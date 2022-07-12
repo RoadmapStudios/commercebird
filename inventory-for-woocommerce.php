@@ -91,6 +91,34 @@ function wooventory_cors( $allowed_origins ) {
   }
 add_filter('allowed_http_origins', 'wooventory_cors', 10, 1);
 
+// The code for creating Product Cost Price in WooCommerce as Meta
+add_action( 'woocommerce_product_options_general_product_data', 'wooventory_cost_price' ); 
+add_action( 'woocommerce_process_product_meta', 'wooventory_cost_price_save' );
+
+function wooventory_cost_price()
+{
+    global $woocommerce, $post;
+    echo '<div class="product_custom_field">';
+    // Custom Product Text Field
+    woocommerce_wp_text_input(
+        array(
+            'id' => 'cost_price',
+            'placeholder' => 'Cost Price',
+            'label' => __('Cost Price', 'woocommerce'),
+            'desc_tip' => 'true'
+        )
+    );
+    echo '</div>';
+}
+
+function wooventory_cost_price_save($post_id)
+{
+    // Custom Product Text Field
+    $woocommerce_custom_product_text_field = $_POST['cost_price'];
+    if (!empty($woocommerce_custom_product_text_field))
+        update_post_meta($post_id, 'cost_price', esc_attr($woocommerce_custom_product_text_field));
+}
+
 // function wooventory_client_activate( $slash = '' ) {
 //     $config = file_get_contents (ABSPATH . "wp-config.php");
 //     $config = preg_replace ("/^([\r\n\t ]*)(\<\?)(php)?/i", "<?php define('ALLOW_UNFILTERED_UPLOADS', true);", $config);
