@@ -15,7 +15,6 @@ if (!defined('ABSPATH')) {
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
-include_once __DIR__ . '/woo-functions.php';
 defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
 
 class WooCommerce_Media_API_By_wooventory
