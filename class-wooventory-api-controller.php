@@ -82,31 +82,6 @@ class WC_REST_WooCommerce_Media_API_By_wooventory_Controller extends WC_REST_CRU
                 'permission_callback' => array($this->media_controller, 'delete_item_permissions_check'),
             ),
         ));
-        // update customer to vendor endpoint
-        register_rest_route($this->namespace, '/vendor',
-            array(
-                'methods' => WP_REST_Server::CREATABLE,
-                'callback' => array($this, 'update_vendor'),
-                'permission_callback' => '__return_true',
-            ),
-        );
-    }
-
-    public function update_vendor($request)
-    {
-        $response = array();
-        $parameters = $request->get_params();
-        $user_id = $parameters[0];
-
-        if ($user_id) {
-            $wp_user_object = new WP_User($user_id);
-            $wp_user_object->set_role('vendor');
-            $response['code'] = 200;
-            $response['message'] = __("User converted to Vendor successfully"); 
-        } else {
-            return new WP_Error( 'no_customer', 'Invalid customer', array( 'status' => 404 ) );
-        }
-        return new WP_REST_Response($response);
     }
 
     public function get_params_upload()
