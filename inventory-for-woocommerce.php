@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Inventory for WooCommerce
- * Description: Allows you to upload Product Images and create Purchase Orders via app.wooventory.com.
+ * Description: Allows you to upload Product Images via https://app.wooventory.com.
  * Author: wooventory
  * Author URI: https://wooventory.com
  * Version: 1.0.0
@@ -32,9 +32,9 @@ class WooCommerce_Media_API_By_wooventory
             return;
         }
 
-        require_once __DIR__ . '/class-wooventory-api-controller.php';
-        require_once __DIR__ . '/class-wooventory-metadata-controller.php';
-        require_once __DIR__ . '/class-wooventory-list-items-api-controller.php';
+        require_once __DIR__ . 'includes/class-wooventory-api-controller.php';
+        require_once __DIR__ . 'includes/class-wooventory-metadata-controller.php';
+        require_once __DIR__ . 'includes/class-wooventory-list-items-api-controller.php';
         $api_classes = array(
             'WC_REST_WooCommerce_Media_API_By_wooventory_Controller',
             'WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller',
@@ -78,69 +78,70 @@ function action_wooventory_update_stock_quantity($product)
 add_action('woocommerce_product_set_stock', 'action_wooventory_update_stock_quantity');
 
 // allow cors
-function wooventory_add_cors_http_header(){
+function wooventory_add_cors_http_header()
+{
     header("Access-Control-Allow-Origin: *");
 }
-add_action('init','wooventory_add_cors_http_header');
+add_action('init', 'wooventory_add_cors_http_header');
 
-function wooventory_cors( $allowed_origins ) {
+function wooventory_cors($allowed_origins)
+{
     $allowed_origins[] = 'http://localhost:8100';
     $allowed_origins[] = 'https://app.wooventory.com';
     return $allowed_origins;
-  }
+}
 add_filter('allowed_http_origins', 'wooventory_cors', 10, 1);
 
+// The code for creating Product Cost Price in WooCommerce as Meta
+add_action('woocommerce_product_options_general_product_data', 'wooventory_cost_price');
+add_action('woocommerce_process_product_meta', 'wooventory_cost_price_save');
 
-// Only enable cost_price if ATUM plugin is not installed
-// if (! defined( 'ATUM_VERSION' ) ) {
-	// The code for creating Product Cost Price in WooCommerce as Meta
-	add_action( 'woocommerce_product_options_general_product_data', 'wooventory_cost_price' ); 
-	add_action( 'woocommerce_process_product_meta', 'wooventory_cost_price_save' );
+function wooventory_cost_price()
+{
+    echo '<div class="product_custom_field">';
+    // Custom Product Text Field
+    woocommerce_wp_text_input(
+        array(
+            'id' => 'cost_price',
+            'placeholder' => 'Cost Price',
+            'label' => __('Cost Price', 'woocommerce'),
+            'desc_tip' => 'true',
+        )
+    );
+    echo '</div>';
+}
 
-	function wooventory_cost_price()
-	{
-		global $woocommerce, $post;
-		echo '<div class="product_custom_field">';
-		// Custom Product Text Field
-		woocommerce_wp_text_input(
-			array(
-				'id' => 'cost_price',
-				'placeholder' => 'Cost Price',
-				'label' => __('Cost Price', 'woocommerce'),
-				'desc_tip' => 'true'
-			)
-		);
-		echo '</div>';
-	}
+function wooventory_cost_price_save($post_id)
+{
+    // Custom Product Text Field
+    $woocommerce_custom_product_text_field = $_POST['cost_price'];
+    if (!empty($woocommerce_custom_product_text_field)) {
+        update_post_meta($post_id, 'cost_price', esc_attr($woocommerce_custom_product_text_field));
+    }
 
-	function wooventory_cost_price_save($post_id)
-	{
-		// Custom Product Text Field
-		$woocommerce_custom_product_text_field = $_POST['cost_price'];
-		if (!empty($woocommerce_custom_product_text_field))
-			update_post_meta($post_id, 'cost_price', esc_attr($woocommerce_custom_product_text_field));
-	}
+}
 
-	// Release cost price in the Woo API
-	add_action( 'rest_api_init', 'wooventory_register_post_meta' );
-	function wooventory_register_post_meta() {
-		register_rest_field( 'product', // any post type registered with API
-			'cost_price', // this needs to match meta key
-			array(
-				'get_callback' => 'wooventory_get_meta',
-				'update_callback' => 'wooventory_update_meta',
-				'schema' => null,
-			)
-		);
-	}
-	function wooventory_get_meta( $object, $field_name, $request ) {
-		return get_post_meta( $object[ 'id' ], $field_name, true );
-	}
-	function wooventory_update_meta( $value, $object, $field_name ) {
-		return update_post_meta( $object->id, $field_name, $value );
-	}
-
-// } // end of Atum plugin check
+// Release cost price in the Woo API
+add_action('rest_api_init', 'wooventory_register_post_meta');
+function wooventory_register_post_meta()
+{
+    register_rest_field('product', // any post type registered with API
+        'cost_price', // this needs to match meta key
+        array(
+            'get_callback' => 'wooventory_get_meta',
+            'update_callback' => 'wooventory_update_meta',
+            'schema' => null,
+        )
+    );
+}
+function wooventory_get_meta($object, $field_name, $request)
+{
+    return get_post_meta($object['id'], $field_name, true);
+}
+function wooventory_update_meta($value, $object, $field_name)
+{
+    return update_post_meta($object->id, $field_name, $value);
+}
 
 // function wooventory_client_activate( $slash = '' ) {
 //     $config = file_get_contents (ABSPATH . "wp-config.php");
@@ -154,7 +155,7 @@ add_filter('allowed_http_origins', 'wooventory_cors', 10, 1);
 // else if (file_exists (dirname (ABSPATH) . "/wp-config.php") && is_writable (dirname (ABSPATH) . "/wp-config.php")){
 //     wooventory_client_activate('/');
 // }
-// else { 
+// else {
 //     add_warning('Error adding');
 // }
 // register_activation_hook( __FILE__, 'wooventory_client_activate' );
