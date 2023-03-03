@@ -66,14 +66,18 @@ add_action('profile_update', 'action_wooventory_update_profile_modified');
 
 function action_wooventory_update_variation_stock_quantity($variation)
 {
-    $product = wc_get_product($variation->get_parent_id());
-    update_post_meta($product->get_id(), 'wooventory_product_last_set_stock', current_time('mysql'));
+    if(!empty($variation)){
+        $product = wc_get_product($variation->get_parent_id());
+        update_post_meta($product->get_id(), 'wooventory_product_last_set_stock', current_time('mysql'));
+    }
 }
 add_action('woocommerce_variation_set_stock', 'action_wooventory_update_variation_stock_quantity');
 
 function action_wooventory_update_stock_quantity($product)
 {
-    update_post_meta($product->get_id(), 'wooventory_product_last_set_stock', current_time('mysql'));
+    if(!empty($product)){
+        update_post_meta($product->get_id(), 'wooventory_product_last_set_stock', current_time('mysql'));
+    }
 }
 add_action('woocommerce_product_set_stock', 'action_wooventory_update_stock_quantity');
 
