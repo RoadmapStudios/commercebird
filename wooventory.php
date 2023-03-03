@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Inventory for WooCommerce
+ * Plugin Name: Wooventory
  * Description: Allows you to upload Product Images via https://app.wooventory.com.
- * Author: wooventory
+ * Author: Fawad Tiemoerie
  * Author URI: https://wooventory.com
  * Version: 1.0.0
  * License: GPL2 or later
@@ -16,6 +16,12 @@ if (!defined('ABSPATH')) {
 //error_reporting(E_ALL);
 
 defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
+
+require_once( plugin_dir_path( __FILE__ ) . 'class-wooventory-license-activation.php' );
+if ( class_exists( 'Wooventory_AM_Client' ) ) {
+	$wcam_lib = new Wooventory_AM_Client( __FILE__, '', '1.0.0', 'plugin', 'https://wooventory.com', 'Wooventory' );
+
+}
 
 class WooCommerce_Media_API_By_wooventory
 {
