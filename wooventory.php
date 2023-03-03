@@ -1,11 +1,17 @@
 <?php
 /**
  * Plugin Name: Wooventory
- * Description: Allows you to upload Product Images via https://app.wooventory.com.
+ * Description: This plugin allows you to upload product images via https://app.wooventory.com.
  * Author: Fawad Tiemoerie
  * Author URI: https://wooventory.com
  * Version: 1.0.0
- * License: GPL2 or later
+ * Requires PHP: 7.4
+ * 
+ * License: GNU General Public License v3.0
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.html
+ *
+ * WC requires at least: 6.1.0
+ * WC tested up to: 7.4.1
  */
 if (!defined('ABSPATH')) {
     exit;
