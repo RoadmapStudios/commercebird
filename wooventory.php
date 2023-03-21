@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 
 defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
 
-require_once( plugin_dir_path( __FILE__ ) . 'class-wooventory-license-activation.php' );
+require_once __DIR__ . '/includes/class-wooventory-license-activation.php';
 if ( class_exists( 'Wooventory_AM_Client' ) ) {
 	$wcam_lib = new Wooventory_AM_Client( __FILE__, '', '1.0.0', 'plugin', 'https://wooventory.com', 'Wooventory' );
 
@@ -44,9 +44,9 @@ class WooCommerce_Media_API_By_wooventory
             return;
         }
 
-        require_once __DIR__ . 'includes/class-wooventory-api-controller.php';
-        require_once __DIR__ . 'includes/class-wooventory-metadata-controller.php';
-        require_once __DIR__ . 'includes/class-wooventory-list-items-api-controller.php';
+        require_once __DIR__ . '/includes/class-wooventory-api-controller.php';
+        require_once __DIR__ . '/includes/class-wooventory-metadata-controller.php';
+        require_once __DIR__ . '/includes/class-wooventory-list-items-api-controller.php';
         $api_classes = array(
             'WC_REST_WooCommerce_Media_API_By_wooventory_Controller',
             'WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller',

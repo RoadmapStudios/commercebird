@@ -1,2 +1,15 @@
-# Wooventory for WooCommerce
-This plugin allows you to upload product images via https://app.wooventory.com to your store media library.
+# wooventory
+
+A WooCommerce Admin Extension
+
+## Development
+
+To get started, run the following commands:
+
+```text
+pnpm install
+pnpm start
+```
+
+See [wp-scripts](https://github.com/WordPress/gutenberg/tree/master/packages/scripts) for more usage information.
+
