@@ -21,6 +21,8 @@ if (!defined('ABSPATH')) {
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
+
+define ( 'Custom_Plugin_URL', trailingslashit( plugins_url( '/', __FILE__ ) ) );
 defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
 
 require_once __DIR__ . '/includes/class-wooventory-license-activation.php';
@@ -47,6 +49,7 @@ class WooCommerce_Media_API_By_wooventory
         require_once __DIR__ . '/includes/class-wooventory-api-controller.php';
         require_once __DIR__ . '/includes/class-wooventory-metadata-controller.php';
         require_once __DIR__ . '/includes/class-wooventory-list-items-api-controller.php';
+        require_once __DIR__ . '/includes/class-wooventory-react-app.php';
         $api_classes = array(
             'WC_REST_WooCommerce_Media_API_By_wooventory_Controller',
             'WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller',
@@ -60,6 +63,34 @@ class WooCommerce_Media_API_By_wooventory
 }
 
 new WooCommerce_Media_API_By_wooventory();
+
+
+add_action('admin_enqueue_scripts','ava_test_init');
+function ava_test_init() {
+
+    wp_enqueue_script( 'wp-react-app', Custom_Plugin_URL .'dist/bundle.js' , [ 'jquery', 'wp-element' ], wp_rand(), true );
+    // wp_register_script( 'ava-test-js', plugins_url( '/src/index.js', __FILE__ ));
+	// wp_enqueue_script('ava-test-js');
+	// wp_enqueue_style( 'my-theme', plugins_url( 'src/index.scss',  __FILE__ ));
+     wp_localize_script( 'wp-react', 'appLocalizer', [
+        'apiUrl' => home_url( '/wp-json' ),
+        'nonce' => wp_create_nonce( 'wp_rest' ),
+    ] );
+}
+
+/**
+ * Display a custom menu page
+ */
+function wpdocs_register_my_custom_menu_page(){
+	add_menu_page( "react-app", "React", "manage_options" , "react" , "my_custom_menu_page" , 'dashicons-buddicons-replies');
+}
+add_action( 'admin_menu', 'wpdocs_register_my_custom_menu_page' );
+
+function my_custom_menu_page(){
+	echo '<div class="react"><div id="react-admin-app"></div></div>';
+}
+
+
 
 function filter_wooventory_modify_after_query($request)
 {
@@ -99,6 +130,7 @@ function wooventory_add_cors_http_header()
     header("Access-Control-Allow-Origin: *");
 }
 add_action('init', 'wooventory_add_cors_http_header');
+
 
 function wooventory_cors($allowed_origins)
 {
