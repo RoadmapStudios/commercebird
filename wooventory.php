@@ -36,10 +36,10 @@ if ( class_exists( 'Wooventory_AM_Client' ) ) {
 add_action( 'admin_enqueue_scripts', 'load_scripts' );
 function load_scripts() {
 
-    wp_register_style( 'style-react', WR_URL .'assets/style.css' );
+    wp_register_style( 'style-react', WR_URL .'build/index.css' );
     wp_enqueue_style('style-react');
 
-    wp_enqueue_script( 'wp-react-app', WR_URL . 'dist/bundle.js', [ 'jquery', 'wp-element' ], wp_rand(), true );
+    wp_enqueue_script( 'wp-react-app', WR_URL . 'build/index.js', [ 'jquery', 'wp-element' ], wp_rand(), true );
     wp_localize_script( 'wp-react-app', 'appLocalizer', [
         'apiUrl' => home_url( '/wp-json' ),
         'nonce' => wp_create_nonce( 'wp_rest' ),
