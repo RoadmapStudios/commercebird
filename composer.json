@@ -1,0 +1,18 @@
+{
+  "name": "wooventory/wooventory",
+  "description": "Assistance plugin to manage Wooventory",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "autoload": {
+      "psr-4": {
+          "Wooventory\\Wooventory\\": "includes/"
+      }
+  },
+  "authors": [
+      {
+          "name": "wooventory",
+          "email": "info@roadmapstudios.com"
+      }
+  ],
+  "require": {}
+}
