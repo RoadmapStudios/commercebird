@@ -1,1 +1,121 @@
-#switch{display:inline-block;height:34px;position:relative;width:60px}#switch #cors_status{height:0;opacity:0;width:0}#slider{background-color:#ccc;bottom:0;cursor:pointer;left:0;right:0;top:0}#slider,#slider:before{position:absolute;transition:.4s}#slider:before{background-color:#fff;bottom:4px;content:"";height:26px;left:4px;width:26px}#cors_status:checked+#slider{background-color:#2196f3}#cors_status:focus+#slider{box-shadow:0 0 1px #2196f3}#cors_status:checked+#slider:before{transform:translateX(26px)}
+/*!********************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/style/main.scss ***!
+  \********************************************************************************************************************************************************************************************************************************************/
+#switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+#switch #cors_status {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+#slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+}
+
+#slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+}
+
+#cors_status:checked + #slider {
+  background-color: #2196F3;
+}
+
+#cors_status:focus + #slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+#cors_status:checked + #slider:before {
+  transform: translateX(26px);
+}
+
+.on-header {
+  text-align: center;
+  padding: 7px;
+  background: #fff;
+  margin-bottom: 10px;
+  padding-left: 0 !important;
+}
+
+.profile-logo {
+  width: 26%;
+}
+
+.aside {
+  float: right;
+}
+
+.head {
+  border-bottom: 1px solid;
+  padding-bottom: 15px;
+  margin: 12px 0;
+}
+
+.footer {
+  border-top: 1px solid;
+  margin-top: 20px;
+}
+
+.notice.notice-error {
+  display: none;
+}
+
+.img-bg {
+  background: #dce4ed;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  height: 170px;
+  align-items: end;
+}
+
+.footbg {
+  background: aqua;
+  padding: 10px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.hub-logo {
+  width: 50%;
+}
+
+.setting-card {
+  margin-top: 15px !important;
+  padding: 0.7em 2em 1em;
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  background: #fff;
+  width: 50%;
+  margin: 8px;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
+.dashboard-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+/*# sourceMappingURL=index.css.map*/
