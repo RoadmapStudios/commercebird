@@ -60,16 +60,18 @@
 .profile-logo {
   width: 26%;
 }
-.aside{
-  float: right;
+.aside {
+  position: relative;
+  bottom: 45px;
+  left: 65%;
 }
 .head {
-  border-bottom: 1px solid;
+  border-bottom:1px solid #e3dada;
   padding-bottom: 15px;
   margin: 12px 0;
 }
 .footer{
-  border-top:1px solid;
+  border-top:1px solid #e3dada;
   margin-top:20px;
 }
 .notice.notice-error{
@@ -80,19 +82,38 @@
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  height: 170px;
+  height: 210px;
   align-items: end;
+  padding: 12px 0;
 }
 .footbg{
-background: aqua;
-padding: 10px;
-height: 66px;
-display: flex;
-align-items: center;
-color: white;
+  background: #2797E8;
+  padding: 15px 0px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  color: white;
+  justify-content: space-evenly;
 }
-.hub-logo{
-  width:50%;
+.op-button-transparent{
+  margin: 12px;
+  background: none;
+  border: none;
+  flex:3;
+}
+.op-button-transparent a{
+  color: #fff;
+  text-decoration: none;
+}
+.footbg p {
+  flex: 9;
+  color: #fff;
+  text-decoration: none;
+  margin-left: 25px;
+}
+.hub-logo {
+  width: 40%;
+  height: 85%;
 }
 .setting-card {
   margin-top: 15px !important;
@@ -100,9 +121,55 @@ color: white;
   border: 1px solid #c3c4c7;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
   background: #fff;
-  width: 50%;
-  margin: 8px;
-  height: fit-content;
+  width: 88%;
+}
+.leftside,.rightside{
+  min-width: 50%;
+}
+.op-portlet-need h6{
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+}
+.op-portlet-need p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: normal;
+}
+.op-portlet-need ul {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 0;
+}
+.op-portlet-need ul li {
+  margin-right: 20px;
+}
+.op-btn-transparent {
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+  color: #FFF;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 18px;
+  font-family: "Poppins";
+  outline: none;
+  cursor: pointer;
+}
+.op-portlet-need ul li:last-child {
+  justify-content: flex-end;
+  flex: 1;
+  display: flex;
+  margin-right: 0px;
+}
+.op-btn-transparent a{
+  text-decoration: none;
+}
+.op-portlet-need ul li:last-child button {
+  color: #2797E8;
+  font-weight: normal;
 }
 
 .dashboard-container {
