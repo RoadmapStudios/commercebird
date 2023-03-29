@@ -54,7 +54,8 @@ const Settings = () => {
                                     <tbody>
                                         <tr>
                                             <th scope="row">
-                                                <label htmlFor="cors_status"> Enable Cors </label>
+                                                <label htmlFor="cors_status"> Enable CORS Support </label>
+                                                <p>Only enable this in case of CORS error</p>
                                             </th>
                                             <td>
                                                 <div >
