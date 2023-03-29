@@ -56,7 +56,8 @@ class WP_React_Settings_Rest_Route {
             }
         }
         if($req["sub_id"] == true) {
-            $endpoint = 'subscriptions/' . $req["sub_id"];
+            $sub_id = $req["sub_id"];
+            $endpoint = 'subscriptions/' . $sub_id;
             try {
                 // logging starts here
                 $fd = fopen(__DIR__.'/get_subscription.txt','w+');
@@ -66,13 +67,9 @@ class WP_React_Settings_Rest_Route {
         
                 fwrite($fd, PHP_EOL. print_r($response, true));
                 fclose($fd);
-        
-                $customer_fname = $result->first_name;
-                $customer_lname = $result->last_name;
-                $customer_name = $customer_fname . ' ' . $customer_lname;
-                $customer_email = $result->email;
-                update_option('zi_customer_name', $customer_name);
-                update_option('zi_customer_email', $customer_email);
+
+                update_option('wooventory_sub_id', $sub_id);
+                return $response;
             } catch (HttpClientException $e) {
                 return $e->getMessage();
                 // echo '<pre><code>' . print_r( $e->getRequest(), true ) . '</code><pre>'; // Last request data
