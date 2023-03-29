@@ -2,6 +2,17 @@
 /**
  * This file will create Custom Rest API End Points.
  */
+require __DIR__ . '../vendor/autoload.php';
+use Automattic\WooCommerce\Client;
+
+$woocommerce = new Client(
+    'https://wooventory.com',
+    'ck_b0305b88f6d5d26e6423c073f6f95de119cc9e55',
+    'cs_609c13f281816b937499b2a0052e1145745acdc3',
+    [
+      'version' => 'wc/v3',
+    ]
+  );
 class WP_React_Settings_Rest_Route {
 
     public function __construct() {
@@ -34,7 +45,7 @@ class WP_React_Settings_Rest_Route {
 
     public function save_settings( $req ) {
         //enable corse
-        if($req["cors_status"] == true){
+        if($req["cors_status"] == true) {
             $fp = fopen('.htaccess','a+');
             if($fp){
                 fwrite($fp,'
@@ -43,6 +54,28 @@ class WP_React_Settings_Rest_Route {
                 </IfModule>');
                 fclose($fp);
             }
+        }
+        if($req["sub_id"] == true) {
+            $endpoint = 'subscriptions/' . $req["sub_id"];
+            try {
+                // logging starts here
+                $fd = fopen(__DIR__.'/get_subscription.txt','w+');
+
+                $response = $woocommerce->get($endpoint);
+                $result = $response->billing;
+        
+                fwrite($fd, PHP_EOL. print_r($response, true));
+                fclose($fd);
+        
+                $customer_fname = $result->first_name;
+                $customer_lname = $result->last_name;
+                $customer_name = $customer_fname . ' ' . $customer_lname;
+                $customer_email = $result->email;
+                update_option('zi_customer_name', $customer_name);
+                update_option('zi_customer_email', $customer_email);
+            } catch (HttpClientException $e) {
+                return $e->getMessage();
+                // echo '<pre><code>' . print_r( $e->getRequest(), true ) . '</code><pre>'; // Last request data
         }
 
 		update_option("enable_corse",$req["cors_status"]);
