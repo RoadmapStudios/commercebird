@@ -13,5 +13,8 @@
           "name": "wooventory",
           "email": "info@roadmapstudios.com"
       }
-  ]
+  ],
+  "require": {
+    "automattic/woocommerce": "^3.1"
+  }
 }
