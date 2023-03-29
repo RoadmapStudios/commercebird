@@ -55,7 +55,7 @@ class WP_React_Settings_Rest_Route {
                 fclose($fp);
             }
         }
-        if($req["sub_id"] == true) {
+        if(!empty($req["sub_id"])) {
             $sub_id = $req["sub_id"];
             $endpoint = 'subscriptions/' . $sub_id;
             try {
