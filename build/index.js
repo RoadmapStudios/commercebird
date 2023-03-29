@@ -52,36 +52,52 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const Settings = () => {
+  const [subscriptionData, setSubscriptionData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
   const [cors_status, setCors] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
+  const [sub_id, setSubid] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
   const [loader, setLoader] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('Save Settings');
   const url = `${appLocalizer.apiUrl}/react/v1/settings`;
   const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
-  let changeLogData = {};
-  axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(changeLogUrl).then(res => {
-    changeLogData = {
-      update1: res.data[0],
-      update2: res.data[1]
-    }; //, update3: res.data[2], update4: res.data[3]
-    console.log(changeLogData);
+  const renderHTML = rawHTML => react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+    dangerouslySetInnerHTML: {
+      __html: rawHTML
+    }
   });
   const handleSubmit = e => {
     e.preventDefault();
     setLoader('Saving...');
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].post(url, {
-      cors: cors_status
+      cors: cors_status,
+      sub_id: sub_id
     }, {
       headers: {
         'content-type': 'application/json',
         'X-WP-NONCE': appLocalizer.nonce
       }
     }).then(res => {
+      getSubscription(sub_id);
       setLoader('Save Settings');
     });
+  };
+  let getSubscription = sub_id => {
+    if (sub_id != null) {
+      var subscriptionUrl = `${appLocalizer.apiUrl}/react/v1/subscription/` + sub_id;
+      console.log(subscriptionUrl);
+      axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(subscriptionUrl).then(res => {
+        if (res.status === 200) {
+          setSubscriptionData(res.data);
+          console.log(3);
+        }
+      }).catch(error => console.log(error));
+    }
   };
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(url).then(res => {
       setCors(res.data.cors_status);
+      setSubid(res.data.sub_id);
+      console.log(1);
     });
+    getSubscription(sub_id);
   }, []);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react__WEBPACK_IMPORTED_MODULE_1___default().Fragment), null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "dashboard-container"
@@ -103,13 +119,26 @@ const Settings = () => {
     scope: "row"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
     htmlFor: "cors_status"
-  }, " Enable Cors ")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
+  }, " Enable CORS Support "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Only enable this in case of CORS error")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
     type: "checkbox",
     id: "cors_status",
     name: "cors_status",
     value: cors_status,
     onChange: e => {
       setCors(e.target.value);
+    },
+    className: "regular-text"
+  })))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("th", {
+    scope: "row"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
+    htmlFor: "cors_status"
+  }, " Enter subscription Id : ")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
+    type: "number",
+    id: "sub_id",
+    name: "sub_id",
+    value: sub_id,
+    onChange: e => {
+      setSubid(e.target.value);
     },
     className: "regular-text"
   }))))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -198,7 +227,7 @@ const Settings = () => {
     className: "setting-card"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "head"
-  }, " Announcement "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, "Your Plan"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "content"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, " Plan Name ... "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Unlimited Transactions, Unlimited Customers"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: "/"

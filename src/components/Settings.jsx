@@ -3,25 +3,23 @@ import axios from 'axios';
 
 const Settings = () => {
 
+    const [subscriptionData, setSubscriptionData] = useState([]);
     const [cors_status, setCors] = useState('');
+    const [sub_id, setSubid] = useState('');
     const [loader, setLoader] = useState('Save Settings');
 
+
     const url = `${appLocalizer.apiUrl}/react/v1/settings`;
-
-
     const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
-    let changeLogData = {};
-    axios.get(changeLogUrl)
-        .then((res) => {
-            changeLogData = { update1: res.data[0], update2: res.data[1] };//, update3: res.data[2], update4: res.data[3]
-            console.log(changeLogData);
-        });
+
+    const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoader('Saving...');
         axios.post(url, {
-            cors: cors_status
+            cors: cors_status,
+            sub_id: sub_id
         }, {
             headers: {
                 'content-type': 'application/json',
@@ -29,16 +27,37 @@ const Settings = () => {
             }
         })
             .then((res) => {
+                getSubscription(sub_id);
                 setLoader('Save Settings');
             })
+    }
+
+    let getSubscription = (sub_id) => {
+        if (sub_id != null) {
+            var subscriptionUrl = `${appLocalizer.apiUrl}/react/v1/subscription/` + sub_id;
+            console.log(subscriptionUrl);
+            axios.get(subscriptionUrl)
+                .then((res) => {
+                    if (res.status === 200) {
+                        setSubscriptionData(res.data);
+                        console.log(3);
+                    }
+                }).catch((error) => console.log(error));
+        }
     }
 
     useEffect(() => {
         axios.get(url)
             .then((res) => {
                 setCors(res.data.cors_status);
-            })
-    }, [])
+                setSubid(res.data.sub_id);
+                console.log(1);
+
+            });
+
+        getSubscription(sub_id);
+    }, []);
+
 
     return (
         <React.Fragment>
@@ -64,6 +83,19 @@ const Settings = () => {
                                                 </div>
                                             </td>
                                         </tr>
+
+                                        <tr>
+                                            <th scope="row">
+                                                <label htmlFor="cors_status"> Enter subscription Id : </label>
+                                            </th>
+                                            <td>
+                                                <div >
+                                                    <input type="number" id="sub_id" name="sub_id" value={sub_id} onChange={(e) => { setSubid(e.target.value) }} className="regular-text" />
+                                                    {/* <span id="slider"></span> */}
+                                                </div>
+                                            </td>
+                                        </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -169,6 +201,30 @@ const Settings = () => {
                 <div className="rightside">
 
                     <div className="setting-card">
+
+                        <div className="head">Your Plan</div>
+
+                        <div className='content'>
+                            <div>
+                                <h1> Plan Name ... </h1>
+                                <p>
+                                    Unlimited Transactions, Unlimited Customers
+                                </p>
+                                <a href='/'>
+                                    View Plans
+                                </a>
+                                <img className="profile-logo aside" src={"../wp-content/plugins/wooventory/media/Wooventory-Logo.webp"} alt={"Wooventory-Logo"} />
+                            </div>
+                        </div>
+
+                        <div className="footer">
+                            Payment
+                            <p> Your next bill is for 0.00 usd + tax on 2024-02-14 </p>
+                        </div>
+                    </div>
+
+                    <div className="setting-card">
+
                         <div className="head">Your Plan</div>
 
                         <div className='content'>
@@ -192,26 +248,6 @@ const Settings = () => {
 
 
 
-                    <div className="setting-card">
-                        <div className="head"> Announcement </div>
-                        <div className='content'>
-                            <div>
-                                <h1> Plan Name ... </h1>
-                                <p>
-                                    Unlimited Transactions, Unlimited Customers
-                                </p>
-                                <a href='/'>
-                                    View Plans
-                                </a>
-                                <img className="profile-logo aside" src={"../wp-content/plugins/wooventory/media/Wooventory-Logo.webp"} alt={"Wooventory-Logo"} />
-                            </div>
-                        </div>
-
-                        <div className="footer">
-                            Payment
-                            <p> Your next bill is for 0.00 usd + tax on 2024-02-14 </p>
-                        </div>
-                    </div>
                 </div>
 
             </div>
