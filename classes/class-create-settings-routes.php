@@ -2,7 +2,7 @@
 /**
  * This file will create Custom Rest API End Points.
  */
-require __DIR__ . '../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 use Automattic\WooCommerce\Client;
 
 $woocommerce = new Client(
@@ -30,11 +30,41 @@ class WP_React_Settings_Rest_Route {
             'callback' => [ $this, 'save_settings' ],
             'permission_callback' => [ $this, 'save_settings_permission' ]
         ] );
+
+        register_rest_route( 'react/v1', '/subscription/(?P<id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [ $this, 'get_subscription' ],
+            'permission_callback' => [ $this, 'get_settings_permission' ]
+        ] );
+    }
+
+
+    public function get_subscription($data){
+        $sub_id = $data['id'];
+        try {
+            $endpoint = 'subscriptions/' . $sub_id;
+            
+            // logging starts here
+            $fd = fopen(__DIR__.'/get_subscription.txt','w+');
+            $response = $woocommerce->get($endpoint);
+            fwrite($fd, PHP_EOL. print_r($response, true));
+            fclose($fd);
+
+            update_option('wooventory_sub_id', $sub_id);
+            return $response;
+        } catch (HttpClientException $e) {
+            $fd = fopen(__DIR__.'/get_subscription.txt','w+');
+            fwrite($fd, PHP_EOL. print_r($e, true));
+            fclose($fd);
+            return false;
+            
+        }
     }
 
     public function get_settings() {
         $response =[
-			cors_status => get_option("enable_corse")
+		    sub_id => get_option("wooventory_sub_id"),
+            cors_status => get_option("enable_corse") 
 		];
         return rest_ensure_response( $response );
     }
@@ -55,27 +85,16 @@ class WP_React_Settings_Rest_Route {
                 fclose($fp);
             }
         }
+        update_option("enable_corse",$req["cors_status"]);
+
         if(!empty($req["sub_id"])) {
             $sub_id = $req["sub_id"];
-            $endpoint = 'subscriptions/' . $sub_id;
-            try {
-                // logging starts here
-                $fd = fopen(__DIR__.'/get_subscription.txt','w+');
-
-                $response = $woocommerce->get($endpoint);
-                $result = $response->billing;
-        
-                fwrite($fd, PHP_EOL. print_r($response, true));
-                fclose($fd);
-
-                update_option('wooventory_sub_id', $sub_id);
-                return $response;
-            } catch (HttpClientException $e) {
-                return $e->getMessage();
-                // echo '<pre><code>' . print_r( $e->getRequest(), true ) . '</code><pre>'; // Last request data
+            $res = $this->get_subscription(array("sub_id" => $sub_id));
+            if($res == false){
+                return rest_ensure_response("failure");
+            }
         }
 
-		update_option("enable_corse",$req["cors_status"]);
         return rest_ensure_response( 'success' );
     }
 
