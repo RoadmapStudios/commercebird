@@ -69,7 +69,7 @@ class WP_React_Settings_Rest_Route
     {
         $response = [
             "sub_id" => get_option("wooventory_sub_id"),
-            "cors_status" => get_option("enable_corse"),
+            "cors_status" => get_option("enable_cors"),
         ];
         return rest_ensure_response($response);
     }
@@ -89,7 +89,7 @@ class WP_React_Settings_Rest_Route
             if($fp){
                 fwrite($fp,'
                 <IfModule mod_headers.c>
-                    Header set Access-Control-Allow-Origin "*"
+                Header set Access-Control-Allow-Origin "*"
                 </IfModule>');
                 fclose($fp);
             }
