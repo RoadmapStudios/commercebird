@@ -3,22 +3,22 @@ import axios from 'axios';
 
 const Settings = () => {
 
-    const [subscriptionData, setSubscriptionData] = useState([]);
+    const [subscriptionData, setSubscriptionData] = useState({});
     const [cors_status, setCors] = useState('');
     const [sub_id, setSubid] = useState('');
     const [loader, setLoader] = useState('Save Settings');
-
+    // let check = 'checked';
 
     const url = `${appLocalizer.apiUrl}/react/v1/settings`;
     const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
 
-    const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
+    // const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoader('Saving...');
         axios.post(url, {
-            cors: cors_status,
+            cors_status: cors_status,
             sub_id: sub_id
         }, {
             headers: {
@@ -32,15 +32,14 @@ const Settings = () => {
             })
     }
 
-    let getSubscription = (sub_id) => {
-        if (sub_id != null) {
+    const getSubscription = (sub_id) => {
+        if (sub_id != null && sub_id != "") {
             var subscriptionUrl = `${appLocalizer.apiUrl}/react/v1/subscription/` + sub_id;
-            console.log(subscriptionUrl);
+
             axios.get(subscriptionUrl)
                 .then((res) => {
                     if (res.status === 200) {
                         setSubscriptionData(res.data);
-                        console.log(3);
                     }
                 }).catch((error) => console.log(error));
         }
@@ -51,12 +50,60 @@ const Settings = () => {
             .then((res) => {
                 setCors(res.data.cors_status);
                 setSubid(res.data.sub_id);
-                console.log(1);
-
+                getSubscription(res.data.sub_id);
             });
 
-        getSubscription(sub_id);
+        // if(cors_status != true){
+        //     check = '';
+        // }
+
     }, []);
+
+    const showMessage = () => {
+        return <div className='inactive-widget'> Please enter your subscription ID to receive support  </div>
+    }
+
+const showList = () => {
+    let appsArray = subscriptionData ? subscriptionData.fee_lines : null ;
+    let list="";
+    if(appsArray != null){
+        list = appsArray.map( (s)=> {
+            return <li> - {s.name} </li>
+        });
+        return list;
+    }
+}
+
+    const renderWidget = () => {
+        let lineItems = subscriptionData.line_items ? subscriptionData.line_items[0] : null;
+        let paymentCurrency = subscriptionData.currency;
+        return <div className='main'>
+            <div className='content'>
+                <div>
+                    <h1> {lineItems != null ? lineItems.name : "Loading..." }  </h1>
+                    <p>
+                        Live Notifications, Fastest IOS/Android App, Staff Members, Integrations and more
+                    </p>
+
+                    <h3> Activated Integrations </h3>
+                    <ul>
+                        {showList()}
+                    </ul>
+
+                    <a href='https://wooventory.com/pricing'>
+                        View Plans
+                    </a>
+                    {subscriptionData.needs_payment == true ?
+                        <a href={subscriptionData.payment_url} target="_blank" className="right rplan-btn"> Reactivate Plan </a>
+                        : null}
+                </div>
+            </div>
+            <div className="footer">
+                Payment
+                <p> Your next bill is for {subscriptionData.total} {paymentCurrency} on {subscriptionData.next_payment_date_gmt} </p>
+            </div>
+        </div >
+    }
 
 
     return (
@@ -79,7 +126,7 @@ const Settings = () => {
                                             <td>
                                                 <div >
                                                     <input type="checkbox" id="cors_status" name="cors_status" value={cors_status} onChange={(e) => { setCors(e.target.value) }} className="regular-text" />
-                                                    {/* <span id="slider"></span> */}
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -91,7 +138,7 @@ const Settings = () => {
                                             <td>
                                                 <div >
                                                     <input type="number" id="sub_id" name="sub_id" value={sub_id} onChange={(e) => { setSubid(e.target.value) }} className="regular-text" />
-                                                    {/* <span id="slider"></span> */}
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -146,23 +193,6 @@ const Settings = () => {
                                         <i class="calendar alternate outline"></i>
                                     </li>
                                     <li>
-                                        <h6>Call our Support Line</h6>
-                                        <p>Give our office a call </p>
-                                    </li>
-                                    <li>
-                                        <button class="op-btn-transparent">
-                                            <a href="tel:8336620633">Call +1-833-662-0633</a>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="op-portlet-need">
-                                <ul>
-                                    <li>
-                                        <i class="calendar alternate outline"></i>
-                                    </li>
-                                    <li>
                                         <h6>Ask Our Knowledge Base</h6>
                                         <p>Get help right away</p>
                                     </li>
@@ -201,49 +231,21 @@ const Settings = () => {
                 <div className="rightside">
 
                     <div className="setting-card">
-
-                        <div className="head">Your Plan</div>
-
-                        <div className='content'>
-                            <div>
-                                <h1> Plan Name ... </h1>
-                                <p>
-                                    Unlimited Transactions, Unlimited Customers
-                                </p>
-                                <a href='/'>
-                                    View Plans
-                                </a>
-                                <img className="profile-logo aside" src={"../wp-content/plugins/wooventory/media/Wooventory-Logo.webp"} alt={"Wooventory-Logo"} />
-                            </div>
+                        <div className="head">
+                            <span className="left"> Your Plan </span>
+                            {(subscriptionData.status != null && subscriptionData.status != undefined) ? <span className={subscriptionData.status == "active" ? "right active" : "right not-active" }> {subscriptionData.status} </span> : null}
                         </div>
-
-                        <div className="footer">
-                            Payment
-                            <p> Your next bill is for 0.00 usd + tax on 2024-02-14 </p>
-                        </div>
+                        { (subscriptionData.status != null && subscriptionData.status != undefined) ? renderWidget() : showMessage()}
                     </div>
 
                     <div className="setting-card">
 
-                        <div className="head">Your Plan</div>
+                        <div className="head">Announcements</div>
 
                         <div className='content'>
-                            <div>
-                                <h1> Plan Name ... </h1>
-                                <p>
-                                    Unlimited Transactions, Unlimited Customers
-                                </p>
-                                <a href='/'>
-                                    View Plans
-                                </a>
-                                <img className="profile-logo aside" src={"../wp-content/plugins/wooventory/media/Wooventory-Logo.webp"} alt={"Wooventory-Logo"} />
-                            </div>
+                            Coming Soon..
                         </div>
 
-                        <div className="footer">
-                            Payment
-                            <p> Your next bill is for 0.00 usd + tax on 2024-02-14 </p>
-                        </div>
                     </div>
 
 

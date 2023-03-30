@@ -14,12 +14,13 @@ class Wp_Create_Admin_Page {
         $slug = 'react';
 
         add_menu_page(
-            __( 'WP React App', 'wp-react-app' ),
-            __( 'WP React App', 'wp-react-app' ),
+            __( 'Wooventory', 'wooventory' ),
+            __( 'Wooventory', 'wooventory' ),
             $capability,
             $slug,
             [ $this, 'menu_page_template' ],
-            'dashicons-buddicons-replies'
+            "",
+            29//After woocomerce
         );
     }
 

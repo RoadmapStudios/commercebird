@@ -13,9 +13,12 @@ $woocommerce = new Client(
       'version' => 'wc/v3',
     ]
   );
+
 class WP_React_Settings_Rest_Route {
 
-    public function __construct() {
+    protected $woocomerce;
+    public function __construct($woo) {
+        $this->woocomerce = $woo;
         add_action( 'rest_api_init', [ $this, 'create_rest_routes' ] );
     }
 
@@ -46,11 +49,9 @@ class WP_React_Settings_Rest_Route {
             
             // logging starts here
             $fd = fopen(__DIR__.'/get_subscription.txt','w+');
-            $response = $woocommerce->get($endpoint);
-            fwrite($fd, PHP_EOL. print_r($response, true));
+            $response = $this->woocomerce->get($endpoint);
+            fwrite($fd, PHP_EOL. print_r(array($response,$woocommerce), true));
             fclose($fd);
-
-            update_option('wooventory_sub_id', $sub_id);
             return $response;
         } catch (HttpClientException $e) {
             $fd = fopen(__DIR__.'/get_subscription.txt','w+');
@@ -63,8 +64,8 @@ class WP_React_Settings_Rest_Route {
 
     public function get_settings() {
         $response =[
-		    sub_id => get_option("wooventory_sub_id"),
-            cors_status => get_option("enable_corse") 
+		    "sub_id" => get_option("wooventory_sub_id"),
+            "cors_status" => get_option("enable_corse") 
 		];
         return rest_ensure_response( $response );
     }
@@ -76,6 +77,8 @@ class WP_React_Settings_Rest_Route {
     public function save_settings( $req ) {
         //enable corse
         if($req["cors_status"] == true) {
+            echo '<pre>';
+            print_r($req);die();
             $fp = fopen('.htaccess','a+');
             if($fp){
                 fwrite($fp,'
@@ -84,8 +87,9 @@ class WP_React_Settings_Rest_Route {
                 </IfModule>');
                 fclose($fp);
             }
+            update_option("enable_corse",true);
         }
-        update_option("enable_corse",$req["cors_status"]);
+
 
         if(!empty($req["sub_id"])) {
             $sub_id = $req["sub_id"];
@@ -93,6 +97,7 @@ class WP_React_Settings_Rest_Route {
             if($res == false){
                 return rest_ensure_response("failure");
             }
+            update_option('wooventory_sub_id', $sub_id);
         }
 
         return rest_ensure_response( 'success' );
@@ -102,4 +107,4 @@ class WP_React_Settings_Rest_Route {
         return true;
     }
 }
-new WP_React_Settings_Rest_Route();
+new WP_React_Settings_Rest_Route($woocommerce);

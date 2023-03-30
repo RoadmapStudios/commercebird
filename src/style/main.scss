@@ -57,26 +57,62 @@
   padding-left: 0 !important;
 }
 
+.right {
+  padding: 8px 20px;
+  position: relative;
+  left: 70%;
+  border-radius: 25px;
+  font-size: 16px;
+}
+.not-active{
+  border: 3px solid red;
+  color: red;
+}
+.rplan-btn,.rplan-btn:hover{
+  border: 3px solid;
+  color: #fff;
+  left: 60%;
+  text-decoration: none;
+  bottom: 5px;
+  background-color: #2196F3;
+}
+
+
+.active{
+  border: 3px solid green;
+  color: green;
+}
+
 .profile-logo {
   width: 26%;
 }
-.aside {
-  position: relative;
-  bottom: 45px;
-  left: 65%;
+
+.hub-logo {
+  width: 40%;
+  height: 85%;
+}
+
+.setting-card{
+  #setting-error-tgmpa{
+    display:none;
+  }
+
 }
 .head {
-  border-bottom:1px solid #e3dada;
+  border-bottom: 1px solid #e3dada;
   padding-bottom: 15px;
   margin: 12px 0;
 }
-.footer{
-  border-top:1px solid #e3dada;
-  margin-top:20px;
+
+.footer {
+  border-top: 1px solid #e3dada;
+  margin-top: 20px;
 }
-.notice.notice-error{
+
+.notice.notice-error {
   display: none;
 }
+
 .img-bg {
   background: #dce4ed;
   margin: 0 auto;
@@ -86,7 +122,8 @@
   align-items: end;
   padding: 12px 0;
 }
-.footbg{
+
+.footbg {
   background: #2797E8;
   padding: 15px 0px;
   height: 66px;
@@ -95,26 +132,26 @@
   color: white;
   justify-content: space-evenly;
 }
-.op-button-transparent{
+
+.op-button-transparent {
   margin: 12px;
   background: none;
   border: none;
-  flex:3;
+  flex: 3;
 }
-.op-button-transparent a{
+
+.op-button-transparent a {
   color: #fff;
   text-decoration: none;
 }
+
 .footbg p {
   flex: 9;
   color: #fff;
   text-decoration: none;
   margin-left: 25px;
 }
-.hub-logo {
-  width: 40%;
-  height: 85%;
-}
+
 .setting-card {
   margin-top: 15px !important;
   padding: 0.7em 2em 1em;
@@ -123,19 +160,24 @@
   background: #fff;
   width: 88%;
 }
-.leftside,.rightside{
+
+.leftside,
+.rightside {
   min-width: 50%;
 }
-.op-portlet-need h6{
+
+.op-portlet-need h6 {
   margin: 0;
   font-size: 12px;
   font-weight: 700;
 }
+
 .op-portlet-need p {
   margin: 0;
   font-size: 12px;
   font-weight: normal;
 }
+
 .op-portlet-need ul {
   padding: 0;
   list-style: none;
@@ -143,9 +185,11 @@
   align-items: center;
   padding: 0.4rem 0;
 }
+
 .op-portlet-need ul li {
   margin-right: 20px;
 }
+
 .op-btn-transparent {
   background-color: transparent;
   border: 0;
@@ -158,15 +202,18 @@
   outline: none;
   cursor: pointer;
 }
+
 .op-portlet-need ul li:last-child {
   justify-content: flex-end;
   flex: 1;
   display: flex;
   margin-right: 0px;
 }
-.op-btn-transparent a{
+
+.op-btn-transparent a {
   text-decoration: none;
 }
+
 .op-portlet-need ul li:last-child button {
   color: #2797E8;
   font-weight: normal;
