@@ -9,7 +9,7 @@ const Settings = () => {
     const [loader, setLoader] = useState('Save Settings');
     // let check = 'checked';
 
-    const url = `${appLocalizer.apiUrl}/react/v1/settings`;
+    const url = `${appLocalizer.apiUrl}/wooventory/v1/settings`;
     const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
 
     // const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
@@ -34,7 +34,7 @@ const Settings = () => {
 
     const getSubscription = (sub_id) => {
         if (sub_id != null && sub_id != "") {
-            var subscriptionUrl = `${appLocalizer.apiUrl}/react/v1/subscription/` + sub_id;
+            var subscriptionUrl = `${appLocalizer.apiUrl}/wooventory/v1/subscription/` + sub_id;
 
             axios.get(subscriptionUrl)
                 .then((res) => {
