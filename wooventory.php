@@ -23,13 +23,13 @@ define ( 'WR_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 define ( 'WR_URL', trailingslashit( plugins_url( '/', __FILE__ ) ) );
 defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
 
-
 require_once __DIR__ . '/includes/class-wooventory-license-activation.php';
 if ( class_exists( 'Wooventory_AM_Client' ) ) {
 	$wcam_lib = new Wooventory_AM_Client( __FILE__, '', '1.0.0', 'plugin', 'https://wooventory.com', 'Wooventory' );
 }
 
-
+require_once WR_PATH . 'classes/class-create-admin-menu.php';
+require_once WR_PATH . 'classes/class-create-settings-routes.php';
 /**
  * Loading Necessary Scripts
  */
@@ -46,7 +46,6 @@ function load_scripts() {
     ] );
 }
 
-
 class WooCommerce_Media_API_By_wooventory
 {
 
@@ -58,7 +57,7 @@ class WooCommerce_Media_API_By_wooventory
     public function register_routes()
     {
         global $wp_version;
-        if (version_compare($wp_version, 4.4, '<')) {
+        if (version_compare($wp_version, 6.0, '<')) {
             return;
         }
 
@@ -79,6 +78,3 @@ class WooCommerce_Media_API_By_wooventory
 }
 
 new WooCommerce_Media_API_By_wooventory();
-
-require_once WR_PATH . 'classes/class-create-admin-menu.php';
-require_once WR_PATH . 'classes/class-create-settings-routes.php';
