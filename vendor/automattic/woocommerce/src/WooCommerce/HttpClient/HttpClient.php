@@ -266,7 +266,7 @@ class HttpClient
 
         // Include post fields.
         if ($hasData) {
-            $body = \json_encode($data);
+            $body = \stripslashes($data);
             \curl_setopt($this->ch, CURLOPT_POSTFIELDS, $body);
         }
 
