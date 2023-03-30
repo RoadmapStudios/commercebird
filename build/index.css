@@ -56,14 +56,44 @@
   padding-left: 0 !important;
 }
 
+.right {
+  padding: 8px 20px;
+  position: relative;
+  left: 70%;
+  border-radius: 25px;
+  font-size: 16px;
+}
+
+.not-active {
+  border: 3px solid red;
+  color: red;
+}
+
+.rplan-btn, .rplan-btn:hover {
+  border: 3px solid;
+  color: #fff;
+  left: 60%;
+  text-decoration: none;
+  bottom: 5px;
+  background-color: #2196F3;
+}
+
+.active {
+  border: 3px solid green;
+  color: green;
+}
+
 .profile-logo {
   width: 26%;
 }
 
-.aside {
-  position: relative;
-  bottom: 45px;
-  left: 65%;
+.hub-logo {
+  width: 40%;
+  height: 85%;
+}
+
+.setting-card #setting-error-tgmpa {
+  display: none;
 }
 
 .head {
@@ -120,11 +150,6 @@
   margin-left: 25px;
 }
 
-.hub-logo {
-  width: 40%;
-  height: 85%;
-}
-
 .setting-card {
   margin-top: 15px !important;
   padding: 0.7em 2em 1em;
@@ -134,7 +159,8 @@
   width: 88%;
 }
 
-.leftside, .rightside {
+.leftside,
+.rightside {
   min-width: 50%;
 }
 

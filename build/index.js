@@ -52,22 +52,22 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const Settings = () => {
-  const [subscriptionData, setSubscriptionData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
+  const [subscriptionData, setSubscriptionData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({});
   const [cors_status, setCors] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
   const [sub_id, setSubid] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
   const [loader, setLoader] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('Save Settings');
+  // let check = 'checked';
+
   const url = `${appLocalizer.apiUrl}/react/v1/settings`;
   const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
-  const renderHTML = rawHTML => react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
-    dangerouslySetInnerHTML: {
-      __html: rawHTML
-    }
-  });
+
+  // const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
+
   const handleSubmit = e => {
     e.preventDefault();
     setLoader('Saving...');
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].post(url, {
-      cors: cors_status,
+      cors_status: cors_status,
       sub_id: sub_id
     }, {
       headers: {
@@ -79,14 +79,12 @@ const Settings = () => {
       setLoader('Save Settings');
     });
   };
-  let getSubscription = sub_id => {
-    if (sub_id != null) {
+  const getSubscription = sub_id => {
+    if (sub_id != null && sub_id != "") {
       var subscriptionUrl = `${appLocalizer.apiUrl}/react/v1/subscription/` + sub_id;
-      console.log(subscriptionUrl);
       axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(subscriptionUrl).then(res => {
         if (res.status === 200) {
           setSubscriptionData(res.data);
-          console.log(3);
         }
       }).catch(error => console.log(error));
     }
@@ -95,10 +93,45 @@ const Settings = () => {
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(url).then(res => {
       setCors(res.data.cors_status);
       setSubid(res.data.sub_id);
-      console.log(1);
+      getSubscription(res.data.sub_id);
     });
-    getSubscription(sub_id);
+
+    // if(cors_status != true){
+    //     check = '';
+    // }
   }, []);
+  const showMessage = () => {
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "inactive-widget"
+    }, " Please enter your subscription ID to receive support  ");
+  };
+  const showList = () => {
+    let appsArray = subscriptionData ? subscriptionData.fee_lines : null;
+    let list = "";
+    if (appsArray != null) {
+      list = appsArray.map(s => {
+        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, " - ", s.name, " ");
+      });
+      return list;
+    }
+  };
+  const renderWidget = () => {
+    let lineItems = subscriptionData.line_items ? subscriptionData.line_items[0] : null;
+    let paymentCurrency = subscriptionData.currency;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "main"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "content"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, " ", lineItems != null ? lineItems.name : "Loading...", "  "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Live Notifications, Fastest IOS/Android App, Staff Members, Integrations and more"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, " Activated Integrations "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", null, showList()), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+      href: "https://wooventory.com/pricing"
+    }, "View Plans"), subscriptionData.needs_payment == true ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+      href: subscriptionData.payment_url,
+      target: "_blank",
+      className: "right rplan-btn"
+    }, " Reactivate Plan ") : null)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "footer"
+    }, "Payment", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, " Your next bill is for ", subscriptionData.total, " ", paymentCurrency, " on ", subscriptionData.next_payment_date_gmt, " ")));
+  };
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)((react__WEBPACK_IMPORTED_MODULE_1___default().Fragment), null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "dashboard-container"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -185,14 +218,6 @@ const Settings = () => {
     class: "op-portlet-need"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
     class: "calendar alternate outline"
-  })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h6", null, "Call our Support Line"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Give our office a call ")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    class: "op-btn-transparent"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "tel:8336620633"
-  }, "Call +1-833-662-0633"))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    class: "op-portlet-need"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("i", {
-    class: "calendar alternate outline"
   })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h6", null, "Ask Our Knowledge Base"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Get help right away")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     class: "op-btn-transparent"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
@@ -213,31 +238,17 @@ const Settings = () => {
     className: "setting-card"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "head"
-  }, "Your Plan"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "content"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, " Plan Name ... "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Unlimited Transactions, Unlimited Customers"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "/"
-  }, "View Plans"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
-    className: "profile-logo aside",
-    src: "../wp-content/plugins/wooventory/media/Wooventory-Logo.webp",
-    alt: "Wooventory-Logo"
-  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "footer"
-  }, "Payment", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, " Your next bill is for 0.00 usd + tax on 2024-02-14 "))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "left"
+  }, " Your Plan "), subscriptionData.status != null && subscriptionData.status != undefined ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: subscriptionData.status == "active" ? "right active" : "right not-active"
+  }, " ", subscriptionData.status, " ") : null), subscriptionData.status != null && subscriptionData.status != undefined ? renderWidget() : showMessage()), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "setting-card"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "head"
-  }, "Your Plan"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, "Announcements"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "content"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, " Plan Name ... "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, "Unlimited Transactions, Unlimited Customers"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: "/"
-  }, "View Plans"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
-    className: "profile-logo aside",
-    src: "../wp-content/plugins/wooventory/media/Wooventory-Logo.webp",
-    alt: "Wooventory-Logo"
-  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "footer"
-  }, "Payment", (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, " Your next bill is for 0.00 usd + tax on 2024-02-14 "))))));
+  }, "Coming Soon..")))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Settings);
 
