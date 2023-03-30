@@ -84,11 +84,15 @@ class WP_React_Settings_Rest_Route
         //enable corse
         if ($req["cors_status"] == true) {
             // Get path to main .htaccess for WordPress
-            $htaccess = get_home_path() . ".htaccess";
-
-            $lines = array();
-            $lines[] = "<IfModule mod_headers.c> Header set Access-Control-Allow-Origin "*" </IfModule>";
-            insert_with_markers($htaccess, "CORS Support", $lines);
+            $htaccess = ABSPATH . '.htaccess';
+            $fp = fopen($htaccess,'a+');
+            if($fp){
+                fwrite($fp,'
+                <IfModule mod_headers.c>
+                    Header set Access-Control-Allow-Origin "*"
+                </IfModule>');
+                fclose($fp);
+            }
 
             update_option("enable_cors", true);
         }
