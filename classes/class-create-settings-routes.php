@@ -23,18 +23,18 @@ class WP_React_Settings_Rest_Route {
     }
 
     public function create_rest_routes() {
-        register_rest_route( 'react/v1', '/settings', [
+        register_rest_route( 'wooventory/v1', '/settings', [
             'methods' => 'GET',
             'callback' => [ $this, 'get_settings' ],
             'permission_callback' => [ $this, 'get_settings_permission' ]
         ] );
-        register_rest_route( 'react/v1', '/settings', [
+        register_rest_route( 'wooventory/v1', '/settings', [
             'methods' => 'POST',
             'callback' => [ $this, 'save_settings' ],
             'permission_callback' => [ $this, 'save_settings_permission' ]
         ] );
 
-        register_rest_route( 'react/v1', '/subscription/(?P<id>\d+)', [
+        register_rest_route( 'wooventory/v1', '/subscription/(?P<id>\d+)', [
             'methods' => 'GET',
             'callback' => [ $this, 'get_subscription' ],
             'permission_callback' => [ $this, 'get_settings_permission' ]
