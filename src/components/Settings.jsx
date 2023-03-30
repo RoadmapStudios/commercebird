@@ -4,7 +4,7 @@ import axios from 'axios';
 const Settings = () => {
 
     const [subscriptionData, setSubscriptionData] = useState({});
-    const [cors_status, setCors] = useState('');
+    const [cors_status, setCors] = useState(false);
     const [sub_id, setSubid] = useState('');
     const [loader, setLoader] = useState('Save Settings');
     // let check = 'checked';
@@ -13,6 +13,9 @@ const Settings = () => {
     const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
 
     // const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
+    const handleCors = (event) => {
+        setCors(event.target.checked);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -102,7 +105,7 @@ const showList = () => {
                 Payment
                 <p> Your next bill is for {subscriptionData.total} {paymentCurrency} on {subscriptionData.next_payment_date_gmt} </p>
             </div>
-        </div >
+        </div>
     }
 
 
@@ -125,7 +128,7 @@ const showList = () => {
                                             </th>
                                             <td>
                                                 <div >
-                                                    <input type="checkbox" id="cors_status" name="cors_status" value={cors_status} onChange={(e) => { setCors(e.target.value) }} className="regular-text" />
+                                                    <input type="checkbox" id="cors_status" name="cors_status" defaultChecked={false} value={cors_status} onChange={handleCors} className="regular-text" />
 
                                                 </div>
                                             </td>

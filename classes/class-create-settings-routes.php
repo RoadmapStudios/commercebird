@@ -89,8 +89,8 @@ class WP_React_Settings_Rest_Route
             $lines = array();
             $lines[] = "<IfModule mod_headers.c> Header set Access-Control-Allow-Origin "*" </IfModule>";
             insert_with_markers($htaccess, "CORS Support", $lines);
-            
-            update_option("enable_corse", true);
+
+            update_option("enable_cors", true);
         }
 
         if (!empty($req["sub_id"])) {
