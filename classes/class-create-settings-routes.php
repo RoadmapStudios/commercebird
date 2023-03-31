@@ -67,9 +67,15 @@ class WP_React_Settings_Rest_Route
 
     public function get_settings()
     {
+        $cors_status = get_option("enable_cors");
+        if($cors_status == 1) {
+            $cors_status = true;
+        } else {
+            $cors_status = false;
+        }
         $response = [
             "sub_id" => get_option("wooventory_sub_id"),
-            "cors_status" => get_option("enable_cors"),
+            "cors_status" => $cors_status
         ];
         return rest_ensure_response($response);
     }

@@ -54,12 +54,7 @@ const Settings = () => {
                 setCors(res.data.cors_status);
                 setSubid(res.data.sub_id);
                 getSubscription(res.data.sub_id);
-            });
-
-        // if(cors_status != true){
-        //     check = '';
-        // }
-
+            }).catch((error) => console.log(error));
     }, []);
 
     const showMessage = () => {
@@ -128,7 +123,7 @@ const showList = () => {
                                             </th>
                                             <td>
                                                 <div >
-                                                    <input type="checkbox" id="cors_status" name="cors_status" defaultChecked={false} value={cors_status} onChange={handleCors} className="regular-text" />
+                                                    <input type="checkbox" id="cors_status" name="cors_status" value={cors_status} onChange={handleCors} className="regular-text" />
 
                                                 </div>
                                             </td>
