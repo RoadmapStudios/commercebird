@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Toggle from 'react-toggle';
+import "react-toggle/style.css"
 import axios from 'axios';
 
 const Settings = () => {
@@ -107,7 +109,6 @@ const showList = () => {
     return (
         <React.Fragment>
             <div className='dashboard-container'>
-
                 <div className="leftside">
                     <div className="setting-card">
                         <div className="head"> Settings </div>
@@ -118,25 +119,21 @@ const showList = () => {
                                     <tbody>
                                         <tr>
                                             <th scope="row">
-                                                <label htmlFor="cors_status"> Enable CORS Support </label>
-                                                <p>Only enable this in case of CORS error</p>
+                                                <label>Enable CORS Support</label>
                                             </th>
                                             <td>
-                                                <div >
-                                                    <input type="checkbox" id="cors_status" name="cors_status" value={cors_status} checked={cors_status} onChange={handleCors} className="regular-text" />
-
-                                                </div>
+                                                <Toggle id="cors_status" name="cors_status" value={cors_status} checked={cors_status} onChange={handleCors} />
+                                                <span class="toggle-text">Only enable if CORS Error</span>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <th scope="row">
-                                                <label htmlFor="cors_status"> Enter subscription Id : </label>
+                                                <label htmlFor="cors_status"> Enter subscription id : </label>
                                             </th>
                                             <td>
-                                                <div >
+                                                <div>
                                                     <input type="number" id="sub_id" name="sub_id" value={sub_id} onChange={(e) => { setSubid(e.target.value) }} className="regular-text" />
-
                                                 </div>
                                             </td>
                                         </tr>
@@ -159,7 +156,7 @@ const showList = () => {
                             <img className="hub-logo" src={"../wp-content/plugins/wooventory/media/wooventory-login-banner.png"} alt={"HUb-Logo"} />
                         </div>
                         <div className="footbg">
-                            <p> Manage staff, receipts, reports, account settings and more. </p>
+                            <p> Manage Orders, Products, Customers, Coupons and more. </p>
                             <button class="op-button-transparent">
                                 <a href="https://app.wooventory.com" target="_blank" id="op-transparent"> Launch Hub </a>
                             </button>
@@ -179,7 +176,7 @@ const showList = () => {
                                     </li>
                                     <li>
                                         <button class="op-btn-transparent">
-                                            <a href="https://app.wooventory.com/pricing" target="_blank">Book Now</a>
+                                            <a href="https://roadmapstudios.zohobookings.eu/" target="_blank">Book Now</a>
                                         </button>
                                     </li>
                                 </ul>

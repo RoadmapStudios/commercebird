@@ -37,7 +37,9 @@ add_action( 'admin_enqueue_scripts', 'load_scripts' );
 function load_scripts() {
 
     wp_register_style( 'style-react', WR_URL .'build/index.css' );
+    wp_register_style( 'style-toggle', WR_URL .'build/style-index.css' );
     wp_enqueue_style('style-react');
+    wp_enqueue_style('style-toggle');
 
     wp_enqueue_script( 'wp-react-app', WR_URL . 'build/index.js', [ 'jquery', 'wp-element' ], wp_rand(), true );
     wp_localize_script( 'wp-react-app', 'appLocalizer', [
