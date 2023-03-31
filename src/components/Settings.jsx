@@ -123,7 +123,7 @@ const showList = () => {
                                             </th>
                                             <td>
                                                 <div >
-                                                    <input type="checkbox" id="cors_status" name="cors_status" value={cors_status} onChange={handleCors} className="regular-text" />
+                                                    <input type="checkbox" id="cors_status" name="cors_status" value={cors_status} checked={cors_status} onChange={handleCors} className="regular-text" />
 
                                                 </div>
                                             </td>
