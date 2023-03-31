@@ -11,7 +11,8 @@ class Wp_Create_Admin_Page {
 
     public function create_admin_menu() {
         $capability = 'manage_options';
-        $slug = 'react';
+        $slug = 'wooventory-app';
+        $icon = WR_URL . 'media/wooventory-icon.svg';
 
         add_menu_page(
             __( 'Wooventory', 'wooventory' ),
@@ -19,8 +20,8 @@ class Wp_Create_Admin_Page {
             $capability,
             $slug,
             [ $this, 'menu_page_template' ],
-            "",
-            29//After woocomerce
+            $icon,
+            29//before woocommerce
         );
     }
 
