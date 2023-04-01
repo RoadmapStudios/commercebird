@@ -152,15 +152,17 @@ const showList = () => {
                     </div>
 
                     <div className="setting-card">
-                        <div className="head"> Wooventory Hub </div>
+                        <div className="head"> Wooventory App </div>
                         <div className='content img-bg'>
                             <img className="hub-logo" src={"../wp-content/plugins/wooventory/media/wooventory-login-banner.png"} alt={"HUb-Logo"} />
                         </div>
                         <div className="footbg">
                             <p> Manage Orders, Products, Customers, Coupons and more. </p>
-                            <button class="op-button-transparent">
-                                <a href="https://app.wooventory.com" target="_blank" id="op-transparent"> Launch Hub </a>
-                            </button>
+                            <a href="https://app.wooventory.com" target="_blank"> 
+                                <button class="button-17">
+                                    Launch App
+                                </button>
+                            </a>
                         </div>
                     </div>
                     <div className="setting-card">
@@ -176,9 +178,9 @@ const showList = () => {
                                         <p>Book a Demo with our Sales Team</p>
                                     </li>
                                     <li>
-                                        <button class="op-btn-transparent">
-                                            <a href="https://roadmapstudios.zohobookings.eu/" target="_blank">Book Now</a>
-                                        </button>
+                                        <a href="https://roadmapstudios.zohobookings.eu/" target="_blank">
+                                            <button class="button-17">Book Now</button>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
@@ -193,9 +195,11 @@ const showList = () => {
                                         <p>Get help right away</p>
                                     </li>
                                     <li>
-                                        <button class="op-btn-transparent">
-                                            <a href="https://docs.wooventory.com/portal/en/kb/setup" target="_blank">Open Knowledge Base</a>
-                                        </button>
+                                        <a href="https://docs.wooventory.com/portal/en/kb/setup" target="_blank">
+                                            <button class="button-17">
+                                                Open Knowledge Base
+                                            </button>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
@@ -210,9 +214,11 @@ const showList = () => {
                                         <p>Talk to a support expert </p>
                                     </li>
                                     <li>
-                                        <button class="op-btn-transparent">
-                                            <a href="https://wooventory.com/contact/#chat-open" target="_blank">Open Website</a>
-                                        </button>
+                                        <a href="https://wooventory.com/contact/" target="_blank">
+                                            <button class="button-17">
+                                                Open Website
+                                            </button>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
