@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Toggle from 'react-toggle';
 import "react-toggle/style.css"
+import { Tooltip } from 'react-tooltip'
 import axios from 'axios';
 import { BsExclamationTriangle } from "react-icons/bs";
 
@@ -130,7 +131,8 @@ const showList = () => {
 
                                         <tr>
                                             <th scope="row">
-                                                <label htmlFor="cors_status"> Enter subscription id : </label>
+                                                <label htmlFor="cors_status" data-tooltip-id="sub_id_tooltip" data-tooltip-content="Check your Order Email"> Enter subscription id: </label>
+                                                <Tooltip id="sub_id_tooltip" />
                                             </th>
                                             <td>
                                                 <div>
@@ -138,7 +140,6 @@ const showList = () => {
                                                 </div>
                                             </td>
                                         </tr>
-
                                     </tbody>
                                 </table>
                             </div>
