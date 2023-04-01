@@ -1,0 +1,483 @@
+
+Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 54241
+            [parent_id] => 54240
+            [status] => on-hold
+            [currency] => USD
+            [version] => 7.5.1
+            [prices_include_tax] => 
+            [date_created] => 2023-03-14T17:17:10
+            [date_modified] => 2023-03-28T19:30:08
+            [discount_total] => 0
+            [discount_tax] => 0
+            [shipping_total] => 0
+            [shipping_tax] => 0
+            [cart_tax] => 0
+            [total] => 24
+            [total_tax] => 0
+            [customer_id] => 141
+            [order_key] => wc_order_oh0VxUmnTVClp
+            [billing] => stdClass Object
+                (
+                    [first_name] => Doran
+                    [last_name] => Williams
+                    [company] => Fit Meals Prep
+                    [address_1] => 
+                    [address_2] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => US
+                    [email] => Info@fitmealsprep.com
+                    [phone] => 
+                )
+
+            [shipping] => stdClass Object
+                (
+                    [first_name] => Doran
+                    [last_name] => Williams
+                    [company] => Fit Meals Prep
+                    [address_1] => 
+                    [address_2] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => US
+                    [phone] => 
+                )
+
+            [payment_method] => 
+            [payment_method_title] => 
+            [customer_ip_address] => 110.54.168.74
+            [customer_user_agent] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36
+            [created_via] => checkout
+            [customer_note] => 
+            [date_completed] => 2023-03-14T18:17:11
+            [date_paid] => 2023-03-14T18:17:11
+            [number] => 54241
+            [meta_data] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [id] => 1232707
+                            [key] => is_vat_exempt
+                            [value] => no
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [id] => 1232708
+                            [key] => automatewoo_cart_id
+                            [value] => 51
+                        )
+
+                    [2] => stdClass Object
+                        (
+                            [id] => 1232709
+                            [key] => _wcpbc_base_exchange_rate
+                            [value] => 1
+                        )
+
+                    [3] => stdClass Object
+                        (
+                            [id] => 1232710
+                            [key] => _wcpbc_pricing_zone
+                            [value] => stdClass Object
+                                (
+                                    [zone_id] => rest
+                                    [enabled] => yes
+                                    [name] => Rest
+                                    [countries] => Array
+                                        (
+                                            [0] => AF
+                                            [1] => AL
+                                            [2] => DZ
+                                            [3] => AS
+                                            [4] => AO
+                                            [5] => AI
+                                            [6] => AQ
+                                            [7] => AG
+                                            [8] => AR
+                                            [9] => AM
+                                            [10] => AW
+                                            [11] => AU
+                                            [12] => AZ
+                                            [13] => BS
+                                            [14] => BH
+                                            [15] => BD
+                                            [16] => BB
+                                            [17] => BY
+                                            [18] => PW
+                                            [19] => BZ
+                                            [20] => BJ
+                                            [21] => BM
+                                            [22] => BT
+                                            [23] => BO
+                                            [24] => BQ
+                                            [25] => BA
+                                            [26] => BW
+                                            [27] => BV
+                                            [28] => BR
+                                            [29] => IO
+                                            [30] => BN
+                                            [31] => BG
+                                            [32] => BF
+                                            [33] => BI
+                                            [34] => KH
+                                            [35] => CM
+                                            [36] => CA
+                                            [37] => CV
+                                            [38] => KY
+                                            [39] => CF
+                                            [40] => TD
+                                            [41] => CL
+                                            [42] => CN
+                                            [43] => CX
+                                            [44] => CC
+                                            [45] => CO
+                                            [46] => KM
+                                            [47] => CG
+                                            [48] => CD
+                                            [49] => CK
+                                            [50] => CR
+                                            [51] => HR
+                                            [52] => CU
+                                            [53] => CW
+                                            [54] => CZ
+                                            [55] => DK
+                                            [56] => DJ
+                                            [57] => DM
+                                            [58] => DO
+                                            [59] => EC
+                                            [60] => EG
+                                            [61] => SV
+                                            [62] => GQ
+                                            [63] => ER
+                                            [64] => SZ
+                                            [65] => ET
+                                            [66] => FK
+                                            [67] => FO
+                                            [68] => FJ
+                                            [69] => PF
+                                            [70] => GA
+                                            [71] => GM
+                                            [72] => GE
+                                            [73] => GH
+                                            [74] => GI
+                                            [75] => GL
+                                            [76] => GD
+                                            [77] => GU
+                                            [78] => GT
+                                            [79] => GG
+                                            [80] => GN
+                                            [81] => GW
+                                            [82] => GY
+                                            [83] => HT
+                                            [84] => HM
+                                            [85] => HN
+                                            [86] => HK
+                                            [87] => HU
+                                            [88] => IS
+                                            [89] => IN
+                                            [90] => ID
+                                            [91] => IR
+                                            [92] => IQ
+                                            [93] => IM
+                                            [94] => IL
+                                            [95] => CI
+                                            [96] => JM
+                                            [97] => JP
+                                            [98] => JE
+                                            [99] => JO
+                                            [100] => KZ
+                                            [101] => KE
+                                            [102] => KI
+                                            [103] => KW
+                                            [104] => KG
+                                            [105] => LA
+                                            [106] => LB
+                                            [107] => LS
+                                            [108] => LR
+                                            [109] => LY
+                                            [110] => LI
+                                            [111] => MO
+                                            [112] => MG
+                                            [113] => MW
+                                            [114] => MY
+                                            [115] => MV
+                                            [116] => ML
+                                            [117] => MH
+                                            [118] => MR
+                                            [119] => MU
+                                            [120] => MX
+                                            [121] => FM
+                                            [122] => MD
+                                            [123] => MN
+                                            [124] => MS
+                                            [125] => MA
+                                            [126] => MZ
+                                            [127] => MM
+                                            [128] => NA
+                                            [129] => NR
+                                            [130] => NP
+                                            [131] => NC
+                                            [132] => NZ
+                                            [133] => NI
+                                            [134] => NE
+                                            [135] => NG
+                                            [136] => NU
+                                            [137] => NF
+                                            [138] => KP
+                                            [139] => MK
+                                            [140] => MP
+                                            [141] => NO
+                                            [142] => OM
+                                            [143] => PK
+                                            [144] => PS
+                                            [145] => PA
+                                            [146] => PG
+                                            [147] => PY
+                                            [148] => PE
+                                            [149] => PH
+                                            [150] => PN
+                                            [151] => PL
+                                            [152] => PR
+                                            [153] => QA
+                                            [154] => RO
+                                            [155] => RU
+                                            [156] => RW
+                                            [157] => ST
+                                            [158] => SH
+                                            [159] => KN
+                                            [160] => LC
+                                            [161] => SX
+                                            [162] => VC
+                                            [163] => WS
+                                            [164] => SA
+                                            [165] => SN
+                                            [166] => RS
+                                            [167] => SC
+                                            [168] => SL
+                                            [169] => SG
+                                            [170] => SB
+                                            [171] => SO
+                                            [172] => ZA
+                                            [173] => GS
+                                            [174] => KR
+                                            [175] => SS
+                                            [176] => LK
+                                            [177] => SD
+                                            [178] => SR
+                                            [179] => SJ
+                                            [180] => SE
+                                            [181] => CH
+                                            [182] => SY
+                                            [183] => TW
+                                            [184] => TJ
+                                            [185] => TZ
+                                            [186] => TH
+                                            [187] => TL
+                                            [188] => TG
+                                            [189] => TK
+                                            [190] => TO
+                                            [191] => TT
+                                            [192] => TN
+                                            [193] => TR
+                                            [194] => TM
+                                            [195] => TC
+                                            [196] => TV
+                                            [197] => UG
+                                            [198] => UA
+                                            [199] => AE
+                                            [200] => US
+                                            [201] => UM
+                                            [202] => UY
+                                            [203] => UZ
+                                            [204] => VU
+                                            [205] => VE
+                                            [206] => VN
+                                            [207] => VG
+                                            [208] => VI
+                                            [209] => WF
+                                            [210] => EH
+                                            [211] => YE
+                                            [212] => ZM
+                                            [213] => ZW
+                                        )
+
+                                    [currency] => USD
+                                    [exchange_rate] => 1
+                                    [auto_exchange_rate] => no
+                                    [disable_tax_adjustment] => no
+                                    [order] => 9999
+                                )
+
+                        )
+
+                    [4] => stdClass Object
+                        (
+                            [id] => 1232751
+                            [key] => _automatewoo_order_created
+                            [value] => 1
+                        )
+
+                )
+
+            [line_items] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [id] => 893
+                            [name] => Wooventory - Business
+                            [product_id] => 13
+                            [variation_id] => 16
+                            [quantity] => 1
+                            [tax_class] => 
+                            [subtotal] => 24
+                            [subtotal_tax] => 0
+                            [total] => 24
+                            [total_tax] => 0
+                            [taxes] => Array
+                                (
+                                )
+
+                            [meta_data] => Array
+                                (
+                                    [0] => stdClass Object
+                                        (
+                                            [id] => 8482
+                                            [key] => license
+                                            [value] => Business
+                                            [display_key] => License
+                                            [display_value] => Business
+                                        )
+
+                                    [1] => stdClass Object
+                                        (
+                                            [id] => 8483
+                                            [key] => _has_trial
+                                            [value] => true
+                                            [display_key] => _has_trial
+                                            [display_value] => true
+                                        )
+
+                                )
+
+                            [sku] => woov-strd-month
+                            [price] => 24
+                            [image] => stdClass Object
+                                (
+                                    [id] => 18250
+                                    [src] => https://wooventory.com/wp-content/uploads/2022/03/cropped-Wooventory-Icon-1.webp
+                                )
+
+                            [parent_name] => Wooventory
+                        )
+
+                )
+
+            [tax_lines] => Array
+                (
+                )
+
+            [shipping_lines] => Array
+                (
+                )
+
+            [fee_lines] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [id] => 894
+                            [name] => ZohoCRM
+                            [tax_class] => 
+                            [tax_status] => taxable
+                            [amount] => 
+                            [total] => 0
+                            [total_tax] => 0
+                            [taxes] => Array
+                                (
+                                )
+
+                            [meta_data] => Array
+                                (
+                                )
+
+                        )
+
+                )
+
+            [coupon_lines] => Array
+                (
+                )
+
+            [payment_url] => https://wooventory.com/checkout/order-pay/54241/?pay_for_order=true&key=wc_order_oh0VxUmnTVClp
+            [is_editable] => 1
+            [needs_payment] => 1
+            [needs_processing] => 
+            [date_created_gmt] => 2023-03-14T16:17:10
+            [date_modified_gmt] => 2023-03-28T17:30:08
+            [date_completed_gmt] => 2023-03-14T17:17:11
+            [date_paid_gmt] => 2023-03-14T17:17:11
+            [billing_period] => month
+            [billing_interval] => 1
+            [start_date_gmt] => 2023-03-14T17:17:10
+            [trial_end_date_gmt] => 2023-03-28T17:17:10
+            [next_payment_date_gmt] => 2023-03-28T17:17:10
+            [payment_retry_date_gmt] => 
+            [last_payment_date_gmt] => 2023-03-28T17:30:08
+            [cancelled_date_gmt] => 
+            [end_date_gmt] => 
+            [resubscribed_from] => 
+            [resubscribed_subscription] => 
+            [removed_line_items] => Array
+                (
+                )
+
+            [_links] => stdClass Object
+                (
+                    [self] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [href] => https://wooventory.com/wp-json/wc/v3/subscriptions/54241
+                                )
+
+                        )
+
+                    [collection] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [href] => https://wooventory.com/wp-json/wc/v3/subscriptions
+                                )
+
+                        )
+
+                    [customer] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [href] => https://wooventory.com/wp-json/wc/v3/customers/141
+                                )
+
+                        )
+
+                    [up] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [href] => https://wooventory.com/wp-json/wc/v3/orders/54240
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [1] => 
+)

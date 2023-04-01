@@ -6,16 +6,30 @@ import { BsExclamationTriangle } from "react-icons/bs";
 
 const Settings = () => {
 
+    const [changeLogData, setUpdatesChanges] = useState([]);
     const [subscriptionData, setSubscriptionData] = useState({});
     const [cors_status, setCors] = useState(false);
     const [sub_id, setSubid] = useState('');
     const [loader, setLoader] = useState('Save Settings');
-    // let check = 'checked';
+
+    const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
 
     const url = `${appLocalizer.apiUrl}/wooventory/v1/settings`;
     const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
 
-    // const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
+    let getChangeLog = (changeLogUrl) => {
+
+        axios.get(changeLogUrl)
+            .then((res) => {
+                if (res.status === 200) {
+                    const middleIndex = Math.ceil(res.data.length / 2);
+                    const cld = res.data.splice(0, middleIndex);   
+                    console.log(cld);console.log(middleIndex);
+                    setUpdatesChanges(cld);
+                }
+            }).catch((error) => console.log(error));
+    }
+
     const handleCors = (event) => {
         setCors(event.target.checked);
     };
@@ -46,22 +60,29 @@ const Settings = () => {
                 .then((res) => {
                     if (res.status === 200) {
                         setSubscriptionData(res.data);
+                    }else{
+                        wid_el.innerText = "Please enter your subscription ID to receive support";
                     }
                 }).catch((error) => console.log(error));
         }
     }
 
     useEffect(() => {
+        let wid_el = document.getElementById("loading-widget");
+        wid_el.innerText = "Loading...";
         axios.get(url)
             .then((res) => {
                 setCors(res.data.cors_status);
                 setSubid(res.data.sub_id);
                 getSubscription(res.data.sub_id);
-            }).catch((error) => console.log(error));
+            }).catch((error) => {
+                console.log(error);
+            });
+            getChangeLog(changeLogUrl);
     }, []);
 
     const showMessage = () => {
-        return <div className='inactive-widget'> Please enter your subscription ID to receive support  </div>
+        return <div className='inactive-widget' id="loading-widget">  </div>
     }
 
 const showList = () => {
@@ -241,15 +262,20 @@ const showList = () => {
                     </div>
 
                     <div className="setting-card">
-
-                        <div className="head">Announcements</div>
+                        <div className="widget-head head"> Announcement </div>
 
                         <div className='content'>
-                            Coming Soon..
+                        {changeLogData.map((item,index) => (
+                            <div class={"border-"+index+" footer"}>
+                                <h3> {renderHTML(item.title.rendered)} </h3>
+                                <span> {item.date} </span>
+                                <p>
+                                   {renderHTML(item.content.rendered)}
+                                </p>
+                            </div>
+                        )) }
                         </div>
-
                     </div>
-
 
 
                 </div>
