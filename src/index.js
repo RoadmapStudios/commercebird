@@ -1,6 +1,7 @@
 import App from './App';
 import { render } from '@wordpress/element';
 import 'react-tooltip/dist/react-tooltip.css'
+import "react-toggle/style.css"
 
 /**
  * Import the stylesheet for the plugin.
