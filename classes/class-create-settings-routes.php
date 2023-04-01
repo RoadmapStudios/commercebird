@@ -87,20 +87,23 @@ class WP_React_Settings_Rest_Route
 
     public function save_settings($req)
     {
-        //enable corse
+        // enable corse
         if ($req["cors_status"] == true) {
-            // Get path to main .htaccess for WordPress
-            $htaccess = ABSPATH . '.htaccess';
-            $fp = fopen($htaccess,'a+');
-            if($fp){
+            $cors_db = get_option("enable_cors");
+
+            if (is_file(ABSPATH . '.htaccess') && (!$cors_db)) {
+                $htaccess = ABSPATH . '.htaccess';
+                $fp = fopen($htaccess,'a+');
                 fwrite($fp,'
                 <IfModule mod_headers.c>
                 Header set Access-Control-Allow-Origin "*"
                 </IfModule>');
                 fclose($fp);
+                update_option("enable_cors", true);
             }
-
-            update_option("enable_cors", true);
+        } else {
+            // TODO add code here to remove CORS from htaccess file
+            update_option("enable_cors", false);
         }
 
         if (!empty($req["sub_id"])) {
