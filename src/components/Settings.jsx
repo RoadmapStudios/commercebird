@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Toggle from 'react-toggle';
 import "react-toggle/style.css"
 import axios from 'axios';
+import { BsExclamationTriangle } from "react-icons/bs";
 
 const Settings = () => {
 
@@ -123,7 +124,7 @@ const showList = () => {
                                             </th>
                                             <td>
                                                 <Toggle id="cors_status" name="cors_status" value={cors_status} checked={cors_status} onChange={handleCors} />
-                                                <span class="toggle-text">Only enable if CORS Error</span>
+                                                <span class="toggle-text"><BsExclamationTriangle/> Only enable if CORS Error</span>
                                             </td>
                                         </tr>
 
