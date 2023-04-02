@@ -23,8 +23,7 @@ const Settings = () => {
             .then((res) => {
                 if (res.status === 200) {
                     const middleIndex = Math.ceil(res.data.length / 2);
-                    const cld = res.data.splice(0, middleIndex);   
-                    console.log(cld);console.log(middleIndex);
+                    const cld = res.data.splice(0, middleIndex);
                     setUpdatesChanges(cld);
                 }
             }).catch((error) => console.log(error));
@@ -60,7 +59,7 @@ const Settings = () => {
                 .then((res) => {
                     if (res.status === 200) {
                         setSubscriptionData(res.data);
-                    }else{
+                    } else {
                         wid_el.innerText = "Please enter your subscription ID to receive support";
                     }
                 }).catch((error) => console.log(error));
@@ -78,23 +77,23 @@ const Settings = () => {
             }).catch((error) => {
                 console.log(error);
             });
-            getChangeLog(changeLogUrl);
+        getChangeLog(changeLogUrl);
     }, []);
 
     const showMessage = () => {
         return <div className='inactive-widget' id="loading-widget">  </div>
     }
 
-const showList = () => {
-    let appsArray = subscriptionData ? subscriptionData.fee_lines : null ;
-    let list="";
-    if(appsArray != null){
-        list = appsArray.map( (s)=> {
-            return <li> - {s.name} </li>
-        });
-        return list;
+    const showList = () => {
+        let appsArray = subscriptionData ? subscriptionData.fee_lines : null;
+        let list = "";
+        if (appsArray != null) {
+            list = appsArray.map((s) => {
+                return <li> - {s.name} </li>
+            });
+            return list;
+        }
     }
-}
 
     const renderWidget = () => {
         let lineItems = subscriptionData.line_items ? subscriptionData.line_items[0] : null;
@@ -102,7 +101,7 @@ const showList = () => {
         return <div className='main'>
             <div className='content'>
                 <div>
-                    <h1> {lineItems != null ? lineItems.name : "Loading..." }  </h1>
+                    <h1> {lineItems != null ? lineItems.name : "Loading..."}  </h1>
                     <p>
                         Live Notifications, Fastest IOS/Android App, Staff Members, Integrations and more
                     </p>
@@ -145,7 +144,7 @@ const showList = () => {
                                             </th>
                                             <td>
                                                 <Toggle id="cors_status" name="cors_status" value={cors_status} checked={cors_status} onChange={handleCors} />
-                                                <span class="toggle-text"><BsExclamationTriangle/> Only enable if CORS Error</span>
+                                                <span class="toggle-text"><BsExclamationTriangle /> Only enable if CORS Error</span>
                                             </td>
                                         </tr>
 
@@ -179,7 +178,7 @@ const showList = () => {
                         </div>
                         <div className="footbg">
                             <p> Manage Orders, Products, Customers, Coupons and more. </p>
-                            <a href="https://app.wooventory.com" target="_blank"> 
+                            <a href="https://app.wooventory.com" target="_blank">
                                 <button class="button-17">
                                     Launch App
                                 </button>
@@ -256,24 +255,24 @@ const showList = () => {
                     <div className="setting-card">
                         <div className="head">
                             <span className="left"> Your Plan </span>
-                            {(subscriptionData.status != null && subscriptionData.status != undefined) ? <span className={subscriptionData.status == "active" ? "right active" : "right not-active" }> {subscriptionData.status} </span> : null}
+                            {(subscriptionData.status != null && subscriptionData.status != undefined) ? <span className={subscriptionData.status == "active" ? "right active" : "right not-active"}> {subscriptionData.status} </span> : null}
                         </div>
-                        { (subscriptionData.status != null && subscriptionData.status != undefined) ? renderWidget() : showMessage()}
+                        {(subscriptionData.status != null && subscriptionData.status != undefined) ? renderWidget() : showMessage()}
                     </div>
 
                     <div className="setting-card">
                         <div className="widget-head head"> Announcement </div>
 
                         <div className='content'>
-                        {changeLogData.map((item,index) => (
-                            <div class={"border-"+index+" footer"}>
-                                <h3> {renderHTML(item.title.rendered)} </h3>
-                                <span> {item.date} </span>
-                                <p>
-                                   {renderHTML(item.content.rendered)}
-                                </p>
-                            </div>
-                        )) }
+                            {changeLogData.map((item, index) => (
+                                <div class={"border-" + index + " footer"}>
+                                    <h3> {renderHTML(item.title.rendered)} </h3>
+                                    <span> {(new Date(item.date)).toLocaleDateString('default', {year: 'numeric', month: 'long', day: 'numeric'})} </span>
+                                    <p>
+                                        {renderHTML(item.content.rendered)}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
