@@ -360,4 +360,64 @@
   box-shadow: rgba(60, 64, 67, 0.3) 0 1px 3px 0, rgba(60, 64, 67, 0.15) 0 4px 8px 3px;
 }
 
+@media screen and (max-width: 782px) {
+  .setting-card {
+    width: 81%;
+  }
+}
+@media screen and (max-width: 682px) {
+  .dashboard-container {
+    display: block;
+  }
+  .setting-card {
+    width: 91%;
+  }
+  .hub-logo {
+    width: 60%;
+  }
+  .rplan-btn {
+    left: 63% !important;
+  }
+  .right {
+    left: 70%;
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: 540px) {
+  .setting-card {
+    width: 89%;
+  }
+  .rplan-btn {
+    left: 52% !important;
+  }
+  .right {
+    left: 62%;
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: 440px) {
+  .setting-card {
+    width: 86%;
+  }
+  .rplan-btn {
+    left: 45% !important;
+  }
+  .right {
+    left: 55%;
+    font-size: 13px;
+  }
+}
+@media screen and (max-width: 340px) {
+  .setting-card {
+    width: 84%;
+  }
+  .rplan-btn {
+    left: 30% !important;
+  }
+  .right {
+    left: 45%;
+    font-size: 12px;
+  }
+}
+
 /*# sourceMappingURL=index.css.map*/
