@@ -76,8 +76,6 @@ const Settings = () => {
       if (res.status === 200) {
         const middleIndex = Math.ceil(res.data.length / 2);
         const cld = res.data.splice(0, middleIndex);
-        console.log(cld);
-        console.log(middleIndex);
         setUpdatesChanges(cld);
       }
     }).catch(error => console.log(error));
@@ -276,7 +274,11 @@ const Settings = () => {
     className: "content"
   }, changeLogData.map((item, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "border-" + index + " footer"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, " ", renderHTML(item.title.rendered), " "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, " ", item.date, " "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, renderHTML(item.content.rendered)))))))));
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, " ", renderHTML(item.title.rendered), " "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, " ", new Date(item.date).toLocaleDateString('default', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }), " "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, renderHTML(item.content.rendered)))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Settings);
 
