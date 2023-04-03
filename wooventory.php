@@ -4,7 +4,7 @@
  * Description: This plugin allows you to upload Product Images via https://app.wooventory.com.
  * Author: Wooventory B.V.
  * Author URI: https://wooventory.com
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires PHP: 7.4
  * 
  * License: GNU General Public License v3.0
@@ -25,7 +25,7 @@ defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
 
 require_once __DIR__ . '/includes/class-wooventory-license-activation.php';
 if ( class_exists( 'Wooventory_AM_Client' ) ) {
-	$wcam_lib = new Wooventory_AM_Client( __FILE__, '', '1.0.0', 'plugin', 'https://wooventory.com', 'Wooventory' );
+	$wcam_lib = new Wooventory_AM_Client( __FILE__, '', '1.0.1', 'plugin', 'https://wooventory.com', 'Wooventory' );
 }
 
 require_once WR_PATH . 'classes/class-create-admin-menu.php';
