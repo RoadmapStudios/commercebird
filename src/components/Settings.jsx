@@ -18,15 +18,19 @@ const Settings = () => {
     const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
 
     let getChangeLog = (changeLogUrl) => {
-
+        let chg_el = document.getElementById("changelog-data");
         axios.get(changeLogUrl)
             .then((res) => {
+                chg_el.innerText = "";
                 if (res.status === 200) {
                     const middleIndex = Math.ceil(res.data.length / 2);
                     const cld = res.data.splice(0, middleIndex);
                     setUpdatesChanges(cld);
                 }
-            }).catch((error) => console.log(error));
+            }).catch((error) => {
+                console.log(error);
+                chg_el.innerText = "No latest annoucements at the moment.";
+            });
     }
 
     const handleCors = (event) => {
@@ -53,22 +57,27 @@ const Settings = () => {
 
     const getSubscription = (sub_id) => {
         if (sub_id != null && sub_id != "") {
+            let wid_el = document.getElementById("loading-widget");
             var subscriptionUrl = `${appLocalizer.apiUrl}/wooventory/v1/subscription/` + sub_id;
-
-            axios.get(subscriptionUrl)
+             axios.get(subscriptionUrl)
                 .then((res) => {
                     if (res.status === 200) {
                         setSubscriptionData(res.data);
                     } else {
                         wid_el.innerText = "Please enter your subscription ID to receive support";
                     }
-                }).catch((error) => console.log(error));
+                }).catch((error) => {
+                    console.log(error);
+                    wid_el.innerText = "Please enter your subscription ID to receive support";
+                });
         }
     }
 
     useEffect(() => {
         let wid_el = document.getElementById("loading-widget");
+        let chg_el = document.getElementById("changelog-data");
         wid_el.innerText = "Loading...";
+        chg_el.innerText = "Loading...";
         axios.get(url)
             .then((res) => {
                 setCors(res.data.cors_status);
@@ -263,7 +272,7 @@ const Settings = () => {
                     <div className="setting-card">
                         <div className="widget-head head"> Announcement </div>
 
-                        <div className='content'>
+                        <div className='content' id="changelog-data">
                             {changeLogData.map((item, index) => (
                                 <div class={"border-" + index + " footer"}>
                                     <h3> {renderHTML(item.title.rendered)} </h3>

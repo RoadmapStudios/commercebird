@@ -72,13 +72,18 @@ const Settings = () => {
   const url = `${appLocalizer.apiUrl}/wooventory/v1/settings`;
   const changeLogUrl = 'https://wooventory.com/wp-json/wp/v2/changelog';
   let getChangeLog = changeLogUrl => {
+    let chg_el = document.getElementById("changelog-data");
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].get(changeLogUrl).then(res => {
+      chg_el.innerText = "";
       if (res.status === 200) {
         const middleIndex = Math.ceil(res.data.length / 2);
         const cld = res.data.splice(0, middleIndex);
         setUpdatesChanges(cld);
       }
-    }).catch(error => console.log(error));
+    }).catch(error => {
+      console.log(error);
+      chg_el.innerText = "No latest annoucements at the moment.";
+    });
   };
   const handleCors = event => {
     setCors(event.target.checked);
@@ -101,6 +106,7 @@ const Settings = () => {
   };
   const getSubscription = sub_id => {
     if (sub_id != null && sub_id != "") {
+      let wid_el = document.getElementById("loading-widget");
       var subscriptionUrl = `${appLocalizer.apiUrl}/wooventory/v1/subscription/` + sub_id;
       axios__WEBPACK_IMPORTED_MODULE_4__["default"].get(subscriptionUrl).then(res => {
         if (res.status === 200) {
@@ -108,12 +114,17 @@ const Settings = () => {
         } else {
           wid_el.innerText = "Please enter your subscription ID to receive support";
         }
-      }).catch(error => console.log(error));
+      }).catch(error => {
+        console.log(error);
+        wid_el.innerText = "Please enter your subscription ID to receive support";
+      });
     }
   };
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     let wid_el = document.getElementById("loading-widget");
+    let chg_el = document.getElementById("changelog-data");
     wid_el.innerText = "Loading...";
+    chg_el.innerText = "Loading...";
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].get(url).then(res => {
       setCors(res.data.cors_status);
       setSubid(res.data.sub_id);
@@ -271,7 +282,8 @@ const Settings = () => {
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "widget-head head"
   }, " Announcement "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "content"
+    className: "content",
+    id: "changelog-data"
   }, changeLogData.map((item, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     class: "border-" + index + " footer"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", null, " ", renderHTML(item.title.rendered), " "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, " ", new Date(item.date).toLocaleDateString('default', {
