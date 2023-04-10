@@ -11,6 +11,7 @@ const Settings = () => {
     const [cors_status, setCors] = useState(false);
     const [sub_id, setSubid] = useState('');
     const [loader, setLoader] = useState('Save Settings');
+    const[saveStatus, setSaveStatus] = useState("");
 
     const renderHTML = (rawHTML) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
 
@@ -52,6 +53,8 @@ const Settings = () => {
             .then((res) => {
                 getSubscription(sub_id);
                 setLoader('Save Settings');
+                setSaveStatus("Settings Saved");
+                setTimeout(() => setSaveStatus(""), 5000);
             })
     }
 
@@ -168,14 +171,27 @@ const Settings = () => {
                                                 </div>
                                             </td>
                                         </tr>
+
+
+                                        <tr className='submit-area'>
+                                            <th scope="row">
+                                                <button type="submit" className="button button-primary">{loader}</button>
+                                            </th>
+                                            <td>
+                                                <div>
+                                                    <p className='savestatus'> { saveStatus } </p>
+                                                </div>
+                                            </td>
+                                        </tr>
+
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="footer">
+                            {/* <div className="footer">
                                 <p className="submit">
-                                    <button type="submit" className="button button-primary">{loader}</button>
+                                    
                                 </p>
-                            </div>
+                            </div> */}
                         </form>
 
                     </div>
