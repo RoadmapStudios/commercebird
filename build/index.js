@@ -64,6 +64,7 @@ const Settings = () => {
   const [cors_status, setCors] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
   const [sub_id, setSubid] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
   const [loader, setLoader] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('Save Settings');
+  const [saveStatus, setSaveStatus] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
   const renderHTML = rawHTML => react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     dangerouslySetInnerHTML: {
       __html: rawHTML
@@ -102,6 +103,8 @@ const Settings = () => {
     }).then(res => {
       getSubscription(sub_id);
       setLoader('Save Settings');
+      setSaveStatus("Settings Saved");
+      setTimeout(() => setSaveStatus(""), 5000);
     });
   };
   const getSubscription = sub_id => {
@@ -210,14 +213,16 @@ const Settings = () => {
       setSubid(e.target.value);
     },
     className: "regular-text"
-  }))))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "footer"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
-    className: "submit"
+  })))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", {
+    className: "submit-area"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("th", {
+    scope: "row"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     type: "submit",
     className: "button button-primary"
-  }, loader))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, loader)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    className: "savestatus"
+  }, " ", saveStatus, " "))))))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "setting-card"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "head"
