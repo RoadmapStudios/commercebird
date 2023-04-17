@@ -8,6 +8,5 @@ import "react-toggle/style.css"
  */
 import './style/main.scss';
 
-const domNode = document.getElementById('wooventory-app');
-const root = createRoot(domNode);
+const root = createRoot(document.getElementById('wooventory-app'));
 root.render(<App />);
