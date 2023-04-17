@@ -1,5 +1,5 @@
 import App from './App';
-import { render } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 import 'react-tooltip/dist/react-tooltip.css'
 import "react-toggle/style.css"
 
@@ -8,4 +8,6 @@ import "react-toggle/style.css"
  */
 import './style/main.scss';
 
-render(<App />, document.getElementById('wp-admin-app'));
+const domNode = document.getElementById('wooventory-app');
+const root = createRoot(domNode);
+root.render(<App />);
