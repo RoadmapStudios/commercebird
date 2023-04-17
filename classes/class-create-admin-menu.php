@@ -18,7 +18,8 @@ class Wp_Create_Admin_Page {
         $slug = 'wooventory-app';
         $icon = WR_URL . 'media/wooventory-icon.svg';
 
-        add_menu_page(
+        global $wooventory_admin_page;
+        $wooventory_admin_page = add_menu_page(
             __( 'Wooventory', 'wooventory' ),
             __( 'Wooventory', 'wooventory' ),
             $capability,

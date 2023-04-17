@@ -35,6 +35,11 @@ require_once WR_PATH . 'classes/class-create-settings-routes.php';
  */
 add_action( 'admin_enqueue_scripts', 'load_scripts' );
 function load_scripts() {
+    global $wooventory_admin_page;
+    $screen = get_current_screen();
+    // Check if screen is our settings page
+    if ( $screen->id != $wooventory_admin_page )
+        return;
 
     wp_register_style( 'style-react', WR_URL .'build/index.css' );
     wp_register_style( 'style-toggle', WR_URL .'build/style-index.css' );
