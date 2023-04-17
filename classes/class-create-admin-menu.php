@@ -30,7 +30,7 @@ class Wp_Create_Admin_Page {
     }
 
     public function menu_page_template() {
-        echo '<div class="wrap"><div id="wp-admin-app"></div></div>';
+        echo '<div class="wrap"><div id="wooventory-app"></div></div>';
     }
 
     public function wooventory_cost_price() {
