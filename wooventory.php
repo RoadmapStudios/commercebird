@@ -4,7 +4,7 @@
  * Description: This plugin allows you to upload Product Images via https://app.wooventory.com.
  * Author: Wooventory B.V.
  * Author URI: https://wooventory.com
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires PHP: 7.4
  * 
  * License: GNU General Public License v3.0
