@@ -2,10 +2,12 @@
 /**
  * This file will create Custom Rest API End Points.
  */
-require __DIR__ . '/../vendor/autoload.php';
+if(!class_exists('Client')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+}
 use Automattic\WooCommerce\Client;
 
-$woocommerce = new Client(
+$wooventory_woocommerce = new Client(
     'https://wooventory.com',
     'ck_b0305b88f6d5d26e6423c073f6f95de119cc9e55',
     'cs_609c13f281816b937499b2a0052e1145745acdc3',
@@ -17,10 +19,10 @@ $woocommerce = new Client(
 class WP_React_Settings_Rest_Route
 {
 
-    protected $woocomerce;
+    protected $woocommerce;
     public function __construct($woo)
     {
-        $this->woocomerce = $woo;
+        $this->woocommerce = $woo;
         add_action('rest_api_init', [$this, 'create_rest_routes']);
     }
 
@@ -44,24 +46,15 @@ class WP_React_Settings_Rest_Route
         ]);
     }
 
-    public function get_subscription($data)
+    public function get_subscription($request)
     {
-        $sub_id = $data['id'];
+        $subId = $request->get_param('id');
         try {
-            $endpoint = 'subscriptions/' . $sub_id;
-
-            // logging starts here
-            $fd = fopen(__DIR__ . '/get_subscription.txt', 'w+');
-            $response = $this->woocomerce->get($endpoint);
-            fwrite($fd, PHP_EOL . print_r(array($response, $woocommerce), true));
-            fclose($fd);
+            $endpoint = 'subscriptions/' . $subId;
+            $response = $this->woocommerce->get($endpoint);
             return $response;
         } catch (HttpClientException $e) {
-            $fd = fopen(__DIR__ . '/get_subscription.txt', 'w+');
-            fwrite($fd, PHP_EOL . print_r($e, true));
-            fclose($fd);
-            return false;
-
+            return $e->getMessage();
         }
     }
 
@@ -123,4 +116,4 @@ class WP_React_Settings_Rest_Route
         return true;
     }
 }
-new WP_React_Settings_Rest_Route($woocommerce);
+new WP_React_Settings_Rest_Route($wooventory_woocommerce);

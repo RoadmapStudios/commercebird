@@ -16,7 +16,7 @@ class Wp_Create_Admin_Page {
     public function create_admin_menu() {
         $capability = 'manage_options';
         $slug = 'wooventory-app';
-        $icon = WR_URL . 'media/wooventory-icon.svg';
+        $icon = WR_DIR_PATH . 'media/wooventory-icon.svg';
 
         global $wooventory_admin_page;
         $wooventory_admin_page = add_menu_page(
