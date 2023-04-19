@@ -133,7 +133,8 @@ const Settings = () => {
             </div>
             <div className="footer">
                 Payment
-                <p> Your next bill is for {subscriptionData.total} {paymentCurrency} on {subscriptionData.next_payment_date_gmt} </p>
+                <p> Your next bill is for {subscriptionData.total} {paymentCurrency} on {(new Date(subscriptionData.next_payment_date_gmt)).toLocaleDateString('default', {year: 'numeric', month: 'long', day: 'numeric'})}
+                </p>
             </div>
         </div>
     }
