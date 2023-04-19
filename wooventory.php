@@ -19,9 +19,8 @@ if( ! defined( 'ABSPATH' ) ) : exit(); endif; // No direct access allowed.
 /**
 * Define Plugins Constants
 */
-if (!defined('WR_DIR_PATH')) {
-    define('WR_DIR_PATH', plugin_dir_path(__FILE__));
-}
+define ( 'WR_DIR_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+define ( 'WR_URL', trailingslashit( plugins_url( '/', __FILE__ ) ) );
 defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
 
 require_once __DIR__ . '/includes/class-wooventory-license-activation.php';
@@ -44,12 +43,12 @@ function woov_load_scripts() {
     if ( $screen->id != $wooventory_admin_page )
         return;
 
-    wp_register_style( 'wooventory-style-react', WR_DIR_PATH .'build/index.css' );
-    wp_register_style( 'wooventory-style-toggle', WR_DIR_PATH .'build/style-index.css' );
+    wp_register_style( 'wooventory-style-react', WR_URL .'build/index.css' );
+    wp_register_style( 'wooventory-style-toggle', WR_URL .'build/style-index.css' );
     wp_enqueue_style('wooventory-style-react');
     wp_enqueue_style('wooventory-style-toggle');
 
-    wp_enqueue_script( 'wooventory-wp-react-app', WR_DIR_PATH . 'build/index.js', [ 'jquery', 'wp-element' ], wp_rand(), true );
+    wp_enqueue_script( 'wooventory-wp-react-app', WR_URL . 'build/index.js', [ 'jquery', 'wp-element' ], wp_rand(), true );
     wp_localize_script( 'wooventory-wp-react-app', 'appLocalizer', [
         'apiUrl' => home_url( '/wp-json' ),
         'nonce' => wp_create_nonce( 'wp_rest' ),
