@@ -48,7 +48,7 @@ class WP_React_Settings_Rest_Route
 
     public function get_subscription($request)
     {
-        $subId = $request->get_param('id');
+        $subId = $request['id'];
         try {
             $endpoint = 'subscriptions/' . $subId;
             $response = $this->woocommerce->get($endpoint);
