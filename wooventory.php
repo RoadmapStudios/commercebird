@@ -24,6 +24,7 @@ define ( 'WR_URL', trailingslashit( plugins_url( '/', __FILE__ ) ) );
 defined('ALLOW_UNFILTERED_UPLOADS') or define('ALLOW_UNFILTERED_UPLOADS', true);
 
 require_once __DIR__ . '/includes/class-wooventory-license-activation.php';
+require_once __DIR__ . '/includes/helper-functions.php';
 require __DIR__ . '/vendor/autoload.php';
 
 if ( class_exists( 'Wooventory_AM_Client' ) ) {
