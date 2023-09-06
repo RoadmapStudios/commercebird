@@ -6,7 +6,7 @@
 
 function wooventory_correct_order_timestamp($object, $request, $is_creating)
 {
-    if ($object) {
+    if ($is_creating) {
         // Get the current date and time in the required format
         $current_datetime = current_time('Y-m-d H:i:s');
 
