@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file represents an example of the code that themes would use to register
  * the required plugins.
@@ -25,8 +26,8 @@
  * Plugin:
  * require_once dirname( __FILE__ ) . '/path/to/class-tgm-plugin-activation.php';
  */
-if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
-    require_once __DIR__ . '/classes/class-tgm-plugin-activation.php' ;
+if (!class_exists('TGM_Plugin_Activation')) {
+    require_once __DIR__ . '/classes/class-tgm-plugin-activation.php';
 }
 add_action('tgmpa_register', 'rmsZI_register_required_plugins');
 /**
@@ -36,7 +37,7 @@ add_action('tgmpa_register', 'rmsZI_register_required_plugins');
 function rmsZI_register_required_plugins()
 {
     global $zi_plugin_prod_id;
-    if ( $zi_plugin_prod_id == 26532 ) {
+    if ($zi_plugin_prod_id == 26532) {
         return;
     }
     /*
@@ -45,56 +46,40 @@ function rmsZI_register_required_plugins()
      */
     $plugins = array();
 
-    if ( $zi_plugin_prod_id == 20832 ) {
-    $plugins = array(
-        array(
-            'name' => 'B2B for WooCommerce', // The plugin name.
-            'slug' => 'b2b-for-woocommerce', // The plugin slug (typically the folder name).
-            'required' => false, // If false, the plugin is only 'recommended' instead of required.
-            'external_url' => 'https://woocommerce.com/products/b2b-for-woocommerce/', // If set, overrides default API URL and points to an external URL.
-            'source' => 'https://woocommerce.com/products/b2b-for-woocommerce/',
-        ),
-        array(
-            'name' => 'Product Bundles for WooCommerce',
-            'slug' => 'product-bundles',
-            'required' => false, // If false, the plugin is only 'recommended' instead of required.
-            'external_url' => 'https://woocommerce.com/products/product-bundles/',
-            'source' => 'https://woocommerce.com/products/product-bundles/',
-        ),
+    // this IF check should check if user is using the Premium plan (variation_id = 18)
+    if ($zi_plugin_prod_id == 20832) {
+        $plugins = array(
+            array(
+                'name' => 'B2B for WooCommerce', // The plugin name.
+                'slug' => 'b2b-for-woocommerce', // The plugin slug (typically the folder name).
+                'required' => false, // If false, the plugin is only 'recommended' instead of required.
+                'external_url' => 'https://woocommerce.com/products/b2b-for-woocommerce/', // If set, overrides default API URL and points to an external URL.
+                'source' => 'https://woocommerce.com/products/b2b-for-woocommerce/',
+            ),
+            array(
+                'name' => 'Product Bundles for WooCommerce',
+                'slug' => 'product-bundles',
+                'required' => false, // If false, the plugin is only 'recommended' instead of required.
+                'external_url' => 'https://woocommerce.com/products/product-bundles/',
+                'source' => 'https://woocommerce.com/products/product-bundles/',
+            ),
 
-        array(
-            'name' => 'Custom Fields Sync of Zoho Products',
-            'slug' => 'woocommerce-zoho-inventory-custom-fields',
-            'required' => false, // If false, the plugin is only 'recommended' instead of required.
-            'external_url' => 'https://roadmapstudios.com/product/woocommerce-zoho-inventory-custom-fields/',
-            'source' => 'https://roadmapstudios.com/product/woocommerce-zoho-inventory-custom-fields/',
-        ),
-
-        // This is an example of how to include a plugin from the WordPress Plugin Repository.
-        array(
-            'name' => 'Custom Order Statuses for WooCommerce',
-            'slug' => 'custom-order-statuses-woocommerce',
-            'required' => true,
-        ),
-        array(
-            'name' => 'Regenerate product lookup table for WooCommerce',
-            'slug' => 'regenerate-product-lookup-table-for-woocommerce',
-            'required' => true,
-        )
-    ); 
-    } elseif ( $zi_plugin_prod_id == 12448 ) {
+            // This is an example of how to include a plugin from the WordPress Plugin Repository.
+            array(
+                'name' => 'Custom Order Statuses for WooCommerce',
+                'slug' => 'custom-order-statuses-woocommerce',
+                'required' => true,
+            )
+        );
+        // below check for the Business plan (variation_id = 16)
+    } elseif ($zi_plugin_prod_id == 12448) {
         $plugins = array(
             array(
                 'name' => 'Custom Order Statuses for WooCommerce',
                 'slug' => 'custom-order-statuses-woocommerce',
                 'required' => true,
-            ),
-            array(
-                'name' => 'Regenerate product lookup table for WooCommerce',
-                'slug' => 'regenerate-product-lookup-table-for-woocommerce',
-                'required' => true,
             )
-        ); 
+        );
     } else {
         return;
     }
@@ -122,15 +107,15 @@ function rmsZI_register_required_plugins()
         'dismiss_msg' => '', // If 'dismissable' is false, this message will be output at top of nag.
         'is_automatic' => false, // Automatically activate plugins after installation or not.
         'strings'      => array(
-            'page_title'                      => __( 'Install Recommended Plugins', 'theme-slug' ),
+            'page_title'                      => __('Install Recommended Plugins', 'theme-slug'),
             'notice_can_install_recommended'  => _n_noop(
                 /* translators: 1: plugin name(s). */
                 'The Zoho Inventory plugin recommends the following plugin: %1$s.',
                 'The Zoho Inventory plugin recommends the following plugins: %1$s.',
                 'tgmpa'
-            ), )
+            ),
+        )
     );
 
     tgmpa($filtered_plugins, $config);
-
 }
