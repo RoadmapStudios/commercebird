@@ -1,0 +1,787 @@
+Version 3.8.42 - 08-30-2023
+* New: Stock sync via specific Warehouse (select on Order Settings tab)
+* Tweak: full support for Wooventory
+* Fix: Product Bundles Sync if child items are variations
+
+Version 3.8.41 - 08-16-2023
+* Fix: syncing orders inclusive tax due to Zoho API changes
+* Fix: pricelist order sync
+* Fix: syncing renewal orders of subscriptions
+* Compatibility added for WooCommerce 8.0
+
+Version 3.8.40 - 08-01-2023
+* Fix: pricelist import for new products
+* Fix: plugin activation for Start users
+* Fix: stock sync of variations in cron
+
+Version 3.8.29 - 04-07-2023
+* Fix: improved group items sync by syncing variations in background
+* Fix: attributes were not shown as selected on each variation
+
+Version 3.8.38 - 06-23-2023
+* Fix: order sync
+* Fix: adding new attribute options in existing attribute
+* Tweak: syncing 10 items at a time to Zoho instead of one at a time via Action Scheduler
+
+Version 3.8.37 - 06-21-2023
+* Fix: improved importing group items
+* Tweak: tracking of synced categories to ensure all selected categories gets synced
+
+Version 3.8.36 - 06-16-2023
+* New: added min_qty and max_qty for pricelist import
+* Fix: re-applying same pricelist was not saving the new data
+* Tweak: added image sync in cron again (duplication issue is now resolved)
+
+Version 3.8.35 - 06-14-2023
+* Fix: updating products custom fields via cron
+* Fix: minor small bugs in manual sync of items
+
+Version 3.8.34 - 06-13-2023
+* Improvement: import simple items via action scheduler
+* Fix: group items import conflict
+
+Version 3.8.33 - 06-12-2023
+* Tweak: improved group items by importing variations via action scheduler
+
+Version 3.8.32 - 06-09-2023
+* Improvement: refactored the import of group items
+* Tweak: removed group items import from Cron (exceptions of variations)
+* Tweak: removed composite items import from Cron
+
+Version 3.8.31 - 06-03-2023
+* New: Zoho Sync Filter on Products page
+* Tweak: automatically removing "uncategorized" from product when category assigned
+* Tweak: refactored the server php check in accordance with latest WordPress guideline
+* Fix: recommended plugins will no longer show once they are installed
+
+Version 3.8.30 - 05-31-2023
+* Fix: manual import of variable items due to strict category check filter
+* Tweak: updated background sync library to version 1.1.0
+
+Version 3.8.29 - 05-30-2023
+* New: Group Items is now also category based
+* Tweak: category check for webhook when creating simple item
+* Tweak: improved support for WC Subscriptions renewal order sync
+* Tweak: improved item sync from woo to zoho with name parser
+* Tweak: improved featured image import
+* Fix: variations duplication
+
+Version 3.8.28 - 05-25-2023
+* New: support for inventory adjustment webhook type
+* New: support for renewal orders - when status is complete
+
+Version 3.8.27 - 05-24-2023
+* Fix: physical stock update 
+* Fix: order status update via webhook
+* Compatibility with WooCommerce 7.7
+
+Version 3.8.26 - 05-10-2023
+* Fix: order sync via order edit page if HPOS is disabled
+* Fix: updating tax of item via cron
+* Fix: updating stock via cron
+
+Version 3.8.25 - 05-08-2023
+* New: support for High-Performance Order Storage (HPOS)
+* Fix: import of composite items
+
+Version 3.8.24 - 04-26-2023
+* Fix: negative stock will now get synced
+* Fix: attributes not showing on variable products
+* Fix: php error for pricelist import
+
+Version 3.8.23 - 04-17-2023
+* Fix: import group items via manual sync
+* Fix: contact sync when company_name already exists in Zoho
+* Compatibility with WooCommerce 7.6
+
+Version 3.8.22 - 04-07-2023
+* Fix: variable attributes were getting removed via webhook sync
+* Tweak: improved support for Wooventory.com
+* Tested with WordPress 6.2
+
+Version 3.8.21 - 03-22-2023
+* New: update custom fields of items
+* Fix: attributes removal of variable product 
+* Compatibility with WooCommerce 7.5
+
+Version 3.8.20 - 03-12-2023
+* New: disable product sync to Zoho via data sync tab
+* New: order will get synced when created via the WC API
+* Tweak: allowing slashes and dots in product names now
+* Compatibility with WooCommerce 7.4
+
+Version 3.8.19 - 02-11-2023
+* Fix: removed tax on transaction fees to align with zoho api
+* Tweak: removed 'imported from zoho' description of categories and images
+* Tweak: require PHP 7.4
+
+Version 3.8.18 - 01-26-2023
+* Fix: warehouse error on order sync
+* Fix: customer sync via backend
+* Fix: webhook sync of product
+* Tweak: improved PHP 8.2 support
+* Compatibility with WooCommerce 7.3
+
+Version 3.8.17 - 01-12-2023
+* Fix: Stripe Fee
+* Fix: Shipping Status Update for Accents
+* Fix: Featured Image Import for Items
+
+Version 3.8.16 - 01-06-2023
+* New: added support for transaction fees of Stripe and PayPal
+* Fix: Backorder status of Bundle Child Item in WooCommerce
+
+Version 3.8.15 - 12-23-2022
+* Fix: categories and brands via manual sync
+* Fix: variation import in cron
+* Tweak: improved order sync time with 60%
+
+Version 3.8.14 - 12-06-2022
+* Fix: support for shipping statuses with accent characters
+* Fix: category and brands import via cronjob
+
+Version 3.8.13 - 11-29-2022
+* Tweak: added support for decimal tax rates
+* Fix: SKU check for existing items
+* Fix: stock update of new items via webhook
+
+Version 3.8.12 - 11-17-2022
+* Fix: memory usage reduced during tax mapping of order sync
+* Fix: variable products sync
+* Tweak: order json request is now visible on order edit page to debug quicker
+
+Version 3.8.11 - 10-24-2022
+* Fix: manual import items
+* Fix: compatibility error PHP 8
+
+Version 3.8.10 - 10-19-2022
+* New: option to disable item description sync
+* Fix: available for sale stock in manual sync
+* Fix: round up tax percentage calculation on order sync
+
+Version 3.8.9 - 10-18-2022
+* Fix: stock sync
+* Fix: updating short description instead of long description
+
+Version 3.8.8 - 10-14-2022
+* New: option to disable price sync
+* Fix: stock update based on available for sale as shown in Zoho Dashboard
+* Tested up to WooCommerce 7.0.0
+
+Version 3.8.7 - 10-06-2022
+* New: support for product description
+* New: support for product tags 
+* New: support for product brand (must be used as custom taxonomy on WP)
+* Fix: variation image via manual sync
+* Fix: package details as float type in WooCommerce
+
+Version 3.8.6 - 06-28-2022
+* Fix: weight and dimensions sync via Webhook
+* Fix: image sync of variation
+* Tweak: restored disable image sync feature for webhook
+
+Version: 3.8.5 - 06-25-2022
+* New: product bundles can now be purchased with other product types
+* Fix: orders incl tax not synced properly
+* Fix: add review for discount on review page
+
+Version 3.8.4 - 06-10-2022
+* New: added support for Sequential Order Number plugin
+* Tweak: improved manual import of items to import more than 50 items
+* Fix: SKU check for composite items mapping
+* Fix: php warning in cron script
+
+Version 3.8.3 - 05-20-2022
+* Tweak: removed image sync from cron script due to WordPress changes
+* Fix: sync of item weight is now a float type
+
+Version 3.8.2 - 04-29-2022
+* Fix: stock sync from zoho to woo
+* Improvement: performance of cron script
+* Tested up to WooCommerce 6.4.1
+
+Version 3.8.1 - 04-22-2022
+* New: enable accounting stock mode for stock sync
+* Fix: featured image sync on some hosting was not working
+* Fix: weight and dimensions are now being processed as float type
+
+Version 3.8.0 - 04-06-2022
+* New: item tax support for webhook sync
+* Improvement: cron script can now import more items per category
+* Tweak: recommended list of plugins will only show relevant plugins
+
+Version 3.7.9 - 03-09-2022
+* New: tax support for custom fee 
+* Fix: attributes matching for variations sync to zoho 
+* Fix: coupon check for variations
+* Fix: taxes with decimals
+
+Version 3.7.8 - 02-16-2022
+* Fix: pricing update via webhook and cron
+
+Version 3.7.7 - 01-28-2022
+* New: simple items will get created via webhook
+* Improvements: webhook and cron script optimized
+
+Version 3.7.6 - 01-11-2022
+* Fix: group item name sync in cron
+* Fix: attributes sync from woo to zoho
+* Fix: json formatting in background process
+
+Version 3.7.5 - 12-30-2021
+* New: added support for backorder status of product
+* New: added plugins recommendation page to use all features of this plugin
+
+Version 3.7.4 - 12-29-2021
+* New: added support for custom order fee
+* Tweak: major refactoring cron script phase one
+
+Version 3.7.3 - 12-17-2021
+* Fix: group item sync via cron
+
+Version 3.7.2 - 12-14-2021
+* Tweak: added support for dynamic tax in order sync
+* Fix: array_push warning in cron
+
+Version 3.7.1 - 12-09-2021
+* New: disable group item sync via settings
+* Tweak: categories will be updated daily now via wp-cron
+* Tweak: refactored cron script
+* Fix: attributes sync from woo to zoho
+* Fix: price sync via webhook
+
+Version 3.7.0 - 11-16-2021
+* New: Bulk sync of Products via bulk action in WC
+* New: Bulk sync of Orders via bulk action in WC
+* New: webhook now supports Void status to cancel order in WC
+* Tweak: localized webhook shipping status sync
+* Fix: price sync of composite item in cron
+
+Version 3.6.9 - 11-15-2021
+* Tweak: localized order status webhook sync
+* Fix: unmap variable product
+
+Version 3.6.8 - 11-09-2021
+* Fix: importing grouped items in cron
+
+Version 3.6.7.10 - 11-02-2021
+* Fix: simple items in cron via error checking
+* Tweak: tax mapping now also checks for standard rate availability
+
+Version 3.6.7 - 11-01-2021
+* New: support for composite item in webhook sync
+* Tweak: sync available_stock instead of actual_available_stock
+* Tweak: review banner improved
+* Tweak: update error message of product when doing background sync
+
+Version 3.6.6 - 10-20-2021
+* New: unmap customer on order detail page if error "invalid billing_address_id"
+* Fix: background sync of items
+
+Version 3.6.5.20 - 10-13-2021
+* Tweak: show available stock via API on Zoho widget in product edit page
+* Fix: updating variation via cron
+* Fix: check if customer still exists in zoho before order sync
+* Fix: remove simple product cache after updating
+* Tested up to WooCommerce 5.8
+
+Version 3.6.5.10 - 10-06-2021
+* Fix: simple item in cron fatal error
+
+Version 3.6.5 - 10-05-2021
+* New: support for state tax rates
+* Tweak: refactored orders settings
+* Fix: grouped items import in cron
+* Fix: image sync in cron
+* Fix: category check simple items via cron
+
+Version 3.6.4 - 10-01-2021
+* New: multicurrency support now optional
+* New: review reminder on settings
+* Tweak: improved mapping of variations
+* Minor improvements for better onboarding experience
+* Tested up to WooCommerce 5.7.1
+
+Version 3.6.3 - 09-14-2021
+* New: import featured image of grouped item
+* Fix: package sync
+* Minor bugfixes
+
+Version 3.6.2 - 09-07-2021
+* New: Unmap synced products
+* New: Sync status column on products listing
+* Fix: pricing sync of sale-price vs regular price
+* Tweak: improved product mapping from Woo to Zoho
+
+Version 3.6.1 - 08-24-2021
+* Fix: price sync zoho to woo
+* Fix: stock sync via webhook
+
+Version 3.6.0 - 07-20-2021
+* New: support for flat discount type in woocommerce
+* Tweak: cron script will now check recently updated items only
+
+Version 3.5.9.4 - 07-07-2021
+* New: check category when sync from woo to zoho
+* Fix: importing grouped items via cron
+
+Version 3.5.9.3 - 06-21-2021
+* Fix: slow loading of thankyou page
+
+Version 3.5.9.2 - 06-18-2021
+* Fix: order sync of composite items
+* Fix: percentage discount not calculated properly
+* Tweak: license check on order sync
+
+Version 3.5.9.1 - 06-15-2021
+* Fix: order sync freeze issue on frontend
+
+Version 3.5.9 - 06-14-2021
+* Fix: importing group item variations
+* Fix: discount in sales order
+* Fix: added 0.5 seconds in api calls to not exceed limit
+
+Version 3.5.8 - 06-04-2021
+* Fix: order not syncing due contact conflict
+* Fix: variations mapping with sku in zoho
+* Improvement: manual edit of zoho item id
+
+Version 3.5.7 - 06-01-2021
+* Improvement: order sync is now in background
+* Fix: incorrect tax in order
+* Fix: discount missing in order
+
+Version 3.5.6 - 05-21-2021
+* Fix: pricelist on some hosting
+* Fix: subcategory import
+
+Version 3.5.5 - 04-21-2021
+* New: added setting to sync attributes, so more than 3 attributes of variable products can be synced
+* Fix: double api call in cron
+
+Version 3.5.4 - 04-15-2021
+* New: attributes of variable products will now get synced
+* Fix: pricelist sync
+* Tweak: improved cronjob for grouped items
+
+Version 3.5.3 - 04-08-2021
+* New: manual product sync on product edit page
+* Fix: map item based on sku
+* Fix: importing sku of variations
+
+Version 3.5.2 - 03-26-2021
+* Fix: cronjob
+* Tweak: added link to get subscription_id
+
+Version 3.5.1 - 03-17-2021
+* New: orders will get synced in background every hour if not synced
+* New: rules popup on connect tab
+* Tweak: added error handling in admin templates
+
+Version 3.5.0 - 03-08-2021
+* New: orders sync status on shop page
+* New: connection status on connect tab
+* New: review tab to place review for discount
+
+Version 3.4.92 - 03-01-2021
+* Improvement: automatic update of plugin
+* Improvement: sync order when using paypal
+* Fix: pagination loop of manual item sync
+
+Version 3.4.91 - 02-13-2021
+* Fix: webhook simple item sync
+* Fix: grouped item cron sync
+* Fix: order cancelled sync
+* Tested up to WooCommerce 5.0
+
+Version 3.4.9 - 02-03-2021
+* New: pricelist can now be applied to multiple userroles (Pro version)
+* Fix: cronjob config error
+
+Version 3.4.8 - 02-01-2021
+* Improvement: multiple selected categories will no longer get de-selected in Woo
+* Tweak: webhook will now check cronjob settings first
+* Tested up to WooCommerce 4.9.2
+
+Version 3.4.7 - 01-26-2021
+* Improvement: performance of order sync
+* Tweak: added error handling for manual item sync
+* Tweak: featured image of variation will now get imported via manual sync and webhook
+
+Version 3.4.6 - 01-22-2021
+* New: webhook will from now on create variation for already synced variable product
+* Fix: syncing variation from woo to zoho
+* Fix: cronjob stopped after importing thousand items
+* Improvement: refactored pricelist template
+
+Version 3.4.5 - 01-08-2021
+* New: major design upgrade of settings page
+* New: remove option of custom sales order field mapping
+* Fix: order sync
+
+Version 3.4.4 - 01-06-2021
+* New: metabox on product edit page with API response
+* New: added support for all Product Addons plugins
+* New: force-sync of item when new order is placed
+* Improvement: product sync is now OOP PHP based
+* Fix: dimensions and weight sync of variations
+
+Version 3.4.3.10 - 01-04-2021
+* Tweak: variable products will not get updated
+
+Version 3.4.3 - 12-29-2020
+* New: added error notification on tax mapping
+* Tweak: item webhook now supports image sync of variations
+* Tweak: order page will automatically refresh after manual sync
+
+Version 3.4.2 - 12-24-2020
+* Fix: sync of variable products
+
+Version 3.4.1 - 12-21-2020
+* Fix: item webhook for variation
+* Fix: cronjob updating existing item
+
+Version 3.4.0 - 12-10-2020
+* New: added support for WC Merge Orders plugin
+* New: added confirmation popup for manual order sync
+* New: remove mapped categories feature on Cron configuration tab
+* Tweak: added carrier information in order status webhook
+* Tweak: product name will not be updated if its disabled for manual item sync
+* Fix: updating stock via webhook item
+* Tested up to WooCommerce 4.8
+
+Version 3.3.32 - 11-30-2020
+* Tweak: Added support for B2B for WooCommerce 1.5 update
+* Tweak: Only new items will be imported via cron. Webhook must be used for updating items from now on.
+* Fix: Prevent duplication of images via cron
+
+Version 3.3.31 - 11-28-2020
+* Minor bugfixes
+
+Version 3.3.3 - 11-27-2020
+* New: Allow store managers to access settings
+* Tweak: Improved confirmation alerts when saving settings
+* Fix: Cancel orders as void in zoho
+* Fix: Prevent purchase rate update when updating variation in woo
+* Fix: Prevent package sync on frontend when its disabled
+* Fix: Visibility of order prefix field in settings
+
+Version 3.3.2 - 11-23-2020
+* New: Image import via webhook item
+* New: Import all active contacts from Zoho
+* Tweak: Added confirmation alerts when saving settings
+* Tweak: Improved sync of variable items
+* Fix: Multicurrency missing user_id
+
+Version 3.3.1 - 11-10-2020
+* Fix: invalid names error when syncing manually
+* Fix: minor bugs
+
+Version 3.3.0 - 11-06-2020
+* New: webhook to push product changes in realtime from Zoho to Woo
+* Fix: image import sometimes not working via cron
+* Tweak: improved guidelines on tab pages
+
+Version 3.2.64 - 11-01-2020
+* Fix: Stock not updated via cronjob
+* Fix: Pricelist not applied
+
+Version 3.2.63 - 10-30-2020
+* Fix: dB table not generated when activating plugin
+* Tweak: deprecated wc methods in order sync
+* Tweak: undefined variables
+* Tested up to WooCommerce 4.6.1
+
+Version 3.2.62 - 10-19-2020
+* Fix: manual sync items from woo to zoho
+
+Version 3.2.61 - 10-15-2020
+* Fix: preventing import of variations as simple items
+
+Version 3.2.6 - 10-12-2020
+* Fix: Saving sku in wpdb during sync
+* Fix: Prevent composite items sync as simple items
+* Tweak: improved woo-to-zoho cron script
+
+Version 3.2.5 - 10-03-2020
+* Fix: Importing grouped items manually and via cron
+* Fix: Product dimensions sync
+
+Version: 3.2.4 - 09-17-2020
+* Tweak: Improved currency sync class
+* Fix: Item tax rate in order sync
+
+Version 3.2.3 - 09-14-2020
+* Tweak: Bundle type in cart limitation
+* Fix: Pricelist returning empty array
+
+Version 3.2.2 - 09-09-2020
+* New: Order prefix option
+* Fix: Bundles in Order sync
+* Fix: Update email address of contact
+* Fix: Invalid order notes if contains special characters
+
+Version 3.2.1 - 09-07-2020
+* Fix: Statements of Account is missing error
+* Fix: Shipping_attention
+
+Version 3.2.0 - 09-02-2020
+* New: Zoho Order Status to WooCommerce Sync
+* Fix: Class exists issue in background lib
+* Fix: Tax rate in line items of order sync
+* Fix: Order note in order sync
+* Fix: Complete billing/shipping address in order sync
+
+Version 3.1.2 - 08-31-2020
+* New: Remove connection on connect tab
+* New: Support for WooCommerce 4.4
+* Fix: Check all categories checkbox
+* Fix: Manual items sync from Zoho
+* Fix: Resolved header output error during plugin activation
+* Tweak: Updated background sync library
+
+Version 3.1.1 - 08-22-2020
+* New: Added attention to billing and shipping address
+* New: Support for Booster plugin
+* Fix: Address field blank in orders
+* Fix: Malformed JSON error
+* Tweak: Improved contact sync
+
+Version 3.1.0 - 07-31-2020
+* New: Package sync
+* New: Featured image sync via manual sync
+* Support: WooCommerce 4.3
+* Improvement: Memory leak of Cron script
+* Fix: Importing featured image via cron
+* Fix: Importing variable products - setting variations
+* Fix: Syncing orders as draft option
+* Fix: Saving API response as order note
+
+Version 3.0.2 - 07-06-2020
+* New: shipping method in order sync
+* Fix: contact sync array error on frontend
+
+Version 3.0.1 - 07-01-2020
+* New: support for vat_exempt orders
+* Fix: disabled order sync if status is failed
+
+Version 3.0.0 - 06-06-2020
+* New: oauth2 connection (Breaking change)
+* New: import grouped items as variable products 
+* Refactored codebase with OOP PHP standards
+* Minor bugfixes
+
+Version 2.4.3 - 06-18-2020
+* Fix: shipping_charge_tax_id as separate line in order sync
+
+Version 2.4.2 - 06-16-2020
+* Support for WooCommerce 4.2
+* Fix: display price was being overwritten if sale_price was active
+* Fix: dimensions values not saved via cron
+* Fix: restored stock key in all sync functions
+
+
+Version 2.4.1 - 06-09-2020
+* Fix: sync-from-cron error
+
+Version 2.4.0 - 06-08-2020
+* New: disable featured image sync from cronjob
+* New: coupons are now handled on line item level
+* New: support for shipping tax
+* Tweak: removed description from background sync
+* Fix: cronjob error
+
+Version 2.3.2 - 05-26-2020
+* New: importing grouped items from Zoho (beta)
+* New: added India and Australia datacenters
+* Fix: duplicated orders 
+* Fix: email notifications of cronjob disabled
+
+Version 2.3.1 - 05-10-2020
+* Fix: stock not always syncing in cron
+* Fix: manual item sync from settings
+
+Version 2.3.0 - 05-05-2020
+* New: Support for multi-currency orders
+* New: Paid Woo orders will be synced as confirmed orders automatically to match the stock
+* New: Cancelled woo orders will get void in Zoho automatically
+* New: Disable item name sync for the cron script
+* Fix: Custom fields mapping for orders
+* Fix: Zoho item prices sync as regular price in woocommerce
+
+Version 2.2.2 - 04-27-2020
+* Fix: JSON Malformed error on order sync
+* Tweak: refactored order sync functions
+
+Version 2.2.1 - 04-24-2020
+* New: syncing subcategories to and from Zoho
+* New: support for EU VAT number for UK edition
+* Fix: contact sync from edit order in woocommerce
+
+Version 2.2.0 - 04-20-2020
+* New: Pricelist based on Userrole (requires B2B plugin)
+* New: Select Warehouse for Orders
+* Tweak: Moved orders functions to new tab 'Orders'
+* Tweak: Now sending item rate in sales order
+* Tweak: Get item meta function improved
+* Fix: Item names now parsed for special characters
+* Fix: Address_2 field now mapped with Zoho Contact
+* Fix: Stock key in Cron is now actual_available_for_sale_stock
+
+Version 2.1.0 - 03-27-2020
+* New: Syncing Variable Products as Grouped Items
+* New: Zoho Pricelist to WooCommerce (Beta)
+* New: Support for wc subscription product type and signup fee
+* Tweak: Improved performance in loading thankyou page
+
+Version 2.0.6 - 03-22-2020
+* Fully compatible with WooCommerce 4.0
+* Tweak: improved contact mapping on checkout
+* Fix: now syncing available_stock instead of stock_on_hand in cron
+
+Version 2.0.5 - 02-18-2020
+* New: minimum PHP version 7.2 checker
+* Fix: Fixed duplicated image import on some hosting providers
+* Fix: stock sync in background process
+* Fix: removed stock_on_hand sync as its not allowed by Zoho
+
+Version 2.0.4 - 02-05-2020
+* New: zoho_item_id now visible on product edit tab
+* Fix: sync bundle item from woocommerce product edit
+* Fix: update stock from woocommerce product edit
+
+Version 2.0.3 - 01-24-2020
+* New: check-all categories on Cron tab
+* Fix: contact sync on admin order sync
+
+Version 2.0.2 - 01-22-2020
+* New: support for virtual products -> synced as service to Zoho Inventory
+* Improved registration by hiding checkout form if not loggedin
+* Fix: composite item sync would sometimes sync as simple items
+
+Version 2.0.1 - 01-17-2020
+* New: support for pricing incl. tax
+* New: custom registration label as setting on connect tab
+* Improved contact sync on manual order sync
+
+Version 2.0.0 - 01-14-2020
+* Removed multistep process 
+* New: Support for Product Addons
+* New: Orders tax rates will now be dynamic
+* Fix: Manual items sync due to ajax error
+* Refactored codebase: 50% smaller in plugin size
+
+Version 1.6.2 - 12-12-2019
+* Improved: Moved order sync to separate script
+* Improved: Guest checkout allowed if sales order sync is disabled
+* Removed: thankyou.php template
+
+Version 1.6.1 - 11-27-2019
+* Tweak: Improved support for Staging sites
+* Removed unused code
+
+Version 1.6.0 - 10-25-2019
+* New: Sync Product Details (weight, length, width, height)
+* New: remove connection function
+* Tweak: Moved connection tab to beginning
+* Tweak: Switched to WC_Logger for logging orders
+
+Version 1.5.4 - 10-01-2019
+* Improved variable items sync
+* Guest checkout will be disabled automatically
+
+Version 1.5.3 - 09-19-2019
+* Tweak: added instructions on tabs
+* Fix: product categories in sync
+
+Version 1.5.2 - 09-16-2019
+* Fix: variable product prices during sync
+* Fix: orders log table was not created in DB
+* Fix: connection to Zoho lost when updated
+* Fix: page index notice
+
+Version 1.5.1 - 09-05-2019
+* New: Send Orders as Confirmed to Zoho
+* Tweak: Added Product_ID in sync email notification
+* Fix: Cronjob double API calls
+* Fix: Shipping address as Billing address if empty
+
+Version 1.5.0 - 09.02.2019
+* Support for Composite items (requires Product Bundle plugin)
+* Switched to Real-Cron (this requires cPanel cron setup)
+* Improved performance
+* WooCommerce 3.7 support
+
+Version 1.4.0 - 07.18.2019
+* New: Custom Field mapping of Sales Orders
+* Fix: stock status corrected if in stock
+
+Version 1.3.2 - 07.01.2019
+* New: background processing of contacts sync
+* Tweak: Image import with item_id as image name
+* Fix: license activation issue
+
+Version 1.3.1 - 06.20.2019
+* New: background processing of items sync
+* New: Zoho Item Description synced as Product Description
+
+Version 1.3.0 - 06.04.2019
+* New: enable auto order number by Zoho
+* Fix: prevent same image getting imported at cron
+* Fix: prevent update of initial stock
+* Fix: contactperson had no email address
+
+Version 1.2.1 - 05.28.2019
+* Fixed image cron import by assigning author
+* Removed unused code
+
+Version 1.2.0 - 05.23.2019
+* Fixed category_id issue during sync
+* Fixed order manual sync when customer created manually or already existed
+* Tweak: dynamically getting terms url for sales order
+
+Version 1.1.7 - 05.16.2019
+* Fixed stock level issue on manual sync
+
+Version 1.1.6 - 05.08.2019
+* Fixed items import by using selected categories of cron tab
+* Blocked My-Account Billing fields that can break the sync
+
+Version 1.1.5 - 05.06.2019
+* New: disable stock of items sync
+* Bugfix: removed initial stock sync after sales order
+
+Version 1.1.4 - 05.03.2019
+* Fixed image sync issue
+* Fixed duplicated items in woocommerce on SKU match
+
+Version 1.1.3 - 04.22.2019
+* Updated category cron sync with new method for faster sync as recommended by Zoho.
+
+Version 1.1.2 - 04.10.2019
+* Improved license key check
+
+Version 1.1.1 - 04.08.2019
+* Fixed cronjob issue
+* Improved item sync with auto-mapping items that already exists in Zoho
+* Small bugfix
+
+Version 1.1.0 - 04.05.2019
+* New: support for Zoho Items Category during import and sync
+* New: Log for Cronjob
+* Tweak: improved log of orders
+
+Version 1.0.3 - 03.26.2019
+* Removed email_id from contact update due to API issues
+* Fixed company_name in contact update
+
+Version 1.0.2 - 03.17.2019
+* Fixed stock level enabling in woocommerce
+* Changed labels names in settings
+
+Version 1.0.1 - 03.05.2019
+* Fixed cronjob disabling
+* Added notification of cronjob disabling
+
+Version 1.0.0 - 03.01.2019
+* Initial release
