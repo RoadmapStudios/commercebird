@@ -1,12 +1,13 @@
 <?php
+
 /**
  * File for ZOHO inventory plugin initialization.
  *
  * @category Zoho_Integration
- * @package  WooZo_Inventory
- * @author   Roadmap Studios <info@roadmapstudios.com>
+ * @package  Wooventory
+ * @author   Wooventory
  * @license  GNU General Public License v3.0
- * @link     https://roadmapstudios.com
+ * @link     https://wooventory.com
  */
 
 // require RMS_DIR_PATH . 'background-process.php';
@@ -46,10 +47,10 @@ function zoho_all_contacts_api_func()
         'role__in' => array('customer', 'subscriber'),
         'number' => -1,
     );
-    
+
     $user_query = new WP_User_Query($args);
     $users = $user_query->get_results();
-    
+
     // $bg_process = new WP_Zoho_Background_Process('contact');
     foreach ($users as $user) {
         // $bg_process->push_to_queue($user);

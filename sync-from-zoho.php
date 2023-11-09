@@ -30,7 +30,7 @@ class ZohoToWoocommerce
     {
         global $zi_plugin_prod_id;
         global $zi_plugin_version;
-        $wcam_lib = new WC_WooZo_Client(__FILE__, $zi_plugin_prod_id, $zi_plugin_version, 'plugin', 'https://roadmapstudios.com/', 'WooCommerce Zoho Inventory');
+        $wcam_lib = new WC_WooZo_Client(__FILE__, $zi_plugin_prod_id, $zi_plugin_version, 'plugin', 'https://wooventory.com/', 'WooCommerce Zoho Inventory');
         $config = [
             'FromZohoZI' => [
                 'OID' => get_option('zoho_inventory_oid'),
@@ -188,7 +188,7 @@ class ZohoToWoocommerce
                     $pdt_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = '%s' LIMIT 1", $item_id));
                     if (empty($pdt_id) && $allow_to_import == true) {
                         // fwrite($fd, PHP_EOL . 'Product Import ');
-                        if(empty($arr->group_id)) {
+                        if (empty($arr->group_id)) {
                             $pdt_id = $this->zi_product_to_woocommerce($arr, $admin_author_id);
                         }
                         // fwrite($fd, PHP_EOL . 'After Import Done : ');
@@ -242,7 +242,6 @@ class ZohoToWoocommerce
                         }
                         // sync via itemDetails as well for other keys
                         $item_ids[] = $arr->item_id;
-
                     } // end of wpdb post_id check
                 }
             }
@@ -392,7 +391,7 @@ class ZohoToWoocommerce
                         $warehouse_id = get_option('zoho_warehouse_id');
                         $warehouses = $arr->warehouses;
 
-                        if($zi_enable_warehousestock == true) {
+                        if ($zi_enable_warehousestock == true) {
                             foreach ($warehouses as $warehouse) {
                                 if ($warehouse->warehouse_id === $warehouse_id) {
                                     if ($accounting_stock == 'true') {
@@ -444,7 +443,7 @@ class ZohoToWoocommerce
                         update_post_meta($pdt_id, '_tax_status', 'taxable');
                     }
                     // Clear/refresh cache
-                    wc_delete_product_transients($pdt_id); 
+                    wc_delete_product_transients($pdt_id);
                 }
             }
         } else {

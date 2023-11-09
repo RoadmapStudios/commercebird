@@ -1,45 +1,45 @@
 {
-    "name": "wooventory/wooventory",
-    "description": "Connect your Zoho Inventory with your WooCommerce store in realtime to sync Customers, Items and Sales Orders. Manage your entire inventory from Zoho",
-    "type": "wordpress-plugin",
-    "license": "GPL-3.0-or-later",
-    "autoload": {
-        "psr-4": {
-            "RMS\\Admin\\": "admin/includes/"
-        },
-        "classmap": [
-            "includes/classes/"
-        ]
+  "name": "wooventory/wooventory",
+  "description": "Connect your Zoho Inventory with your WooCommerce store in realtime to sync Customers, Items and Sales Orders. Manage your entire inventory from Zoho",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "RMS\\Admin\\": "admin/includes/"
     },
-    "authors": [
-        {
-            "name": "Roadmap Studios",
-            "email": "info@roadmapstudios.com",
-            "role": "Owner"
-        },
-        {
-            "name": "Dev Kabir",
-            "email": "dev.kabir01@gmail.com",
-            "role": "WordPress Developer"
-        }
-    ],
-    "require": {
-        "php": ">=7.4",
-        "ext-json": "*",
-        "ext-curl": "*",
-        "automattic/woocommerce": ">=3.1.0"
+    "classmap": [
+      "includes/classes/"
+    ]
+  },
+  "authors": [
+    {
+      "name": "Roadmap Studios",
+      "email": "info@wooventory.com",
+      "role": "Owner"
     },
-    "require-dev": {
-        "filp/whoops": ">=2.15.4",
-        "roots/wordpress-no-content": ">=6.3.2",
-        "symfony/var-dumper": "^5.4",
-        "wp-coding-standards/wpcs": ">=3.0.1"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "sort-packages": true,
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+    {
+      "name": "Dev Kabir",
+      "email": "dev.kabir01@gmail.com",
+      "role": "WordPress Developer"
     }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-json": "*",
+    "ext-curl": "*",
+    "automattic/woocommerce": ">=3.1.0"
+  },
+  "require-dev": {
+    "filp/whoops": ">=2.15.4",
+    "roots/wordpress-no-content": ">=6.3.2",
+    "symfony/var-dumper": "^5.4",
+    "wp-coding-standards/wpcs": ">=3.0.1"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  }
 }

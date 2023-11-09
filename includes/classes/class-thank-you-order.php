@@ -6,7 +6,7 @@
  * @package  WooZo Inventory
  * @category Zoho Integration
  * @author   Roadmap Studios
- * @link     https://roadmapstudios.com
+ * @link     https://wooventory.com
  */
 
 class OrderClass
@@ -75,7 +75,6 @@ class OrderClass
                         if (!empty($tax_option)) {
                             $applied_tax_zohoid = explode('##', $tax_option)[0];
                         }
-
                     }
                     if (!empty($applied_tax_zohoid)) {
                         break; // If first applied tax has zoho id found. break loop.
@@ -356,7 +355,7 @@ class OrderClass
                                     foreach ($order->get_items('tax') as $item_key => $item) {
                                         $tax_rate_id = $item->get_rate_id(); // Tax rate ID
                                         $tax_percent = WC_Tax::get_rate_percent($tax_rate_id);
-                                        $tax_total   = $item_price1 * ( $tax_percent / 100 );
+                                        $tax_total   = $item_price1 * ($tax_percent / 100);
                                         $option_table = $wpdb->prefix . 'options';
                                         $tax_option_object = $wpdb->get_row($wpdb->prepare("SELECT * FROM $option_table WHERE option_value LIKE '%s' LIMIT 1", "%##tax##$tax_percent"));
                                         $tax_option = $tax_option_object->option_value;
@@ -407,7 +406,6 @@ class OrderClass
 
                                     $shipping_tax_id = $shipping_tax_total_ex[0];
                                     $shipping_tax_per = end($shipping_tax_total_ex);
-
                                 }
                             }
 
@@ -561,13 +559,13 @@ class OrderClass
     {
         $order = wc_get_order($order_id);
         switch (true) {
-            // get fees from Stripe, if exists
+                // get fees from Stripe, if exists
             case $fees = $order->get_meta("_stripe_fee");
                 break;
-            // get fees from Paypal, if exists
+                // get fees from Paypal, if exists
             case $fees = $order->get_meta("_paypal_transaction_fee"):
                 break;
-            // otherwise fee is 0
+                // otherwise fee is 0
             default:
                 $fees = 0;
                 break;

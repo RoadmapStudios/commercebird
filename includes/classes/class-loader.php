@@ -1,11 +1,8 @@
 <?php
 
 
-class WCZohoInventory
+class Wooventory
 {
-
-    private static $options = array();
-    private static $defaultOptions = array();
 
     /**
      * Plugin activation
@@ -42,25 +39,25 @@ class WCZohoInventory
     public static function initHooks()
     {
         //Init
-        add_action('init', array( 'WCZohoInventory', 'init'));
+        add_action('init', array('wooventory', 'init'));
 
         //Admin init
-        add_action('admin_init', array( 'WCZohoInventory', 'adminInit'));
+        add_action('admin_init', array('wooventory', 'adminInit'));
 
         //Admin notices
-        add_action('admin_notices', array( 'WCZohoInventory', 'adminNotices'));
-        add_action('wp_ajax_dismiss_rmszi_review_request_notice', array( 'WCZohoInventory', 'dismiss_rmszi_review_request_notice'));
-        add_action('wp_ajax_skip_rmszi_review_request_notice', array( 'WCZohoInventory', 'skip_rmszi_review_request_notice'));
+        add_action('admin_notices', array('wooventory', 'adminNotices'));
+        add_action('wp_ajax_dismiss_rmszi_review_request_notice', array('wooventory', 'dismiss_rmszi_review_request_notice'));
+        add_action('wp_ajax_skip_rmszi_review_request_notice', array('wooventory', 'skip_rmszi_review_request_notice'));
 
-        
+
         //Plugins page
-        add_filter('plugin_row_meta', array( 'WCZohoInventory', 'pluginRowMeta'), 10, 2);
-        add_filter('plugin_action_links_' . RMS_BASENAME, array( 'WCZohoInventory', 'actionLinks'));
+        add_filter('plugin_row_meta', array('wooventory', 'pluginRowMeta'), 10, 2);
+        add_filter('plugin_action_links_' . RMS_BASENAME, array('wooventory', 'actionLinks'));
 
         //Admin page
         $page = filter_input(INPUT_GET, 'page');
         if (!empty($page) && $page == RMS_MENU_SLUG) {
-            add_filter('admin_footer_text', array( 'WCZohoInventory', 'adminFooter'));
+            add_filter('admin_footer_text', array('wooventory', 'adminFooter'));
         }
     }
 
@@ -111,7 +108,7 @@ class WCZohoInventory
             RMS_PLUGIN_NAME,
             'manage_woocommerce',
             RMS_MENU_SLUG,
-            array( 'WCZohoInventory', 'adminOptions')
+            array('wooventory', 'adminOptions')
         );
     }
 
@@ -128,13 +125,9 @@ class WCZohoInventory
 
         //Plugin admin styles
         wp_enqueue_style('rms-zi-styles-admin', RMS_DIR_URL . 'assets/css/styles-admin.css', array(), RMS_VERSION);
-        wp_enqueue_style('rms-zi-font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css', array(), RMS_VERSION);
 
         //Plugin admin script
         wp_register_script('rms-zi-scripts-admin', RMS_DIR_URL . 'assets/js/scripts-admin.js', array('jquery'), RMS_VERSION, true);
-
-        wp_register_script('sweatAlert', 'https://unpkg.com/sweetalert/dist/sweetalert.min.js', array('jquery'), RMS_VERSION, true);
-        wp_enqueue_script('sweatAlert');
 
         wp_localize_script(
             'rms-zi-scripts-admin',
@@ -164,11 +157,6 @@ class WCZohoInventory
             return;
         }
 
-        $customer_review = get_option('zi_customer_review');
-        if ($customer_review) {
-            return;
-        }
-
         $rmszi_since = get_option('rmszi_since');
         $now = time();
         if (!$rmszi_since) {
@@ -185,24 +173,25 @@ class WCZohoInventory
 
     public static function render_review_request_notice()
     {
-        $review_url = "https://roadmapstudios.com/product/woocommerce-zoho-inventory";
-        ?>
-		<div id="rmszi_review_request_notice" class="notice notice-info is-dismissible  thpladmin-notice" data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>" data-action="dismiss_rmszi_review_request_notice" style="display:none">
-			<h3>
-				Just wanted to say thank you for using Zoho Inventory plugin in your store.
-			</h3>
-			<p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers! PS: you will also get 25% on your renewal payment as our thank you ;)</p>
-			<p class="action-row">
-		        <button type="button" class="button button-primary" onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
-		        <button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
-            	<span class="logo"><a target="_blank" href="https://roadmapstudios.com">
-                	<img src="<?php // echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg'); ?>" />
-                </a></span>
+        $review_url = "https://wooventory.com/product/woocommerce-zoho-inventory";
+?>
+        <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible  thpladmin-notice" data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>" data-action="dismiss_rmszi_review_request_notice" style="display:none">
+            <h3>
+                Just wanted to say thank you for using Zoho Inventory plugin in your store.
+            </h3>
+            <p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers! PS: you will also get 25% on your renewal payment as our thank you ;)</p>
+            <p class="action-row">
+                <button type="button" class="button button-primary" onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
+                <button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
+                <span class="logo"><a target="_blank" href="https://wooventory.com">
+                        <img src="<?php // echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg'); 
+                                    ?>" />
+                    </a></span>
 
-			</p>
-		</div>
-		<?php
-}
+            </p>
+        </div>
+    <?php
+    }
 
     public static function dismiss_rmszi_review_request_notice()
     {
@@ -220,129 +209,6 @@ class WCZohoInventory
             die();
         }
         set_transient('rmszi_skip_review_request_notice', true, apply_filters('rmszi_skip_review_request_notice_lifespan', 1 * DAY_IN_SECONDS));
-    }
-
-    /**
-     * Set options
-     */
-    public static function setOptions($options, &$defaultOptions)
-    {
-        foreach ($options as $key => $value) {
-            if (is_array($value)) {
-                self::setOptions($options[$key], $defaultOptions[$key]);
-            } else {
-                if (array_key_exists($key, $defaultOptions)) {
-                    $defaultOptions[$key] = $value;
-                }
-            }
-        }
-    }
-
-    /**
-     * Admin options
-     */
-    public static function adminOptions()
-    {
-        global $wcam_lib;
-        $data = filter_input_array(INPUT_POST);
-
-        //Form submit
-        if (!empty($data)) {
-
-            $data = array_map('stripslashes_deep', $data);
-
-            if (!empty($data['reset'])) {
-                self::$options = self::$defaultOptions;
-            } else {
-                foreach ($data as $fieldName => $fieldValue) {
-                    if ($fieldName == 'save' || $fieldName == 'reset') {
-                        continue;
-                    }
-
-                    if (!array_key_exists($fieldName, self::$options)) {
-                        continue;
-                    }
-
-                    if ($fieldName == 'steps') {
-                        foreach ($fieldValue as $stepName => $stepValue) {
-                            self::$options[$fieldName][$stepName]['text'] = $stepValue['text'];
-                        }
-                    } else {
-                        self::$options[$fieldName] = $fieldValue;
-                    }
-                }
-            }
-
-            self::$options = apply_filters('rms-zi-update-options', self::$options);
-
-            update_option('rms-zi-options', self::$options);
-        }
-
-        //Set options
-        $options = self::$options;
-
-        //Admin options
-        $selectedTab = 'zoho';
-        $sub_tab = 'ziconnect'; // Default tabe to be selected.
-        $tab = filter_input(INPUT_GET, 'tab');
-        $sub_tab = filter_input(INPUT_GET, 'stab');
-        if (!empty($tab) && in_array($tab, array('general', 'steps', 'styles', 'zoho', 'custom-fields'))) {
-            $selectedTab = $tab;
-        }
-        if ($wcam_lib->get_api_key_status()) {
-            $customer_review = get_option('zi_customer_review');
-            ?>
-			<div class="rmsZI-wrapper">
-
-				<div class="nav-tab-wrapper rmsZI-tab-wrapper">
-					<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=ziconnect" class="nav-tab zi-plugin-head <?php echo $selectedTab == 'zoho' ? ' nav-tab-active' : ''; ?>"><?php _e('Zoho Inventory Settings', 'rmsZI');?></a>
-
-				</div>
-				<?php if ($selectedTab == 'zoho') {?>
-					<div class="zi-menu-item">
-						<ul class="zi-tab-list">
-							<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=ziconnect" class="zi-tab <?php echo $sub_tab == 'ziconnect' ? ' zi-a-selected' : ''; ?>"><?php _e(' Connect', 'rmsZI');?></a>
-							<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=zitax" class="zi-tab <?php echo $sub_tab == 'zitax' ? ' zi-a-selected' : ''; ?>"><?php _e(' Tax Mapping', 'rmsZI');?></a>
-							<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=zisync" class="zi-tab <?php echo $sub_tab == 'zisync' ? ' zi-a-selected' : ''; ?>"><?php _e(' Products Sync', 'rmsZI');?></a>
-							<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=zicron" class="zi-tab <?php echo $sub_tab == 'zicron' ? ' zi-a-selected' : ''; ?>"><?php _e(' Cron Configuration', 'rmsZI');?></a>
-							<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=orders" class="zi-tab <?php echo $sub_tab == 'orders' ? ' zi-a-selected' : ''; ?>"><?php _e(' Orders Settings', 'rmsZI');?></a>
-							<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=mapping" class="zi-tab <?php echo $sub_tab == 'mapping' ? ' zi-a-selected' : ''; ?>"><?php _e('Custom Fields', 'rmsZI');?></a>
-							<a href="?page=<?php echo RMS_MENU_SLUG; ?>&tab=zoho&stab=pricelist" class="zi-tab <?php echo $sub_tab == 'pricelist' ? ' zi-a-selected' : ''; ?>"><?php _e('Price List', 'rmsZI');?></a>
-							<ul>
-					</div>
-				<?php
-
-                if ($sub_tab == 'ziconnect') {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-zoho.php';
-                } elseif ('zitax' === $sub_tab) {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-zoho-tax.php';
-                } elseif ('zisync' === $sub_tab) {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-zoho-sync.php';
-                } elseif ('zicron' === $sub_tab) {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-zoho-cron.php';
-                } elseif ('orders' === $sub_tab) {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-zoho-orders.php';
-                } elseif ('mapping' === $sub_tab) {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-mapping.php';
-                } elseif ('pricelist' === $sub_tab) {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-zoho-pricelist.php';
-                } else {
-                    include_once RMS_DIR_PATH . 'admin/template-parts/content-zoho.php';
-                }
-            }
-            ?>
-
-				<form method="post" class="rmsZI-form">
-
-					<?php if ($selectedTab != 'zoho' && $selectedTab != 'zitax' && $selectedTab != 'zicron') {?>
-						<input type="submit" name="save" class="button button-primary" value="<?php _e('Save Changes', 'rmsZI');?>">
-						<input type="submit" name="reset" class="button" value="<?php _e('Reset All', 'rmsZI');?>">
-					<?php }?>
-				</form>
-
-			</div>
-		<?php
-}
     }
 
     /**
@@ -382,8 +248,8 @@ class WCZohoInventory
      */
     public static function adminFooter()
     {
-        ?>
-		<p><a href="https://roadmapstudios.com/product/woocommerce-zoho-inventory/" class="arg-review-link" target="_blank"><?php echo sprintf(__('If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI'), RMS_PLUGIN_NAME); ?></a> <?php _e('Thank you.', 'rmsZI');?></p>
+    ?>
+        <p><a href="https://wooventory.com/product/wooventory/" class="arg-review-link" target="_blank"><?php echo sprintf(__('If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI'), RMS_PLUGIN_NAME); ?></a> <?php _e('Thank you.', 'rmsZI'); ?></p>
 <?php
-}
+    }
 }

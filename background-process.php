@@ -5,9 +5,9 @@
  *
  * @category Zoho_Integration
  * @package  WooZo_Inventory
- * @author   Roadmap Studios <info@roadmapstudios.com>
+ * @author   Roadmap Studios <info@wooventory.com>
  * @license  GNU General Public License v3.0
- * @link     https://roadmapstudios.com
+ * @link     https://wooventory.com
  */
 
 if (!class_exists('WP_Zoho_Background_Process')) {
@@ -263,5 +263,5 @@ if (!class_exists('WP_Zoho_Background_Process')) {
             $result = curl_exec($curl);
             return json_decode($result);
         }
-
-    }}
+    }
+}

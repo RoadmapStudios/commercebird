@@ -6,7 +6,7 @@
  * @package  WooZo Inventory
  * @category Zoho Integration
  * @author   Roadmap Studios
- * @link     https://roadmapstudios.com
+ * @link     https://wooventory.com
  */
 
 class PackageClass {
@@ -110,4 +110,3 @@ class PackageClass {
 	}
 
 } // end of class
-?>

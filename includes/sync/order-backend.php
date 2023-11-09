@@ -1,12 +1,13 @@
 <?php
+
 /**
  * All backend order sync related functions.
  *
  * @category Zoho_Integration
  * @package  WooZo_Inventory
- * @author   Roadmap Studios <info@roadmapstudios.com>
+ * @author   Roadmap Studios <info@wooventory.com>
  * @license  GNU General Public License v3.0
- * @link     https://roadmapstudios.com
+ * @link     https://wooventory.com
  */
 
 if (!defined('ABSPATH')) {
@@ -33,7 +34,8 @@ function zoho_on_insert_rest_api($object, $request, $is_creating)
  * Sync Renewal Order to Zoho once its created
  */
 add_filter('wcs_renewal_order_created', 'zoho_sync_renewal_order', 10, 2);
-function zoho_sync_renewal_order($renewal_order, $subscription) {
+function zoho_sync_renewal_order($renewal_order, $subscription)
+{
 
     // Set the current renewal order as completed.
     $order_id = $renewal_order->get_id();
@@ -315,7 +317,6 @@ function zoho_admin_order_sync($order_id)
                         $d_price = ($item_price - $g_price);
                         $d_price = (($d_price / $item_price) * 100);
                         $discount_per_item = round($d_price, 2) . '%';
-
                     }
 
                     $discount_per_item = '"discount": "' . $discount_per_item . '",';
@@ -340,7 +341,7 @@ function zoho_admin_order_sync($order_id)
                     foreach ($order->get_items('tax') as $item_key => $item) {
                         $tax_rate_id = $item->get_rate_id(); // Tax rate ID
                         $tax_percent = WC_Tax::get_rate_percent($tax_rate_id);
-                        $tax_total     = $item_price1 * ( $tax_percent / 100 );
+                        $tax_total     = $item_price1 * ($tax_percent / 100);
                         $option_table = $wpdb->prefix . 'options';
                         $tax_option_object = $wpdb->get_row($wpdb->prepare("SELECT * FROM $option_table WHERE option_value LIKE '%s' LIMIT 1", "%##tax##$tax_percent"));
                         $tax_option = $tax_option_object->option_value;
@@ -594,13 +595,13 @@ function get_transaction_fees($order_id)
 {
     $order = wc_get_order($order_id);
     switch (true) {
-        // get fees from Stripe, if exists
+            // get fees from Stripe, if exists
         case $fees = $order->get_meta("_stripe_fee");
             break;
-        // get fees from Paypal, if exists
+            // get fees from Paypal, if exists
         case $fees = $order->get_meta("_paypal_transaction_fee"):
             break;
-        // otherwise fee is 0
+            // otherwise fee is 0
         default:
             $fees = 0;
             break;
@@ -710,8 +711,8 @@ add_action('admin_enqueue_scripts', 'load_script');
 function zoho_admin_metabox()
 {
     $screen = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
-    ? wc_get_page_screen_id('shop-order')
-    : 'shop_order';
+        ? wc_get_page_screen_id('shop-order')
+        : 'shop_order';
 
     add_meta_box(
         'zoho-admin-sync',
@@ -765,7 +766,6 @@ function zi_sync_all_orders_to_zoho_handler($redirect, $action, $object_ids)
 
         // do not forget to add query args to URL because we will show notices later
         $redirect = add_query_arg('sync_order_to_zoho_done', count($object_ids), $redirect);
-
     }
 
     return $redirect;

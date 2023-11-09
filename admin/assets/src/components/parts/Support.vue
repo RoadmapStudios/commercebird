@@ -3,9 +3,9 @@
     <div class="p-4">
       <ul class="divide-y divide-gray-200" role="list">
         <li v-for="(link, name) in links" :key="name" class="py-2 space-y-4">
-          <div class="flex flex-wrap items-center justify-center space-x-4 ">
+          <div class="flex flex-wrap items-center justify-center space-x-4">
             <div class="flex-shrink-0">
-              <component :is="link.icon" aria-hidden="true" class="w-6 h-6"/>
+              <component :is="link.icon" aria-hidden="true" class="w-6 h-6" />
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900">
@@ -14,7 +14,9 @@
               <p class="text-sm text-gray-500">{{ link.subtitle }}</p>
             </div>
             <div>
-              <BaseLink href="link.link" target="_blank">{{ link.button }}</BaseLink>
+              <BaseLink href="link.link" target="_blank">{{
+                link.button
+              }}</BaseLink>
             </div>
           </div>
         </li>
@@ -24,14 +26,18 @@
 </template>
 <script lang="ts" setup>
 import Card from "@/components/ui/Card.vue";
-import {BookOpenIcon, CalendarDaysIcon, ChatBubbleBottomCenterIcon,} from "@heroicons/vue/24/outline";
+import {
+  BookOpenIcon,
+  CalendarDaysIcon,
+  ChatBubbleBottomCenterIcon,
+} from "@heroicons/vue/24/outline";
 import BaseLink from "@/components/ui/BaseLink.vue";
 
 const links = {
   meeting: {
     title: "Schedule a Meeting",
     subtitle: "Book a Demo with our Sales Team",
-    link: "https://roadmapstudios.zohobookings.eu/",
+    link: "https://wooventory.zohobookings.eu/",
     icon: CalendarDaysIcon,
     button: "Book Now",
   },
@@ -51,4 +57,3 @@ const links = {
   },
 };
 </script>
-  

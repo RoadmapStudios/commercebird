@@ -1,11 +1,12 @@
 <?php
+
 /**
  * All Frontend Order sync related functions.
  *
  * @package  WooZo Inventory
  * @category Zoho Integration
  * @author   Roadmap Studios
- * @link     https://roadmapstudios.com
+ * @link     https://wooventory.com
  */
 
 if (!defined('ABSPATH')) {
@@ -20,18 +21,18 @@ function zi_find_order_id($order_id)
     if (!$wcam_lib->get_api_key_status()) {
         return;
     }
-    ?>
+?>
     <script type="text/javascript">
-        (function($){
-            $(document).ready(function(){
+        (function($) {
+            $(document).ready(function() {
                 $.ajax({
                     url: '<?php echo admin_url('admin-ajax.php'); ?>',
-                    type : 'post',
+                    type: 'post',
                     data: {
-                        'action' : 'sync_zoho_order_thankyou',
+                        'action': 'sync_zoho_order_thankyou',
                         'order_id': '<?php echo $order_id; ?>'
                     },
-                    success: function( data ) {
+                    success: function(data) {
 
                     }
                 });
@@ -53,7 +54,6 @@ function sync_zoho_order_thankyou()
 
     $sync_order = new OrderClass();
     $sync_order->zi_order_sync($order_id);
-
 }
 
 /**
@@ -99,7 +99,7 @@ function zoho_post_contact_js()
 {
 
     // Only on Checkout
-    if (is_checkout() && !is_wc_endpoint_url()):
+    if (is_checkout() && !is_wc_endpoint_url()) :
 
         $multicurrency_support = get_option('zoho_enable_multicurrency_status');
 
@@ -120,26 +120,25 @@ function zoho_post_contact_js()
 			}
 	        </style>';
         }
-        ?>
-	    <script type="text/javascript" defer="defer">
-		//fetch currency code
-		jQuery(document).ready(function(){
-			var currency_code = jQuery('.currency_code').first().text();
-		jQuery.ajax({
-			type: 'POST',
-			url: "<?php echo admin_url('admin-ajax.php'); ?>",
-			async: false,
-			data: {
-				action: 'get_currency_code',
-				currency_code: currency_code,
-				},
-			success: function (response) {
-			},
-		});
-		});
-	    </script>
-	    <?php
-endif;
+    ?>
+        <script type="text/javascript" defer="defer">
+            //fetch currency code
+            jQuery(document).ready(function() {
+                var currency_code = jQuery('.currency_code').first().text();
+                jQuery.ajax({
+                    type: 'POST',
+                    url: "<?php echo admin_url('admin-ajax.php'); ?>",
+                    async: false,
+                    data: {
+                        action: 'get_currency_code',
+                        currency_code: currency_code,
+                    },
+                    success: function(response) {},
+                });
+            });
+        </script>
+<?php
+    endif;
 }
 
 /**
