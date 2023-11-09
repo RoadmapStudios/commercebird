@@ -4,6 +4,15 @@ This is the realtime API plugin between WooCommerce and Zoho Inventory. Easily s
 
 This plugin is certified by Zoho and is also available in the Zoho Marketplace.
 
+## How to install and test
+1. run `composer install` on root dir (first time only)
+2. Go to admin/assets and run `npm i && npm run dev`
+3. Go to wp-admin and activate plugin
+
+## How to build a zip
+1. run ./build.sh
+2. use .zip file as production version.
+
 ## Features:
 - Sync customers as contacts to Zoho
 - Sync products as items to Zoho
