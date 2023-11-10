@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="b2b_enabled">
+    <div v-if="b2b_enabled && useHomepageStore().subscription.variation_id.includes(18)">
       <InputGroup v-if="b2b_enabled" label="Zoho Price List">
         <SelectInput
           v-model="store.price_settings.zoho_inventory_pricelist"
@@ -45,6 +45,7 @@ import Alert from "../ui/Alert.vue";
 import { useZohoInventoryStore } from "@/stores/zohoInventory";
 import { useLoadingStore } from "@/stores/loading";
 import type { Message } from "../../composables";
+import {useHomepageStore} from "@/stores/homepage";
 
 const message: Message = {
   icon: ExclamationCircleIcon,

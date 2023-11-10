@@ -1,5 +1,5 @@
-import {Notyf} from "notyf";
-import type {BackendAction, StoreKey, UseStorage} from "@/type";
+import { Notyf } from "notyf";
+import type { BackendAction, StoreKey, UseStorage } from "@/type";
 
 export const storeKey: StoreKey = {
     connected: 'connected',
@@ -118,7 +118,7 @@ export const useStorage = (): UseStorage => {
     };
     const get = (key: string) => {
         const data = localStorage.getItem(getKey(key));
-        return data ? JSON.parse(data) : null;
+        return data ? JSON.parse(data) : false;
     };
 
     const remove = (key: string) => {
@@ -149,7 +149,7 @@ export const useStorage = (): UseStorage => {
 export const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
 
-    return date.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 
@@ -166,7 +166,7 @@ export const basicAuth = (): string => {
 export const ucwords = (str: string): string => str.replace(/\b\w/g, char => char.toUpperCase());
 
 export const notify: Notyf = new Notyf({
-    position: {x: 'center', y: 'bottom'},
+    position: { x: 'center', y: 'bottom' },
     dismissible: true,
     ripple: true,
 });
@@ -191,7 +191,7 @@ export const fetchData = async (action: string, storeKey: string): Promise<any> 
         if (data.message) {
             notify.error(data.message);
         }
-        return;
+        return false;
     }
 };
 
@@ -204,10 +204,10 @@ export const fetchData = async (action: string, storeKey: string): Promise<any> 
  * @return {Promise<any>} A promise that resolves to the returned data from the server.
  */
 export const sendData = async (action: string, request: Object, storageKey: string): Promise<any> => {
-    const headers = {'Content-Type': 'application/json'};
+    const headers = { 'Content-Type': 'application/json' };
     const requestBody = JSON.stringify(request);
 
-    let response = await fetch(ajaxUrl(action), {method: 'POST', headers, body: requestBody});
+    let response = await fetch(ajaxUrl(action), { method: 'POST', headers, body: requestBody });
     let data: any = await response.json();
     if (data.success) {
         useStorage().save(storageKey, request);

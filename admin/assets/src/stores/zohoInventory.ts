@@ -18,10 +18,10 @@ import type {
     TaxSettings,
     ZohoTax
 } from '@/type'
-import {acceptHMRUpdate, defineStore} from "pinia";
-import type {Ref, UnwrapRef} from "vue";
-import {reactive, ref, watch} from "vue";
-import {useLoadingStore} from "@/stores/loading";
+import { acceptHMRUpdate, defineStore } from "pinia";
+import type { Ref, UnwrapRef } from "vue";
+import { reactive, ref, watch } from "vue";
+import { useLoadingStore } from "@/stores/loading";
 
 
 export const useZohoInventoryStore = defineStore("zohoInventory", () => {
@@ -55,7 +55,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         if (loader.isLoading(backendAction.is_connected)) return;
         loader.setLoading(backendAction.is_connected);
         const response = await fetchData(backendAction.is_connected, storeKey.connected);
-        isConnected.value = response && response.length > 0;
+        isConnected.value = response;
         loader.clearLoading(backendAction.is_connected);
     };
 
@@ -270,7 +270,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const fields: Ref<UnwrapRef<{ key: string, value: string }[]>> = ref([])
 
     function addField() {
-        fields.value.push({key: "", value: ""});
+        fields.value.push({ key: "", value: "" });
     }
 
     function removeField(index) {
@@ -358,7 +358,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     break;
                 case backendAction.save_fields:
                     if (fields.value.length === 0) {
-                        fields.value.push({key: "", value: ""});
+                        fields.value.push({ key: "", value: "" });
                     }
                 default:
                     break;
@@ -474,12 +474,13 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const tabWatcher = async (tab: string) => {
         let response;
         notSubscribed.value = storage.get(storeKey.subscription) && storage.get(storeKey.subscription).length;
-        isConnected.value = storage.get(storeKey.connected) && storage.get(storeKey.connected).length;
+        isConnected.value = storage.get(storeKey.connected);
 
 
         if (tab !== "connect") {
             if (!isConnected.value) {
                 selectedTab.value = "connect";
+                return false;
             }
         }
 
@@ -570,12 +571,12 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     Object.entries(parsed).forEach(([key, value]) => {
                         const existingObject = fields.value.some(field => field.key === key && field.value === value);
                         if (!existingObject) {
-                            fields.value.push({key, value});
+                            fields.value.push({ key, value });
                         }
 
                     });
                     if (fields.value.length === 0) {
-                        fields.value.push({key: "", value: ""});
+                        fields.value.push({ key: "", value: "" });
                     }
 
                 }
