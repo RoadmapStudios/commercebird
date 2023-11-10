@@ -4,7 +4,7 @@ namespace RMS\Admin;
 
 use Classfunctions;
 use ExecutecallClass;
-use importPricelistClass;
+use ImportPricelistClass;
 use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
@@ -20,27 +20,27 @@ final class Ajax {
 	use AjaxRequest;
 	use OptionStatus;
 
-	private const FORMS = [
-		'settings' => [
+	private const FORMS = array(
+		'settings' => array(
 			'cors',
 			'id',
-		],
-		'tax'      => [
+		),
+		'tax'      => array(
 			'decimalTax',
 			'selectedTaxRates',
 			'selectedVatExempt',
-		],
-		'product'  => [
+		),
+		'product'  => array(
 			'item_from_zoho',
 			'disable_stock_sync',
 			'disable_product_sync',
 			'enable_accounting_stock',
-		],
-		'cron'     => [
+		),
+		'cron'     => array(
 			'form',
 			'categories',
-		],
-		'order'    => [
+		),
+		'order'    => array(
 			'package_sync',
 			'disable_sync',
 			'enable_auto_number',
@@ -49,152 +49,245 @@ final class Ajax {
 			'order_prefix',
 			'warehouse_id',
 			'enable_warehousestock',
-		],
-		'price'    => [
+		),
+		'price'    => array(
 			'wp_user_role',
 			'zoho_inventory_pricelist',
-		],
-	];
+		),
+	);
 
 	const WOOVENTORY_SUBSCRIPTION_INFO = 'wooventory-subscription-info';
 
 	public function __construct() {
-		add_action( $this->action( 'get_subscription' ), [
-			$this,
-			'subscription_get',
-		] );
+		add_action(
+			$this->action( 'get_subscription' ),
+			array(
+				$this,
+				'subscription_get',
+			),
+		);
 
-		add_action( $this->action( 'save_settings' ), [
-			$this,
-			'settings_set',
-		] );
-		add_action( $this->action( 'get_settings' ), [
-			$this,
-			'settings_get',
-		] );
-		add_action( $this->action( 'reset_settings' ), [
-			$this,
-			'settings_reset',
-		] );
+		add_action(
+			$this->action( 'save_settings' ),
+			array(
+				$this,
+				'settings_set',
+			),
+		);
+		add_action(
+			$this->action( 'get_settings' ),
+			array(
+				$this,
+				'settings_get',
+			),
+		);
+		add_action(
+			$this->action( 'reset_settings' ),
+			array(
+				$this,
+				'settings_reset',
+			),
+		);
 
-		add_action( $this->action( 'save_connection' ), [
-			$this,
-			'connection_set',
-		] );
-		add_action( $this->action( 'get_connection' ), [
-			$this,
-			'connection_get',
-		] );
-		add_action( $this->action( 'reset_connection' ), [
-			$this,
-			'connection_reset',
-		] );
-		add_action( $this->action( 'is_connected' ), [
-			$this,
-			'connection_done',
-		] );
+		add_action(
+			$this->action( 'save_connection' ),
+			array(
+				$this,
+				'connection_set',
+			),
+		);
+		add_action(
+			$this->action( 'get_connection' ),
+			array(
+				$this,
+				'connection_get',
+			),
+		);
+		add_action(
+			$this->action( 'reset_connection' ),
+			array(
+				$this,
+				'connection_reset',
+			),
+		);
+		add_action(
+			$this->action( 'is_connected' ),
+			array(
+				$this,
+				'connection_done',
+			),
+		);
 
-		add_action( $this->action( 'get_wc_taxes' ), [
-			$this,
-			'wc_tax_collect',
-		] );
-		add_action( $this->action( 'get_zoho_taxes' ), [
-			$this,
-			'zoho_tax_rates_collect',
-		] );
-		add_action( $this->action( 'save_tax_settings' ), [
-			$this,
-			'tax_set',
-		] );
-		add_action( $this->action( 'get_tax_settings' ), [ $this, 'tax_get' ] );
-		add_action( $this->action( 'reset_tax_settings' ), [
-			$this,
-			'tax_reset',
-		] );
+		add_action(
+			$this->action( 'get_wc_taxes' ),
+			array(
+				$this,
+				'wc_tax_collect',
+			),
+		);
+		add_action(
+			$this->action( 'get_zoho_taxes' ),
+			array(
+				$this,
+				'zoho_tax_rates_collect',
+			),
+		);
+		add_action(
+			$this->action( 'save_tax_settings' ),
+			array(
+				$this,
+				'tax_set',
+			),
+		);
+		add_action( $this->action( 'get_tax_settings' ), array( $this, 'tax_get' ) );
+		add_action(
+			$this->action( 'reset_tax_settings' ),
+			array(
+				$this,
+				'tax_reset',
+			),
+		);
 
-		add_action( $this->action( 'get_product_settings' ), [
-			$this,
-			'product_get',
-		] );
-		add_action( $this->action( 'save_product_settings' ), [
-			$this,
-			'product_set',
-		] );
-		add_action( $this->action( 'reset_product_settings' ), [
-			$this,
-			'product_reset',
-		] );
+		add_action(
+			$this->action( 'get_product_settings' ),
+			array(
+				$this,
+				'product_get',
+			),
+		);
+		add_action(
+			$this->action( 'save_product_settings' ),
+			array(
+				$this,
+				'product_set',
+			),
+		);
+		add_action(
+			$this->action( 'reset_product_settings' ),
+			array(
+				$this,
+				'product_reset',
+			),
+		);
 
-		add_action( $this->action( 'get_zoho_categories' ), [
-			$this,
-			'zoho_categories_collect',
-		] );
-		add_action( $this->action( 'get_cron_settings' ), [
-			$this,
-			'cron_get',
-		] );
-		add_action( $this->action( 'save_cron_settings' ), [
-			$this,
-			'cron_set',
-		] );
-		add_action( $this->action( 'reset_cron_settings' ), [
-			$this,
-			'cron_reset',
-		] );
+		add_action(
+			$this->action( 'get_zoho_categories' ),
+			array(
+				$this,
+				'zoho_categories_collect',
+			),
+		);
+		add_action(
+			$this->action( 'get_cron_settings' ),
+			array(
+				$this,
+				'cron_get',
+			),
+		);
+		add_action(
+			$this->action( 'save_cron_settings' ),
+			array(
+				$this,
+				'cron_set',
+			),
+		);
+		add_action(
+			$this->action( 'reset_cron_settings' ),
+			array(
+				$this,
+				'cron_reset',
+			),
+		);
 
-		add_action( $this->action( 'get_zoho_warehouses' ), [
-			$this,
-			'zoho_warehouses_collect',
-		] );
-		add_action( $this->action( 'get_order_settings' ), [
-			$this,
-			'order_get',
-		] );
-		add_action( $this->action( 'save_order_settings' ), [
-			$this,
-			'order_set',
-		] );
-		add_action( $this->action( 'reset_order_settings' ), [
-			$this,
-			'order_reset',
-		] );
+		add_action(
+			$this->action( 'get_zoho_warehouses' ),
+			array(
+				$this,
+				'zoho_warehouses_collect',
+			),
+		);
+		add_action(
+			$this->action( 'get_order_settings' ),
+			array(
+				$this,
+				'order_get',
+			),
+		);
+		add_action(
+			$this->action( 'save_order_settings' ),
+			array(
+				$this,
+				'order_set',
+			),
+		);
+		add_action(
+			$this->action( 'reset_order_settings' ),
+			array(
+				$this,
+				'order_reset',
+			),
+		);
 
-		add_action( $this->action( 'get_zoho_prices' ), [
-			$this,
-			'zoho_prices_collect',
-		] );
-		add_action( $this->action( 'save_price_settings' ), [
-			$this,
-			'price_set',
-		] );
+		add_action(
+			$this->action( 'get_zoho_prices' ),
+			array(
+				$this,
+				'zoho_prices_collect',
+			),
+		);
+		add_action(
+			$this->action( 'save_price_settings' ),
+			array(
+				$this,
+				'price_set',
+			),
+		);
 
-		add_action( $this->action( 'get_price_settings' ), [
-			$this,
-			'price_get',
-		] );
-		add_action( $this->action( 'reset_price_settings' ), [
-			$this,
-			'price_reset',
-		] );
+		add_action(
+			$this->action( 'get_price_settings' ),
+			array(
+				$this,
+				'price_get',
+			),
+		);
+		add_action(
+			$this->action( 'reset_price_settings' ),
+			array(
+				$this,
+				'price_reset',
+			),
+		);
 
-		add_action( $this->action( 'get_all_custom_fields' ), [
-			$this,
-			'wc_custom_fields_collect',
-		] );
-		add_action( $this->action( 'get_fields_settings' ), [
-			$this,
-			'fields_get',
-		] );
-		add_action( $this->action( 'save_fields_settings' ), [
-			$this,
-			'fields_set',
-		] );
-		add_action( $this->action( 'reset_fields_settings' ), [
-			$this,
-			'fields_reset',
-		] );
+		add_action(
+			$this->action( 'get_all_custom_fields' ),
+			array(
+				$this,
+				'wc_custom_fields_collect',
+			),
+		);
+		add_action(
+			$this->action( 'get_fields_settings' ),
+			array(
+				$this,
+				'fields_get',
+			),
+		);
+		add_action(
+			$this->action( 'save_fields_settings' ),
+			array(
+				$this,
+				'fields_set',
+			),
+		);
+		add_action(
+			$this->action( 'reset_fields_settings' ),
+			array(
+				$this,
+				'fields_reset',
+			),
+		);
 
-		add_action( $this->action( 'handle_code' ), [ $this, 'handle_code' ] );
+		add_action( $this->action( 'handle_code' ), array( $this, 'handle_code' ) );
 	}
 
 	/**
@@ -207,30 +300,34 @@ final class Ajax {
 	 */
 	public function wc_custom_fields_collect(): void {
 		$this->verify();
-		$types         = [ 'billing', 'shipping', 'additional' ];
-		$all_fields    = [];
-		$custom_fields = [];
+		$types         = array( 'billing', 'shipping', 'additional' );
+		$all_fields    = array();
+		$custom_fields = array();
 		// Get all the fields.
 		foreach ( $types as $type ) {
 			// Skip if an unsupported type.
-			if ( ! in_array( $type, [
-				'billing',
-				'shipping',
-				'additional',
-			], TRUE ) ) {
+			if ( ! in_array(
+				$type,
+				array(
+					'billing',
+					'shipping',
+					'additional',
+				),
+				true,
+			) ) {
 				continue;
 			}
 
 			$temp_fields = get_option( 'wc_fields_' . $type );
-			if ( FALSE !== $temp_fields ) {
+			if ( false !== $temp_fields ) {
 				$all_fields = array_merge( $all_fields, $temp_fields );
 			}
 		}
-
 		// Loop through each field to see if it is a custom field.
 		foreach ( $all_fields as $name => $options ) {
 			if ( isset( $options['custom'] ) && $options['custom'] ) {
-				$custom_fields[ $name ] = $options['label'];
+				$label                  = trim( $options['label'] );
+				$custom_fields[ $name ] = empty( $label ) ? __( 'Please set label' ) : $label;
 			}
 		}
 
@@ -262,41 +359,8 @@ final class Ajax {
 	 */
 	public function subscription_get(): void {
 		$this->verify();
-		$this->response = [];
-		$subscription   = get_transient( self::WOOVENTORY_SUBSCRIPTION_INFO );
-		if ( $subscription ) {
-			if ( $subscription['next_payment_date_gmt'] === gmdate( 'Y-m-d\TH:i:s' ) ) {
-				delete_transient( self::WOOVENTORY_SUBSCRIPTION_INFO );
-			}
-			$this->response = $subscription;
-		} else {
-			$subscription_id = get_option( 'zoho_id_status', 0 );
-			if ( $subscription_id ) {
-				$response = wp_safe_remote_get( sprintf( 'https://wooventory.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ), [
-					'headers' => [
-						'Accept'        => 'application/json',
-						'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
-					],
-				] );
-				if ( is_wp_error( $response ) ) {
-					$this->errors = [ 'message' => $response->get_error_messages() ];
-				} else {
-					$body   = wp_remote_retrieve_body( $response );
-					$decode = json_decode( $body, TRUE );
-					if ( $decode ) {
-						$this->response = $this->extract_data( $decode, [
-							'fee_lines',
-							'total',
-							'currency',
-							'next_payment_date_gmt',
-							'needs_payment',
-							'payment_url',
-							'status',
-						] );
-					}
-				}
-			}
-		}
+		$this->response = $this->get_subscription_data();
+
 		$this->serve();
 	}
 
@@ -308,7 +372,7 @@ final class Ajax {
 	public function settings_reset(): void {
 		$this->verify();
 		$this->option_status_remove( self::FORMS['settings'] );
-		$this->response = [ 'message' => 'Reset successfully!' ];
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -334,11 +398,13 @@ final class Ajax {
 			if ( $this->data ) {
 				$this->option_status_update( $this->data );
 			} else {
-				$this->errors = [ 'message' => 'Invalid Inputs', $this->data ];
+				$this->errors = array(
+					'message' => 'Invalid Inputs',
+					$this->data,
+				);
 			}
-		}
-		catch ( Exception $exception ) {
-			$this->errors = [ 'message' => $exception->getMessage() ];
+		} catch ( Exception $exception ) {
+			$this->errors = array( 'message' => $exception->getMessage() );
 		}
 		$this->serve();
 	}
@@ -350,7 +416,7 @@ final class Ajax {
 	 */
 	public function fields_get(): void {
 		$this->verify();
-		$this->response['form'] = get_option( 'wootozoho_custom_fields', [] );
+		$this->response['form'] = get_option( 'wootozoho_custom_fields', array() );
 		$this->serve();
 	}
 
@@ -360,13 +426,12 @@ final class Ajax {
 	 * @return void
 	 */
 	public function fields_set(): void {
-		$this->verify( [ 'form' ] );
+		$this->verify( array( 'form' ) );
 		try {
 			update_option( 'wootozoho_custom_fields', $this->data['form'] );
-			$this->response = [ 'message' => 'saved' ];
-		}
-		catch ( Throwable $throwable ) {
-			$this->errors = [ 'message' => $throwable->getMessage() ];
+			$this->response = array( 'message' => 'saved' );
+		} catch ( Throwable $throwable ) {
+			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 		$this->serve();
 	}
@@ -379,7 +444,7 @@ final class Ajax {
 	public function fields_reset(): void {
 		$this->verify();
 		delete_option( 'wootozoho_custom_fields' );
-		$this->response = [ 'message' => 'Reset successfully!' ];
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -392,7 +457,7 @@ final class Ajax {
 		$this->verify();
 		delete_option( 'zoho_pricelist_id' );
 		delete_option( 'zoho_pricelist_role' );
-		$this->response = [ 'message' => 'Reset successfully!' ];
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -419,10 +484,9 @@ final class Ajax {
 			global $importPricelist;
 			$importPricelist->save_pricelist( $this->data );
 			update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
-			$this->response = [ 'message' => 'saved' ];
-		}
-		catch ( Throwable $throwable ) {
-			$this->errors = [ 'message' => 'Something went wrong with zoho!' ];
+			$this->response = array( 'message' => 'saved' );
+		} catch ( Throwable $throwable ) {
+			$this->errors = array( 'message' => 'Something went wrong with zoho!' );
 		}
 
 		$this->serve();
@@ -435,7 +499,7 @@ final class Ajax {
 	 */
 	public function zoho_prices_collect(): void {
 		$this->verify();
-		$price_list_class = new importPricelistClass();
+		$price_list_class = new ImportPricelistClass();
 		$prices           = $price_list_class->zi_get_all_pricelist();
 		if ( gettype( $prices ) === 'array' && array_key_exists( 'pricebooks', $prices ) ) {
 			$this->response = wp_list_pluck( $prices['pricebooks'], 'name', 'pricebook_id' );
@@ -451,7 +515,7 @@ final class Ajax {
 	public function order_set(): void {
 		$this->verify( self::FORMS['order'] );
 		$this->option_status_update( $this->data );
-		$this->response = [ 'message' => 'Saved!' ];
+		$this->response = array( 'message' => 'Saved!' );
 		$this->serve();
 	}
 
@@ -474,7 +538,7 @@ final class Ajax {
 	public function order_reset(): void {
 		$this->verify();
 		$this->option_status_remove( self::FORMS['order'] );
-		$this->response = [ 'message' => 'Reset successfully!' ];
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -507,7 +571,7 @@ final class Ajax {
 	public function cron_set(): void {
 		$this->verify( self::FORMS['cron'] );
 		if ( array_key_exists( 'form', $this->data ) ) {
-			$decode = json_decode( $this->data['form'], TRUE );
+			$decode = json_decode( $this->data['form'], true );
 			update_option( 'zi_cron_interval', $decode['zi_cron_interval'] );
 			unset( $decode['zi_cron_interval'] );
 			$this->option_status_update( $decode );
@@ -516,7 +580,7 @@ final class Ajax {
 			$decode = json_decode( $this->data['categories'] );
 			update_option( 'zoho_item_category', serialize( $decode ) );
 		}
-		$this->response = [ 'message' => 'Saved' ];
+		$this->response = array( 'message' => 'Saved' );
 		$this->serve();
 	}
 
@@ -531,15 +595,17 @@ final class Ajax {
 	 */
 	public function cron_get(): void {
 		$this->verify();
-		$this->response                             = [];
-		$this->response['form']                     = $this->option_status_get( [
-			'disable_name_sync',
-			'disable_price_sync',
-			'disable_image_sync',
-			'disable_description_sync',
-		] );
+		$this->response                             = array();
+		$this->response['form']                     = $this->option_status_get(
+			array(
+				'disable_name_sync',
+				'disable_price_sync',
+				'disable_image_sync',
+				'disable_description_sync',
+			),
+		);
 		$this->response['form']['zi_cron_interval'] = get_option( 'zi_cron_interval', 'none' );
-		$this->response['categories']               = unserialize( get_option( 'zoho_item_category', [] ) );
+		$this->response['categories']               = unserialize( get_option( 'zoho_item_category', '' ) );
 		$this->serve();
 	}
 
@@ -553,14 +619,16 @@ final class Ajax {
 	 */
 	public function cron_reset(): void {
 		$this->verify();
-		$this->option_status_remove( [
-			'disable_name_sync',
-			'disable_price_sync',
-			'disable_image_sync',
-			'disable_description_sync',
-		] );
+		$this->option_status_remove(
+			array(
+				'disable_name_sync',
+				'disable_price_sync',
+				'disable_image_sync',
+				'disable_description_sync',
+			),
+		);
 		delete_option( 'zoho_item_category' );
-		$this->response = [ 'message' => 'Reset successfully!' ];
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -579,7 +647,7 @@ final class Ajax {
 		$categories = get_zoho_item_categories();
 		if ( gettype( $categories ) === 'array' && array_key_exists( 'categories', $categories ) ) {
 			$filtered = wp_list_pluck( $categories['categories'], 'name', 'category_id' );
-			unset( $filtered[ - 1 ] );
+			unset( $filtered[- 1] );
 			$this->response = $filtered;
 		}
 		$this->serve();
@@ -597,7 +665,7 @@ final class Ajax {
 		$executeCurlCallHandle = new ExecutecallClass();
 		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
 		if ( is_wp_error( $json ) ) {
-			$this->errors = [ 'message' => $json->get_error_message() ];
+			$this->errors = array( 'message' => $json->get_error_message() );
 		} else {
 			$this->response = $json->organizations;
 		}
@@ -613,7 +681,7 @@ final class Ajax {
 		if ( ! empty( $this->data ) ) {
 			$this->option_status_update( $this->data );
 		}
-		$this->response = [ 'message' => 'Saved!' ];
+		$this->response = array( 'message' => 'Saved!' );
 		$this->serve();
 	}
 
@@ -636,7 +704,7 @@ final class Ajax {
 	public function product_reset(): void {
 		$this->verify();
 		$this->option_status_remove( self::FORMS['product'] );
-		$this->response = [ 'message' => 'Reset successfully!' ];
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -647,7 +715,7 @@ final class Ajax {
 	 */
 	public function tax_get(): void {
 		$this->verify();
-		$this->response = [];
+		$this->response = array();
 		foreach ( $this->wc_taxes() as $tax ) {
 			$this->response['selectedTaxRates'][] = $tax['id'] . '^^' . get_option( 'zoho_inventory_tax_rate_' . $tax['id'] );
 		}
@@ -662,7 +730,7 @@ final class Ajax {
 	 * @return array An array of all tax rates.
 	 */
 	public function wc_taxes(): array {
-		$wc_tax_array = [];
+		$wc_tax_array = array();
 		$tax_classes  = WC_Tax::get_tax_classes(); // Retrieve all tax classes.
 		if ( ! in_array( '', $tax_classes ) ) { // Make sure "Standard rate" (empty class name) is present.
 			array_unshift( $tax_classes, '' );
@@ -696,7 +764,7 @@ final class Ajax {
 		}
 		delete_option( 'zi_vat_exempt' );
 		delete_option( 'zoho_enable_decimal_tax_status' );
-		$this->response = [ 'message' => 'Reset successfully!' ];
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -716,10 +784,9 @@ final class Ajax {
 				update_option( 'zi_vat_exempt', $this->data['selectedVatExempt'] );
 			}
 			update_option( 'zoho_enable_decimal_tax_status', $this->data['decimalTax'] );
-			$this->response = [ 'message' => 'Saved' ];
-		}
-		catch ( Throwable $throwable ) {
-			$this->errors = [ 'message' => $throwable->getMessage() ];
+			$this->response = array( 'message' => 'Saved' );
+		} catch ( Throwable $throwable ) {
+			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
 		$this->serve();
@@ -730,13 +797,15 @@ final class Ajax {
 	 *
 	 */
 	public function connection_set(): void {
-		$this->verify( [
-			'account_domain',
-			'organization_id',
-			'client_id',
-			'client_secret',
-			'redirect_uri',
-		] );
+		$this->verify(
+			array(
+				'account_domain',
+				'organization_id',
+				'client_id',
+				'client_secret',
+				'redirect_uri',
+			),
+		);
 		try {
 			$inventory = sprintf( 'https://inventory.zoho.%s/', $this->data['account_domain'] );
 			update_option( 'zoho_inventory_domain', $this->data['account_domain'] );
@@ -746,13 +815,12 @@ final class Ajax {
 			update_option( 'zoho_inventory_url', $inventory );
 			update_option( 'authorization_redirect_uri', $this->data['redirect_uri'] );
 			$redirect       = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoInventory.FullAccess.all&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
-			$this->response = [
+			$this->response = array(
 				'redirect' => $redirect,
 				'message'  => 'We are redirecting you to zoho. please wait...',
-			];
-		}
-		catch ( Throwable $throwable ) {
-			$this->errors = [ 'message' => $throwable->getMessage() ];
+			);
+		} catch ( Throwable $throwable ) {
+			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
 		$this->serve();
@@ -765,20 +833,19 @@ final class Ajax {
 	public function connection_reset(): void {
 		$this->verify();
 		try {
-			$options = [
+			$options = array(
 				'zoho_inventory_domain',
 				'zoho_inventory_oid',
 				'zoho_inventory_cid',
 				'zoho_inventory_cs',
 				'zoho_inventory_url',
-			];
+			);
 			foreach ( $options as $zi_option ) {
 				delete_option( $zi_option );
 			}
-			$this->response = [ 'message' => 'Reset successfully!' ];
-		}
-		catch ( Throwable $throwable ) {
-			$this->errors = [ 'message' => $throwable->getMessage() ];
+			$this->response = array( 'message' => 'Reset successfully!' );
+		} catch ( Throwable $throwable ) {
+			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
 		$this->serve();
@@ -805,11 +872,10 @@ final class Ajax {
 			if ( array_key_exists( 'taxes', $json ) ) {
 				$this->response = $json['taxes'];
 			} else {
-				$this->errors = [ 'message' => 'Something went wrong!' ];
+				$this->errors = array( 'message' => 'Something went wrong!' );
 			}
-		}
-		catch ( Throwable $throwable ) {
-			$this->errors = [ 'message' => $throwable->getMessage() ];
+		} catch ( Throwable $throwable ) {
+			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
 		$this->serve();
@@ -848,12 +914,53 @@ final class Ajax {
 				} else {
 					$this->errors = (array) $ZI_access_token;
 				}
-			}
-			catch ( Throwable $throwable ) {
-				$this->errors = [ 'message' => $throwable->getMessage() ];
+			} catch ( Throwable $throwable ) {
+				$this->errors = array( 'message' => $throwable->getMessage() );
 			}
 		}
 		$this->serve();
 	}
 
+	/**
+	 * @return array
+	 */
+	public function get_subscription_data(): array {
+		$data            = array();
+		$subscription_id = get_option( 'zoho_id_status', 0 );
+		if ( $subscription_id ) {
+			$response = wp_safe_remote_get(
+				sprintf( 'https://wooventory.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ),
+				array(
+					'headers' => array(
+						'Accept'        => 'application/json',
+						'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
+					),
+				),
+			);
+			if ( is_wp_error( $response ) ) {
+				$this->errors = array( 'message' => $response->get_error_messages() );
+			} else {
+				$body   = wp_remote_retrieve_body( $response );
+				$decode = json_decode( $body, true );
+				if ( $decode ) {
+					$data                 = $this->extract_data(
+						$decode,
+						array(
+							'fee_lines',
+							'total',
+							'currency',
+							'next_payment_date_gmt',
+							'needs_payment',
+							'payment_url',
+							'status',
+							'variation_id',
+						),
+					);
+					$data['variation_id'] = wp_list_pluck( $decode['line_items'], 'variation_id' );
+				}
+			}
+		}
+
+		return $data;
+	}
 }

@@ -158,3 +158,33 @@ export interface ZohoTax {
     last_modified_time: string;
     status: string;
 }
+
+
+export interface Subscription {
+    status: string;
+    currency: string;
+    total: string;
+    fee_lines: FeeLine[];
+    payment_url: string;
+    needs_payment: boolean;
+    next_payment_date_gmt: string;
+    variation_id: number[];
+}
+
+export interface FeeLine {
+    id: number;
+    name: string;
+    tax_class: string;
+    tax_status: string;
+    amount: string;
+    total: string;
+    total_tax: string;
+    taxes: Tax[];
+    meta_data: any[];
+}
+
+export interface Tax {
+    id: number;
+    total: string;
+    subtotal: string;
+}

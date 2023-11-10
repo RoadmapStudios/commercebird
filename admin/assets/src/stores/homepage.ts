@@ -2,7 +2,8 @@ import { backendAction, fetchData, notify, resetData, sendData, storeKey, useSto
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { reactive, ref, watch } from 'vue'
 import { useLoadingStore } from './loading'
-
+import type { Ref, UnwrapRef } from 'vue'
+import type { Subscription } from '@/type'
 export const useHomepageStore = defineStore('homepage', () => {
     const storage = useStorage()
     const loader = useLoadingStore()
@@ -10,7 +11,7 @@ export const useHomepageStore = defineStore('homepage', () => {
         cors: false,
         id: ''
     })
-    const subscription = ref({})
+    const subscription: Ref<Subscription> = ref({})
     const changelog = ref('')
     const invalidId = ref(false)
 
