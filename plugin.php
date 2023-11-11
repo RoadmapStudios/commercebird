@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Wooventory
- * Plugin URI:  https//wooventory.com
+ * Plugin URI:  https://wooventory.com
  * Description: Connect your Zoho Inventory with your WooCommerce store in 
  * realtime to sync Customers, Items and Sales Orders. Manage your entire
  * inventory from Zoho. Please follow the documentation "Getting Started"
@@ -16,7 +16,7 @@
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
- * @package wooventory
+ * @package Wooventory
  * @license GNU General Public License v3.0
  *
  * WC requires at least: 8.0.0
@@ -75,9 +75,9 @@ $whoops->register();
 
 global $importProductClass, $productClass, $importPricelist;
 /* Check the minimum PHP version on activation hook */
-function woozo_check_plugin_requirements()
+function Woozo_Check_Plugin_requirements()
 {
-	$php_min_version     = '7.4';
+	$php_min_version = '7.4';
 	$php_current_version = phpversion();
 
 	if (version_compare($php_min_version, $php_current_version, '>')) {
@@ -90,13 +90,13 @@ function woozo_check_plugin_requirements()
 		);
 
 		wp_die($error_message, 'Plugin Activation Error', [
-			'response'  => 200,
+			'response' => 200,
 			'back_link' => TRUE,
 		]);
 	}
 }
 
-add_action('admin_init', 'woozo_check_plugin_requirements');
+add_action('admin_init', 'Woozo_Check_Plugin_requirements');
 
 /**
  * Function for initializing plugin object.
@@ -117,16 +117,16 @@ Wooventory::initHooks();
 /*
 if (!function_exists('zi_create_order_log_table')) {
 
-    function zi_create_order_log_table()
-    {
-        global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-        $zi_order_log_table = "{$wpdb->prefix}zoho_ordersale_error";
-        $zi_create_sql = "CREATE TABLE $zi_order_log_table ( ID bigint(20) PRIMARY KEY auto_increment, user_id bigint(20) NOT NULL, order_id bigint(20) NOT NULL, error_message TEXT NOT NULL, order_timestamp VARCHAR(20) NOT NULL, status int(10) NOT NULL )$charset_collate;";
+	function zi_create_order_log_table()
+	{
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		$zi_order_log_table = "{$wpdb->prefix}zoho_ordersale_error";
+		$zi_create_sql = "CREATE TABLE $zi_order_log_table ( ID bigint(20) PRIMARY KEY auto_increment, user_id bigint(20) NOT NULL, order_id bigint(20) NOT NULL, error_message TEXT NOT NULL, order_timestamp VARCHAR(20) NOT NULL, status int(10) NOT NULL )$charset_collate;";
 
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta($zi_create_sql);
-    }
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta($zi_create_sql);
+	}
 }
 register_activation_hook(__FILE__, 'zi_create_order_log_table');
 */
@@ -214,7 +214,7 @@ if (!function_exists('rms_cron_unsubscribe')) {
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
-		$sql        = $wpdb->get_results('SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"');
+		$sql = $wpdb->get_results('SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"');
 		foreach ($sql as $key => $row) {
 			$option_name = $row->option_name;
 			delete_option($option_name);
