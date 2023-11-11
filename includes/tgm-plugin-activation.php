@@ -38,10 +38,6 @@ add_action( 'tgmpa_register', 'rmsZI_register_required_plugins' );
  *
  */
 function rmsZI_register_required_plugins() {
-	global $zi_plugin_prod_id;
-	if ( $zi_plugin_prod_id == 26532 ) {
-		return;
-	}
 	/*
 	 * Array of plugin arrays. Required keys are name and slug.
 	 * If the source is NOT from the .org repo, then source is also required.
@@ -90,14 +86,6 @@ function rmsZI_register_required_plugins() {
 		} else {
 			return;
 		}
-	} elseif ( $zi_plugin_prod_id == 12448 ) {
-		$plugins = array(
-			array(
-				'name'     => 'Custom Order Statuses for WooCommerce',
-				'slug'     => 'custom-order-statuses-woocommerce',
-				'required' => true,
-			),
-		);
 	} else {
 		return;
 	}
