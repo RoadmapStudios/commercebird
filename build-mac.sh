@@ -27,7 +27,7 @@ npm --prefix ./admin/assets/ run build-only
 
 # copy all files for production
 progress_message "Copying files for production..."
-rsync -a --exclude "$plugin_name" --exclude "$plugin_name".zip --exclude node_modules --exclude vendor --exclude .git --exclude .gitignore --exclude .DS_Store --exclude build.sh . ./"$plugin_name"/
+rsync -a --exclude "$plugin_name" --exclude "$plugin_name".zip --exclude node_modules --exclude vendor --exclude src --exclude .git --exclude .gitignore --exclude .DS_Store --exclude build.sh . ./"$plugin_name"/
 
 # cp -R  ./includes ./lib ./libraries ./admin/assets/dist ./admin/includes ./vendor ./*.php composer.json changelog.txt  LICENSE README.md  ./"$plugin_name"/ --parents
 
