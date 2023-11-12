@@ -97,22 +97,6 @@ class Wooventory
     }
 
     /**
-     * Admin menu
-     * @return void
-     */
-    public static function adminMenu()
-    {
-        add_submenu_page(
-            'woocommerce',
-            RMS_PLUGIN_NAME,
-            RMS_PLUGIN_NAME,
-            'manage_woocommerce',
-            RMS_MENU_SLUG,
-            array('wooventory', 'adminOptions')
-        );
-    }
-
-    /**
      * Enqueue scripts and styles for the admin
      */
     public static function enqueueScriptAdmin()
@@ -175,16 +159,16 @@ class Wooventory
     {
         $review_url = "https://wooventory.com/product/woocommerce-zoho-inventory";
 ?>
-        <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible  thpladmin-notice" data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>" data-action="dismiss_rmszi_review_request_notice" style="display:none">
+        <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice" data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>" data-action="dismiss_rmszi_review_request_notice" style="display:none">
             <h3>
-                Just wanted to say thank you for using Zoho Inventory plugin in your store.
+                Just wanted to say thank you for using Wooventory in your store.
             </h3>
             <p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers! PS: you will also get 25% on your renewal payment as our thank you ;)</p>
             <p class="action-row">
                 <button type="button" class="button button-primary" onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
                 <button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
                 <span class="logo"><a target="_blank" href="https://wooventory.com">
-                        <img src="<?php // echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg'); 
+                        <img src="<?php // echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg');
                                     ?>" />
                     </a></span>
 
