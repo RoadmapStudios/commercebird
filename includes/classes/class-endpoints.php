@@ -10,11 +10,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-global $zi_plugin_prod_id;
-if (26532 === $zi_plugin_prod_id) {
-    exit;
-}
-
 // If product class not exists then import that class.
 if (!class_exists('ProductClass')) {
     require_once __DIR__ . '/classes/product-class.php';

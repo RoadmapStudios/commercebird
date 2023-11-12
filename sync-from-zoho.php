@@ -28,9 +28,7 @@ class ZohoToWoocommerce
      */
     public function __construct()
     {
-        global $zi_plugin_prod_id;
-        global $zi_plugin_version;
-        $wcam_lib = new WC_WooZo_Client(__FILE__, $zi_plugin_prod_id, $zi_plugin_version, 'plugin', 'https://wooventory.com/', 'WooCommerce Zoho Inventory');
+        $wcam_lib = new WC_WooZo_Client(__FILE__, '', '', 'plugin', 'https://wooventory.com/', 'WooCommerce Zoho Inventory');
         $config = [
             'FromZohoZI' => [
                 'OID' => get_option('zoho_inventory_oid'),
