@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * All WooCommerce related functions.
+ *
+ * @package  WooZo_Inventory
+ */
+
+ if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
  * Helper functions to ensure correct handling of Data being transferred via rest api
  */
 
@@ -8,21 +18,14 @@ function wooventory_clear_product_cache($object, $request, $is_creating)
 {
 	if (!$is_creating) {
 		$product_id = $object->get_id();
+        $productHandler = new ProductClass();
+        $productHandler->zi_product_sync($product_id);
 		wc_delete_product_transients($product_id);
 	}
 }
 add_action('woocommerce_rest_insert_product_object', 'wooventory_clear_product_cache', 10, 3);
 
 
-/**
- * All WooCommerce related functions.
- *
- * @package  WooZo_Inventory
- */
-
-if (!defined('ABSPATH')) {
-    exit;
-}
 
 /**
  * Function to update the Contact in Zoho when customer updates address on frontend
@@ -54,21 +57,6 @@ function zi_product_sync_class($product_id)
         $productHandler->zi_product_sync($product_id);
     }
 }
-/**
-* Fires after a Product is created or updated via the REST API.
-*
-* @param WC_Data         $object    Inserted object.
-* @param WP_REST_Request $request   Request object.
-* @param boolean         $creating  True when creating object, false when updating.
-*/
-add_action(
-    "woocommerce_rest_insert_product_object",
-    function($product, $request, $creating ){
-        $product_id = $product->get_id();
-        $productHandler = new ProductClass();
-        $productHandler->zi_product_sync($product_id);
-    }, 10, 3
-);
 
 /**
  * Bulk-action to sync products from WooCommerce to Zoho
@@ -419,9 +407,6 @@ function zi_sync_column_orders_overview($columns)
     return $new_columns;
 }
 add_filter('manage_woocommerce_page_wc-orders_columns', 'zi_sync_column_orders_overview', 20);
-// TODO: remove this below filter when woocommerce 8.0 is released
-add_filter('manage_edit-shop_order_columns', 'zi_sync_column_orders_overview', 20);
-
 
 /**
  * Adding Sync Status for Orders Column
@@ -459,19 +444,7 @@ function zi_add_zoho_column_content($column)
     global $post;
     $post_type = get_post_type($post);
 
-    // TODO: Remove this order section when WooCommerce 8.0 is released
-    if ('zoho_sync' === $column && 'shop_order' === $post_type) {
-
-        $order = wc_get_order($post->ID);
-        $zi_order_id = $order->get_meta('zi_salesorder_id');
-        $zi_url = get_option('zoho_inventory_url');
-        $url = $zi_url . 'app#/salesorders/' . $zi_order_id;
-        if ($zi_order_id) {
-            echo '<span class="dashicons dashicons-yes-alt" style="color:green;"></span><a href="' . esc_url($url) . '" target="_blank"> <span class="dashicons dashicons-external" style="color:green;"></span> </a>';
-        } else {
-            echo '<span class="dashicons dashicons-dismiss" style="color:red;"></span>';
-        }
-    } elseif ('zoho_sync' === $column && 'product' === $post_type) {
+    if ('zoho_sync' === $column && 'product' === $post_type) {
         $product_id = $post->ID;
         $zi_product_id = get_post_meta($product_id, 'zi_item_id');
         if ($zi_product_id) {
@@ -483,8 +456,6 @@ function zi_add_zoho_column_content($column)
 
 }
 add_action('manage_product_posts_custom_column', 'zi_add_zoho_column_content');
-// TODO: remove below action when WooCommerce 8.0 is released
-add_action('manage_shop_order_posts_custom_column', 'zi_add_zoho_column_content');
 
 /**
  * Adds 'Zoho Sync' column header to 'Products' page.
