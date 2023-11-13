@@ -619,6 +619,8 @@ class ImportProductClass
                         // Get the attribute slug from the taxonomy
                         update_post_meta($variation_id, 'attribute_' . $taxonomy, $term_slug);
                     }
+                    // Save the Item ID as postmeta for the variation
+                    update_post_meta($variation_id, 'zi_item_id', $item->id);
 
                     // Featured Image of variation
                     if (!empty($variation_data['featured_image'])) {
