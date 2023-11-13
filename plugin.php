@@ -3,16 +3,16 @@
 /**
  * Plugin Name: Wooventory
  * Plugin URI:  https://wooventory.com
- * Description: Connect your Zoho Inventory with your WooCommerce store in 
+ * Description: Connect your Zoho Inventory with your WooCommerce store in
  * realtime to sync Customers, Items and Sales Orders. Manage your entire
  * inventory from Zoho. Please follow the documentation "Getting Started"
- * before you use this plugin. 
+ * before you use this plugin.
  * Version: 2.0.0
  * Author: Wooventory
- * Author URI:  https://wooventory.com 
- * Requires PHP: 7.4 
- * Domain Path: /languages 
- * Text Domain: rmsZI 
+ * Author URI:  https://wooventory.com
+ * Requires PHP: 7.4
+ * Domain Path: /languages
+ * Text Domain: rmsZI
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
@@ -23,39 +23,39 @@
  * WC tested up to: 8.3.0
  */
 
-if (!defined('ABSPATH')) {
-	define('ABSPATH', '') or die('No script kiddies please!');
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', '' ) or die( 'No script kiddies please!' );
 }
-if (!defined('RMS_PLUGIN_NAME')) {
-	define('RMS_PLUGIN_NAME', 'Wooventory');
+if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
+	define( 'RMS_PLUGIN_NAME', 'Wooventory' );
 }
-if (!defined('RMS_VERSION')) {
-	define('RMS_VERSION', '2.0.0');
+if ( ! defined( 'RMS_VERSION' ) ) {
+	define( 'RMS_VERSION', '2.0.0' );
 }
-if (!defined('RMS_DIR_PATH')) {
-	define('RMS_DIR_PATH', plugin_dir_path(__FILE__));
+if ( ! defined( 'RMS_DIR_PATH' ) ) {
+	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
 }
-if (!defined('RMS_DIR_URL')) {
-	define('RMS_DIR_URL', plugin_dir_url(__FILE__));
+if ( ! defined( 'RMS_DIR_URL' ) ) {
+	define( 'RMS_DIR_URL', plugin_dir_url( __FILE__ ) );
 }
-if (!defined('RMS_BASENAME')) {
-	define('RMS_BASENAME', plugin_basename(__FILE__));
+if ( ! defined( 'RMS_BASENAME' ) ) {
+	define( 'RMS_BASENAME', plugin_basename( __FILE__ ) );
 }
-if (!defined('RMS_MENU_SLUG')) {
-	define('RMS_MENU_SLUG', 'wooventory');
+if ( ! defined( 'RMS_MENU_SLUG' ) ) {
+	define( 'RMS_MENU_SLUG', 'wooventory' );
 }
-if (!defined('RMS_DOCUMENTATION_URL')) {
-	define('RMS_DOCUMENTATION_URL', 'https://support.wooventory.com/portal/en/kb/zoho-inventory-woocommerce');
+if ( ! defined( 'RMS_DOCUMENTATION_URL' ) ) {
+	define( 'RMS_DOCUMENTATION_URL', 'https://support.wooventory.com/portal/en/kb/zoho-inventory-woocommerce' );
 }
-if (!defined('RMS_PLUGIN_URL')) {
-	define('RMS_PLUGIN_URL', 'https://wooventory.com/product/woocommerce-zoho-inventory/');
+if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
+	define( 'RMS_PLUGIN_URL', 'https://wooventory.com/product/woocommerce-zoho-inventory/' );
 }
 
-include_once RMS_DIR_PATH . 'includes/woo-functions.php';
-include_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
-include_once RMS_DIR_PATH . 'includes/sync/order-frontend.php';
-include_once RMS_DIR_PATH . 'data-sync.php';
-include_once RMS_DIR_PATH . 'includes/tgm-plugin-activation.php';
+require_once RMS_DIR_PATH . 'includes/woo-functions.php';
+require_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
+require_once RMS_DIR_PATH . 'includes/sync/order-frontend.php';
+require_once RMS_DIR_PATH . 'data-sync.php';
+require_once RMS_DIR_PATH . 'includes/tgm-plugin-activation.php';
 require_once RMS_DIR_PATH . 'libraries/action-scheduler/action-scheduler.php';
 
 require __DIR__ . '/vendor/autoload.php';
@@ -67,21 +67,19 @@ use RMS\Admin\Template;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
-//	remove on production
+//  remove on production
 $whoops = new Run();
-$whoops->pushHandler(new PrettyPageHandler());
+$whoops->pushHandler( new PrettyPageHandler() );
 $whoops->register();
 // remove on production
 
-global $importProductClass, $productClass, $importPricelist;
 /* Check the minimum PHP version on activation hook */
-function Woozo_Check_Plugin_requirements()
-{
-	$php_min_version = '7.4';
+function Woozo_Check_Plugin_requirements() {
+	$php_min_version     = '7.4';
 	$php_current_version = phpversion();
 
-	if (version_compare($php_min_version, $php_current_version, '>')) {
-		deactivate_plugins('wooventory/wooventory.php');
+	if ( version_compare( $php_min_version, $php_current_version, '>' ) ) {
+		deactivate_plugins( 'wooventory/wooventory.php' );
 
 		$error_message = sprintf(
 			'Your server is running PHP version %s but the Wooventory plugin requires at least PHP %s. Please update your PHP version.',
@@ -89,24 +87,28 @@ function Woozo_Check_Plugin_requirements()
 			$php_min_version,
 		);
 
-		wp_die($error_message, 'Plugin Activation Error', [
-			'response' => 200,
-			'back_link' => TRUE,
-		]);
+		wp_die(
+			$error_message,
+			'Plugin Activation Error',
+			array(
+				'response'  => 200,
+				'back_link' => true,
+			)
+		);
 	}
 }
 
-add_action('admin_init', 'Woozo_Check_Plugin_requirements');
+add_action( 'admin_init', 'Woozo_Check_Plugin_requirements' );
 
 /**
  * Function for initializing plugin object.
  */
-if (class_exists('Wooventory_AM_Client')) {
-	$wcam_lib = new Wooventory_AM_Client(__FILE__, '', RMS_VERSION, 'plugin', 'https://wooventory.com/', 'Wooventory');
+if ( class_exists( 'Wooventory_AM_Client' ) ) {
+	$wcam_lib = new Wooventory_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://wooventory.com/', 'Wooventory' );
 }
 
 // Activate plugin.
-register_activation_hook(__FILE__, ['wooventory', 'activate']);
+register_activation_hook( __FILE__, array( 'wooventory', 'activate' ) );
 
 // Init hooks.
 Wooventory::initHooks();
@@ -134,21 +136,23 @@ register_activation_hook(__FILE__, 'zi_create_order_log_table');
 /**
  * Declaring compatibility for WooCommerce HPOS
  */
-add_action('before_woocommerce_init', function () {
-	if (class_exists(FeaturesUtil::class)) {
-		FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, TRUE);
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( FeaturesUtil::class ) ) {
+			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
 	}
-});
+);
 
-register_uninstall_hook(__FILE__, 'rms_cron_unsubscribe');
+register_uninstall_hook( __FILE__, 'rms_cron_unsubscribe' );
 /**
  * Unsunscribing cron at uninstall of hook.
  */
-if (!function_exists('rms_cron_unsubscribe')) {
-	function rms_cron_unsubscribe()
-	{
+if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
+	function rms_cron_unsubscribe() {
 		// wp_clear_scheduled_hook( 'rms_cron_schedule_hook' );
-		$post_meta_keys = [
+		$post_meta_keys = array(
 			'zi_item_id',
 			'zi_purchase_account_id',
 			'zi_account_id',
@@ -156,8 +160,8 @@ if (!function_exists('rms_cron_unsubscribe')) {
 			'zi_inventory_account_id',
 			'zi_salesorder_id',
 			'zi_category_id',
-		];
-		$user_meta_keys = [
+		);
+		$user_meta_keys = array(
 			'zi_contact_id',
 			'zi_primary_contact_id',
 			'zi_created_time',
@@ -167,8 +171,8 @@ if (!function_exists('rms_cron_unsubscribe')) {
 			'zi_contact_persons_id',
 			'zi_currency_id',
 			'zi_currency_code',
-		];
-		$zi_option_keys = [
+		);
+		$zi_option_keys = array(
 			'zi_cron_isactive',
 			'zoho_inventory_cron_class',
 			'zoho_sync_status',
@@ -194,30 +198,30 @@ if (!function_exists('rms_cron_unsubscribe')) {
 			'zoho_inventory_timestamp',
 			'rms_ck',
 			'rms_cs',
-		];
+		);
 
-		foreach ($zi_option_keys as $zi_option) {
-			delete_option($zi_option);
+		foreach ( $zi_option_keys as $zi_option ) {
+			delete_option( $zi_option );
 		}
 
-		foreach ($post_meta_keys as $post_key) {
-			delete_post_meta_by_key($post_key);
+		foreach ( $post_meta_keys as $post_key ) {
+			delete_post_meta_by_key( $post_key );
 		}
 
 		$users = get_users();
-		foreach ($users as $user) {
-			foreach ($user_meta_keys as $user_key) {
-				delete_user_meta($user->ID, $user_key);
+		foreach ( $users as $user ) {
+			foreach ( $user_meta_keys as $user_key ) {
+				delete_user_meta( $user->ID, $user_key );
 			}
 		}
 
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
-		$sql = $wpdb->get_results('SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"');
-		foreach ($sql as $key => $row) {
+		$sql        = $wpdb->get_results( 'SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"' );
+		foreach ( $sql as $key => $row ) {
 			$option_name = $row->option_name;
-			delete_option($option_name);
+			delete_option( $option_name );
 		}
 	}
 }
@@ -225,28 +229,16 @@ if (!function_exists('rms_cron_unsubscribe')) {
 /**
  * Hooks for WC Action Scheduler to import or export products
  */
-add_action('import_group_items_cron', [
-	$importProductClass,
-	'sync_groupitem_recursively',
-], 10, 2);
-add_action('import_simple_items_cron', [
-	$importProductClass,
-	'sync_item_recursively',
-], 10, 2);
-add_action('import_variable_product_cron', [
-	$importProductClass,
-	'import_variable_product_variations',
-], 10, 2);
-add_action('sync_zi_product_cron', [
-	$productClass,
-	'zi_products_prepare_sync',
-], 10, 2);
-add_action('sync_zi_pricelist', [
-	$importPricelist,
-	'zi_get_pricelist',
-], 10, 2);
+$importProductClass = new ImportProductClass();
+$importPricelist    = new ImportPricelistClass();
+$productClass       = new ProductClass();
+add_action( 'import_group_items_cron', array( $importProductClass, 'sync_groupitem_recursively' ), 10, 2 );
+add_action( 'import_simple_items_cron', array( $importProductClass, 'sync_item_recursively' ), 10, 2 );
+add_action( 'import_variable_product_cron', array( $importProductClass, 'import_variable_product_variations' ), 10, 2 );
+add_action( 'sync_zi_product_cron', array( $productClass, 'zi_products_prepare_sync' ), 10, 2 );
+add_action( 'sync_zi_pricelist', array( $importPricelist, 'zi_get_pricelist' ), 10, 2 );
 
-if (is_admin()) {
+if ( is_admin() ) {
 	Template::instance();
 	Ajax::instance();
 	Cors::instance();
