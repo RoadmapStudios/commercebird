@@ -5,12 +5,12 @@ namespace RMS\Admin;
 defined( 'RMS_PLUGIN_NAME' ) || exit();
 
 final class Template {
-	const NAME = 'wooventory-app';
-	private static  $instance = null;
+	const NAME               = 'wooventory-app';
+	private static $instance = null;
 
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'menu' ) );
-		add_action( 'admin_enqueue_scripts', [ $this, 'scripts' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ) );
 	}
 
 	public static function instance(): Template {
@@ -23,7 +23,7 @@ final class Template {
 
 
 	public function menu(): void {
-		$icon = RMS_DIR_URL. 'admin/wooventory-icon.svg';
+		$icon = RMS_DIR_URL . 'admin/wooventory-icon.svg';
 		add_menu_page(
 			__( 'Wooventory', 'wooventory' ),
 			__( 'Wooventory', 'wooventory' ),
@@ -64,10 +64,10 @@ final class Template {
 	 */
 	public function scripts(): void {
 		global $wp_roles;
-		if ( true ) {
-			wp_register_style( self::NAME, 'http://localhost:5000/src/main.css', array(), RMS_VERSION );
-			wp_register_script( self::NAME, 'http://localhost:5000/src/main.js', array(), RMS_VERSION, true );
-		}
+		// comment on production
+		wp_register_style( self::NAME, 'http://localhost:5000/src/main.css', array(), RMS_VERSION );
+		wp_register_script( self::NAME, 'http://localhost:5000/src/main.js', array(), RMS_VERSION, true );
+		// comment on production
 		wp_register_style( self::NAME, RMS_DIR_URL . 'admin/assets/dist/index.css', array(), RMS_VERSION );
 		wp_register_script( self::NAME, RMS_DIR_URL . 'admin/assets/dist/index.js', array(), RMS_VERSION, true );
 		wp_add_inline_style( self::NAME, '#wpcontent, .auto-fold #wpcontent{padding-left: 0px} #wpcontent .notice, #wpcontent #message{display: none} input[type=checkbox]:checked::before{content:unset}' );
