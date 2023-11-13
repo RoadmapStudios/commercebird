@@ -23,7 +23,7 @@ final class Template {
 
 
 	public function menu(): void {
-		$icon = RMS_DIR_URL . 'admin/wooventory-icon.svg';
+		$svg = RMS_DIR_URL . 'admin/wooventory-icon.svg';
 		add_menu_page(
 			__( 'Wooventory', 'wooventory' ),
 			__( 'Wooventory', 'wooventory' ),
@@ -36,7 +36,7 @@ final class Template {
 				add_filter( 'script_loader_tag', array( $this, 'add_module' ), 10, 3 );
 				printf( '<div id="%s">Loading...</div>', self::NAME );
 			},
-			$icon,
+			$svg,
 			29
 		);
 	}

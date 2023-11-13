@@ -27,7 +27,7 @@ npm --prefix ./admin/assets/ run build-only
 
 # copy all files for production
 progress_message "Copying files for production..."
-cp -R  ./includes ./libraries ./admin/assets/dist ./admin/includes ./vendor ./*.php composer.json changelog.txt  LICENSE README.md  ./"$plugin_name"/ --parents
+cp -R  ./includes ./libraries ./admin/assets/dist ./admin/includes ./admin/wooventory-icon.svg ./vendor ./*.php composer.json changelog.txt  LICENSE README.md  ./"$plugin_name"/ --parents
 
 #
 ## Install PHP dependencies
@@ -38,7 +38,7 @@ rm ./"$plugin_name"/composer.lock
 
 progress_message "Removing dev data..."
 sed -i '67,74d' ./"$plugin_name"/plugin.php
-sed -i '66,69d' ./"$plugin_name"/admin/includes/Template.php
+sed -i '68,71d' ./"$plugin_name"/admin/includes/Template.php
 ## Add index.php to every directory
 progress_message "Adding index.php to every directory..."
 find ./"$plugin_name" -type d -exec sh -c "echo '<?php // silence' > {}/index.php" \;
@@ -49,7 +49,7 @@ progress_message "Creating zip archive..."
 #
 ## Revert changes for production
 #progress_message "Reverting changes..."
-rm -rf ./"$plugin_name"
+# rm -rf ./"$plugin_name"
 
 # Completion message
 progress_message "Build process completed successfully."
