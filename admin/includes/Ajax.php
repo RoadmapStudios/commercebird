@@ -667,7 +667,11 @@ final class Ajax {
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );
 		} else {
-			$this->response = $json->organizations;
+			if (empty($json)) {
+				$this->errors = array( 'message' => "We lost connection with zoho. please refresh page." );
+			} else {
+				$this->response = $json->organizations;
+			}
 		}
 		$this->serve();
 	}

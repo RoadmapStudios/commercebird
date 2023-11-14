@@ -35,7 +35,6 @@ function error_log_api_email($subject, $message)
     $messages .= '</body></html>';
 
     wp_mail($to, $subject, $messages, $headers);
-    exit();
 }
 
 /**
@@ -130,14 +129,9 @@ function zoho_ajax_call_variable_item_from_zoho()
         $loop_completed = true;
     }
 
-    wp_send_json_success();
-    // Send log message to admin only if the loop completed
-    if ($loop_completed) {
-        // send_log_message_to_admin($item_add_resp, 'Log for manual sync of variable item', 'Variable item sync from zoho');
-    }
+    
+    wp_send_json_success(['message' => 'Items are being imported in background. You can visit other tabs :).']);
 
-    // Send the final response and terminate the AJAX call
-    wp_die();
 }
 
 
@@ -215,8 +209,7 @@ function zoho_ajax_call_item_from_zoho_func()
     }
 
     // Terminate the AJAX call
-    wp_send_json_success();
-    wp_die();
+    wp_send_json_success(['message' => 'Items are being imported in background. You can visit other tabs :).']);
 }
 
 /**
@@ -387,9 +380,8 @@ function zi_sync_composite_item_from_zoho()
         $response = $productClass->recursively_sync_composite_item_from_zoho(1, $category_id, 'sync');
         $item_add_resp = array_merge($item_add_resp, $response);
     }
-    echo json_encode($item_add_resp);
     send_log_message_to_admin($item_add_resp, 'Log Message for manual sync', 'Composite item sync from zoho');
-    wp_die();
+    wp_send_json_success($item_add_resp);
 }
 
 /**

@@ -15,6 +15,7 @@ import Orders from "@/components/forms/Order.vue";
 import Price from "@/components/forms/Price.vue";
 import Field from "@/components/forms/Field.vue";
 import Connect from "@/components/forms/Connect.vue";
+import Webhooks from "@/components/forms/Webhooks.vue";
 import { notify } from "@/composables";
 import { useZohoInventoryStore } from "@/stores/zohoInventory";
 import { useLoadingStore } from "@/stores/loading";
@@ -34,6 +35,7 @@ const tabs = {
   order: { title: "Orders", component: Orders, icon: TruckIcon },
   price: { title: "Price List", component: Price, icon: SwatchIcon },
   field: { title: "Custom Fields", component: Field, icon: TableCellsIcon },
+  webhooks: { title: "Webhooks", component: Webhooks, icon: LinkIcon },
 };
 const handleClick = () => {
   notify.error("Please subscribe to Wooventory");
