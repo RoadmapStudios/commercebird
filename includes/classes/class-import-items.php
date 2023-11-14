@@ -421,26 +421,28 @@ class ImportProductClass
                             wp_set_object_terms($group_id, $final_tags, 'product_tag');
                         }
                     } else {
-                        // Create the parent variable product
-                        $parent_product = new WC_Product_Variable();
-                        $parent_product->set_name($zi_group_name);
-                        $parent_product->set_status('publish');
-                        $parent_product->set_short_description($gpArr->description);
-                        $parent_product->add_meta_data('zi_item_id', $zi_group_id);
-                        $group_id = $parent_product->save();
+                        if ($gpArr->status == 'active') {
+                            // Create the parent variable product
+                            $parent_product = new WC_Product_Variable();
+                            $parent_product->set_name($zi_group_name);
+                            $parent_product->set_status('publish');
+                            $parent_product->set_short_description($gpArr->description);
+                            $parent_product->add_meta_data('zi_item_id', $zi_group_id);
+                            $group_id = $parent_product->save();
 
-                        // fwrite($fd, PHP_EOL . 'New $group_id ' . $group_id);
+                            // fwrite($fd, PHP_EOL . 'New $group_id ' . $group_id);
 
-                        // Create or Update the Attributes
-                        $attr_created = $this->sync_attributes_of_group($gpArr, $group_id);
+                            // Create or Update the Attributes
+                            $attr_created = $this->sync_attributes_of_group($gpArr, $group_id);
 
-                        if (!empty($group_id) && $attr_created) {
-                            // Enqueue and schedule the action using WC Action Scheduler
-                            $existing_schedule = as_has_scheduled_action('import_variable_product_cron', array($zi_group_id, $group_id));
-                            if (!$existing_schedule) {
-                                as_schedule_single_action(time(), 'import_variable_product_cron', array($zi_group_id, $group_id));
-                            } // $this->import_variable_product_variations($gpArr, $group_id);
-                        } // end for each item loop
+                            if (!empty($group_id) && $attr_created) {
+                                // Enqueue and schedule the action using WC Action Scheduler
+                                $existing_schedule = as_has_scheduled_action('import_variable_product_cron', array($zi_group_id, $group_id));
+                                if (!$existing_schedule) {
+                                    as_schedule_single_action(time(), 'import_variable_product_cron', array($zi_group_id, $group_id));
+                                } // $this->import_variable_product_variations($gpArr, $group_id);
+                            } // end for each item loop
+                        }
                     } // create variable product
                 } // end foreach group items
 
@@ -596,7 +598,7 @@ class ImportProductClass
                         ),
                         // Add more meta key-value pairs as needed
                     );
-                    
+
                     // fwrite($fd, PHP_EOL . '$variation_attributes : ' . print_r($variation_attributes, true));
 
                     // Loop through the variations and create them
