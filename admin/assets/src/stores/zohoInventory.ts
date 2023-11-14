@@ -147,18 +147,20 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         }
         syncResponse.value = [];
         await fetch(url)
-            .then((response) => response.text())
+            .then((response) => response.json())
             .then((response) => {
                 if (!response) return;
-                let data = JSON.parse(response);
-                if (data.hasOwnProperty("success")) {
+                const data = response.data;
+                if (data.hasOwnProperty("success") && !data.hasOwnProperty("message")) {
                     notify.success("Done!");
                     return;
+                } else {
+                    if (data.hasOwnProperty("message")) {
+                        notify.success(data.message);
+                        return;
+                    }
                 }
-                if (data.hasOwnProperty("message")) {
-                    notify.success(data.message);
-                    return;
-                }
+                
                 syncResponse.value = data;
             })
             .finally(() => {

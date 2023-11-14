@@ -34,19 +34,7 @@
     <InputGroup label="Client Secret">
       <TextInput v-model="store.connection.client_secret" />
     </InputGroup>
-    <InputGroup label="Authorization Redirect URI">
-      <div class="flex rounded-md shadow-sm">
-        <TextInput
-          v-model="store.connection.redirect_uri"
-          :disabled="true"
-          :readonly="true"
-        />
-        <span class="px-4 py-2" @click="copy(store.connection.redirect_uri)">
-          <ClipboardDocumentCheckIcon v-if="copied" />
-          <ClipboardDocumentIcon v-else />
-        </span>
-      </div>
-    </InputGroup>
+    <CopyableInput :value="store.connection.redirect_uri"/>
 
     <div class="flex items-center justify-between py-2">
       <LoaderIcon v-if="loader.isLoading('load_connection')" :loading="true" />
@@ -70,21 +58,18 @@
 </template>
 <script lang="ts" setup>
 import BaseButton from "@/components/ui/BaseButton.vue";
-import {
-  ClipboardDocumentCheckIcon,
-  ClipboardDocumentIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/vue/24/outline";
-import { useZohoInventoryStore } from "@/stores/zohoInventory";
-import { useLoadingStore } from "@/stores/loading";
+import {ExclamationCircleIcon,} from "@heroicons/vue/24/outline";
+import {useZohoInventoryStore} from "@/stores/zohoInventory";
+import {useLoadingStore} from "@/stores/loading";
 import InputGroup from "../ui/InputGroup.vue";
 import TextInput from "../ui/inputs/TextInput.vue";
 import SelectInput from "../ui/inputs/SelectInput.vue";
 import Alert from "@/components/ui/Alert.vue";
 import LoaderIcon from "@/components/ui/LoaderIcon.vue";
-import { useClipboard } from "@vueuse/core";
-import { backendAction, redirect_uri, storeKey } from "@/composables";
-import { onBeforeMount } from "vue";
+import {useClipboard} from "@vueuse/core";
+import {backendAction, redirect_uri, storeKey} from "@/composables";
+import {onBeforeMount} from "vue";
+import CopyableInput from "@/components/ui/inputs/CopyableInput.vue";
 
 const hints = {
   pluginDoc: {
