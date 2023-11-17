@@ -585,22 +585,13 @@ class ImportProductClass
                             $variation_attributes[$taxonomy] = urldecode($term);
                         }
                     }
-
                     // Add the variation data to the variations array
                     $variation_data['regular_price'] = $item->rate;
                     $variation_data['sku'] = $item->sku;
                     $variation_data['attributes'] = $variation_attributes;
                     $variation_data['featured_image'] = $item->image_document_id;
-                    $variation_data['meta_data'] = array(
-                        array(
-                            'key' => $item->item_id,
-                            'value' => 'zi_item_id',
-                        ),
-                        // Add more meta key-value pairs as needed
-                    );
 
                     // fwrite($fd, PHP_EOL . '$variation_attributes : ' . print_r($variation_attributes, true));
-
                     // Loop through the variations and create them
                     $variation = new WC_Product_Variation();
                     $variation->set_parent_id($group_id);
