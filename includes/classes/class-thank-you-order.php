@@ -299,7 +299,7 @@ class OrderClass
                                     $item_id = get_post_meta($proid, 'zi_item_id', true);
                                 }
 
-                                $product_desc = $val['product_desc'];
+                                $product_desc = str_replace('"', '', $val['product_desc']);
                                 // $subtotal = $val['subtotal'];
                                 $item_price = $val['item_price'];
                                 // $item_total = $val['total'];
