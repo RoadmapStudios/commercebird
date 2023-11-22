@@ -239,5 +239,10 @@ if (is_admin()) {
     Ajax::instance();
     Cors::instance();
 }
-// From wooventory
+// Load Media Library Endpoints
 new WooCommerce_Media_API_By_wooventory();
+// Load License Key library
+if (class_exists('Wooventory_AM_Client')) {
+    $wcam_lib_custom_menu = array('menu_type' => 'add_submenu_page', 'parent_slug' => 'wooventory-app', 'page_title' => 'API key Activation', 'menu_title' => 'License Activation');
+    $wcam_lib = new Wooventory_AM_Client(__FILE__, '', RMS_VERSION, 'plugin', 'https://wooventory.com/', 'Wooventory', '', $wcam_lib_custom_menu, false);
+}
