@@ -3,10 +3,8 @@
 /**
  * Plugin Name: Wooventory
  * Plugin URI:  https://wooventory.com
- * Description: Connect your Zoho Inventory with your WooCommerce store in
- * realtime to sync Customers, Items and Sales Orders. Manage your entire
- * inventory from Zoho. Please follow the documentation "Getting Started"
- * before you use this plugin.
+ * Description: This plugin helps you get the most of Wooventory by
+ * allowing you to manage product images, integrations and more.
  * Version: 2.0.0
  * Author: Wooventory
  * Author URI:  https://wooventory.com
