@@ -284,7 +284,8 @@ function zoho_admin_order_sync($order_id)
                     // fwrite($fd,PHP_EOL.'Product sync: '.print_r($product_response, true));
                 }
 
-                $product_desc = isset($val['product_desc']) ? $val['product_desc'] : '';
+                $product_description = isset($val['product_desc']) ? $val['product_desc'] : '';
+                $product_desc = str_replace('"', '', $product_description);
                 $discount_per_item = '';
 
                 $qty = ($val['quantity']) ? $val['quantity'] : 1;
