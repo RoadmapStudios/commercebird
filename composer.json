@@ -1,6 +1,6 @@
 {
   "name": "wooventory/wooventory",
-  "description": "Connect your Zoho Inventory with your WooCommerce store in realtime to sync Customers, Items and Sales Orders. Manage your entire inventory from Zoho",
+  "description": "This plugin helps you get the most of Wooventory by allowing you to manage product images, integrations and more",
   "type": "wordpress-plugin",
   "license": "GPL-3.0-or-later",
   "autoload": {
@@ -16,11 +16,6 @@
       "name": "Roadmap Studios",
       "email": "info@wooventory.com",
       "role": "Owner"
-    },
-    {
-      "name": "Dev Kabir",
-      "email": "dev.kabir01@gmail.com",
-      "role": "WordPress Developer"
     }
   ],
   "require": {

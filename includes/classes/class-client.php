@@ -17,8 +17,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WC_WooZo_Client' ) ) {
-	class WC_WooZo_Client {
+if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
+	class Wooventory_AM_Client {
 
 		/**
 		 * Class args
@@ -418,7 +418,7 @@ if ( ! class_exists( 'WC_WooZo_Client' ) ) {
 				} else {
 					$html[] = sprintf( '<a href="%s" class="toggle-auto-update aria-button-if-js" data-wp-action="%s">', wp_nonce_url( $url, 'updates' ), $action );
 
-					$html[] = '<span class="dashicons dashicons-update spin hidden" aria-hidden="true"></span>';
+					$html[] = '<span class="hidden dashicons dashicons-update spin" aria-hidden="true"></span>';
 					$html[] = '<span class="label">' . $text . '</span>';
 					$html[] = '</a>';
 				}
