@@ -1,6 +1,5 @@
 <?php
 
-
 class Wooventory
 {
 
@@ -24,7 +23,7 @@ class Wooventory
         //Detect WooCommerce plugin
         if (!is_plugin_active('woocommerce/woocommerce.php')) {
             //Load the plugin's translated strings
-            load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
+            // load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
 
             $error = '<strong>' . sprintf(__('%1$s %2$s requires WooCommerce Plugin to be installed and activated.', 'rmsZI'), RMS_PLUGIN_NAME, RMS_VERSION) . '</strong> ' . sprintf(__('Please <a href="%1$s" target="_blank">install WooCommerce Plugin</a>.', 'rmsZI'), 'https://wordpress.org/plugins/woocommerce/');
 
@@ -49,7 +48,6 @@ class Wooventory
         add_action('wp_ajax_dismiss_rmszi_review_request_notice', array('wooventory', 'dismiss_rmszi_review_request_notice'));
         add_action('wp_ajax_skip_rmszi_review_request_notice', array('wooventory', 'skip_rmszi_review_request_notice'));
 
-
         //Plugins page
         add_filter('plugin_row_meta', array('wooventory', 'pluginRowMeta'), 10, 2);
         add_filter('plugin_action_links_' . RMS_BASENAME, array('wooventory', 'actionLinks'));
@@ -68,7 +66,12 @@ class Wooventory
     public static function init()
     {
         //Load the plugin's translated strings
-        load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
+        // load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
+        // Function for initializing plugin object.
+        if (class_exists('Wooventory_AM_Client')) {
+            $wcam_lib_custom_menu = array('menu_type' => 'add_submenu_page', 'parent_slug' => 'wooventory-app', 'page_title' => 'API key Activation', 'menu_title' => 'License Activation');
+            $wcam_lib = new Wooventory_AM_Client(__FILE__, '', RMS_VERSION, 'plugin', 'https://wooventory.com/', 'Wooventory', '', $wcam_lib_custom_menu, false);
+        }
     }
 
     /**
@@ -77,7 +80,7 @@ class Wooventory
      */
     public static function adminInit()
     {
-        //Check plugin requirements
+        // Check plugin requirements
         self::checkRequirements();
     }
 
@@ -106,13 +109,6 @@ class Wooventory
         if (empty($page) || $page !== RMS_MENU_SLUG) {
             return;
         }
-
-        //Plugin admin styles
-        wp_enqueue_style('rms-zi-styles-admin', RMS_DIR_URL . 'assets/css/styles-admin.css', array(), RMS_VERSION);
-
-        //Plugin admin script
-        wp_register_script('rms-zi-scripts-admin', RMS_DIR_URL . 'assets/js/scripts-admin.js', array('jquery'), RMS_VERSION, true);
-
         wp_localize_script(
             'rms-zi-scripts-admin',
             'rmsZIJsVars',
@@ -158,7 +154,7 @@ class Wooventory
     public static function render_review_request_notice()
     {
         $review_url = "https://wooventory.com/product/woocommerce-zoho-inventory";
-?>
+        ?>
         <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice" data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>" data-action="dismiss_rmszi_review_request_notice" style="display:none">
             <h3>
                 Just wanted to say thank you for using Wooventory in your store.
@@ -169,13 +165,13 @@ class Wooventory
                 <button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
                 <span class="logo"><a target="_blank" href="https://wooventory.com">
                         <img src="<?php // echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg');
-                                    ?>" />
+        ?>" />
                     </a></span>
 
             </p>
         </div>
     <?php
-    }
+}
 
     public static function dismiss_rmszi_review_request_notice()
     {
@@ -232,8 +228,8 @@ class Wooventory
      */
     public static function adminFooter()
     {
-    ?>
-        <p><a href="https://wooventory.com/product/wooventory/" class="arg-review-link" target="_blank"><?php echo sprintf(__('If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI'), RMS_PLUGIN_NAME); ?></a> <?php _e('Thank you.', 'rmsZI'); ?></p>
+        ?>
+        <p><a href="https://wooventory.com/product/wooventory/" class="arg-review-link" target="_blank"><?php echo sprintf(__('If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI'), RMS_PLUGIN_NAME); ?></a> <?php _e('Thank you.', 'rmsZI');?></p>
 <?php
-    }
+}
 }

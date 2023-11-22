@@ -9,7 +9,6 @@
  * Author: Wooventory
  * Author URI:  https://wooventory.com
  * Requires PHP: 7.4
- * Domain Path: /languages
  * Text Domain: rmsZI
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,7 +39,7 @@ if (!defined('RMS_BASENAME')) {
     define('RMS_BASENAME', plugin_basename(__FILE__));
 }
 if (!defined('RMS_MENU_SLUG')) {
-    define('RMS_MENU_SLUG', 'wooventory');
+    define('RMS_MENU_SLUG', 'wooventory-app');
 }
 if (!defined('RMS_DOCUMENTATION_URL')) {
     define('RMS_DOCUMENTATION_URL', 'https://support.wooventory.com/portal/en/kb/zoho-inventory-woocommerce');
@@ -53,6 +52,7 @@ require_once RMS_DIR_PATH . 'includes/woo-functions.php';
 require_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
 require_once RMS_DIR_PATH . 'includes/sync/order-frontend.php';
 require_once RMS_DIR_PATH . 'data-sync.php';
+require_once RMS_DIR_PATH . 'includes/wc-am-client.php';
 require_once RMS_DIR_PATH . 'includes/tgm-plugin-activation.php';
 require_once RMS_DIR_PATH . 'libraries/action-scheduler/action-scheduler.php';
 
@@ -98,14 +98,6 @@ function Woozo_Check_Plugin_requirements()
 }
 
 add_action('admin_init', 'Woozo_Check_Plugin_requirements');
-
-/**
- * Function for initializing plugin object.
- */
-if (class_exists('Wooventory_AM_Client')) {
-    $wcam_lib_custom_menu = array('menu_type' => 'add_submenu_page', 'parent_slug' => 'wooventory-app', 'page_title' => 'My Plugin License Activation', 'menu_title' => 'API Key');
-    $wcam_lib = new Wooventory_AM_Client(__FILE__, '', RMS_VERSION, 'plugin', 'https://wooventory.com/', 'Wooventory', '', $wcam_lib_custom_menu, false);
-}
 
 // Activate plugin.
 register_activation_hook(__FILE__, array('wooventory', 'activate'));
