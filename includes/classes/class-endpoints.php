@@ -46,10 +46,12 @@ function return_zoho_accesstoken()
 
 function request_is_from_wooventory( $request ) {
     // Check if the request is from the domain example.com
-    $allowed_domain = 'app.wooventory.com';
+    $allowed_domain = ['http://localhost:8100', 'https://app.wooventory.com', 'capacitor://localhost', 'http://localhost'];
     $origin = $request->get_header( 'Origin' );
 
-    if ( $origin && strpos( $origin, $allowed_domain ) !== false ) {
+    // check if the origin is in our array of allowed domains
+    if ( in_array( $origin, $allowed_domain ) ) {
+        // Allow the REST request
         return true;
     }
 
