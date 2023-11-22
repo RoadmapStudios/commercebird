@@ -13,11 +13,14 @@
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
- * @package Wooventory
- * @license GNU General Public License v3.0
+ * @category Fulfillment
+ * @package  Wooventory
+ * @author   Fawad Tiemoerie <info@roadmapstudios.com>
+ * @license  GNU General Public License v3.0
+ * @link     https://wooventory.com
  *
  * WC requires at least: 8.0.0
- * WC tested up to: 8.3.0
+ * WC tested up to: 8.3.1
  */
 
 if (!defined('ABSPATH')) {
@@ -78,7 +81,7 @@ function Woozo_Check_Plugin_requirements()
     $php_current_version = phpversion();
 
     if (version_compare($php_min_version, $php_current_version, '>')) {
-        deactivate_plugins('wooventory/wooventory.php');
+        deactivate_plugins('wooventory/plugin.php');
 
         $error_message = sprintf(
             'Your server is running PHP version %s but the Wooventory plugin requires at least PHP %s. Please update your PHP version.',
