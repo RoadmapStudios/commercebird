@@ -25,45 +25,45 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		 *
 		 * @var string
 		 */
-        public $api_url          = '';
-        public $data_key         = '';
-        public $file             = '';
-        public $plugin_name      = '';
-        public $plugin_or_theme  = '';
-        public $product_id       = '';
-        public $slug             = '';
-        public $software_title   = '';
-        public $software_version = '';
-        public $text_domain      = ''; // For language translation.
+		public $api_url = '';
+		public $data_key = '';
+		public $file = '';
+		public $plugin_name = '';
+		public $plugin_or_theme = '';
+		public $product_id = '';
+		public $slug = '';
+		public $software_title = '';
+		public $software_version = '';
+		public $text_domain = ''; // For language translation.
 
 		/**
 		 * Class properties.
 		 *
 		 * @var string
 		 */
-		public $data                              = array();
-		public $identifier                        = '';
-		public $no_product_id                     = false;
-		public $product_id_chosen                 = 0;
-		public $wc_am_activated_key               = '';
-		public $wc_am_activation_tab_key          = '';
-		public $wc_am_api_key_key                 = '';
-		public $wc_am_deactivate_checkbox_key     = '';
-		public $wc_am_deactivation_tab_key        = '';
-		public $wc_am_auto_update_key             = '';
-		public $wc_am_domain                      = '';
-		public $wc_am_instance_id                 = '';
-		public $wc_am_instance_key                = '';
-		public $wc_am_menu_tab_activation_title   = '';
+		public $data = array();
+		public $identifier = '';
+		public $no_product_id = false;
+		public $product_id_chosen = 0;
+		public $wc_am_activated_key = '';
+		public $wc_am_activation_tab_key = '';
+		public $wc_am_api_key_key = '';
+		public $wc_am_deactivate_checkbox_key = '';
+		public $wc_am_deactivation_tab_key = '';
+		public $wc_am_auto_update_key = '';
+		public $wc_am_domain = '';
+		public $wc_am_instance_id = '';
+		public $wc_am_instance_key = '';
+		public $wc_am_menu_tab_activation_title = '';
 		public $wc_am_menu_tab_deactivation_title = '';
-		public $wc_am_plugin_name                 = '';
-		public $wc_am_product_id                  = '';
-		public $wc_am_renew_license_url           = '';
-		public $wc_am_settings_menu_title         = '';
-		public $wc_am_settings_title              = '';
-		public $wc_am_software_version            = '';
-		public $menu                              = array();
-		public $inactive_notice                   = true;
+		public $wc_am_plugin_name = '';
+		public $wc_am_product_id = '';
+		public $wc_am_renew_license_url = '';
+		public $wc_am_settings_menu_title = '';
+		public $wc_am_settings_title = '';
+		public $wc_am_software_version = '';
+		public $menu = array();
+		public $inactive_notice = true;
 
 		public function __construct( $file, $product_id, $software_version, $plugin_or_theme, $api_url, $software_title = '', $text_domain = '', $custom_menu = array(), $inactive_notice = true ) {
 			/**
@@ -82,7 +82,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 					'_',
 					'&',
 					'?',
-					'-'
+					'-',
 				), '_', $this->identifier ) );
 				$this->wc_am_product_id  = 'wc_am_product_id_' . $product_id;
 				$this->product_id_chosen = get_option( $this->wc_am_product_id );
@@ -115,7 +115,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 					'_',
 					'&',
 					'?',
-					'-'
+					'-',
 				), '_', $product_id ) );
 			$this->wc_am_activated_key = $this->data_key . '_activated';
 
@@ -146,8 +146,8 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				$this->wc_am_activation_tab_key          = $this->data_key . '_dashboard';
 				$this->wc_am_deactivation_tab_key        = $this->data_key . '_deactivation';
 				$this->wc_am_auto_update_key             = $this->data_key . '_auto_update';
-				$this->wc_am_settings_title              = sprintf( __( '%s', $this->text_domain ), ! empty( $this->menu[ 'page_title' ] ) ? $this->menu[ 'page_title' ] : $this->software_title . ' API Key Activation', $this->text_domain );
-				$this->wc_am_settings_menu_title         = sprintf( __( '%s', $this->text_domain ), ! empty( $this->menu[ 'menu_title' ] ) ? $this->menu[ 'menu_title' ] : $this->software_title . ' Activation', $this->text_domain );
+				$this->wc_am_settings_title              = sprintf( __( '%s', $this->text_domain ), ! empty( $this->menu['page_title'] ) ? $this->menu['page_title'] : $this->software_title . ' API Key Activation', $this->text_domain );
+				$this->wc_am_settings_menu_title         = sprintf( __( '%s', $this->text_domain ), ! empty( $this->menu['menu_title'] ) ? $this->menu['menu_title'] : $this->software_title . ' Activation', $this->text_domain );
 				$this->wc_am_menu_tab_activation_title   = esc_html__( 'API Key Activation', $this->text_domain );
 				$this->wc_am_menu_tab_deactivation_title = esc_html__( 'API Key Deactivation', $this->text_domain );
 
@@ -171,7 +171,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				 */
 				$this->wc_am_domain           = str_ireplace( array(
 					'http://',
-					'https://'
+					'https://',
 				), '', home_url() ); // blog domain name
 				$this->wc_am_software_version = $this->software_version; // The software version
 
@@ -214,11 +214,11 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		 * Clean variables using sanitize_text_field. Arrays are cleaned recursively.
 		 * Non-scalar values are ignored.
 		 *
-		 * @since 2.9
-		 *
 		 * @param string|array $var Data to sanitize.
 		 *
 		 * @return string|array
+		 * @since 2.9
+		 *
 		 */
 		private function clean( $var ) {
 			if ( is_array( $var ) ) {
@@ -236,23 +236,23 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		public function register_menu() {
 			$page_title = $this->wc_am_settings_title;
 			$menu_title = $this->wc_am_settings_menu_title;
-			$capability = ! empty( $this->menu[ 'capability' ] ) ? $this->menu[ 'capability' ] : 'manage_options';
-			$menu_slug  = ! empty( $this->menu[ 'menu_slug' ] ) ? $this->menu[ 'menu_slug' ] : $this->wc_am_activation_tab_key;
-			$callback   = ! empty( $this->menu[ 'callback' ] ) ? $this->menu[ 'callback' ] : array(
+			$capability = ! empty( $this->menu['capability'] ) ? $this->menu['capability'] : 'manage_options';
+			$menu_slug  = ! empty( $this->menu['menu_slug'] ) ? $this->menu['menu_slug'] : $this->wc_am_activation_tab_key;
+			$callback   = ! empty( $this->menu['callback'] ) ? $this->menu['callback'] : array(
 				$this,
-				'config_page'
+				'config_page',
 			);
-			$icon_url   = ! empty( $this->menu[ 'icon_url' ] ) ? $this->menu[ 'icon_url' ] : '';
-			$position   = ! empty( $this->menu[ 'position' ] ) ? $this->menu[ 'position' ] : null;
+			$icon_url   = ! empty( $this->menu['icon_url'] ) ? $this->menu['icon_url'] : '';
+			$position   = ! empty( $this->menu['position'] ) ? $this->menu['position'] : null;
 
-			if ( is_array( $this->menu ) && ! empty( $this->menu[ 'menu_type' ] ) ) {
-				if ( $this->menu[ 'menu_type' ] == 'add_submenu_page' ) {
+			if ( is_array( $this->menu ) && ! empty( $this->menu['menu_type'] ) ) {
+				if ( $this->menu['menu_type'] == 'add_submenu_page' ) {
 					// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null )
-					add_submenu_page( $this->menu[ 'parent_slug' ], $page_title, $menu_title, $capability, $menu_slug, $callback, $position );
-				} elseif ( $this->menu[ 'menu_type' ] == 'add_options_page' ) {
+					add_submenu_page( $this->menu['parent_slug'], $page_title, $menu_title, $capability, $menu_slug, $callback, $position );
+				} elseif ( $this->menu['menu_type'] == 'add_options_page' ) {
 					// add_options_page( $page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null )
 					add_options_page( $page_title, $menu_title, $capability, $menu_slug, $callback, $position );
-				} elseif ( $this->menu[ 'menu_type' ] == 'add_menu_page' ) {
+				} elseif ( $this->menu['menu_type'] == 'add_menu_page' ) {
 					// add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $callback = '', $icon_url = '', $position = null )
 					add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $callback, $icon_url, $position );
 				}
@@ -260,7 +260,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				// add_options_page( $page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null )
 				add_options_page( sprintf( __( '%s', $this->text_domain ), $this->wc_am_settings_menu_title ), sprintf( __( '%s', $this->text_domain ), $this->wc_am_settings_menu_title ), 'manage_options', $this->wc_am_activation_tab_key, array(
 					$this,
-					'config_page'
+					'config_page',
 				) );
 			}
 		}
@@ -289,12 +289,12 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		/**
 		 * Tries to set auto updates.
 		 *
-		 * @since 2.8
-		 *
 		 * @param bool|null $update
 		 * @param object    $item
 		 *
 		 * @return bool
+		 * @since 2.8
+		 *
 		 */
 		public function maybe_auto_update( $update, $item ) {
 			if ( strpos( $this->wc_am_plugin_name, '.php' ) !== 0 ) {
@@ -321,9 +321,9 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		/**
 		 * Checks if auto updates are disabled.
 		 *
+		 * @return bool
 		 * @since 2.8
 		 *
-		 * @return bool
 		 */
 		public function is_auto_update_disabled() {
 			/*
@@ -362,15 +362,15 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		 *
 		 * Plugin updates stored in 'auto_update_plugins' array.
 		 *
-		 * @see   'wp-admin/includes/class-wp-plugins-list-table.php'
-		 *
-		 * @since 2.8
-		 *
 		 * @param string $html        HTML of the auto-update message.
 		 * @param string $plugin_file Plugin file.
 		 * @param array  $plugin_data Plugin details.
 		 *
 		 * @return mixed|string
+		 * @see   'wp-admin/includes/class-wp-plugins-list-table.php'
+		 *
+		 * @since 2.8
+		 *
 		 */
 		public function auto_update_message( $html, $plugin_file, $plugin_data ) {
 			if ( $this->wc_am_plugin_name == $plugin_file ) {
@@ -384,8 +384,8 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				$auto_updates = (array) get_site_option( 'auto_update_plugins', array() );
 				$html         = array();
 
-				if ( ! empty( $plugin_data[ 'auto-update-forced' ] ) ) {
-					if ( $plugin_data[ 'auto-update-forced' ] ) {
+				if ( ! empty( $plugin_data['auto-update-forced'] ) ) {
+					if ( $plugin_data['auto-update-forced'] ) {
 						// Forced on.
 						$text = __( 'Auto-updates enabled' );
 					} else {
@@ -423,7 +423,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 					$html[] = '</a>';
 				}
 
-				if ( ! empty( $plugin_data[ 'update' ] ) ) {
+				if ( ! empty( $plugin_data['update'] ) ) {
 					$html[] = sprintf( '<div class="auto-update-time%s">%s</div>', $time_class, wp_get_auto_update_message() );
 				}
 
@@ -438,7 +438,6 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		 */
 		public function activation() {
 			$instance_exists = get_option( $this->wc_am_instance_key );
-
 			if ( get_option( $this->data_key ) === false || $instance_exists === false ) {
 				if ( $instance_exists === false ) {
 					update_option( $this->wc_am_instance_key, wp_generate_password( 12, false ) );
@@ -485,7 +484,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 						array(
 							$this->wc_am_instance_key,
 							$this->wc_am_deactivate_checkbox_key,
-							$this->wc_am_activated_key
+							$this->wc_am_activated_key,
 						) as $option
 					) {
 
@@ -528,7 +527,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				<?php if ( ! current_user_can( 'manage_options' ) ) {
 					return;
 				} ?>
-				<?php if ( isset( $_GET[ 'page' ] ) && $this->wc_am_activation_tab_key == $_GET[ 'page' ] ) {
+				<?php if ( isset( $_GET['page'] ) && $this->wc_am_activation_tab_key == $_GET['page'] ) {
 					return;
 				} ?>
                 <div class="notice notice-error">
@@ -560,10 +559,10 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		public function config_page() {
 			$settings_tabs = array(
 				$this->wc_am_activation_tab_key   => esc_html__( $this->wc_am_menu_tab_activation_title, $this->text_domain ),
-				$this->wc_am_deactivation_tab_key => esc_html__( $this->wc_am_menu_tab_deactivation_title, $this->text_domain )
+				$this->wc_am_deactivation_tab_key => esc_html__( $this->wc_am_menu_tab_deactivation_title, $this->text_domain ),
 			);
-			$current_tab   = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : $this->wc_am_activation_tab_key;
-			$tab           = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : $this->wc_am_activation_tab_key;
+			$current_tab   = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->wc_am_activation_tab_key;
+			$tab           = isset( $_GET['tab'] ) ? $_GET['tab'] : $this->wc_am_activation_tab_key;
 			?>
             <div class='wrap'>
                 <h2><?php esc_html_e( $this->wc_am_settings_title, $this->text_domain ); ?></h2>
@@ -602,11 +601,11 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			// API Key
 			add_settings_section( $this->wc_am_api_key_key, esc_html__( 'API Key Activation', $this->text_domain ), array(
 				$this,
-				'wc_am_api_key_text'
+				'wc_am_api_key_text',
 			), $this->wc_am_activation_tab_key );
 			add_settings_field( $this->wc_am_api_key_key, esc_html__( 'API Key', $this->text_domain ), array(
 				$this,
-				'wc_am_api_key_field'
+				'wc_am_api_key_field',
 			), $this->wc_am_activation_tab_key, $this->wc_am_api_key_key );
 
 			/**
@@ -615,7 +614,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			if ( $this->no_product_id ) {
 				add_settings_field( 'product_id', esc_html__( 'Product ID', $this->text_domain ), array(
 					$this,
-					'wc_am_product_id_field'
+					'wc_am_product_id_field',
 				), $this->wc_am_activation_tab_key, $this->wc_am_api_key_key );
 			}
 
@@ -630,29 +629,30 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 
 			add_settings_field( 'status', esc_html__( 'API Key Status', $this->text_domain ), array(
 				$this,
-				'wc_am_api_key_status'
+				'wc_am_api_key_status',
 			), $this->wc_am_activation_tab_key, $this->wc_am_api_key_key );
 			add_settings_field( 'info', esc_html__( 'Activation Info', $this->text_domain ), array(
 				$this,
-				'wc_am_activation_info'
+				'wc_am_activation_info',
 			), $this->wc_am_activation_tab_key, $this->wc_am_api_key_key );
 			// Activation settings
 			register_setting( $this->wc_am_deactivate_checkbox_key, $this->wc_am_deactivate_checkbox_key, array(
 				$this,
-				'wc_am_license_key_deactivation'
+				'wc_am_license_key_deactivation',
 			) );
 			add_settings_section( 'deactivate_button', esc_html__( 'API Deactivation', $this->text_domain ), array(
 				$this,
-				'wc_am_deactivate_text'
+				'wc_am_deactivate_text',
 			), $this->wc_am_deactivation_tab_key );
 			add_settings_field( 'deactivate_button', esc_html__( 'Deactivate API Key', $this->text_domain ), array(
 				$this,
-				'wc_am_deactivate_textarea'
+				'wc_am_deactivate_textarea',
 			), $this->wc_am_deactivation_tab_key, 'deactivate_button' );
 		}
 
 		// Provides text for api key section
-		public function wc_am_api_key_text() {}
+		public function wc_am_api_key_text() {
+		}
 
 		// Returns the API Key status from the WooCommerce API Manager on the server
 		public function wc_am_api_key_status() {
@@ -681,11 +681,11 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		/**
 		 * Returns true if the API Key status is Activated.
 		 *
-		 * @since 2.1
-		 *
 		 * @param bool $live Do not set to true if using to activate software. True is for live status checks after activation.
 		 *
 		 * @return bool
+		 * @since 2.1
+		 *
 		 */
 		public function get_api_key_status( $live = false ) {
 			/**
@@ -696,7 +696,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			if ( $live ) {
 				$license_status = $this->license_key_status();
 
-				return ! empty( $license_status ) && ! empty( $license_status[ 'data' ][ 'activated' ] ) && $license_status[ 'data' ][ 'activated' ];
+				return ! empty( $license_status ) && ! empty( $license_status['data']['activated'] ) && $license_status['data']['activated'];
 			}
 
 			/**
@@ -717,30 +717,34 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			$live_status  = json_decode( $this->status(), true );
 			$line_break   = wp_kses_post( '<br>' );
 
-			if ( ! empty( $live_status ) && $live_status[ 'success' ] == false ) {
-				echo esc_html( 'Error: ' . $live_status[ 'data' ][ 'error' ] );
+			if ( ! empty( $live_status ) && ! $live_status['success'] ) {
+				echo esc_html( 'Error: ' . $live_status['data']['error'] );
 			}
 
-			if ( $this->get_api_key_status() ) {
+			$api_key_status = $this->get_api_key_status();
+			if ( false === $api_key_status ) {
+				return;
+			}
+			if ( $api_key_status ) {
 				$result_success = get_option( 'wc_am_' . $this->product_id . '_activate_success' );
 
-				if ( ! empty( $live_status ) && $live_status[ 'status_check' ] == 'active' ) {
-					echo esc_html( 'Activations purchased: ' . $live_status[ 'data' ][ 'total_activations_purchased' ] );
+				if ( ! empty( $live_status ) && $live_status['status_check'] == 'active' ) {
+					echo esc_html( 'Activations purchased: ' . $live_status['data']['total_activations_purchased'] );
 					echo $line_break;
-					echo esc_html( 'Total Activations: ' . $live_status[ 'data' ][ 'total_activations' ] );
+					echo esc_html( 'Total Activations: ' . $live_status['data']['total_activations'] );
 					echo $line_break;
-					echo esc_html( 'Activations Remaining: ' . $live_status[ 'data' ][ 'activations_remaining' ] );
+					echo esc_html( 'Activations Remaining: ' . $live_status['data']['activations_remaining'] );
 				} elseif ( ! empty( $result_success ) ) {
 					echo esc_html( $result_success );
 				} else {
 					echo '';
 				}
-			} elseif ( ! $this->get_api_key_status() && ! empty( $live_status ) && $live_status[ 'status_check' ] == 'inactive' ) {
-				echo esc_html( 'Activations purchased: ' . $live_status[ 'data' ][ 'total_activations_purchased' ] );
+			} elseif ( ! $this->get_api_key_status() && ! empty( $live_status ) && $live_status['status_check'] == 'inactive' ) {
+				echo esc_html( 'Activations purchased: ' . $live_status['data']['total_activations_purchased'] );
 				echo $line_break;
-				echo esc_html( 'Total Activations: ' . $live_status[ 'data' ][ 'total_activations' ] );
+				echo esc_html( 'Total Activations: ' . $live_status['data']['total_activations'] );
 				echo $line_break;
-				echo esc_html( 'Activations Remaining: ' . $live_status[ 'data' ][ 'activations_remaining' ] );
+				echo esc_html( 'Activations Remaining: ' . $live_status['data']['activations_remaining'] );
 			} elseif ( ! $this->get_api_key_status() && ! empty( $result_error ) ) {
 				echo esc_html__( 'Previous activation attempt errors:', $this->text_domain );
 				echo $line_break;
@@ -789,13 +793,14 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		/**
 		 * Sanitizes and validates all input and output for Dashboard
 		 *
-		 * @since 2.0
-		 *
 		 * @param $input
 		 *
 		 * @return mixed|string
+		 * @since 2.0
+		 *
 		 */
 		public function validate_options( $input ) {
+
 			// Load existing options, validate, and update with changes from input before returning
 			$options                             = $this->data;
 			$options[ $this->wc_am_api_key_key ] = trim( $input[ $this->wc_am_api_key_key ] );
@@ -827,7 +832,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			//}
 
 			// Should match the settings_fields() value
-			if ( ! empty( $_REQUEST[ 'option_page' ] ) && $_REQUEST[ 'option_page' ] != $this->wc_am_deactivate_checkbox_key ) {
+			if ( ! empty( $_REQUEST['option_page'] ) && $_REQUEST['option_page'] != $this->wc_am_deactivate_checkbox_key ) {
 				//if ( stripos( add_query_arg( null ), $this->wc_am_deactivation_tab_key ) === false ) {
 				if ( $activation_status == 'Deactivated' || $activation_status == '' || $api_key == '' || $checkbox_status == 'on' || $current_api_key != $api_key ) {
 					/**
@@ -847,9 +852,9 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 					if ( ! empty( $activation_result ) ) {
 						$activate_results = json_decode( $activation_result, true );
 
-						if ( $activate_results[ 'success' ] === true && $activate_results[ 'activated' ] === true ) {
+						if ( $activate_results['success'] === true && $activate_results['activated'] === true ) {
 							add_settings_error( 'activate_text', 'activate_msg', sprintf( __( '%s activated. ', $this->text_domain ), esc_attr( $this->software_title ) ) . esc_attr( "{$activate_results['message']}." ), 'updated' );
-							update_option( 'wc_am_' . $this->product_id . '_activate_success', $activate_results[ 'message' ] );
+							update_option( 'wc_am_' . $this->product_id . '_activate_success', $activate_results['message'] );
 							update_option( $this->wc_am_activated_key, 'Activated' );
 							update_option( $this->wc_am_deactivate_checkbox_key, 'off' );
 						}
@@ -859,7 +864,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 							update_option( $this->wc_am_activated_key, 'Deactivated' );
 						}
 
-						if ( isset( $activate_results[ 'data' ][ 'error_code' ] ) && ! empty( $this->data ) && ! empty( $this->wc_am_activated_key ) ) {
+						if ( isset( $activate_results['data']['error_code'] ) && ! empty( $this->data ) && ! empty( $this->wc_am_activated_key ) ) {
 							add_settings_error( 'wc_am_client_error_text', 'wc_am_client_error', esc_attr( "{$activate_results['data']['error']}" ), 'error' );
 							update_option( $this->wc_am_activated_key, 'Deactivated' );
 						}
@@ -888,7 +893,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				if ( ! empty( $deactivation_result ) ) {
 					$activate_results = json_decode( $deactivation_result, true );
 
-					if ( $activate_results[ 'success' ] === true && $activate_results[ 'deactivated' ] === true ) {
+					if ( $activate_results['success'] === true && $activate_results['deactivated'] === true ) {
 						if ( ! empty( $this->wc_am_activated_key ) ) {
 							update_option( $this->wc_am_activated_key, 'Deactivated' );
 							add_settings_error( 'wc_am_deactivate_text', 'deactivate_msg', esc_html__( 'API Key deactivated. ', $this->text_domain ) . esc_attr( "{$activate_results['activations_remaining']}." ), 'updated' );
@@ -897,7 +902,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 						return $options;
 					}
 
-					if ( isset( $activate_results[ 'data' ][ 'error_code' ] ) && ! empty( $this->data ) && ! empty( $this->wc_am_activated_key ) ) {
+					if ( isset( $activate_results['data']['error_code'] ) && ! empty( $this->data ) && ! empty( $this->wc_am_activated_key ) ) {
 						add_settings_error( 'wc_am_client_error_text', 'wc_am_client_error', esc_attr( "{$activate_results['data']['error']}" ), 'error' );
 						update_option( $this->wc_am_activated_key, 'Deactivated' );
 					}
@@ -922,7 +927,8 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			$this->deactivate( $args );
 		}
 
-		public function wc_am_deactivate_text() {}
+		public function wc_am_deactivate_text() {
+		}
 
 		public function wc_am_deactivate_textarea() {
 			echo '<input type="checkbox" id="' . esc_attr( $this->wc_am_deactivate_checkbox_key ) . '" name="' . esc_attr( $this->wc_am_deactivate_checkbox_key ) . '" value="on"';
@@ -963,7 +969,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				'product_id'       => $this->product_id,
 				'instance'         => $this->wc_am_instance_id,
 				'object'           => $this->wc_am_domain,
-				'software_version' => $this->wc_am_software_version
+				'software_version' => $this->wc_am_software_version,
 			);
 
 			$args       = wp_parse_args( $defaults, $args );
@@ -1004,7 +1010,7 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 				'wc_am_action' => 'deactivate',
 				'product_id'   => $this->product_id,
 				'instance'     => $this->wc_am_instance_id,
-				'object'       => $this->wc_am_domain
+				'object'       => $this->wc_am_domain,
 			);
 
 			$args       = wp_parse_args( $defaults, $args );
@@ -1028,13 +1034,17 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			if ( empty( $this->data[ $this->wc_am_api_key_key ] ) ) {
 				return '';
 			}
-
+			if ( empty( $this->wc_am_instance_id ) ) {
+				$instance_id             = wp_generate_password( 12, false );
+				$this->wc_am_instance_id = $instance_id;
+				update_option( $this->wc_am_instance_key, $instance_id );
+			}
 			$defaults = array(
 				'wc_am_action' => 'status',
 				'api_key'      => $this->data[ $this->wc_am_api_key_key ],
 				'product_id'   => $this->product_id,
 				'instance'     => $this->wc_am_instance_id,
-				'object'       => $this->wc_am_domain
+				'object'       => $this->wc_am_domain,
 			);
 
 			$target_url = esc_url_raw( $this->create_software_api_url( $defaults ) );
@@ -1099,11 +1109,11 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		/**
 		 * Sends and receives data to and from the server API
 		 *
-		 * @since  2.0
-		 *
 		 * @param array $args
 		 *
 		 * @return bool|string $response
+		 * @since  2.0
+		 *
 		 */
 		public function send_query( $args ) {
 			$target_url = esc_url_raw( add_query_arg( 'wc-api', 'wc-am-api', $this->api_url ) . '&' . http_build_query( $args ) );
@@ -1121,11 +1131,11 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 		/**
 		 * Check for updates against the remote server.
 		 *
-		 * @since  2.0
-		 *
 		 * @param object $transient
 		 *
 		 * @return object $transient
+		 * @since  2.0
+		 *
 		 */
 		public function update_check( $transient ) {
 			if ( empty( $transient->checked ) ) {
@@ -1147,25 +1157,25 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 			// Displays an admin error message in the WordPress dashboard
 			//$this->check_response_for_errors( $response );
 
-			if ( isset( $response[ 'data' ][ 'error_code' ] ) ) {
+			if ( isset( $response['data']['error_code'] ) ) {
 				add_settings_error( 'wc_am_client_error_text', 'wc_am_client_error', "{$response['data']['error']}", 'error' );
 			}
 
-			if ( $response !== false && $response[ 'success' ] === true ) {
+			if ( $response !== false && $response['success'] === true ) {
 				// New plugin version from the API
-				$new_ver = (string) $response[ 'data' ][ 'package' ][ 'new_version' ];
+				$new_ver = (string) $response['data']['package']['new_version'];
 				// Current installed plugin version
 				$curr_ver = (string) $this->wc_am_software_version;
 
 				$package = array(
-					'id'             => $response[ 'data' ][ 'package' ][ 'id' ],
-					'slug'           => $response[ 'data' ][ 'package' ][ 'slug' ],
-					'plugin'         => $response[ 'data' ][ 'package' ][ 'plugin' ],
-					'new_version'    => $response[ 'data' ][ 'package' ][ 'new_version' ],
-					'url'            => $response[ 'data' ][ 'package' ][ 'url' ],
-					'tested'         => $response[ 'data' ][ 'package' ][ 'tested' ],
-					'package'        => $response[ 'data' ][ 'package' ][ 'package' ],
-					'upgrade_notice' => $response[ 'data' ][ 'package' ][ 'upgrade_notice' ],
+					'id'             => $response['data']['package']['id'],
+					'slug'           => $response['data']['package']['slug'],
+					'plugin'         => $response['data']['package']['plugin'],
+					'new_version'    => $response['data']['package']['new_version'],
+					'url'            => $response['data']['package']['url'],
+					'tested'         => $response['data']['package']['tested'],
+					'package'        => $response['data']['package']['package'],
+					'upgrade_notice' => $response['data']['package']['upgrade_notice'],
 				);
 
 				if ( isset( $new_ver ) && isset( $curr_ver ) ) {
@@ -1174,9 +1184,9 @@ if ( ! class_exists( 'Wooventory_AM_Client' ) ) {
 							$transient->response[ $this->plugin_name ] = (object) $package;
 							unset( $transient->no_update[ $this->plugin_name ] );
 						} elseif ( $this->plugin_or_theme == 'theme' ) {
-							$transient->response[ $this->plugin_name ][ 'new_version' ] = $response[ 'data' ][ 'package' ][ 'new_version' ];
-							$transient->response[ $this->plugin_name ][ 'url' ]         = $response[ 'data' ][ 'package' ][ 'url' ];
-							$transient->response[ $this->plugin_name ][ 'package' ]     = $response[ 'data' ][ 'package' ][ 'package' ];
+							$transient->response[ $this->plugin_name ]['new_version'] = $response['data']['package']['new_version'];
+							$transient->response[ $this->plugin_name ]['url']         = $response['data']['package']['url'];
+							$transient->response[ $this->plugin_name ]['package']     = $response['data']['package']['package'];
 						}
 					}
 				}
