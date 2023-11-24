@@ -946,7 +946,7 @@ final class Ajax {
 			} else {
 				$body   = wp_remote_retrieve_body( $response );
 				$decode = json_decode( $body, true );
-				if ( $decode ) {
+				if ( $decode && array_key_exists( 'line_items', $decode ) ) {
 					$data                 = $this->extract_data(
 						$decode,
 						array(
@@ -958,9 +958,11 @@ final class Ajax {
 							'payment_url',
 							'status',
 							'variation_id',
+							'line_items',
 						),
 					);
-					$data['variation_id'] = wp_list_pluck( $decode['line_items'], 'variation_id' );
+					$data['variation_id'] = array_column( $data['line_items'], 'variation_id' );
+					$data['plan'] = array_column( $data['line_items'], 'name' );
 				}
 			}
 		}
