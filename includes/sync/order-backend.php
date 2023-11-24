@@ -3,9 +3,9 @@
 /**
  * All backend order sync related functions.
  *
- * @category Zoho_Integration
- * @package  WooZo_Inventory
- * @author   Roadmap Studios <info@wooventory.com>
+ * @category Fulfillment
+ * @package  Wooventory
+ * @author   Roadmap Studios <info@roadmapstudios.com>
  * @license  GNU General Public License v3.0
  * @link     https://wooventory.com
  */
@@ -45,6 +45,15 @@ function zoho_sync_renewal_order($renewal_order, $subscription)
 }
 
 /**
+ * Sync Order when placed via frontend
+ */
+add_action('woocommerce_new_order', 'zi_sync_frontend_order', 10, 2);
+function zi_sync_frontend_order($order_id, $order)
+{
+   zoho_admin_order_sync($order_id);
+}
+
+/**
  * Function for admin zoho sync call.
  */
 function zoho_admin_order_sync($order_id)
@@ -64,7 +73,7 @@ function zoho_admin_order_sync($order_id)
     $order_status = $order->get_status();
     $note = $order->get_customer_note();
     $notes = preg_replace('/[^A-Za-z0-9\-]/', ' ', $note);
-    $total_shipping = $order->get_total_shipping();
+    $total_shipping = $order->get_shipping_total();
     $shipping_method = $order->get_shipping_method();
     $discount_amt = $order->get_total_discount();
 
@@ -745,16 +754,18 @@ add_action('add_meta_boxes', 'zoho_admin_metabox');
  * Bulk-action to sync orders from WooCommerce to Zoho
  * @param: $bulk_array
  */
-add_filter('bulk_actions-edit-shop_order', 'zi_sync_all_orders_to_zoho');
-function zi_sync_all_orders_to_zoho($bulk_array)
+add_filter('bulk_actions-woocommerce_page_wc-orders', 'zi_sync_all_orders_to_zoho', 10, 1);
+function zi_sync_all_orders_to_zoho($actions)
 {
-    $bulk_array['sync_order_to_zoho'] = 'Sync to Zoho';
-    return $bulk_array;
+    $actions['sync_order_to_zoho'] = __( 'Sync to Zoho', 'woocommerce' );
+    return $actions;
 }
 
-add_filter('handle_bulk_actions-edit-shop_order', 'zi_sync_all_orders_to_zoho_handler', 10, 3);
+add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'zi_sync_all_orders_to_zoho_handler', 10, 3);
 function zi_sync_all_orders_to_zoho_handler($redirect, $action, $object_ids)
 {
+    if ( $action !== 'sync_order_to_zoho' )
+        return $redirect; // Exit
     // let's remove query args first
     $redirect = remove_query_arg('sync_order_to_zoho_done', $redirect);
 

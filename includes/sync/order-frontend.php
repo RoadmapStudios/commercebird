@@ -13,13 +13,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-add_action('woocommerce_new_order', 'zi_find_order_id', 10, 2);
-function zi_find_order_id($order_id, $order)
-{
-    $sync_order = new OrderClass();
-    $sync_order->zi_order_sync($order_id);
-}
-
 /**
  * Function to map customer on checkout before placing order
  */
