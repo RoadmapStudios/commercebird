@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    svg {
+        @apply w-6 h-6 text-gray-500;
+    }
+
+    img {
+        @apply block w-auto h-12;
+    }
+
+    label {
+        @apply block text-sm font-medium text-gray-700;
+    }
+
+    input {
+        @apply block w-full border-gray-300 rounded-md shadow focus:border-teal-500 focus:ring-teal-500 sm:text-sm;
+    }
+
+    input[type="checkbox"] {
+        @apply w-4 h-4 text-indigo-600 border-gray-300 rounded shadow focus:ring-indigo-500;
+    }
+}

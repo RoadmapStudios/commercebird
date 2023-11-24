@@ -1,20 +1,40 @@
 {
   "name": "wooventory/wooventory",
-  "description": "Assistance plugin to manage Wooventory",
+  "description": "This plugin helps you get the most of Wooventory by allowing you to manage product images, integrations and more",
   "type": "wordpress-plugin",
-  "license": "GPL-2.0-or-later",
+  "license": "GPL-3.0-or-later",
   "autoload": {
-      "psr-4": {
-          "Wooventory\\Wooventory\\": "includes/"
-      }
+    "psr-4": {
+      "RMS\\Admin\\": "admin/includes/"
+    },
+    "classmap": [
+      "includes/classes/"
+    ]
   },
   "authors": [
-      {
-          "name": "wooventory",
-          "email": "info@roadmapstudios.com"
-      }
+    {
+      "name": "Roadmap Studios",
+      "email": "info@roadmapstudios.com",
+      "role": "Owner"
+    }
   ],
   "require": {
-    "automattic/woocommerce": "^3.1"
+    "php": ">=7.4",
+    "ext-json": "*",
+    "ext-curl": "*",
+    "automattic/woocommerce": ">=3.1.0"
+  },
+  "require-dev": {
+    "filp/whoops": ">=2.15.4",
+    "roots/wordpress-no-content": ">=6.3.2",
+    "symfony/var-dumper": "^5.4",
+    "wp-coding-standards/wpcs": ">=3.0.1"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
