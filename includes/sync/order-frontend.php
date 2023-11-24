@@ -14,6 +14,21 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Sync the order from frontend to Zoho Inventory
+ */
+add_action('wp_enqueue_scripts', 'zi_sync_frontend_order');
+function zi_sync_frontend_order() {
+
+    // Check if we are on the "Order Received" page
+    if (is_wc_endpoint_url('order-received')) {
+        // Output JavaScript to delay the execution
+        wp_enqueue_script('zoho-frontend-ajax', RMS_DIR_URL . 'admin/js/zoho_frontend_order.js', array('jquery'), RMS_VERSION, true);
+        wp_localize_script('zoho-frontend-ajax', 'frontendajax', array('ajaxurl' => admin_url('admin-ajax.php')));
+    }
+}
+
+
+/**
  * Function to map customer on checkout before placing order
  */
 add_action('template_redirect', 'zoho_contact_check');
