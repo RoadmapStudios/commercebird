@@ -41,6 +41,11 @@ class ImageClass
      */
     public function args_attach_image($item_id, $item_name, $post_id, $image_name, $author_id)
     {
+        // Check if the Imagick class exists
+        if (!class_exists('Imagick')) {
+            // Imagick class is not available, so you cannot perform image comparison.
+            return;
+        }
         // $fd = fopen(__DIR__ . '/image_sync.txt', 'a+');
 
         global $wpdb;
@@ -78,8 +83,10 @@ class ImageClass
         }
 
         $attach_id = intval(get_post_meta($post_id, 'zoho_product_image_id', true));
+        $imageExistsInLibrary = $this->compareImageWithMediaLibrary($temp_file);
         // fwrite($fd, PHP_EOL . 'Attach Id : ' . $attach_id);
-        if ($attach_id > 0) {
+        if ($imageExistsInLibrary) {
+            $attach_id = $imageExistsInLibrary;
             wp_delete_attachment($attach_id, true);
             $image_post_id = 0;
         } else {
@@ -170,6 +177,45 @@ class ImageClass
         }
         // fclose($fd);
         return;
+    }
+
+    /**
+     * Compare the image with existing media library images.
+     *
+     * @param string $imagePath The path to the image to be checked.
+     * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
+     */
+    protected function compareImageWithMediaLibrary($imagePath)
+    {
+        // Load the image you want to check
+        $compareImage = new Imagick($imagePath);
+
+        // Get the list of existing media library images
+        $args = array(
+            'post_type' => 'attachment',
+            'post_mime_type' => 'image',
+            'posts_per_page' => -1,
+        );
+        $mediaLibraryImages = get_posts($args);
+
+        foreach ($mediaLibraryImages as $mediaImage) {
+            // Get the path to the existing image in the media library
+            $existingImagePath = get_attached_file($mediaImage->ID);
+
+            // Load the existing image
+            $existingImage = new Imagick($existingImagePath);
+
+            // Compare the images using Imagick::compareImages
+            $result = $existingImage->compareImages($compareImage, Imagick::METRIC_MEANSQUAREERROR);
+
+            // If the mean square error is below a certain threshold, consider the images the same
+            if ($result[1] < 0.1) {
+                return $mediaImage->ID; // Return the ID of the existing image
+            }
+        }
+
+        // If no match is found in the loop, return false
+        return false;
     }
 
     /**
