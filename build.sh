@@ -27,7 +27,7 @@ npm --prefix ./admin/assets/ run build-only
 
 # copy all files for production
 progress_message "Copying files for production..."
-cp -R  ./includes ./libraries ./admin/assets/dist ./admin/includes ./admin/wooventory-icon.svg ./vendor ./*.php composer.json changelog.txt  LICENSE README.md  ./"$plugin_name"/ --parents
+cp -R  ./includes ./libraries ./admin/js ./admin/assets/dist ./admin/includes ./admin/wooventory-icon.svg ./vendor ./*.php composer.json changelog.txt  LICENSE README.md  ./"$plugin_name"/ --parents
 
 #
 ## Install PHP dependencies
