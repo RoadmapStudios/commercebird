@@ -1,5 +1,5 @@
 <template>
-  <Card :foot="true" title="Your Plan">
+  <Card :foot="true" :title="`${store.subscription.plan && store.subscription.plan.length > 0 ? store.subscription.plan : 'Your Plan'}`">
     <template #action>
       <LoaderIcon :loading="loader.isLoading(backendAction.get_subscription)"/>
     </template>
@@ -55,4 +55,5 @@ import LoaderIcon from "@/components/ui/LoaderIcon.vue";
 
 const store = useHomepageStore();
 const loader = useLoadingStore();
+
 </script>

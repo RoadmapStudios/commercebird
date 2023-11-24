@@ -169,6 +169,7 @@ export interface Subscription {
     needs_payment: boolean;
     next_payment_date_gmt: string;
     variation_id: number[];
+    plan: string[];
 }
 
 export interface FeeLine {
