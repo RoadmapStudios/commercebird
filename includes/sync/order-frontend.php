@@ -13,45 +13,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-add_action('woocommerce_thankyou', 'zi_find_order_id', 10, 1);
-function zi_find_order_id($order_id)
+add_action('woocommerce_new_order', 'zi_find_order_id', 10, 2);
+function zi_find_order_id($order_id, $order)
 {
-    // check license
-    global $wcam_lib;
-    if (!$wcam_lib->get_api_key_status()) {
-        return;
-    }
-?>
-    <script type="text/javascript">
-        (function($) {
-            $(document).ready(function() {
-                $.ajax({
-                    url: '<?php echo admin_url('admin-ajax.php'); ?>',
-                    type: 'post',
-                    data: {
-                        'action': 'sync_zoho_order_thankyou',
-                        'order_id': '<?php echo $order_id; ?>'
-                    },
-                    success: function(data) {
-
-                    }
-                });
-            });
-        })(jQuery);
-    </script>
-    <?php
-}
-
-add_action("wp_ajax_sync_zoho_order_thankyou", "sync_zoho_order_thankyou");
-add_action("wp_ajax_nopriv_sync_zoho_order_thankyou", "sync_zoho_order_thankyou");
-function sync_zoho_order_thankyou()
-{
-    // logging
-    // $fd = fopen(__DIR__.'/front-order.txt', 'w+');
-    $order_id = $_POST['order_id'];
-    // fwrite($fd, PHP_EOL. 'order_id: '.$order_id);
-    // fclose($fd);
-
     $sync_order = new OrderClass();
     $sync_order->zi_order_sync($order_id);
 }
