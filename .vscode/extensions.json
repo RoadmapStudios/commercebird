@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "devsense.phptools-vscode",
+        "valeryanm.vscode-phpsab",
+        "jaguadoromero.vscode-php-create-class",
+        "mehedidracula.php-namespace-resolver",
+        "neilbrayfield.php-docblocker",
+        "andrewmcodes.tailwindcss-extension-pack",
+        "hollowtree.vue-pack"
+    ]
+}

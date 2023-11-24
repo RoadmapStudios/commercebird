@@ -1,3 +1,15 @@
+Version 2.0.1 - November 24th 2023
+* New: image comparison for zoho item to avoid duplication
+* Tweak: refactored frontend sync to zoho inventory
+* Fix: License key activation
+
+Version 2.0.0 - November 22nd 2023
+* New: Zoho Inventory Integration
+* New: complete rebuild of plugin in Vue.js
+* Tweak: improved CORS support
+* Tweak: PHP 8.1 support
+* Compatibility added for WooCommerce 8.3
+
 Version 1.0.4 - September 6th 2023
 * New: timezone support for order timestamp
 * Fix: date formatting on settings page
