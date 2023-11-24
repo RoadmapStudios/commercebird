@@ -228,12 +228,11 @@ function zoho_item_id_variation_field($loop, $variation_data, $variation)
     ));
 }
 
-// Disable Guest Checkout
+// Disable Guest Checkout if Zoho Inventory is active
 function zi_disable_guest_checkout()
 {
-
-    $zoho_sync_status = get_option('zoho_sync_status');
-    if ($zoho_sync_status != 'true') {
+    $zoho_sync_status = get_option('zoho_inventory_access_token');
+    if ($zoho_sync_status) {
         $value = 'no';
         return $value;
     }
