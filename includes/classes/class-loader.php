@@ -95,27 +95,6 @@ class Wooventory
     }
 
     /**
-     * Enqueue scripts and styles for the admin
-     */
-    public static function enqueueScriptAdmin()
-    {
-        //Admin page
-        $page = filter_input(INPUT_GET, 'page');
-        if (empty($page) || $page !== RMS_MENU_SLUG) {
-            return;
-        }
-        wp_localize_script(
-            'rms-zi-scripts-admin',
-            'rmsZIJsVars',
-            array(
-                'ajaxURL' => admin_url('admin-ajax.php'),
-            )
-        );
-
-        wp_enqueue_script('rms-zi-scripts-admin');
-    }
-
-    /**
      * Place review output
      * @return void
      */
