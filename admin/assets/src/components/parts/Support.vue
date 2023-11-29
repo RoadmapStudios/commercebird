@@ -14,7 +14,7 @@
               <p class="text-sm text-gray-500">{{ link.subtitle }}</p>
             </div>
             <div>
-              <BaseLink href="link.link" target="_blank">{{
+              <BaseLink :href="link.link" target="_blank">{{
                 link.button
               }}</BaseLink>
             </div>
@@ -37,7 +37,7 @@ const links = {
   meeting: {
     title: "Schedule a Meeting",
     subtitle: "Book a Demo with our Sales Team",
-    link: "https://wooventory.zohobookings.eu/",
+    link: "https://roadmapstudios.zohobookings.eu/#/customer/roadmapstudios",
     icon: CalendarDaysIcon,
     button: "Book Now",
   },
