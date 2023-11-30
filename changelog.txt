@@ -1,3 +1,6 @@
+Version 2.0.2 - November 30 2023
+* Fixed Cronjob
+
 Version 2.0.1 - November 24th 2023
 * New: image comparison for zoho item to avoid duplication
 * Tweak: refactored frontend sync to zoho inventory
