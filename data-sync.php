@@ -129,11 +129,14 @@ function zoho_ajax_call_variable_item_from_zoho()
         $loop_completed = true;
     }
 
-    
+
     wp_send_json_success(['message' => 'Items are being imported in background. You can visit other tabs :).']);
 
 }
 
+
+// Attach the function to the cron event
+add_action('zi_execute_import_sync', 'zoho_ajax_call_item_from_zoho_func');
 
 /**
  * Function to be called at simple item sync from zoho to woo ajax call.

@@ -128,6 +128,23 @@ dbDelta($zi_create_sql);
 register_activation_hook(__FILE__, 'zi_create_order_log_table');
  */
 
+// Register Cronjob Hook when activating the plugin
+register_activation_hook(__FILE__, 'zi_custom_zoho_cron_activate');
+
+function zi_custom_zoho_cron_activate() {
+    $interval = get_option('zi_cron_interval', 'daily');
+    if (!wp_next_scheduled('zi_execute_import_sync')) {
+        wp_schedule_event(time(), $interval, 'zi_execute_import_sync');
+    }
+}
+
+// Unschedule event upon plugin deactivation
+register_deactivation_hook(__FILE__, 'zi_zoho_cron_deactivate');
+function zi_zoho_cron_deactivate() {
+    wp_clear_scheduled_hook('zi_execute_import_sync');
+}
+
+
 /**
  * Declaring compatibility for WooCommerce HPOS
  */
