@@ -127,7 +127,7 @@ class Wooventory
 
     public static function render_review_request_notice()
     {
-        $review_url = "https://wooventory.com/product/woocommerce-zoho-inventory";
+        $review_url = "https://wooventory.com/product/wooventory";
         ?>
         <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice" data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>" data-action="dismiss_rmszi_review_request_notice" style="display:none">
             <h3>
