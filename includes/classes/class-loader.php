@@ -133,7 +133,7 @@ class Wooventory
             <h3>
                 Just wanted to say thank you for using Wooventory in your store.
             </h3>
-            <p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers! PS: you will also get 25% on your renewal payment as our thank you ;)</p>
+            <p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers!</p>
             <p class="action-row">
                 <button type="button" class="button button-primary" onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
                 <button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
