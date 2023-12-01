@@ -45,7 +45,7 @@ final class Template {
 	 * It will add module attribute to script tag.
 	 *
 	 * @param string $tag of script.
-	 * @param string $id  of script.
+	 * @param string $id of script.
 	 *
 	 * @return string
 	 */
@@ -75,12 +75,13 @@ final class Template {
 			self::NAME,
 			'zoho_inventory_admin',
 			array(
-				'security_token' => wp_create_nonce( self::NAME ),
-				'redirect_uri'   => admin_url( 'admin.php?page=wooventory-app' ),
-				'url'            => admin_url( 'admin-ajax.php' ),
-				'wc_tax_enabled' => is_plugin_active('woocommerce/woocommerce.php') ? wc_tax_enabled() : false,
-				'roles'          => $wp_roles->get_names(),
-				'b2b_enabled'    => class_exists( 'Addify_B2B_Plugin' ),
+				'security_token'  => wp_create_nonce( self::NAME ),
+				'redirect_uri'    => admin_url( 'admin.php?page=wooventory-app' ),
+				'url'             => admin_url( 'admin-ajax.php' ),
+				'wc_tax_enabled'  => is_plugin_active( 'woocommerce/woocommerce.php' ) ? wc_tax_enabled() : false,
+				'roles'           => $wp_roles->get_names(),
+				'b2b_enabled'     => class_exists( 'Addify_B2B_Plugin' ),
+				'imagick_enabled' => extension_loaded( 'imagick' ),
 			),
 		);
 	}

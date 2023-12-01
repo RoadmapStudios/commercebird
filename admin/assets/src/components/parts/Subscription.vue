@@ -1,7 +1,16 @@
 <template>
   <Card :foot="true" :title="`${store.subscription.plan && store.subscription.plan.length > 0 ? store.subscription.plan : 'Your Plan'}`">
+    <template #title>
+      <Badge :text="store.subscription.status"/>
+    </template>
     <template #action>
-      <LoaderIcon :loading="loader.isLoading(backendAction.get_subscription)"/>
+      <LoaderIcon v-if="loader.isLoading(backendAction.get_subscription)" :loading="loader.isLoading(backendAction.get_subscription)"/>
+      <span v-else>
+        <a class="py-1 font-medium text-rose-600" v-if="store.subscription && store.subscription.needs_payment" :href="store.subscription.payment_url"
+                  target="_blank">
+          Reactivate Plan
+        </a>
+      </span>
     </template>
     <div v-if="store.subscription.fee_lines" class="px-4 py-2 space-y-4">
       <p class="text-sm font-medium text-gray-700">Activated Integrations</p>
@@ -37,10 +46,6 @@
         <BaseLink href="https://wooventory.com/pricing" target="_blank">
           View Plans
         </BaseLink>
-        <BaseLink v-if="store.subscription && store.subscription.needs_payment" :href="store.subscription.payment_url"
-                  target="_blank">
-          Reactivate Plan
-        </BaseLink>
       </div>
     </template>
   </Card>
@@ -52,6 +57,7 @@ import {backendAction, formatDate} from "@/composables";
 import Card from '../ui/Card.vue';
 import BaseLink from "@/components/ui/BaseLink.vue";
 import LoaderIcon from "@/components/ui/LoaderIcon.vue";
+import Badge from "@/components/ui/Badge.vue";
 
 const store = useHomepageStore();
 const loader = useLoadingStore();
