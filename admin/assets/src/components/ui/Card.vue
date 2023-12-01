@@ -2,10 +2,11 @@
   <div class="flex flex-col overflow-hidden bg-white divide-y divide-gray-200 rounded-lg shadow h-fit">
     <div v-if="title" class="px-4 py-2 sm:px-6">
       <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-nowrap">
-        <div class="mt-2 ml-4">
+        <div class="mt-2 ml-2 inline-flex gap-2">
           <h3 class="text-lg font-medium leading-6 text-gray-900">
             {{ title }}
           </h3>
+          <slot name="title"></slot>
         </div>
         <div class="flex-shrink-0 mt-2 ml-4">
           <slot name="action"/>

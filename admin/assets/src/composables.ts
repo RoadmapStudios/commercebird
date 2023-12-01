@@ -59,6 +59,7 @@ export const backendAction: BackendAction = {
 export const taxEnabled = window.zoho_inventory_admin.wc_tax_enabled === '1'
 export const roles = window.zoho_inventory_admin.roles
 export const b2b_enabled = window.zoho_inventory_admin.b2b_enabled === '1'
+export const imagick_enabled = window.zoho_inventory_admin.imagick_enabled === '1'
 export const redirect_uri = window.zoho_inventory_admin.redirect_uri
 export const origin = window.location.origin;
 /**
