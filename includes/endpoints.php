@@ -117,9 +117,9 @@ if(class_exists('Alg_WC_Custom_Order_Statuses')) {
 		);
 	}
 
-	function wp_get_zoho_order_data() {
+	function wp_get_zoho_order_data($request) {
 		$dir = dirname(plugin_dir_path(__FILE__), 1);
-		$postdata = '';
+		$postdata = $request->get_json_params();
 		if(array_key_exists('JSONString', $_POST)) {
 			$postdata = str_replace('\\', '', $_POST['JSONString']);
 			file_put_contents($dir.'/zi_shipping_status.txt', $postdata);
