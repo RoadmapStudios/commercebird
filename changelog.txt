@@ -1,3 +1,7 @@
+Version 2.0.3 - December 6th 2023
+* Fix: Webhooks sync
+* Tweak: added warning for missing Imagick library
+
 Version 2.0.2 - November 30 2023
 * Fixed Cronjob
 
