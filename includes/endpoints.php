@@ -531,8 +531,6 @@ function zi_process_product_response($data) {
 				update_post_meta($variation_id, '_length', $length);
 				update_post_meta($variation_id, '_width', $width);
 				update_post_meta($variation_id, '_height', $height);
-				update_post_meta($variation_id, '_weight_unit', $details->weight_unit);
-				update_post_meta($variation_id, '_dimension_unit', $details->dimension_unit);
 			}
 			wc_delete_product_transients($group_id); // Clear/refresh cache
 			// end of grouped item creation
@@ -637,8 +635,6 @@ function zi_process_product_response($data) {
 				$simple_product->set_length($length);
 				$simple_product->set_width($width);
 				$simple_product->set_height($height);
-				$simple_product->set_weight_unit($details->weight_unit);
-				$simple_product->set_dimension_unit($details->dimension_unit);
 				
 				// featured image
 				$zi_disable_itemimage_sync = get_option('zoho_disable_itemimage_sync_status');
