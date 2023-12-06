@@ -51,7 +51,6 @@ if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
 	define( 'RMS_PLUGIN_URL', 'https://wooventory.com/product/woocommerce-zoho-inventory/' );
 }
 
-require_once RMS_DIR_PATH . 'includes/endpoints.php';
 require_once RMS_DIR_PATH . 'includes/woo-functions.php';
 require_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
 require_once RMS_DIR_PATH . 'includes/sync/order-frontend.php';
@@ -66,6 +65,9 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use RMS\Admin\Ajax;
 use RMS\Admin\Cors;
 use RMS\Admin\Template;
+use RMS\API\ProductWebhook;
+use RMS\API\ShippingWebhook;
+use RMS\API\Zoho;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
@@ -267,3 +269,11 @@ if ( class_exists( 'Wooventory_AM_Client' ) ) {
 	);
 	$wcam_lib             = new Wooventory_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://wooventory.com/', 'Wooventory', '', $wcam_lib_custom_menu, false );
 }
+add_action(
+	'rest_api_init',
+	function () {
+		new Zoho();
+		new ProductWebhook();
+		new ShippingWebhook();
+	}
+);
