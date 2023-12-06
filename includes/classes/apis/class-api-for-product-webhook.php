@@ -141,9 +141,11 @@ class ProductWebhook {
 				wp_set_object_terms( $groupid, $final_tags, 'product_tag' );
 			}
 
-			// Brand
-			if ( ! empty( $item_brand ) ) {
-				wp_set_object_terms( $groupid, $item_brand, 'product_brand' );
+			// Brand update if taxonomy product_brand exists
+			if ( ! empty( $item_brand ) && taxonomy_exists( 'product_brand' ) ) {
+			    wp_set_object_terms( $groupid, $item_brand, 'product_brand' );
+			} elseif(!empty($item_brand) && taxonomy_exists('product_brands')) {
+				wp_set_object_terms($groupid, $item_brand, 'product_brands');
 			}
 
 			// fwrite($fd, PHP_EOL . 'Query : ' . 'SELECT * FROM ' . $wpdb->prefix . "postmeta WHERE meta_key='zi_item_id' AND meta_value='" . $groupid . "'");
@@ -334,9 +336,11 @@ class ProductWebhook {
 					wp_set_object_terms( $pdt_id, $final_tags, 'product_tag' );
 				}
 
-				// Brand
-				if ( ! empty( $item_brand ) ) {
-					wp_set_object_terms( $pdt_id, $item_brand, 'product_brand' );
+				// Brand update if taxonomy product_brand(s) exists
+				if(!empty($item_brand) && taxonomy_exists('product_brand')) {
+					wp_set_object_terms($pdt_id, $item_brand, 'product_brand');
+				} elseif(!empty($item_brand) && taxonomy_exists('product_brands')) {
+					wp_set_object_terms($pdt_id, $item_brand, 'product_brands');
 				}
 
 				// stock
