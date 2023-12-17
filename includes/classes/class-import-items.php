@@ -296,9 +296,9 @@ class ImportProductClass
                         if (!empty($arr->brand)) {
                             // check if the Brand or Brands taxonomy exists and then update the term
                             if(taxonomy_exists('product_brand')) {
-                                wp_set_object_terms($pdt_id, $arr->brand, 'brand');
+                                wp_set_object_terms($pdt_id, $arr->brand, 'product_brand');
                             } elseif(taxonomy_exists('product_brands')) {
-                                wp_set_object_terms($pdt_id, $arr->brand, 'brands');
+                                wp_set_object_terms($pdt_id, $arr->brand, 'product_brands');
                             }
                         }
                         $item_ids[] = $arr->item_id;

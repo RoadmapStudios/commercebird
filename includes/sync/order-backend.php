@@ -118,7 +118,7 @@ function zoho_admin_order_sync($order_id)
         if (empty($userid) && empty($user_email)) {
             // fwrite($fd,PHP_EOL.'ALL EMPTY');
             $order->add_order_note('Zoho Order Sync: UserId or email not found');
-            exit();
+            return;
         }
         $valOrder = array_shift($sale_order);
         // fwrite($fd, PHP_EOL . 'USER ID : ' . $userid);
@@ -415,7 +415,7 @@ function zoho_admin_order_sync($order_id)
                 $pdt1 .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
             }
 
-            // if there are order fees
+            // Check if there are order fees total is more than 0
             $order_fees = $order->get_fees();
             // $transaction_fee = get_transaction_fees($order_id);
             if (!empty($order_fees)) {
@@ -423,8 +423,10 @@ function zoho_admin_order_sync($order_id)
                     $fee_name = $order_fee->get_name();
                     $fee_total = $order_fee->get_total();
                 }
-                $pdt1 .= ',"adjustment":' . $fee_total . '';
-                $pdt1 .= ',"adjustment_description":"' . $fee_name . '"';
+                if ($fee_total > 0) {
+                    $pdt1 .= ',"adjustment":' . $fee_total . '';
+                    $pdt1 .= ',"adjustment_description":"' . $fee_name . '"';
+                }
             }
             // } elseif (!empty($transaction_fee)) {
             //     $pdt1 .= ',"adjustment":"' . -$transaction_fee . '"';
@@ -505,7 +507,6 @@ function zoho_admin_order_sync($order_id)
             $order->update_meta_data('zi_salesorder_id', $response_msg['zi_salesorder_id']);
             $order->save();
         }
-        // exit();
         return;
     }
 }
@@ -653,7 +654,7 @@ function single_salesorder_void($order_id)
 function single_saleorder_zoho_inventory($order_id, $pdt1)
 {
     //start logging
-    $fd = fopen(__DIR__ . '/order-sync-backend.txt', 'w+');
+    // $fd = fopen(__DIR__ . '/order-sync-backend.txt', 'w+');
 
     $zoho_inventory_oid = get_option('zoho_inventory_oid');
     $zoho_inventory_url = get_option('zoho_inventory_url');
