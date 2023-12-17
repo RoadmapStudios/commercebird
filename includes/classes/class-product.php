@@ -847,43 +847,55 @@ class ProductClass
      */
     public function zi_product_to_woocommerce($item, $item_stock = '', $type = '')
     {
-        if ($item->status == 'active') {
-            $status = 'publish';
-        } else {
-            return;
-        }
-        $product = new WC_Product();
-
-        $allow_backorders = get_option('woocommerce_allow_backorders');
-        $zi_stock_sync = get_option('zoho_stock_sync_status');
-        // Set the product data
-        $product->set_status($status);
-        $product->set_name($item->name);
-        $product->set_regular_price($item->rate);
-        $product->set_description($item->description);
-        $product->set_sku($item->sku);
-        // Set the stock management properties
-        if (!empty($item_stock) && $zi_stock_sync != 'true') {
-            $product->set_manage_stock(true);
-            $product->set_stock_quantity($item_stock);
-            if ($item_stock > 0) {
-                $product->set_stock_status('instock');
-            } elseif ($item_stock < 0 && $allow_backorders === 'yes') {
-                $product->set_stock_status('onbackorder');
+        try {
+            if ($item->status == 'active') {
+                $status = 'publish';
             } else {
-                $product->set_stock_status('outofstock');
+                return;
             }
-        }
-        // Save the product
-        $product_id = $product->save();
+            $product = new WC_Product();
 
-        // Map composite items metadata to convert product as bundle product.
-        if ('composite' === $type) {
-            update_post_meta($product_id, '_wc_pb_layout_style', 'default');
-            update_post_meta($product_id, '_wc_pb_add_to_cart_form_location', 'default');
-            wp_set_object_terms($product_id, 'bundle', 'product_type');
+            $allow_backorders = get_option('woocommerce_allow_backorders');
+            $zi_stock_sync = get_option('zoho_stock_sync_status');
+
+            // Set the product data
+            $product->set_status($status);
+            $product->set_name($item->name);
+            $product->set_regular_price($item->rate);
+            $product->set_description($item->description);
+            $product->set_sku($item->sku);
+
+            // Set the stock management properties
+            if (!empty($item_stock) && $zi_stock_sync != 'true') {
+                $product->set_manage_stock(true);
+                $product->set_stock_quantity($item_stock);
+
+                if ($item_stock > 0) {
+                    $product->set_stock_status('instock');
+                } elseif ($item_stock < 0 && $allow_backorders === 'yes') {
+                    $product->set_stock_status('onbackorder');
+                } else {
+                    $product->set_stock_status('outofstock');
+                }
+            }
+
+            // Save the product
+            $product_id = $product->save();
+
+            // Map composite items metadata to convert product as a bundle product.
+            if ('composite' === $type) {
+                update_post_meta($product_id, '_wc_pb_layout_style', 'default');
+                update_post_meta($product_id, '_wc_pb_add_to_cart_form_location', 'default');
+                wp_set_object_terms($product_id, 'bundle', 'product_type');
+            }
+
+            return $product_id;
+        } catch (Exception $e) {
+            // Handle the exception, log it, or perform any necessary actions.
+            error_log('Error creating WooCommerce product: ' . $e->getMessage());
+            return false; // Or you can rethrow the exception if needed.
         }
-        return $product_id;
     }
+
 }
 $productClass = new ProductClass;

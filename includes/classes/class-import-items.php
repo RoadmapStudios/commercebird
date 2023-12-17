@@ -229,11 +229,11 @@ class ImportProductClass
                     $allow_to_import = false;
                     // Check if product exists with same sku.
                     if ($prod_id) {
-                        $allow_to_import = false;
                         $zi_item_id = get_post_meta($prod_id, 'zi_item_id', true);
                         if (empty($zi_item_id)) {
                             // Map existing item with zoho id.
                             update_post_meta($prod_id, 'zi_item_id', $arr->item_id);
+                            $allow_to_import = true;
                         }
                     }
                     if ('' == $is_bundle && empty($is_grouped)) {
@@ -243,22 +243,18 @@ class ImportProductClass
                     if (!empty($is_grouped)) {
                         $allow_to_import = false;
                         $this->sync_variation_of_group($arr);
+                        continue;
                     }
 
                     // Get the post id
                     $pdt_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = '%s' LIMIT 1", $arr->item_id));
 
-                    if ($allow_to_import == true) {
-                        // fwrite($fd, PHP_EOL . 'Product Import ');
+                    if (empty($pdt_id) && $allow_to_import == true) {
                         $product_class = new ProductClass();
                         $pdt_id = $product_class->zi_product_to_woocommerce($arr, '', '');
-                        // fwrite($fd, PHP_EOL . 'After Import Done : ');
                         if ($pdt_id) {
-                            // fwrite($fd, PHP_EOL . 'Update post meta');
                             update_post_meta($pdt_id, 'zi_item_id', $arr->item_id);
                         }
-                    } else {
-                        // fwrite($fd, PHP_EOL . 'Product import not allowed ');
                     }
 
                     if ($pdt_id) {
@@ -298,7 +294,12 @@ class ImportProductClass
                         }
 
                         if (!empty($arr->brand)) {
-                            wp_set_object_terms($pdt_id, $arr->brand, 'product_brand');
+                            // check if the Brand or Brands taxonomy exists and then update the term
+                            if(taxonomy_exists('brand')) {
+                                wp_set_object_terms($pdt_id, $arr->brand, 'brand');
+                            } elseif(taxonomy_exists('brands')) {
+                                wp_set_object_terms($pdt_id, $arr->brand, 'brands');
+                            }
                         }
                         $item_ids[] = $arr->item_id;
                     } // end of wpdb post_id check
