@@ -26,6 +26,10 @@ use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableControlle
 add_action("woocommerce_rest_insert_shop_order_object", 'zoho_on_insert_rest_api', 10, 3);
 function zoho_on_insert_rest_api($object, $request, $is_creating)
 {
+    // check first if zoho access token exists in db options
+    if(!get_option('zoho_inventory_access_token')) {
+        return;
+    }
     $order_id = $object->get_id();
     zoho_admin_order_sync($order_id);
 }
@@ -38,6 +42,9 @@ function zoho_sync_renewal_order($renewal_order, $subscription)
 {
 
     // Set the current renewal order as completed.
+    if (!get_option('zoho_inventory_access_token')) {
+        return $renewal_order;
+    }
     $order_id = $renewal_order->get_id();
     zoho_admin_order_sync($order_id);
 
