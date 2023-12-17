@@ -41,11 +41,6 @@ class ImageClass
      */
     public function args_attach_image($item_id, $item_name, $post_id, $image_name, $author_id)
     {
-        // Check if the Imagick class exists
-        if (!class_exists('Imagick')) {
-            // Imagick class is not available, so you cannot perform image comparison.
-            return;
-        }
         // $fd = fopen(__DIR__ . '/image_sync.txt', 'a+');
 
         global $wpdb;
@@ -87,8 +82,7 @@ class ImageClass
         // fwrite($fd, PHP_EOL . 'Attach Id : ' . $attach_id);
         if ($imageExistsInLibrary) {
             $attach_id = $imageExistsInLibrary;
-            wp_delete_attachment($attach_id, true);
-            $image_post_id = 0;
+            wp_delete_file($temp_file);
         } else {
             $image_post_id = $wpdb->get_var(
                 $wpdb->prepare(
@@ -180,15 +174,15 @@ class ImageClass
     }
 
     /**
-     * Compare the image with existing media library images.
+     * Compare the image with existing media library images based on titles.
      *
      * @param string $imagePath The path to the image to be checked.
      * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
      */
     protected function compareImageWithMediaLibrary($imagePath)
     {
-        // Load the image you want to check
-        $compareImage = new Imagick($imagePath);
+        // Get the title of the image you want to check
+        $compareImageTitle = get_the_title(pathinfo($imagePath)['filename']);
 
         // Get the list of existing media library images
         $args = array(
@@ -199,17 +193,12 @@ class ImageClass
         $mediaLibraryImages = get_posts($args);
 
         foreach ($mediaLibraryImages as $mediaImage) {
-            // Get the path to the existing image in the media library
+            // Get the title of the existing image
             $existingImagePath = get_attached_file($mediaImage->ID);
+            $existingImageTitle = get_the_title(pathinfo($existingImagePath)['filename']);
 
-            // Load the existing image
-            $existingImage = new Imagick($existingImagePath);
-
-            // Compare the images using Imagick::compareImages
-            $result = $existingImage->compareImages($compareImage, Imagick::METRIC_MEANSQUAREERROR);
-
-            // If the mean square error is below a certain threshold, consider the images the same
-            if ($result[1] < 0.1) {
+            // Compare the titles
+            if ($compareImageTitle === $existingImageTitle) {
                 return $mediaImage->ID; // Return the ID of the existing image
             }
         }
