@@ -620,8 +620,8 @@ class ImportProductClass
                         $imageClass->args_attach_image($item->item_id, $item->name, $variation_id, $item->image_name, $admin_author_id);
                     }
 
-                    // Sync the data of the variation in the parent variable product
-                    $product->sync($variation_id);
+                    // Sync the data of the variation in the parent variable product (TODO: this is causing errors in the logs)
+                    // $product->sync($variation_id);
                 }
                 // End group item add process
                 // array_push($response_msg, $this->zi_response_message('SUCCESS', 'Zoho variable item created for zoho item id ' . $zi_item_id, $variation_id));
