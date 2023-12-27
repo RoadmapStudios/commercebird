@@ -295,9 +295,9 @@ class ImportProductClass
 
                         if (!empty($arr->brand)) {
                             // check if the Brand or Brands taxonomy exists and then update the term
-                            if(taxonomy_exists('product_brand')) {
+                            if (taxonomy_exists('product_brand')) {
                                 wp_set_object_terms($pdt_id, $arr->brand, 'product_brand');
-                            } elseif(taxonomy_exists('product_brands')) {
+                            } elseif (taxonomy_exists('product_brands')) {
                                 wp_set_object_terms($pdt_id, $arr->brand, 'product_brands');
                             }
                         }
@@ -422,28 +422,27 @@ class ImportProductClass
                             wp_set_object_terms($group_id, $final_tags, 'product_tag');
                         }
                     } else {
-                        if ($gpArr->status == 'active') {
-                            // Create the parent variable product
-                            $parent_product = new WC_Product_Variable();
-                            $parent_product->set_name($zi_group_name);
-                            $parent_product->set_status('publish');
-                            $parent_product->set_short_description($gpArr->description);
-                            $parent_product->add_meta_data('zi_item_id', $zi_group_id);
-                            $group_id = $parent_product->save();
+                        // Create the parent variable product
+                        $parent_product = new WC_Product_Variable();
+                        $parent_product->set_name($zi_group_name);
+                        $parent_product->set_status('publish');
+                        $parent_product->set_short_description($gpArr->description);
+                        $parent_product->add_meta_data('zi_item_id', $zi_group_id);
+                        $group_id = $parent_product->save();
 
-                            // fwrite($fd, PHP_EOL . 'New $group_id ' . $group_id);
+                        // fwrite($fd, PHP_EOL . 'New $group_id ' . $group_id);
 
-                            // Create or Update the Attributes
-                            $attr_created = $this->sync_attributes_of_group($gpArr, $group_id);
+                        // Create or Update the Attributes
+                        $attr_created = $this->sync_attributes_of_group($gpArr, $group_id);
 
-                            if (!empty($group_id) && $attr_created) {
-                                // Enqueue and schedule the action using WC Action Scheduler
-                                $existing_schedule = as_has_scheduled_action('import_variable_product_cron', array($zi_group_id, $group_id));
-                                if (!$existing_schedule) {
-                                    as_schedule_single_action(time(), 'import_variable_product_cron', array($zi_group_id, $group_id));
-                                } // $this->import_variable_product_variations($gpArr, $group_id);
-                            } // end for each item loop
-                        }
+                        if (!empty($group_id) && $attr_created) {
+                            // Enqueue and schedule the action using WC Action Scheduler
+                            $existing_schedule = as_has_scheduled_action('import_variable_product_cron', array($zi_group_id, $group_id));
+                            if (!$existing_schedule) {
+                                as_schedule_single_action(time(), 'import_variable_product_cron', array($zi_group_id, $group_id));
+                            } // $this->import_variable_product_variations($gpArr, $group_id);
+                        } // end for each item loop
+
                     } // create variable product
                 } // end foreach group items
 
@@ -1137,15 +1136,15 @@ class ImportProductClass
         return $term_id;
     }
 
-/**
- * Helper Function to check if child of composite items already synced  or not
- *
- * @param string $composite_zoho_id - zoho composite item id to check if it's child are already synced.
- * @param string $zi_url - zoho api url.
- * @param string $zi_key - zoho access token.
- * @param string $zi_org_id - zoho organization id.
- * @return array of child id and metadata if child item already synced else will return false.
- */
+    /**
+     * Helper Function to check if child of composite items already synced  or not
+     *
+     * @param string $composite_zoho_id - zoho composite item id to check if it's child are already synced.
+     * @param string $zi_url - zoho api url.
+     * @param string $zi_key - zoho access token.
+     * @param string $zi_org_id - zoho organization id.
+     * @return array of child id and metadata if child item already synced else will return false.
+     */
     public function zi_check_if_child_synced_already($composite_zoho_id, $zi_url, $zi_org_id, $prod_id)
     {
         if ($prod_id) {
@@ -1204,14 +1203,14 @@ class ImportProductClass
         }
         return false;
     }
-/**
- * Mapping of bundled product
- *
- * @param number $product_id - Product id of child item of bundle product.
- * @param number $bundle_id  - BUndle id of product.
- * @param number $menu_order - Listing order of child product ($menu_order will useful at composite product details page).
- * @return void
- */
+    /**
+     * Mapping of bundled product
+     *
+     * @param number $product_id - Product id of child item of bundle product.
+     * @param number $bundle_id  - BUndle id of product.
+     * @param number $menu_order - Listing order of child product ($menu_order will useful at composite product details page).
+     * @return void
+     */
     public function add_bundle_product($product_id, $bundle_id, $menu_order = 0)
     {
         global $wpdb;
@@ -1233,14 +1232,14 @@ class ImportProductClass
         }
     }
 
-/**
- * Create or update bundle item metadata
- *
- * @param number $bundle_item_id bundle item id.
- * @param string $key - metadata key.
- * @param string $value - metadata value.
- * @return void
- */
+    /**
+     * Create or update bundle item metadata
+     *
+     * @param number $bundle_item_id bundle item id.
+     * @param string $key - metadata key.
+     * @param string $value - metadata value.
+     * @return void
+     */
 
     public function zi_update_bundle_meta($bundle_item_id, $key, $value)
     {
@@ -1254,14 +1253,14 @@ class ImportProductClass
         }
     }
 
-/**
- * Function to sync composite item from zoho to woocommerce
- *
- * @param integer $page - Page number of composite item data.
- * @param string $category - Category id of composite data.
- * @param string $source - Source of calling function.
- * @return mixed - mostly array of response message.
- */
+    /**
+     * Function to sync composite item from zoho to woocommerce
+     *
+     * @param integer $page - Page number of composite item data.
+     * @param string $category - Category id of composite data.
+     * @param string $source - Source of calling function.
+     * @return mixed - mostly array of response message.
+     */
     public function recursively_sync_composite_item_from_zoho($page, $category, $source)
     {
         // Start logging
