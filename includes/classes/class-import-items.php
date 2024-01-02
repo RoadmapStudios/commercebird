@@ -26,7 +26,7 @@ class ImportProductClass
      */
     public function zi_item_bulk_sync($url)
     {
-        // $fd = fopen(__DIR__ . '/manual_item_updated.txt', 'a+');
+        // $fd = fopen(__DIR__ . '/manual_item_updated.txt', 'w+');
 
         global $wpdb;
         $executeCurlCallHandle = new ExecutecallClass();
@@ -42,6 +42,7 @@ class ImportProductClass
 
         // $message = $json->message;
         // fwrite($fd, PHP_EOL . '$json->item : ' . print_r($json, true));
+
         if (0 == $code || '0' == $code) {
 
             foreach ($json->items as $arr) {
@@ -138,18 +139,17 @@ class ImportProductClass
                                 }
                             }
 
-                            if (!empty($stock)) {
-                                $product->set_manage_stock(true);
-                                $product->set_stock_quantity(number_format($stock, 0, '.', ''));
-                                if ($stock > 0) {
-                                    $status = 'instock';
-                                    $product->set_stock_status($status);
-                                } else {
-                                    $backorder_status = $product->get_backorders();
-                                    $status = ($backorder_status === 'yes') ? 'onbackorder' : 'outofstock';
-                                    $product->set_stock_status($status);
-                                }
+                            $product->set_manage_stock(true);
+                            $product->set_stock_quantity(number_format($stock, 0, '.', ''));
+                            if ($stock > 0) {
+                                $status = 'instock';
+                                $product->set_stock_status($status);
+                            } else {
+                                $backorder_status = $product->get_backorders();
+                                $status = ($backorder_status === 'yes') ? 'onbackorder' : 'outofstock';
+                                $product->set_stock_status($status);
                             }
+
                         }
 
                         if (!empty($arr->tax_id)) {
@@ -171,9 +171,9 @@ class ImportProductClass
         } else {
             return false;
         }
+        // fclose($fd);
         // Return if synced.
         return true;
-        // fclose($fd);
     }
 
     /**
@@ -753,10 +753,12 @@ class ImportProductClass
                             );
 
                             // Get the existing terms for the taxonomy
-                            $existing_terms = get_terms(array(
-                                'taxonomy' => $taxonomy,
-                                'hide_empty' => false,
-                            ));
+                            $existing_terms = get_terms(
+                                array(
+                                    'taxonomy' => $taxonomy,
+                                    'hide_empty' => false,
+                                )
+                            );
 
                             // Loop through existing terms and assign them to the product
                             foreach ($existing_terms as $existing_term) {
@@ -770,10 +772,12 @@ class ImportProductClass
                         }
                     } else {
                         // Add existing attribute with its selected terms to the product attributes array
-                        $existing_terms = get_terms(array(
-                            'taxonomy' => $taxonomy,
-                            'hide_empty' => false,
-                        ));
+                        $existing_terms = get_terms(
+                            array(
+                                'taxonomy' => $taxonomy,
+                                'hide_empty' => false,
+                            )
+                        );
 
                         if ($existing_terms) {
                             $existing_term_ids = array();
