@@ -13,9 +13,6 @@
       <InputGroup label="Send all Orders as Draft" type="toggle">
         <Toggle v-model="store.order_settings.enable_order_status" />
       </InputGroup>
-      <InputGroup label="Enable Multicurrency Support" type="toggle">
-        <Toggle v-model="store.order_settings.enable_multicurrency" />
-      </InputGroup>
     </div>
     <InputGroup v-if="store.order_settings.enable_auto_number" label="Order Prefix">
       <TextInput v-model="store.order_settings.order_prefix" placeholder="Set Order Prefix like WC" />
