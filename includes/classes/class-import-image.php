@@ -41,7 +41,7 @@ class ImageClass
      */
     public function args_attach_image($item_id, $item_name, $post_id, $image_name, $author_id)
     {
-        // $fd = fopen(__DIR__ . '/image_sync.txt', 'a+');
+        // $fd = fopen(__DIR__ . '/image_sync.txt', 'w+');
 
         global $wpdb;
 
@@ -98,6 +98,10 @@ class ImageClass
 
         if ($image_post_id == 0) {
             if (!is_wp_error($temp_file)) {
+                // fwrite($fd, PHP_EOL . 'Inside If: ');
+                // fwrite($fd, PHP_EOL . '$temp_file : ' . $temp_file);
+                // fwrite($fd, PHP_EOL . 'file_size : ' . filesize($temp_file));
+                // Set variables for storage, fix file filename for query strings.
                 $file = array(
                     'name' => $image_name,
                     'type' => $file_type,

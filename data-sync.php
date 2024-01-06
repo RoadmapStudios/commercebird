@@ -808,9 +808,6 @@ add_action('wp_ajax_disable_itemimage_sync', 'zi_sync_option_handler');
 add_action('wp_ajax_disable_itemdescription_sync', 'zi_sync_option_handler');
 add_action('wp_ajax_disable_groupitem_sync', 'zi_sync_option_handler');
 
-// Enable Multi-currency support
-add_action('wp_ajax_enable_multicurrency', 'zi_sync_option_handler');
-
 // Enable Accounting Stock Mode
 add_action('wp_ajax_enable_accounting_stock', 'zi_sync_option_handler');
 
