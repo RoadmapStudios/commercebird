@@ -158,7 +158,7 @@ function zoho_ajax_call_item_from_zoho_func()
     }
 
     // fwrite($fd, PHP_EOL . 'opt_category: '. print_r($opt_category, true));
-    $item_add_resp = array();
+    // $item_add_resp = array();
     $loop_completed = false; // Flag to track loop completion
 
     // Retrieve the last synced category index from the previous run
@@ -208,7 +208,7 @@ function zoho_ajax_call_item_from_zoho_func()
 
     // Send log message to admin only if the loop completed
     if ($loop_completed) {
-        send_log_message_to_admin($item_add_resp, 'Log for manual sync of simple item', 'Simple item sync from zoho');
+        // send_log_message_to_admin($item_add_resp, 'Log for manual sync of simple item', 'Simple item sync from zoho');
     }
 
     // Terminate the AJAX call
