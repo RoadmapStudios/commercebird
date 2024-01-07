@@ -1,4 +1,9 @@
-Version 2.0.5 - December 27 2023
+Version 2.0.6 - January 7th 2024
+* Tweak: orders sync now via Action Scheduler
+* Fix: stock items import
+* Compatible with WooCommerce 8.5
+
+Version 2.0.5 - December 27th 2023
 * Fix: import group items
 
 Version 2.0.4 - December 17th 2023
