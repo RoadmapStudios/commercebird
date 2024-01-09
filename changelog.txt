@@ -1,3 +1,8 @@
+Version 2.0.7 - January 9th 2024
+Fix: featured image import
+Fix: webhook item sync
+Tweak: Imagick module no longer required for image import
+
 Version 2.0.6 - January 7th 2024
 * Tweak: orders sync now via Action Scheduler
 * Fix: stock items import
