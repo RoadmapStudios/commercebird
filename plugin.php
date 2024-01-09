@@ -5,7 +5,7 @@
  * Plugin URI:  https://wooventory.com
  * Description: This plugin helps you get the most of Wooventory by
  * allowing you to manage product images, integrations and more.
- * Version: 2.0.6
+ * Version: 2.0.7
  * Author: Wooventory
  * Author URI:  https://wooventory.com
  * Requires PHP: 7.4
@@ -20,7 +20,7 @@
  * @link     https://wooventory.com
  *
  * WC requires at least: 8.0.0
- * WC tested up to: 8.4.1
+ * WC tested up to: 8.5.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,7 +30,7 @@ if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
 	define( 'RMS_PLUGIN_NAME', 'Wooventory' );
 }
 if ( ! defined( 'RMS_VERSION' ) ) {
-	define( 'RMS_VERSION', '2.0.6' );
+	define( 'RMS_VERSION', '2.0.7' );
 }
 if ( ! defined( 'RMS_DIR_PATH' ) ) {
 	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
