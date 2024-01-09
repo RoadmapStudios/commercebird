@@ -16,7 +16,7 @@ import Price from "@/components/forms/Price.vue";
 import Field from "@/components/forms/Field.vue";
 import Connect from "@/components/forms/Connect.vue";
 import Webhooks from "@/components/forms/Webhooks.vue";
-import {imagick_enabled, notify} from "@/composables";
+import {fileinfo_enabled, notify} from "@/composables";
 import { useZohoInventoryStore } from "@/stores/zohoInventory";
 import { useLoadingStore } from "@/stores/loading";
 import { onBeforeMount } from "vue";
@@ -51,8 +51,8 @@ onBeforeMount(() => {
 <template>
   <div>
     <div
-        v-if="!imagick_enabled"
-        class="rounded-md shadow bg-rose-100 mb-4 p-2"
+        v-if="!fileinfo_enabled"
+        class="p-2 mb-4 rounded-md shadow bg-rose-100"
     >
       <h3
           class="text-sm font-semibold text-rose-700"
@@ -61,7 +61,7 @@ onBeforeMount(() => {
         Warning
       </h3>
       <p class="mt-1 text-sm text-rose-900">
-        Please activate the PHP module <span class="font-medium">"Imagick"</span> to import Product Images from Zoho Inventory. This can be activated via your hosting cPanel or please contact your hosting for this activation.
+        Please activate the PHP module <span class="font-medium">"fileinfo"</span> to import Product Images from Zoho Inventory. This can be activated via your hosting cPanel or please contact your hosting for this activation.
       </p>
     </div>
     <div class="relative pb-6 lg:pb-16">
