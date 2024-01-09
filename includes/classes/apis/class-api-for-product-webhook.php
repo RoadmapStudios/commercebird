@@ -52,7 +52,7 @@ class ProductWebhook {
 
 		// variable item sync
 		if ( array_key_exists( 'item', $data ) ) {
-			return $this->process_variable_product( $data['item'], $zi_enable_warehousestock, $warehouse_id, $accounting_stock );
+			return $this->process_product_data( $data['item'], $zi_enable_warehousestock, $warehouse_id, $accounting_stock );
 
 		}
 		// inventory_adjustment
@@ -72,7 +72,7 @@ class ProductWebhook {
 	 * @return WP_REST_Response
 	 * @throws WC_Data_Exception
 	 */
-	public function process_variable_product( $item, $zi_enable_warehousestock, $warehouse_id, $accounting_stock ): WP_REST_Response {
+	public function process_product_data( $item, $zi_enable_warehousestock, $warehouse_id, $accounting_stock ): WP_REST_Response {
 		global $wpdb;
 		$item_id          = $item['item_id'];
 		$item_name        = $item['name'];
