@@ -20,6 +20,7 @@ trait Api {
 		$allowed_domain = array(
 			'http://localhost:8100',
 			'https://app.wooventory.com',
+			'https://app.commercebird.com/',
 			'capacitor://localhost',
 			'http://localhost',
 		);
@@ -41,14 +42,11 @@ trait Api {
 		$data = $request->get_json_params();
 		if ( array_key_exists( 'JSONString', $data ) ) {
 			$data = str_replace( '\\', '', $data['JSONString'] );
-		} else {
-			$data = str_replace( '\\', '', $data );
 		}
 		$this->write_log( $data );
-		if ( ! empty( $data ) ) {
+		if ( !empty( $data ) ) {
 			try {
 				$response = $this->process( $data );
-
 			} catch ( Exception $exception ) {
 				error_log(
 					__DIR__ . '/error-' . $this->endpoint . '.log',
