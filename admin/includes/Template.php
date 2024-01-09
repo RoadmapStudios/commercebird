@@ -81,7 +81,7 @@ final class Template {
 				'wc_tax_enabled'  => is_plugin_active( 'woocommerce/woocommerce.php' ) ? wc_tax_enabled() : false,
 				'roles'           => $wp_roles->get_names(),
 				'b2b_enabled'     => class_exists( 'Addify_B2B_Plugin' ),
-				'imagick_enabled' => extension_loaded( 'imagick' ),
+				'fileinfo_enabled' => extension_loaded( 'fileinfo' ),
 			),
 		);
 	}
