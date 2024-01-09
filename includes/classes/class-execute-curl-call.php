@@ -147,8 +147,13 @@ class ExecutecallClass {
 		return $json;
 	}
 
-	// Get Image Zoho
-
+	/**
+	 * 
+	 * Get Call Zoho Image
+	 * @param mixed $url
+	 * @param mixed $image_name
+	 * @return string
+	 */
 	public function ExecuteCurlCallImageGet( $url, $image_name ) {
 
 		$handlefunction = new Classfunctions();
@@ -193,16 +198,16 @@ class ExecutecallClass {
 		$absolute_upload_path = $upload['basedir'] . '/zoho_image/';
 		$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
 
-		$img = '/' . rand() . $image_name;
-		//$img = '/image'.rand().'.jpg';
-		$upload_dir = $absolute_upload_path . $img;
+		$img = 'image_' . rand() . '_' . $image_name;
+		$upload_dir = $absolute_upload_path . '/' . $img;
 
-		if ( ! is_dir( $absolute_upload_path ) ) {
-			mkdir( $absolute_upload_path );
+		if (!is_dir($absolute_upload_path)) {
+			mkdir($absolute_upload_path);
 		}
 
-		file_put_contents( $upload_dir, $response );
+		file_put_contents($upload_dir, $response);
 
-		return $url_upload_path . $img;
+		// Use trailingslashit to make sure the URL ends with a single slash
+		return trailingslashit($url_upload_path) . $img;
 	}
 }

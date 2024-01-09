@@ -9,6 +9,9 @@ if (!function_exists('wp_insert_attachment')) {
     require_once ABSPATH . 'wp-admin/includes/file.php';
     require_once ABSPATH . 'wp-admin/includes/media.php';
 }
+if (!function_exists('download_url')) {
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+}
 
 /**
  * Class for All Product Data from Woo To Zoho
@@ -41,10 +44,8 @@ class ImageClass
      */
     public function args_attach_image($item_id, $item_name, $post_id, $image_name, $author_id)
     {
-        // $fd = fopen(__DIR__ . '/image_sync.txt', 'w+');
-
+        // $fd = fopen(__DIR__ . '/image_sync.txt', 'a+');
         global $wpdb;
-
         $zoho_inventory_oid = $this->config['ProductZI']['OID'];
         $zoho_inventory_url = $this->config['ProductZI']['APIURL'];
         $url = $zoho_inventory_url . 'api/v1/items/' . $item_id . '/image';
@@ -53,10 +54,6 @@ class ImageClass
         // fwrite($fd, PHP_EOL . '$url : ' . $url);
         $executeCurlCallHandle = new ExecutecallClass();
         $image_url = $executeCurlCallHandle->ExecuteCurlCallImageGet($url, $image_name);
-        // If download_url is not available, require it.
-        if (!function_exists('download_url')) {
-            require_once ABSPATH . 'wp-admin/includes/file.php';
-        }
         // fwrite($fd, PHP_EOL . 'Sync init');
         $temp_file = download_url($image_url);
         // Get the MIME type of the downloaded image
@@ -79,7 +76,7 @@ class ImageClass
 
         $attach_id = intval(get_post_meta($post_id, 'zoho_product_image_id', true));
         $imageExistsInLibrary = $this->compareImageWithMediaLibrary($temp_file);
-        // fwrite($fd, PHP_EOL . 'Attach Id : ' . $attach_id);
+
         if ($imageExistsInLibrary) {
             $attach_id = $imageExistsInLibrary;
             wp_delete_file($temp_file);
@@ -99,8 +96,6 @@ class ImageClass
         if ($image_post_id == 0) {
             if (!is_wp_error($temp_file)) {
                 // fwrite($fd, PHP_EOL . 'Inside If: ');
-                // fwrite($fd, PHP_EOL . '$temp_file : ' . $temp_file);
-                // fwrite($fd, PHP_EOL . 'file_size : ' . filesize($temp_file));
                 // Set variables for storage, fix file filename for query strings.
                 $file = array(
                     'name' => $image_name,
@@ -170,7 +165,6 @@ class ImageClass
             }
         } else {
             set_post_thumbnail($post_id, $image_post_id);
-            // fwrite($fd, PHP_EOL . 'Image already exists: ');
             return;
         }
         // fclose($fd);
@@ -182,33 +176,37 @@ class ImageClass
      *
      * @param string $imagePath The path to the image to be checked.
      * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
+     * @since 1.0.0
      */
     protected function compareImageWithMediaLibrary($imagePath)
     {
         // Get the title of the image you want to check
-        $compareImageTitle = get_the_title(pathinfo($imagePath)['filename']);
+        $compareImageTitle = sanitize_file_name(pathinfo($imagePath, PATHINFO_FILENAME));
 
-        // Get the list of existing media library images
-        $args = array(
-            'post_type' => 'attachment',
-            'post_mime_type' => 'image',
-            'posts_per_page' => -1,
-        );
-        $mediaLibraryImages = get_posts($args);
+        if (!empty($compareImageTitle)) {
+            $args = array(
+                'post_type' => 'attachment',
+                'post_mime_type' => 'image',
+                'posts_per_page' => -1,
+            );
+            $mediaLibraryImages = get_posts($args);
 
-        foreach ($mediaLibraryImages as $mediaImage) {
-            // Get the title of the existing image
-            $existingImagePath = get_attached_file($mediaImage->ID);
-            $existingImageTitle = get_the_title(pathinfo($existingImagePath)['filename']);
+            foreach ($mediaLibraryImages as $mediaImage) {
+                // Get the title of the existing image
+                $existingImagePath = get_attached_file($mediaImage->ID);
+                $existingImageTitle = get_the_title(pathinfo($existingImagePath)['filename']);
 
-            // Compare the titles
-            if ($compareImageTitle === $existingImageTitle) {
-                return $mediaImage->ID; // Return the ID of the existing image
+                // Compare the titles
+                if ($compareImageTitle === $existingImageTitle) {
+
+                    return $mediaImage->ID; // Return the ID of the existing image
+                } else {
+                    return false;
+                }
             }
+        } else {
+            return false;
         }
-
-        // If no match is found in the loop, return false
-        return false;
     }
 
     /**
@@ -265,6 +263,8 @@ class ImageClass
                 return '.jps';
             case 'image/x-freehand':
                 return '.fh';
+            case 'image/webp':
+                return '.webp';
             default:
                 return false;
         }
