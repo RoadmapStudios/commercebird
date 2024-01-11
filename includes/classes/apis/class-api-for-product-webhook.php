@@ -73,6 +73,8 @@ class ProductWebhook {
 	 * @throws WC_Data_Exception
 	 */
 	public function process_product_data( $item, $zi_enable_warehousestock, $warehouse_id, $accounting_stock ): WP_REST_Response {
+		// $fd = fopen(__DIR__ . '/process_product_data.txt', 'a+');
+
 		global $wpdb;
 		$item_id          = $item['item_id'];
 		$item_name        = $item['name'];
@@ -301,7 +303,7 @@ class ProductWebhook {
 					$opt_category = unserialize( $opt_category );
 					if ( in_array( $category_id, $opt_category, true ) ) {
 						$product_class = new ProductClass();
-						$pdt_id        = $product_class->zi_product_to_woocommerce( $item, $item_stock );
+						$pdt_id = $product_class->zi_product_to_woocommerce( $item, $item_stock );
 					}
 				}
 				// fwrite($fd, PHP_EOL . 'After adding it : ' . $pdt_id);

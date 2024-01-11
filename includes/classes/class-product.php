@@ -848,7 +848,7 @@ class ProductClass
     public function zi_product_to_woocommerce($item, $item_stock = '', $type = '')
     {
         try {
-            if ($item->status == 'active') {
+            if ($item['status'] == 'active') {
                 $status = 'publish';
             } else {
                 return;
@@ -860,10 +860,10 @@ class ProductClass
 
             // Set the product data
             $product->set_status($status);
-            $product->set_name($item->name);
-            $product->set_regular_price($item->rate);
-            $product->set_description($item->description);
-            $product->set_sku($item->sku);
+            $product->set_name($item['name']);
+            $product->set_regular_price($item['rate']);
+            $product->set_description($item['description']);
+            $product->set_sku($item['sku']);
 
             // Set the stock management properties
             if (!empty($item_stock) && $zi_stock_sync != 'true') {

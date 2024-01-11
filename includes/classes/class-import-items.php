@@ -219,7 +219,7 @@ class ImportProductClass
             if ($code == '0' || $code == 0) {
                 $item_ids = [];
                 foreach ($json->items as $arr) {
-
+                    // fwrite($fd, PHP_EOL . 'Item arr : ' . $arr);
                     $prod_id = $this->get_product_by_sku($arr->sku);
                     $is_bundle = $arr->is_combo_product;
                     if (isset($arr->group_id)) {
@@ -319,7 +319,7 @@ class ImportProductClass
                 }
                 array_push($response_msg, $this->zi_response_message($code, $json->message));
             }
-            //fclose($fd);
+            // fclose($fd);
             return $response_msg;
         }
     }
