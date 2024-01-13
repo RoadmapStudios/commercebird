@@ -8,7 +8,7 @@
       <InputGroup label="WooCommerce Field" type="repeater">
         <SelectInput v-model="field.key" :options="store.customFields" />
       </InputGroup>
-      <InputGroup label="Zoho Field" type="repeater">
+      <InputGroup label="Zoho Field Label" type="repeater">
         <TextInput v-model="field.value" />
       </InputGroup>
       <div class="pb-[11px]">
