@@ -480,19 +480,23 @@ class Sync_Order_Class
                 }
 
                 // Custom Field mapping with zoho.
-                $getmappedfield = get_option('wootozoho_custom_fields');
-                $customfield = ',"custom_fields":[';
-                if ($getmappedfield && count($getmappedfield) > 0) {
-                    foreach ($getmappedfield as $key => $value) {
-                        $metavalue = $order->get_meta($key);
-                        $customfield .= '{"customfield_id": "' . $value . '","value":"' . $metavalue . '"}';
+                $getmappedfields = get_option('wootozoho_custom_fields');
+                $customfield = ',"custom_fields":[{';
 
-                        if (count($getmappedfield) - 1 > 0) {
+                $data = json_decode($getmappedfields, true);
+                if ($data !== null) {
+                    foreach ($data as $key => $label) {
+                        // Get the meta value which is the meta_key
+                        $metavalue = $order->get_meta($key);
+                        // Add the custom field to the JSON string
+                        $customfield .= '"label": "' . $label . '","value":"' . $metavalue . '"';
+
+                        if (count($data) - 1 > 0) {
                             $customfield .= ',';
                         }
                     }
                 }
-                $pdt1 .= $customfield . ']';
+                $pdt1 .= $customfield . '}]';
 
                 // If auto order number is enabled.
                 $enabled_auto_no = get_option('zoho_enable_auto_no_status');
@@ -529,6 +533,7 @@ class Sync_Order_Class
                 $order->update_meta_data('zi_body_request', $pdt1);
 
                 $notes = 'Zoho Order Sync: ' . $response_msg['message'];
+
                 // fclose($fd); // end logging
                 $order->add_order_note($notes);
                 $order->update_meta_data('zi_salesorder_id', $response_msg['zi_salesorder_id']);

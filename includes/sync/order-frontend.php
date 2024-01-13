@@ -18,12 +18,17 @@ if (!defined('ABSPATH')) {
  */
 add_action('woocommerce_thankyou', 'zi_sync_frontend_order');
 function zi_sync_frontend_order($order_id) {
+    // Check if the transient flag is set
+    if (get_transient('your_thankyou_callback_executed_' . $order_id)) {
+        return;
+    }
     // Use WC Action Scheduler to sync the order to Zoho Inventory
     $existing_schedule = as_has_scheduled_action('sync_zi_order', array($order_id));
     if (!$existing_schedule) {
         as_schedule_single_action(time(), 'sync_zi_order', array($order_id));
     }
-
+    // Set the transient flag to prevent multiple executions
+    set_transient('your_thankyou_callback_executed_' . $order_id, true, 60);
 }
 
 
