@@ -1,3 +1,7 @@
+Version 2.0.9 - January 15th 2024
+* Fix: custom order fields sync - requires label now instead of ID
+* Tweak: migration to commercebird.com preparation
+
 Version 2.0.8 - January 11th 2024
 * Fix: product create via webhook
 
