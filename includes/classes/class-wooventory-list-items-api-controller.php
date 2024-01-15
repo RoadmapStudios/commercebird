@@ -1,5 +1,5 @@
 <?php
-class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Controller
+class WC_REST_List_Items_API_By_commercebird_Controller extends WC_REST_CRUD_Controller
 {
     protected $namespace = 'wc/v2';
     protected $namespace2 = 'wc/v3';
@@ -16,7 +16,8 @@ class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Contr
                 'args' => $this->get_params(),
                 'permission_callback' => '__return_true',
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace2, '/' . $this->rest_base . '(?:/(?P<type>))?', array(
             array(
                 'methods' => WP_REST_Server::READABLE,
@@ -24,7 +25,8 @@ class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Contr
                 'args' => $this->get_params(),
                 'permission_callback' => '__return_true',
             ),
-        ));
+        )
+        );
     }
 
     public function get_params()
@@ -32,7 +34,7 @@ class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Contr
         $params = array(
             'type' => array(
                 'required' => true,
-                'description' => __('Type of item to list ("users", "posts", "products", etc)', 'wooventory_list_items'),
+                'description' => __('Type of item to list ("users", "posts", "products", etc)', 'commercebird_list_items'),
                 'type' => 'string',
                 'sanitize_callback' => function ($param) {
                     return strtolower($param);
@@ -40,7 +42,7 @@ class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Contr
             ),
             'orderby' => array(
                 'required' => false,
-                'description' => __('Parameter to sort items by (default "modified")', 'wooventory_list_items'),
+                'description' => __('Parameter to sort items by (default "modified")', 'commercebird_list_items'),
                 'type' => 'string',
                 'default' => 'modified',
                 'sanitize_callback' => function ($param) {
@@ -49,7 +51,7 @@ class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Contr
             ),
             'order' => array(
                 'required' => false,
-                'description' => __('ASC or DESC (default "DESC")', 'wooventory_list_items'),
+                'description' => __('ASC or DESC (default "DESC")', 'commercebird_list_items'),
                 'type' => 'string',
                 'default' => 'desc',
                 'validate_callback' => function ($param) {
@@ -61,35 +63,35 @@ class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Contr
             ),
             'after_date' => array(
                 'required' => false,
-                'description' => __('last_modified after this date', 'wooventory_list_items'),
+                'description' => __('last_modified after this date', 'commercebird_list_items'),
                 'type' => 'string',
                 'format' => 'date-time',
             ),
             'before_date' => array(
                 'required' => false,
-                'description' => __('last_modified before that date', 'wooventory_list_items'),
+                'description' => __('last_modified before that date', 'commercebird_list_items'),
                 'type' => 'string',
                 'format' => 'date-time',
             ),
             'items_per_page' => array(
                 'required' => false,
-                'description' => __('The maximum returned number of results (needed in pagination)', 'wooventory_list_items'),
+                'description' => __('The maximum returned number of results (needed in pagination)', 'commercebird_list_items'),
                 'type' => 'number',
                 'default' => '100',
             ),
             'offset' => array(
                 'required' => false,
-                'description' => __('Offset the returned results (needed in pagination)', 'wooventory_list_items'),
+                'description' => __('Offset the returned results (needed in pagination)', 'commercebird_list_items'),
                 'type' => 'number',
             ),
             'paged' => array(
                 'required' => false,
-                'description' => __('When used with number, defines the page of results to return. Default 1.', 'wooventory_list_items'),
+                'description' => __('When used with number, defines the page of results to return. Default 1.', 'commercebird_list_items'),
                 'type' => 'number',
             ),
             'post_status' => array(
                 'required' => false,
-                'description' => __('Status of posts to retrieve', 'wooventory_list_items'),
+                'description' => __('Status of posts to retrieve', 'commercebird_list_items'),
                 'type' => 'string',
                 'default' => 'any',
             ),
@@ -138,7 +140,7 @@ class WC_REST_List_Items_API_By_wooventory_Controller extends WC_REST_CRUD_Contr
                 foreach ($users as $user) {
                     $UserData = get_user_meta($user->ID);
                     if (!empty($request['after_date'])) {
-                        if (strtotime($UserData['wooventory_profile_updated'][0]) > strtotime($request['after_date'])) {
+                        if (strtotime($UserData['commercebird_profile_updated'][0]) > strtotime($request['after_date'])) {
                             if (!in_array($user->ID, $ids)) {
                                 $ids[] = (int) $user->ID;
                             }

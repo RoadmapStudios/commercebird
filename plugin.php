@@ -1,54 +1,54 @@
 <?php
 
 /**
- * Plugin Name: Wooventory
- * Plugin URI:  https://wooventory.com
- * Description: This plugin helps you get the most of Wooventory by
+ * Plugin Name: commercebird
+ * Plugin URI:  https://commercebird.com
+ * Description: This plugin helps you get the most of commercebird by
  * allowing you to manage product images, integrations and more.
- * Version: 2.0.8
- * Author: Wooventory
- * Author URI:  https://wooventory.com
+ * Version: 2.0.9
+ * Author: commercebird
+ * Author URI:  https://commercebird.com
  * Requires PHP: 7.4
  * Text Domain: rmsZI
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
  * @category Fulfillment
- * @package  Wooventory
+ * @package  commercebird
  * @author   Fawad Tiemoerie <info@roadmapstudios.com>
  * @license  GNU General Public License v3.0
- * @link     https://wooventory.com
+ * @link     https://commercebird.com
  *
  * WC requires at least: 8.0.0
  * WC tested up to: 8.5.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', '' ) or die( 'No script kiddies please!' );
+if (!defined('ABSPATH')) {
+	define('ABSPATH', '') or die('No script kiddies please!');
 }
-if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
-	define( 'RMS_PLUGIN_NAME', 'Wooventory' );
+if (!defined('RMS_PLUGIN_NAME')) {
+	define('RMS_PLUGIN_NAME', 'CommerceBird');
 }
-if ( ! defined( 'RMS_VERSION' ) ) {
-	define( 'RMS_VERSION', '2.0.8' );
+if (!defined('RMS_VERSION')) {
+	define('RMS_VERSION', '2.0.9');
 }
-if ( ! defined( 'RMS_DIR_PATH' ) ) {
-	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
+if (!defined('RMS_DIR_PATH')) {
+	define('RMS_DIR_PATH', plugin_dir_path(__FILE__));
 }
-if ( ! defined( 'RMS_DIR_URL' ) ) {
-	define( 'RMS_DIR_URL', plugin_dir_url( __FILE__ ) );
+if (!defined('RMS_DIR_URL')) {
+	define('RMS_DIR_URL', plugin_dir_url(__FILE__));
 }
-if ( ! defined( 'RMS_BASENAME' ) ) {
-	define( 'RMS_BASENAME', plugin_basename( __FILE__ ) );
+if (!defined('RMS_BASENAME')) {
+	define('RMS_BASENAME', plugin_basename(__FILE__));
 }
-if ( ! defined( 'RMS_MENU_SLUG' ) ) {
-	define( 'RMS_MENU_SLUG', 'wooventory-app' );
+if (!defined('RMS_MENU_SLUG')) {
+	define('RMS_MENU_SLUG', 'commercebird-app');
 }
-if ( ! defined( 'RMS_DOCUMENTATION_URL' ) ) {
-	define( 'RMS_DOCUMENTATION_URL', 'https://support.wooventory.com/portal/en/kb/zoho-inventory-woocommerce' );
+if (!defined('RMS_DOCUMENTATION_URL')) {
+	define('RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb/');
 }
-if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
-	define( 'RMS_PLUGIN_URL', 'https://wooventory.com/product/woocommerce-zoho-inventory/' );
+if (!defined('RMS_PLUGIN_URL')) {
+	define('RMS_PLUGIN_URL', 'https://commercebird.com/product/commercebird/');
 }
 
 require_once RMS_DIR_PATH . 'includes/woo-functions.php';
@@ -73,20 +73,21 @@ use Whoops\Run;
 
 //  remove on production
 $whoops = new Run();
-$whoops->pushHandler( new PrettyPageHandler() );
+$whoops->pushHandler(new PrettyPageHandler());
 $whoops->register();
 // remove on production
 
 /* Check the minimum PHP version on activation hook */
-function woozo_check_plugin_requirements() {
-	$php_min_version     = '7.4';
+function woozo_check_plugin_requirements()
+{
+	$php_min_version = '7.4';
 	$php_current_version = phpversion();
 
-	if ( version_compare( $php_min_version, $php_current_version, '>' ) ) {
-		deactivate_plugins( 'wooventory/plugin.php' );
+	if (version_compare($php_min_version, $php_current_version, '>')) {
+		deactivate_plugins('commercebird/plugin.php');
 
 		$error_message = sprintf(
-			'Your server is running PHP version %s but the Wooventory plugin requires at least PHP %s. Please update your PHP version.',
+			'Your server is running PHP version %s but the commercebird plugin requires at least PHP %s. Please update your PHP version.',
 			$php_current_version,
 			$php_min_version,
 		);
@@ -95,20 +96,20 @@ function woozo_check_plugin_requirements() {
 			$error_message,
 			'Plugin Activation Error',
 			array(
-				'response'  => 200,
+				'response' => 200,
 				'back_link' => true,
 			)
 		);
 	}
 }
 
-add_action( 'admin_init', 'woozo_check_plugin_requirements' );
+add_action('admin_init', 'woozo_check_plugin_requirements');
 
 // Activate plugin.
-register_activation_hook( __FILE__, array( 'wooventory', 'activate' ) );
+register_activation_hook(__FILE__, array('commercebird', 'activate'));
 
 // Init hooks.
-Wooventory::initHooks();
+commercebird::initHooks();
 
 /**
  * Create table if it is not available in plugin
@@ -131,19 +132,21 @@ register_activation_hook(__FILE__, 'zi_create_order_log_table');
  */
 
 // Register Cronjob Hook when activating the plugin
-register_activation_hook( __FILE__, 'zi_custom_zoho_cron_activate' );
+register_activation_hook(__FILE__, 'zi_custom_zoho_cron_activate');
 
-function zi_custom_zoho_cron_activate() {
-	$interval = get_option( 'zi_cron_interval', 'daily' );
-	if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
-		wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
+function zi_custom_zoho_cron_activate()
+{
+	$interval = get_option('zi_cron_interval', 'daily');
+	if (!wp_next_scheduled('zi_execute_import_sync')) {
+		wp_schedule_event(time(), $interval, 'zi_execute_import_sync');
 	}
 }
 
 // Unschedule event upon plugin deactivation
-register_deactivation_hook( __FILE__, 'zi_zoho_cron_deactivate' );
-function zi_zoho_cron_deactivate() {
-	wp_clear_scheduled_hook( 'zi_execute_import_sync' );
+register_deactivation_hook(__FILE__, 'zi_zoho_cron_deactivate');
+function zi_zoho_cron_deactivate()
+{
+	wp_clear_scheduled_hook('zi_execute_import_sync');
 }
 
 
@@ -153,8 +156,8 @@ function zi_zoho_cron_deactivate() {
 add_action(
 	'before_woocommerce_init',
 	function () {
-		if ( class_exists( FeaturesUtil::class ) ) {
-			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		if (class_exists(FeaturesUtil::class)) {
+			FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
 		}
 	}
 );
@@ -244,32 +247,32 @@ add_action(
  * Hooks for WC Action Scheduler to import or export products
  */
 $importProductClass = new ImportProductClass();
-$importPricelist    = new ImportPricelistClass();
-$productClass       = new ProductClass();
+$importPricelist = new ImportPricelistClass();
+$productClass = new ProductClass();
 $orderClass = new Sync_Order_Class();
-add_action( 'import_group_items_cron', array( $importProductClass, 'sync_groupitem_recursively' ), 10, 2 );
-add_action( 'import_simple_items_cron', array( $importProductClass, 'sync_item_recursively' ), 10, 2 );
-add_action( 'import_variable_product_cron', array( $importProductClass, 'import_variable_product_variations' ), 10, 2 );
-add_action( 'sync_zi_product_cron', array( $productClass, 'zi_products_prepare_sync' ), 10, 2 );
-add_action( 'sync_zi_pricelist', array( $importPricelist, 'zi_get_pricelist' ), 10, 2 );
-add_action( 'sync_zi_order', array( $orderClass, 'zi_orders_prepare_sync' ), 10, 2 );
+add_action('import_group_items_cron', array($importProductClass, 'sync_groupitem_recursively'), 10, 2);
+add_action('import_simple_items_cron', array($importProductClass, 'sync_item_recursively'), 10, 2);
+add_action('import_variable_product_cron', array($importProductClass, 'import_variable_product_variations'), 10, 2);
+add_action('sync_zi_product_cron', array($productClass, 'zi_products_prepare_sync'), 10, 2);
+add_action('sync_zi_pricelist', array($importPricelist, 'zi_get_pricelist'), 10, 2);
+add_action('sync_zi_order', array($orderClass, 'zi_orders_prepare_sync'), 10, 2);
 
-if ( is_admin() ) {
+if (is_admin()) {
 	Template::instance();
 	Ajax::instance();
 	Cors::instance();
 }
 // Load Media Library Endpoints
-new WooCommerce_Media_API_By_wooventory();
+new WooCommerce_Media_API_By_commercebird();
 // Load License Key library
-if ( class_exists( 'Wooventory_AM_Client' ) ) {
+if (class_exists('commercebird_AM_Client')) {
 	$wcam_lib_custom_menu = array(
-		'menu_type'   => 'add_submenu_page',
-		'parent_slug' => 'wooventory-app',
-		'page_title'  => 'API key Activation',
-		'menu_title'  => 'License Activation',
+		'menu_type' => 'add_submenu_page',
+		'parent_slug' => 'commercebird-app',
+		'page_title' => 'API key Activation',
+		'menu_title' => 'License Activation',
 	);
-	$wcam_lib             = new Wooventory_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://wooventory.com/', 'Wooventory', '', $wcam_lib_custom_menu, false );
+	$wcam_lib = new commercebird_AM_Client(__FILE__, '', RMS_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false);
 }
 add_action(
 	'rest_api_init',

@@ -23,7 +23,7 @@ export const useHomepageStore = defineStore('homepage', () => {
         }
         if (loader.isLoading(backendAction.get_changelog)) return
         loader.setLoading(backendAction.get_changelog)
-        await fetch('https://wooventory.com/wp-json/wp/v2/changelog')
+        await fetch('https://commercebird.com/wp-json/wp/v2/changelog')
             .then(response => response.json())
             .then(data => {
                 changelog.value = data

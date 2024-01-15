@@ -1,6 +1,6 @@
 {
-  "name": "wooventory/wooventory",
-  "description": "This plugin helps you get the most of Wooventory by allowing you to manage product images, integrations and more",
+  "name": "commercebird/commercebird",
+  "description": "This plugin helps you get the most of commercebird by allowing you to manage product images, integrations and more",
   "type": "wordpress-plugin",
   "license": "GPL-3.0-or-later",
   "autoload": {

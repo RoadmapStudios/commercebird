@@ -44,14 +44,14 @@ const links = {
   knowledge: {
     title: "Knowledge Base",
     subtitle: "Find answers to your questions",
-    link: "https://docs.wooventory.com/portal/en/kb/setup",
+    link: "https://docs.commercebird.com/portal/en/kb/setup",
     icon: BookOpenIcon,
     button: "Open Knowledge Base",
   },
   chat: {
     title: "Chat with us",
     subtitle: "Find answers to your questions",
-    link: "https://wooventory.com/contact/",
+    link: "https://commercebird.com/contact/",
     icon: ChatBubbleBottomCenterIcon,
     button: "Chat Now",
   },

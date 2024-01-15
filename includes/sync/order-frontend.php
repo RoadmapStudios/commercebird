@@ -6,7 +6,7 @@
  * @package  WooZo Inventory
  * @category Zoho Integration
  * @author   Roadmap Studios
- * @link     https://wooventory.com
+ * @link     https://commercebird.com
  */
 
 if (!defined('ABSPATH')) {
@@ -17,7 +17,8 @@ if (!defined('ABSPATH')) {
  * Sync the order from frontend to Zoho Inventory
  */
 add_action('woocommerce_thankyou', 'zi_sync_frontend_order');
-function zi_sync_frontend_order($order_id) {
+function zi_sync_frontend_order($order_id)
+{
     // Check if the transient flag is set
     if (get_transient('your_thankyou_callback_executed_' . $order_id)) {
         return;

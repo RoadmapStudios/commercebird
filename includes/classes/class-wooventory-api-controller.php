@@ -1,5 +1,5 @@
 <?php
-class WC_REST_WooCommerce_Media_API_By_wooventory_Controller extends WC_REST_CRUD_Controller
+class WC_REST_WooCommerce_Media_API_By_commercebird_Controller extends WC_REST_CRUD_Controller
 {
     protected $namespace = 'wc/v2';
     protected $namespace2 = 'wc/v3';
@@ -29,7 +29,8 @@ class WC_REST_WooCommerce_Media_API_By_wooventory_Controller extends WC_REST_CRU
                 'args' => $this->get_params_upload(),
                 'permission_callback' => array($this->media_controller, 'create_item_permissions_check'),
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace, '/' . $this->rest_base . '/(?P<id>\d+)', array(
             array(
                 'methods' => WP_REST_Server::READABLE,
@@ -48,7 +49,8 @@ class WC_REST_WooCommerce_Media_API_By_wooventory_Controller extends WC_REST_CRU
                 'args' => $this->get_params_delete(),
                 'permission_callback' => array($this->media_controller, 'delete_item_permissions_check'),
             ),
-        ));
+        )
+        );
 
         register_rest_route($this->namespace2, '/' . $this->rest_base, array(
             array(
@@ -62,7 +64,8 @@ class WC_REST_WooCommerce_Media_API_By_wooventory_Controller extends WC_REST_CRU
                 'args' => $this->get_params_upload(),
                 'permission_callback' => array($this->media_controller, 'create_item_permissions_check'),
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace2, '/' . $this->rest_base . '/(?P<id>\d+)', array(
             array(
                 'methods' => WP_REST_Server::READABLE,
@@ -81,7 +84,8 @@ class WC_REST_WooCommerce_Media_API_By_wooventory_Controller extends WC_REST_CRU
                 'args' => $this->get_params_delete(),
                 'permission_callback' => array($this->media_controller, 'delete_item_permissions_check'),
             ),
-        ));
+        )
+        );
     }
 
     public function get_params_upload()
@@ -141,7 +145,7 @@ class WC_REST_WooCommerce_Media_API_By_wooventory_Controller extends WC_REST_CRU
             // fwrite($fd,PHP_EOL.'File type : '.$decoded['type']);
             // fwrite($fd,PHP_EOL.'File file : '.print_r($decoded['file'],true));
             $request->set_body($decoded);
-            $br_content_type = ( ! empty( $request['mime_type'] ) ? $request['mime_type'] : "image/jpeg" );
+            $br_content_type = (!empty($request['mime_type']) ? $request['mime_type'] : "image/jpeg");
             $request->remove_header('Content-Type');
             $request->add_header('Content-Type', $br_content_type);
             $request->add_header('Content-Disposition', "attachment;filename=\"{$filename}\"");

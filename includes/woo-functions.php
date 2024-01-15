@@ -6,7 +6,7 @@
  * @package  WooZo_Inventory
  */
 
- if (!defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
@@ -14,16 +14,16 @@
  * Helper functions to ensure correct handling of Data being transferred via rest api
  */
 
-function wooventory_clear_product_cache($object, $request, $is_creating)
+function commercebird_clear_product_cache($object, $request, $is_creating)
 {
-	if (!$is_creating) {
-		$product_id = $object->get_id();
+    if (!$is_creating) {
+        $product_id = $object->get_id();
         $productHandler = new ProductClass();
         $productHandler->zi_product_sync($product_id);
-		wc_delete_product_transients($product_id);
-	}
+        wc_delete_product_transients($product_id);
+    }
 }
-add_action('woocommerce_rest_insert_product_object', 'wooventory_clear_product_cache', 10, 3);
+add_action('woocommerce_rest_insert_product_object', 'commercebird_clear_product_cache', 10, 3);
 
 
 
@@ -31,7 +31,8 @@ add_action('woocommerce_rest_insert_product_object', 'wooventory_clear_product_c
  * Function to update the Contact in Zoho when customer updates address on frontend
  * @param $userid
  */
-function zi_update_contact_via_accountpage($user_id) {
+function zi_update_contact_via_accountpage($user_id)
+{
     $contactClassHandle = new ContactClass();
     $contactClassHandle->ContactUpdateFunction($user_id);
 }
@@ -218,14 +219,16 @@ function zoho_item_id_field()
 }
 function zoho_item_id_variation_field($loop, $variation_data, $variation)
 {
-    woocommerce_wp_text_input(array(
-        'id' => 'zi_item_id[' . $loop . ']',
-        'class' => 'readonly',
-        'label' => __('Zoho Item ID'),
-        'value' => get_post_meta($variation->ID, 'zi_item_id', true),
-        'desc_tip' => true,
-        'description' => __('This is the Zoho Item ID of this product. You cannot change this'),
-    ));
+    woocommerce_wp_text_input(
+        array(
+            'id' => 'zi_item_id[' . $loop . ']',
+            'class' => 'readonly',
+            'label' => __('Zoho Item ID'),
+            'value' => get_post_meta($variation->ID, 'zi_item_id', true),
+            'desc_tip' => true,
+            'description' => __('This is the Zoho Item ID of this product. You cannot change this'),
+        )
+    );
 }
 
 // Disable Guest Checkout if Zoho Inventory is active
@@ -330,12 +333,13 @@ add_filter('manage_woocommerce_page_wc-orders_columns', 'zi_sync_column_orders_o
  * @param int    $order_id $order id.
  * @return void
  */
-function zi_add_zoho_orders_content( $column, $order_id ) {
+function zi_add_zoho_orders_content($column, $order_id)
+{
     $zi_url = get_option('zoho_inventory_url');
-	switch ( $column ) {
-		case 'zoho_sync':
-			// Get custom order meta data.
-			$order = wc_get_order( $order_id );
+    switch ($column) {
+        case 'zoho_sync':
+            // Get custom order meta data.
+            $order = wc_get_order($order_id);
             $zi_order_id = $order->get_meta('zi_salesorder_id', true, 'edit');
             $url = $zi_url . 'app#/salesorders/' . $zi_order_id;
             if ($zi_order_id) {
@@ -343,9 +347,9 @@ function zi_add_zoho_orders_content( $column, $order_id ) {
             } else {
                 echo '<span class="dashicons dashicons-dismiss" style="color:red;"></span>';
             }
-			unset( $order );
-			break;
-	}
+            unset($order);
+            break;
+    }
 }
 add_action('manage_woocommerce_page_wc-orders_custom_column', 'zi_add_zoho_orders_content', 20, 2);
 
@@ -410,16 +414,18 @@ function zi_sync_column_filterable()
         echo '<option value="">Zoho Sync Filter</option>';
 
         // Count synced products
-        $synced_count = new WP_Query(array(
-            'post_type' => 'product',
-            'meta_query' => array(
-                array(
-                    'key' => 'zi_item_id',
-                    'compare' => 'EXISTS',
+        $synced_count = new WP_Query(
+            array(
+                'post_type' => 'product',
+                'meta_query' => array(
+                    array(
+                        'key' => 'zi_item_id',
+                        'compare' => 'EXISTS',
+                    ),
                 ),
-            ),
-            'fields' => 'ids',
-        ));
+                'fields' => 'ids',
+            )
+        );
         $synced_count = $synced_count->found_posts;
         $synced_label = 'Synced';
         if ($synced_count > 0) {
@@ -428,16 +434,18 @@ function zi_sync_column_filterable()
         echo '<option value="synced" ' . selected($value, 'synced', false) . '>' . $synced_label . '</option>';
 
         // Count not synced products
-        $not_synced_count = new WP_Query(array(
-            'post_type' => 'product',
-            'meta_query' => array(
-                array(
-                    'key' => 'zi_item_id',
-                    'compare' => 'NOT EXISTS',
+        $not_synced_count = new WP_Query(
+            array(
+                'post_type' => 'product',
+                'meta_query' => array(
+                    array(
+                        'key' => 'zi_item_id',
+                        'compare' => 'NOT EXISTS',
+                    ),
                 ),
-            ),
-            'fields' => 'ids',
-        ));
+                'fields' => 'ids',
+            )
+        );
         $not_synced_count = $not_synced_count->found_posts;
         $not_synced_label = 'Not Synced';
         if ($not_synced_count > 0) {
