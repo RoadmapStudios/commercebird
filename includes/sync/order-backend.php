@@ -4,10 +4,10 @@
  * All backend order sync related functions.
  *
  * @category Fulfillment
- * @package  Wooventory
+ * @package  commercebird
  * @author   Roadmap Studios <info@roadmapstudios.com>
  * @license  GNU General Public License v3.0
- * @link     https://wooventory.com
+ * @link     https://commercebird.com
  */
 
 if (!defined('ABSPATH')) {
@@ -72,14 +72,14 @@ add_action('add_meta_boxes', 'zoho_admin_metabox');
 add_filter('bulk_actions-woocommerce_page_wc-orders', 'zi_sync_all_orders_to_zoho', 10, 1);
 function zi_sync_all_orders_to_zoho($actions)
 {
-    $actions['sync_order_to_zoho'] = __( 'Sync to Zoho', 'woocommerce' );
+    $actions['sync_order_to_zoho'] = __('Sync to Zoho', 'woocommerce');
     return $actions;
 }
 
 add_filter('handle_bulk_actions-woocommerce_page_wc-orders', 'zi_sync_all_orders_to_zoho_handler', 10, 3);
 function zi_sync_all_orders_to_zoho_handler($redirect, $action, $object_ids)
 {
-    if ( $action !== 'sync_order_to_zoho' )
+    if ($action !== 'sync_order_to_zoho')
         return $redirect; // Exit
     // let's remove query args first
     $redirect = remove_query_arg('sync_order_to_zoho_done', $redirect);

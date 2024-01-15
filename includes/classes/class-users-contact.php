@@ -6,7 +6,7 @@
  * @package  WooZo Inventory
  * @category Zoho Integration
  * @author   Roadmap Studios
- * @link     https://wooventory.com
+ * @link     https://commercebird.com
  */
 class ContactClass
 {

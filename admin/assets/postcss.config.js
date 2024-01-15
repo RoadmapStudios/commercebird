@@ -1,9 +1,9 @@
 module.exports = {
-    plugins: {
-        tailwindcss: {},
-        autoprefixer: {},
-        "postcss-prefix-selector": {
-            prefix: "#wooventory-app",
-        },
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+    "postcss-prefix-selector": {
+      prefix: "#commercebird-app",
     },
+  },
 };

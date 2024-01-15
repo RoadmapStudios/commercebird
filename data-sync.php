@@ -4,10 +4,10 @@
  * File for ZOHO inventory plugin initialization.
  *
  * @category Zoho_Integration
- * @package  Wooventory
- * @author   Wooventory
+ * @package  commercebird
+ * @author   commercebird
  * @license  GNU General Public License v3.0
- * @link     https://wooventory.com
+ * @link     https://commercebird.com
  */
 
 // require RMS_DIR_PATH . 'background-process.php';
@@ -329,13 +329,15 @@ function zoho_contacts_import($page = '')
                         /* Update Wp User if already exist */
                         $user_data = get_user_by('email', $email);
                         $user_id = $user_data->ID;
-                        $is_err = wp_update_user(array(
-                            'ID' => $user_id,
-                            "display_name" => $first_name . ' ' . $last_name,
-                            'user_email' => $email,
-                            'first_name' => $first_name,
-                            'last_name' => $last_name,
-                        ));
+                        $is_err = wp_update_user(
+                            array(
+                                'ID' => $user_id,
+                                "display_name" => $first_name . ' ' . $last_name,
+                                'user_email' => $email,
+                                'first_name' => $first_name,
+                                'last_name' => $last_name,
+                            )
+                        );
                         if (!is_wp_error($is_err)) {
                             update_user_meta($user_id, 'zi_contact_id', $zohocontact_id);
                             update_user_meta($user_id, 'billing_company', $company_name);

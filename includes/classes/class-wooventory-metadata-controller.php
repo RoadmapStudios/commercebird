@@ -1,5 +1,5 @@
 <?php
-class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_CRUD_Controller
+class WC_REST_WooCommerce_Metadata_API_By_commercebird_Controller extends WC_REST_CRUD_Controller
 {
     protected $namespace = 'wc/v2';
     protected $namespace2 = 'wc/v3';
@@ -16,7 +16,8 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
                 'permission_callback' => array($this, 'check_permission_to_edit_posts'),
                 'args' => $this->get_params(),
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace, '/' . $this->rest_base . '/delete', array(
             array(
                 'methods' => WP_REST_Server::EDITABLE,
@@ -24,7 +25,8 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
                 'permission_callback' => array($this, 'check_permission_to_edit_posts'),
                 'args' => $this->get_params(),
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace, '/' . $this->rest_base . '/list', array(
             array(
                 'methods' => WP_REST_Server::EDITABLE,
@@ -32,7 +34,8 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
                 'permission_callback' => array($this, 'check_permission_to_edit_posts'),
                 'args' => $this->get_params(),
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace2, '/' . $this->rest_base, array(
             array(
                 'methods' => WP_REST_Server::EDITABLE,
@@ -40,7 +43,8 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
                 'permission_callback' => array($this, 'check_permission_to_edit_posts'),
                 'args' => $this->get_params(),
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace2, '/' . $this->rest_base . '/delete', array(
             array(
                 'methods' => WP_REST_Server::EDITABLE,
@@ -48,7 +52,8 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
                 'permission_callback' => array($this, 'check_permission_to_edit_posts'),
                 'args' => $this->get_params(),
             ),
-        ));
+        )
+        );
         register_rest_route($this->namespace2, '/' . $this->rest_base . '/list', array(
             array(
                 'methods' => WP_REST_Server::EDITABLE,
@@ -56,7 +61,8 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
                 'permission_callback' => array($this, 'check_permission_to_edit_posts'),
                 'args' => $this->get_params(),
             ),
-        ));
+        )
+        );
     }
 
     public function check_permission_to_edit_posts()
@@ -69,37 +75,37 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
         $params = array(
             'posts' => array(
                 'required' => true,
-                'description' => __('Array of posts to change.', 'wooventory_metadata'),
+                'description' => __('Array of posts to change.', 'commercebird_metadata'),
                 'type' => 'array',
                 'items' => array(
-                    'description' => __('Post object', 'wooventory_metadata'),
+                    'description' => __('Post object', 'commercebird_metadata'),
                     'type' => 'object',
                     'properties' => array(
                         'id' => array(
                             'required' => true,
-                            'description' => __('Post ID.', 'wooventory_metadata'),
+                            'description' => __('Post ID.', 'commercebird_metadata'),
                             'type' => 'integer',
                         ),
                         'data' => array(
                             'required' => true,
-                            'description' => __('Array of meta and taxonomy fields to change.', 'wooventory_metadata'),
+                            'description' => __('Array of meta and taxonomy fields to change.', 'commercebird_metadata'),
                             'type' => 'array',
                             'items' => array(
-                                'description' => __('Array of meta and taxonomy fields to change.', 'wooventory_metadata'),
+                                'description' => __('Array of meta and taxonomy fields to change.', 'commercebird_metadata'),
                                 'type' => 'object',
                                 'properties' => array(
                                     'key' => array(
-                                        'description' => __('Field or taxonomy name.', 'wooventory_metadata'),
+                                        'description' => __('Field or taxonomy name.', 'commercebird_metadata'),
                                         'type' => 'string',
                                         'sanitize_callback' => 'sanitize_text_field',
                                     ),
                                     'value' => array(
-                                        'description' => __('Value.', 'wooventory_metadata'),
+                                        'description' => __('Value.', 'commercebird_metadata'),
                                         'default' => '',
                                         'sanitize_callback' => 'sanitize_text_field',
                                     ),
                                     'type' => array(
-                                        'description' => __('Key type. Possible values are "meta" and "taxonomy".', 'wooventory_metadata'),
+                                        'description' => __('Key type. Possible values are "meta" and "taxonomy".', 'commercebird_metadata'),
                                         'type' => 'string',
                                         'enum' => array('post', 'meta', 'taxonomy'),
                                     ),
@@ -165,7 +171,8 @@ class WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller extends WC_REST_
                         $response_data[] = array_merge($meta, array(
                             'result' => 'error',
                             'message' => $e->getMessage(),
-                        ));
+                        )
+                        );
                     }
                 }
                 $response['posts'][] = array(

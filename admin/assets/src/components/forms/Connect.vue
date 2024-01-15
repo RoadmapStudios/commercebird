@@ -34,7 +34,7 @@
     <InputGroup label="Client Secret">
       <TextInput v-model="store.connection.client_secret" />
     </InputGroup>
-    <CopyableInput :value="store.connection.redirect_uri"/>
+    <CopyableInput :value="store.connection.redirect_uri" />
 
     <div class="flex items-center justify-between py-2">
       <LoaderIcon v-if="loader.isLoading('load_connection')" :loading="true" />
@@ -58,17 +58,17 @@
 </template>
 <script lang="ts" setup>
 import BaseButton from "@/components/ui/BaseButton.vue";
-import {ExclamationCircleIcon,} from "@heroicons/vue/24/outline";
-import {useZohoInventoryStore} from "@/stores/zohoInventory";
-import {useLoadingStore} from "@/stores/loading";
+import { ExclamationCircleIcon } from "@heroicons/vue/24/outline";
+import { useZohoInventoryStore } from "@/stores/zohoInventory";
+import { useLoadingStore } from "@/stores/loading";
 import InputGroup from "../ui/InputGroup.vue";
 import TextInput from "../ui/inputs/TextInput.vue";
 import SelectInput from "../ui/inputs/SelectInput.vue";
 import Alert from "@/components/ui/Alert.vue";
 import LoaderIcon from "@/components/ui/LoaderIcon.vue";
-import {useClipboard} from "@vueuse/core";
-import {backendAction, redirect_uri, storeKey} from "@/composables";
-import {onBeforeMount} from "vue";
+import { useClipboard } from "@vueuse/core";
+import { backendAction, redirect_uri, storeKey } from "@/composables";
+import { onBeforeMount } from "vue";
 import CopyableInput from "@/components/ui/inputs/CopyableInput.vue";
 
 const hints = {
@@ -76,7 +76,7 @@ const hints = {
     icon: ExclamationCircleIcon,
     message:
       "Please read the documentation first before you use this plugin and make sure to enable automatic updates for this plugin!",
-    link: "https://support.wooventory.com/portal/en/kb/zoho-inventory-woocommerce",
+    link: "https://support.commercebird.com/portal/en/kb/zoho-inventory-woocommerce",
     linkText: "Visit Here",
   },
   zohoDoc: {

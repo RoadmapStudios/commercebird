@@ -6,16 +6,16 @@
  * @package  WooZo Inventory
  * @category Zoho Integration
  * @author   Roadmap Studios
- * @link     https://wooventory.com
+ * @link     https://commercebird.com
  */
 class MulticurrencyClass
 {
 
 	public function __construct()
 	{
-		$config =  [
+		$config = [
 
-			'MulticurrencyZI'	=> [
+			'MulticurrencyZI' => [
 				'OID' => get_option('zoho_inventory_oid'),
 				'APIURL' => get_option('zoho_inventory_url'),
 
@@ -39,7 +39,7 @@ class MulticurrencyClass
 		$executeCurlCallHandle = new ExecutecallClass();
 		$response = $executeCurlCallHandle->ExecuteCurlCallGet($url);
 
-		$code    = $response->code;
+		$code = $response->code;
 		$message = $response->message;
 
 		if (0 == $code || '0' == $code) {

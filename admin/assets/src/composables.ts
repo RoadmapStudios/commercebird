@@ -71,7 +71,7 @@ export const origin = window.location.origin;
 export const ajaxUrl = (action: string): string => {
     const url = `${window.zoho_inventory_admin.url}`;
     const securityToken = `${window.zoho_inventory_admin.security_token}`;
-    return `${url}?security_token=${securityToken}&action=wooventory-app-${action}`;
+    return `${url}?security_token=${securityToken}&action=commercebird-app-${action}`;
 }
 
 
@@ -106,7 +106,7 @@ export function extractOptions(
  * - `hasNew(data: Object)`: Checks if `data` is different from the data stored with the same key.
  */
 export const useStorage = (): UseStorage => {
-    const prefix: string = "wooventory-app-storage";
+    const prefix: string = "commercebird-app-storage";
 
     const getKey = (key: string) => `${prefix}-${key}`;
     const hasNew = (key: string, data: Object) => {

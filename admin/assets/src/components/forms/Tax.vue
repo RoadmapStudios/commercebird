@@ -69,7 +69,7 @@ import BaseButton from "@/components/ui/BaseButton.vue";
 const hints = {
   icon: DocumentIcon,
   message: "Please read the Tax Mapping documentation",
-  link: "https://support.wooventory.com/portal/en/kb/articles/tax-mapping",
+  link: "https://support.commercebird.com/portal/en/kb/articles/tax-mapping",
   linkText: "Visit Here",
 };
 

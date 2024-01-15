@@ -1,6 +1,6 @@
 <?php
 
-class WooCommerce_Media_API_By_wooventory
+class WooCommerce_Media_API_By_commercebird
 {
 
 	public function __construct()
@@ -15,9 +15,9 @@ class WooCommerce_Media_API_By_wooventory
 			return;
 		}
 		$api_classes = array(
-			'WC_REST_WooCommerce_Media_API_By_wooventory_Controller',
-			'WC_REST_WooCommerce_Metadata_API_By_wooventory_Controller',
-			'WC_REST_List_Items_API_By_wooventory_Controller',
+			'WC_REST_WooCommerce_Media_API_By_commercebird_Controller',
+			'WC_REST_WooCommerce_Metadata_API_By_commercebird_Controller',
+			'WC_REST_List_Items_API_By_commercebird_Controller',
 		);
 		foreach ($api_classes as $api_class) {
 			$controller = new $api_class();

@@ -1,6 +1,6 @@
 <?php
 
-class Wooventory
+class commercebird
 {
 
     /**
@@ -38,24 +38,24 @@ class Wooventory
     public static function initHooks()
     {
         //Init
-        add_action('init', array('wooventory', 'init'));
+        add_action('init', array('commercebird', 'init'));
 
         //Admin init
-        add_action('admin_init', array('wooventory', 'adminInit'));
+        add_action('admin_init', array('commercebird', 'adminInit'));
 
         //Admin notices
-        add_action('admin_notices', array('wooventory', 'adminNotices'));
-        add_action('wp_ajax_dismiss_rmszi_review_request_notice', array('wooventory', 'dismiss_rmszi_review_request_notice'));
-        add_action('wp_ajax_skip_rmszi_review_request_notice', array('wooventory', 'skip_rmszi_review_request_notice'));
+        add_action('admin_notices', array('commercebird', 'adminNotices'));
+        add_action('wp_ajax_dismiss_rmszi_review_request_notice', array('commercebird', 'dismiss_rmszi_review_request_notice'));
+        add_action('wp_ajax_skip_rmszi_review_request_notice', array('commercebird', 'skip_rmszi_review_request_notice'));
 
         //Plugins page
-        add_filter('plugin_row_meta', array('wooventory', 'pluginRowMeta'), 10, 2);
-        add_filter('plugin_action_links_' . RMS_BASENAME, array('wooventory', 'actionLinks'));
+        add_filter('plugin_row_meta', array('commercebird', 'pluginRowMeta'), 10, 2);
+        add_filter('plugin_action_links_' . RMS_BASENAME, array('commercebird', 'actionLinks'));
 
         //Admin page
         $page = filter_input(INPUT_GET, 'page');
         if (!empty($page) && $page == RMS_MENU_SLUG) {
-            add_filter('admin_footer_text', array('wooventory', 'adminFooter'));
+            add_filter('admin_footer_text', array('commercebird', 'adminFooter'));
         }
     }
 
@@ -127,25 +127,29 @@ class Wooventory
 
     public static function render_review_request_notice()
     {
-        $review_url = "https://wooventory.com/product/wooventory";
+        $review_url = "https://commercebird.com/product/commercebird";
         ?>
-        <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice" data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>" data-action="dismiss_rmszi_review_request_notice" style="display:none">
+        <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice"
+            data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>"
+            data-action="dismiss_rmszi_review_request_notice" style="display:none">
             <h3>
-                Just wanted to say thank you for using Wooventory in your store.
+                Just wanted to say thank you for using commercebird in your store.
             </h3>
-            <p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers!</p>
+            <p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers!
+            </p>
             <p class="action-row">
-                <button type="button" class="button button-primary" onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
+                <button type="button" class="button button-primary"
+                    onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
                 <button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
-                <span class="logo"><a target="_blank" href="https://wooventory.com">
+                <span class="logo"><a target="_blank" href="https://commercebird.com">
                         <img src="<?php // echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg');
-        ?>" />
+                                ?>" />
                     </a></span>
 
             </p>
         </div>
-    <?php
-}
+        <?php
+    }
 
     public static function dismiss_rmszi_review_request_notice()
     {
@@ -203,7 +207,11 @@ class Wooventory
     public static function adminFooter()
     {
         ?>
-        <p><a href="https://wooventory.com/product/wooventory/" class="arg-review-link" target="_blank"><?php echo sprintf(__('If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI'), RMS_PLUGIN_NAME); ?></a> <?php _e('Thank you.', 'rmsZI');?></p>
-<?php
-}
+        <p><a href="https://commercebird.com/product/commercebird/" class="arg-review-link" target="_blank">
+                <?php echo sprintf(__('If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI'), RMS_PLUGIN_NAME); ?>
+            </a>
+            <?php _e('Thank you.', 'rmsZI'); ?>
+        </p>
+        <?php
+    }
 }
