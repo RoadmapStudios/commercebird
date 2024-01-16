@@ -19,7 +19,7 @@
         >
           <router-link class="flex items-center flex-shrink-0 gap-2" to="/">
             <Logo />
-            <span class="font-sans text-xl italic font-bold">commercebird</span>
+            <span class="font-sans text-xl italic font-bold">CommerceBird</span>
           </router-link>
           <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
             <router-link

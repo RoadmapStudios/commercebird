@@ -1,9 +1,9 @@
 <template>
-  <Card :foot="true" title="commercebird App">
+  <Card :foot="true" title="CommerceBird App">
     <img
-      alt="commercebird App"
+      alt="CommerceBird App"
       class="object-cover w-full px-0 h-fit"
-      src="https://app.commercebird.com/assets/images/commercebird-login-banner.png"
+      src="https://app.commercebird.com/assets/images/wooventory-login-banner.png"
     />
     <template #footer>
       <div class="flex items-center justify-between gap-4 px-2">
