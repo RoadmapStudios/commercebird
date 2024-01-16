@@ -38,7 +38,7 @@ rm ./"$plugin_name"/composer.lock
 
 progress_message "Removing dev data..."
 sed -i '71,78d' ./"$plugin_name"/plugin.php
-sed -i '67,70d' ./"$plugin_name"/admin/includes/Template.php
+sed -i '73,76d' ./"$plugin_name"/admin/includes/Template.php
 ## Add index.php to every directory
 progress_message "Adding index.php to every directory..."
 find ./"$plugin_name" -type d -exec sh -c "echo '<?php // silence' > {}/index.php" \;

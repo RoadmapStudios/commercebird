@@ -29,8 +29,8 @@ final class Template
 	{
 		$svg = RMS_DIR_URL . 'admin/commercebird-icon.svg';
 		add_menu_page(
-			__('commercebird', 'commercebird'),
-			__('commercebird', 'commercebird'),
+			__('CommerceBird', 'commercebird'),
+			__('CommerceBird', 'commercebird'),
 			'manage_options',
 			self::NAME,
 			function () {
