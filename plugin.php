@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Plugin Name: commercebird
+ * Plugin Name: CommerceBird
  * Plugin URI:  https://commercebird.com
- * Description: This plugin helps you get the most of commercebird by
- * allowing you to manage product images, integrations and more.
- * Version: 2.0.9
- * Author: commercebird
+ * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
+ * Version: 2.0.10
+ * Author: CommerceBird
  * Author URI:  https://commercebird.com
  * Requires PHP: 7.4
  * Text Domain: rmsZI
@@ -14,13 +13,13 @@
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
  * @category Fulfillment
- * @package  commercebird
+ * @package  CommerceBird
  * @author   Fawad Tiemoerie <info@roadmapstudios.com>
  * @license  GNU General Public License v3.0
  * @link     https://commercebird.com
  *
  * WC requires at least: 8.0.0
- * WC tested up to: 8.5.0
+ * WC tested up to: 8.5.1
  */
 
 if (!defined('ABSPATH')) {
@@ -30,7 +29,7 @@ if (!defined('RMS_PLUGIN_NAME')) {
 	define('RMS_PLUGIN_NAME', 'CommerceBird');
 }
 if (!defined('RMS_VERSION')) {
-	define('RMS_VERSION', '2.0.9');
+	define('RMS_VERSION', '2.0.10');
 }
 if (!defined('RMS_DIR_PATH')) {
 	define('RMS_DIR_PATH', plugin_dir_path(__FILE__));
