@@ -4,7 +4,7 @@
 
 @layer base {
     svg {
-        @apply w-6 h-6 text-gray-500;
+        @apply w-auto h-12 text-gray-500;
     }
 
     img {
