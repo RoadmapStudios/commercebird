@@ -218,8 +218,8 @@ class ImportProductClass
             $response_msg = array();
             if ($code == '0' || $code == 0) {
                 $item_ids = [];
+                // fwrite($fd, PHP_EOL . 'Items : ' . print_r($json, true));
                 foreach ($json->items as $arr) {
-                    // fwrite($fd, PHP_EOL . 'Item arr : ' . $arr);
                     $prod_id = $this->get_product_by_sku($arr->sku);
                     $is_bundle = $arr->is_combo_product;
                     if (isset($arr->group_id)) {
@@ -251,7 +251,8 @@ class ImportProductClass
 
                     if (empty($pdt_id) && $allow_to_import == true) {
                         $product_class = new ProductClass();
-                        $pdt_id = $product_class->zi_product_to_woocommerce($arr, '', '');
+                        $itemArray = json_decode(json_encode($arr), true);
+                        $pdt_id = $product_class->zi_product_to_woocommerce($itemArray, '', '');
                         if ($pdt_id) {
                             update_post_meta($pdt_id, 'zi_item_id', $arr->item_id);
                         }
@@ -1360,7 +1361,8 @@ class ImportProductClass
                         // Check if item is allowed to import or not.
                         if ($allow_to_import) {
                             $product_class = new ProductClass();
-                            $com_prod_id = $product_class->zi_product_to_woocommerce($comp_item, $stock, 'composite');
+                            $itemArray = json_decode(json_encode($comp_item), true);
+                            $com_prod_id = $product_class->zi_product_to_woocommerce($itemArray, $stock, 'composite');
                             update_post_meta($com_prod_id, 'zi_item_id', $zoho_comp_item_id);
                         } else {
                             // Import not allowed.
