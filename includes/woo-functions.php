@@ -497,4 +497,29 @@ function zi_sync_column_filter_query($query)
 }
 add_action('pre_get_posts', 'zi_sync_column_filter_query');
 
+/**
+ * Prevent Webhook delivery execution when order gets updated too often per minute
+ * 
+ */
+add_filter('woocommerce_webhook_should_deliver', 'skip_webhook_delivery', 10, 3);
+function skip_webhook_delivery($should_deliver, $webhook, $arg)
+{
+    // $fd = fopen(__DIR__ . '/should_skip_webhook.txt', 'a+');
+    // log the order id
+    // fwrite($fd, PHP_EOL . '$arg : ' . $arg);
+      
+    $webhook_name_to_exclude = 'CommerceBird Orders';
+    if ($webhook->get_name() === $webhook_name_to_exclude) {
+        // Check if the order status is not "processing" or "completed"
+        $order = wc_get_order($arg);
+        $order_status = $order->get_status();
+        // fwrite($fd, PHP_EOL . '$order_status : ' . $order_status);
 
+        if (!in_array($order_status, array('processing', 'completed'))) {
+            return false; // Skip webhook delivery for this order
+        }
+    }
+    // fclose($fd);
+
+    return $should_deliver; // Continue with normal webhook delivery
+}
