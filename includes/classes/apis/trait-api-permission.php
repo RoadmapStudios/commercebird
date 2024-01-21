@@ -21,7 +21,7 @@ trait Api
 		// Check if the request is from the domain example.com
 		$allowed_domain = array(
 			'http://localhost:8100',
-			'https://app.commercebird.com/',
+			'https://app.commercebird.com',
 			'capacitor://localhost',
 			'http://localhost',
 		);
