@@ -1,28 +1,25 @@
-import {
-    backendAction,
-    extractOptions,
-    fetchData,
-    notify,
-    redirect_uri,
-    resetData,
-    sendData,
-    storeKey,
-    useStorage,
-} from "@/composables";
 import type {
     ConnectionSettings,
     CronSettings,
+    Intervals,
     OrderSettings,
     PriceSettings,
     ProductSettings,
     TaxSettings,
+    WcTax,
     ZohoTax
-} from '@/type'
-import { acceptHMRUpdate, defineStore } from "pinia";
-import type { Ref, UnwrapRef } from "vue";
-import { reactive, ref, watch } from "vue";
-import { useLoadingStore } from "@/stores/loading";
+} from '@/types'
+import {acceptHMRUpdate, defineStore} from "pinia";
+import type {Ref, UnwrapRef} from "vue";
+import {reactive, ref, watch} from "vue";
+import {useLoadingStore} from "@/stores/loading";
+import {extractOptions, notify, redirect_uri} from "@/composable/helpers";
+import {backendAction, storeKey} from "@/keys";
+import {fetchData, resetData, sendData} from "@/composable/http";
+import {useStorage} from "@/composable/storage";
 
+const actions = backendAction.zohoInventory;
+const keys = storeKey.zohoInventory;
 
 export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const loader = useLoadingStore();
@@ -52,11 +49,11 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     });
 
     const isConnectionValid = async () => {
-        if (loader.isLoading(backendAction.is_connected)) return;
-        loader.setLoading(backendAction.is_connected);
-        const response = await fetchData(backendAction.is_connected, storeKey.connected);
-        isConnected.value = response;
-        loader.clearLoading(backendAction.is_connected);
+        const connected = actions.connection;
+        if (loader.isLoading(connected)) return;
+        loader.setLoading(connected);
+        isConnected.value = await fetchData(connected, keys.connected);
+        loader.clearLoading(connected);
     };
 
 
@@ -66,7 +63,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
      * -----------------------------------------------------------------------------------------------------------------
      */
 
-    const wc_taxes = ref<WC_TAX[]>([]);
+    const wc_taxes = ref<WcTax[]>([]);
     const zoho_taxes = ref<ZohoTax[]>([]);
     const tax_settings = reactive(<TaxSettings>{
         decimalTax: false,
@@ -74,25 +71,29 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         selectedVatExempt: "",
     });
     const get_wc_taxes = async () => {
-        const instore = storage.get(storeKey.wc_tax);
+        const key = keys.wc_tax;
+        const instore = storage.get(key);
         if (instore) {
             wc_taxes.value = instore;
         } else {
-            if (loader.isLoading(backendAction.get_wc_taxes)) return;
-            loader.setLoading(backendAction.get_wc_taxes);
-            wc_taxes.value = await fetchData(backendAction.get_wc_taxes, storeKey.wc_tax);
-            loader.clearLoading(backendAction.get_wc_taxes);
+            const action = actions.wc_taxes;
+            if (loader.isLoading(action)) return;
+            loader.setLoading(action);
+            wc_taxes.value = await fetchData(action, key);
+            loader.clearLoading(action);
         }
     };
     const get_zoho_taxes = async () => {
-        const in_store = storage.get(storeKey.zoho_tax);
+        const key = keys.zoho_tax;
+        const in_store = storage.get(key);
         if (in_store) {
             zoho_taxes.value = in_store;
         } else {
-            if (loader.isLoading(backendAction.get_zoho_taxes)) return;
-            loader.setLoading(backendAction.get_zoho_taxes);
-            zoho_taxes.value = await fetchData(backendAction.get_zoho_taxes, storeKey.zoho_tax);
-            loader.clearLoading(backendAction.get_zoho_taxes);
+            const action = actions.zoho_taxes;
+            if (loader.isLoading(action)) return;
+            loader.setLoading(action);
+            zoho_taxes.value = await fetchData(action, key);
+            loader.clearLoading(action);
         }
     };
 
@@ -103,8 +104,8 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         )}##${zoho_tax_rate.tax_type.replace(" ", "@@")}##${zoho_tax_rate.tax_percentage
         }`;
 
-    const taxOptions = (woocommerce_tax_id) => {
-        const taxOptions = {};
+    const taxOptions = (woocommerce_tax_id: number) => {
+        const taxOptions: { [key: string]: string } = {};
         for (const zoho_tax_rate of zoho_taxes.value) {
             taxOptions[woocommerce_tax_id + "^^" + encodeTax(zoho_tax_rate)] =
                 zoho_tax_rate.tax_name;
@@ -113,7 +114,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     };
 
     const vatExemptOptions = () => {
-        const vatExemptOptions = {};
+        const vatExemptOptions: { [key: string]: string } = {};
         for (const zoho_tax_rate of zoho_taxes.value) {
             vatExemptOptions[zoho_tax_rate.tax_id] = zoho_tax_rate.tax_name;
         }
@@ -136,7 +137,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const sync = async (action: string) => {
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
-        let url = `${zoho_inventory_admin.url}?action=zoho_ajax_call_${action}`;
+        let url = `${window.commercebird_admin.url}?action=zoho_ajax_call_${action}`;
         if (
             product_settings.item_from_zoho &&
             (action === "variable_item" ||
@@ -151,16 +152,16 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
             .then((response) => {
                 if (!response) return;
                 const data = response.data;
-                if (data.hasOwnProperty("success") && !data.hasOwnProperty("message")) {
+                if (data?.success) {
                     notify.success("Done!");
                     return;
                 } else {
-                    if (data.hasOwnProperty("message")) {
+                    if (data?.message) {
                         notify.success(data.message);
                         return;
                     }
                 }
-                
+
                 syncResponse.value = data;
             })
             .finally(() => {
@@ -189,7 +190,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
     const selected_categories: Ref<string[]> = ref([]);
     const zoho_categories = ref({});
-    const toggleSelectAll = (event) => {
+    const toggleSelectAll = (event: any) => {
         if (event.target.id === 'toggle-all') {
             if (event.target.checked) {
                 selected_categories.value = Object.keys(zoho_categories.value);
@@ -201,13 +202,11 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
     };
     const get_zoho_categories = async () => {
-        if (loader.isLoading(backendAction.get_zoho_categories)) return;
-        loader.setLoading(backendAction.get_zoho_categories);
-        zoho_categories.value = await fetchData(
-            backendAction.get_zoho_categories,
-            storeKey.zoho_categories
-        );
-        loader.clearLoading(backendAction.get_zoho_categories);
+        const action = actions.zoho_categories;
+        if (loader.isLoading(action)) return;
+        loader.setLoading(action);
+        zoho_categories.value = await fetchData(action, keys.zoho_categories);
+        loader.clearLoading(action);
     };
 
     /*
@@ -228,17 +227,16 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
     })
     const get_zoho_warehouses = async () => {
-        const instore = storage.get(storeKey.zoho_warehouses);
+        const key = keys.zoho_warehouses;
+        const instore = storage.get(key);
         if (instore) {
             zoho_warehouses.value = instore;
         }
-        if (loader.isLoading(backendAction.get_zoho_warehouses)) return;
-        loader.setLoading(backendAction.get_zoho_warehouses);
-        zoho_warehouses.value = await fetchData(
-            backendAction.get_zoho_warehouses,
-            storeKey.zoho_warehouses
-        );
-        loader.clearLoading(backendAction.get_zoho_warehouses);
+        const action = actions.zoho_warehouses;
+        if (loader.isLoading(action)) return;
+        loader.setLoading(action);
+        zoho_warehouses.value = await fetchData(action, key);
+        loader.clearLoading(action);
     };
     /*
     * -----------------------------------------------------------------------------------------------------------------
@@ -251,17 +249,19 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         wp_user_role: ''
     })
     const get_zoho_prices = async () => {
-        const instore = storage.get(storeKey.zoho_prices);
+        const key = keys.price;
+        const instore = storage.get(key);
         if (instore) {
             zoho_prices.value = instore;
         }
-        if (loader.isLoading(backendAction.get_zoho_prices)) return;
-        loader.setLoading(backendAction.get_zoho_prices);
+        const action = actions.price.get;
+        if (loader.isLoading(action)) return;
+        loader.setLoading(action);
         zoho_prices.value = await fetchData(
-            backendAction.get_zoho_prices,
-            storeKey.zoho_prices
+            action,
+            key
         );
-        loader.clearLoading(backendAction.get_zoho_prices);
+        loader.clearLoading(action);
     }
     /*
     * -----------------------------------------------------------------------------------------------------------------
@@ -272,25 +272,27 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const fields: Ref<UnwrapRef<{ key: string, value: string }[]>> = ref([])
 
     function addField() {
-        fields.value.push({ key: "", value: "" });
+        fields.value.push({key: "", value: ""});
     }
 
-    function removeField(index) {
+    function removeField(index: number) {
         fields.value.splice(index, 1);
     }
 
     const get_all_custom_fields = async () => {
-        const instore = storage.get(storeKey.order_custom_fields);
+        const key = keys.fields
+        const instore = storage.get(key);
         if (instore) {
             customFields.value = instore;
         }
-        if (loader.isLoading(backendAction.get_all_custom_fields)) return;
-        loader.setLoading(backendAction.get_all_custom_fields);
+        const action = actions.custom_fields;
+        if (loader.isLoading(action)) return;
+        loader.setLoading(action);
         customFields.value = await fetchData(
-            backendAction.get_all_custom_fields,
-            storeKey.order_custom_fields
+            action,
+            key
         );
-        loader.clearLoading(backendAction.get_all_custom_fields);
+        loader.clearLoading(action);
     }
 
     /*
@@ -308,39 +310,39 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         let store: string = ''
 
         switch (action) {
-            case backendAction.save_connect:
+            case actions.connect.save:
                 data = connection;
-                store = storeKey.connection
+                store = keys.connect
                 break;
-            case backendAction.save_tax:
+            case actions.tax.save:
                 data = tax_settings;
-                store = storeKey.tax
+                store = keys.tax
                 break;
-            case backendAction.save_product:
+            case actions.product.save:
                 data = product_settings;
-                store = storeKey.product
+                store = keys.product
                 break;
-            case backendAction.save_cron:
+            case actions.cron.save:
                 data = {
                     form: JSON.stringify(cron_settings),
                     categories: JSON.stringify(selected_categories.value)
                 };
-                store = storeKey.cron
+                store = keys.cron
                 break;
-            case backendAction.save_order:
+            case actions.order.save:
                 data = order_settings
-                store = storeKey.order
+                store = keys.order
                 break;
-            case backendAction.save_price:
+            case actions.price.save:
                 data = price_settings
-                store = storeKey.price
+                store = keys.price
                 break;
-            case backendAction.save_fields:
+            case actions.field.save:
                 const fieldData = extractOptions(fields.value, 'key', 'value')
                 data = {
                     form: JSON.stringify(fieldData),
                 }
-                store = storeKey.fields
+                store = keys.fields
                 break;
             default:
                 break;
@@ -353,15 +355,16 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         if (response) {
             notify.success(response.message);
             switch (action) {
-                case backendAction.save_connect:
+                case actions.connect.save:
                     setTimeout(() => {
                         window.location.href = response.redirect;
                     }, 1000);
                     break;
-                case backendAction.save_fields:
+                case actions.field.save:
                     if (fields.value.length === 0) {
-                        fields.value.push({ key: "", value: "" });
+                        fields.value.push({key: "", value: ""});
                     }
+                    break;
                 default:
                     break;
             }
@@ -376,32 +379,32 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
         switch (action) {
-            case backendAction.reset_connect:
-                response = await resetData(action, storeKey.connection);
-                storage.remove(storeKey.connection);
+            case actions.connect.reset:
+                response = await resetData(action, keys.connect);
+                storage.remove(keys.connect);
                 break;
-            case backendAction.reset_tax:
-                response = await resetData(action, storeKey.tax);
+            case actions.tax.reset:
+                response = await resetData(action, keys.tax);
                 break;
-            case backendAction.reset_product:
-                response = await resetData(action, storeKey.product);
-                storage.remove(storeKey.product);
+            case actions.product.reset:
+                response = await resetData(action, keys.product);
+                storage.remove(keys.product);
                 break;
-            case backendAction.reset_cron:
-                response = await resetData(action, storeKey.cron);
-                storage.remove(storeKey.cron);
+            case actions.cron.reset:
+                response = await resetData(action, keys.cron);
+                storage.remove(keys.cron);
                 break;
-            case backendAction.reset_order:
-                response = await resetData(action, storeKey.order);
-                storage.remove(storeKey.order);
+            case actions.order.reset:
+                response = await resetData(action, keys.order);
+                storage.remove(keys.order);
                 break;
-            case backendAction.reset_price:
-                response = await resetData(action, storeKey.price);
-                storage.remove(storeKey.price);
+            case actions.price.reset:
+                response = await resetData(action, keys.price);
+                storage.remove(keys.price);
                 break;
-            case backendAction.reset_fields:
-                response = await resetData(action, storeKey.fields);
-                storage.remove(storeKey.fields);
+            case actions.field.reset:
+                response = await resetData(action, keys.fields);
+                storage.remove(keys.fields);
                 break;
             default:
                 break;
@@ -411,25 +414,25 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
             notify.success(response.message);
             switch (action) {
-                case backendAction.reset_connect:
+                case actions.connect.reset:
                     connection.organization_id = "";
                     connection.client_id = "";
                     connection.client_secret = "";
                     connection.redirect_uri = redirect_uri;
                     connection.account_domain = "";
                     break;
-                case backendAction.reset_tax:
+                case actions.tax.reset:
                     tax_settings.decimalTax = false;
                     tax_settings.selectedTaxRates = [];
                     tax_settings.selectedVatExempt = "";
                     break;
-                case backendAction.reset_product:
+                case actions.product.reset:
                     product_settings.disable_product_sync = false;
                     product_settings.enable_accounting_stock = false;
                     product_settings.disable_stock_sync = false;
                     product_settings.item_from_zoho = false;
                     break;
-                case backendAction.reset_cron:
+                case actions.cron.reset:
                     cron_settings.disable_description_sync = false;
                     cron_settings.disable_image_sync = false;
                     cron_settings.disable_name_sync = false;
@@ -437,7 +440,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     cron_settings.zi_cron_interval = 'none'
                     selected_categories.value = [];
                     break;
-                case backendAction.reset_order:
+                case actions.order.reset:
                     order_settings.package_sync = false
                     order_settings.disable_sync = false
                     order_settings.enable_auto_number = false
@@ -447,11 +450,11 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     order_settings.order_prefix = ''
                     order_settings.warehouse_id = ''
                     break;
-                case backendAction.reset_price:
+                case actions.price.reset:
                     price_settings.zoho_inventory_pricelist = '';
                     price_settings.wp_user_role = ''
                     break;
-                case backendAction.reset_fields:
+                case actions.field.reset:
                     fields.value = [];
                     break;
                 default:
@@ -461,22 +464,12 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         }
         loader.clearLoading(action);
     };
-    const loadData = async (storeKey: string, action: string) => {
-        let instore = storage.get(storeKey);
-        if (!instore || !instore.organization_id) {
-            if (loader.isLoading(action)) return;
-            loader.setLoading(action);
-            instore = await fetchData(action, storeKey);
-            loader.clearLoading(action);
-        }
 
-        return instore;
-    };
 
     const tabWatcher = async (tab: string) => {
         let response;
-        notSubscribed.value = storage.get(storeKey.subscription) && storage.get(storeKey.subscription).length;
-        isConnected.value = storage.get(storeKey.connected);
+        notSubscribed.value = storage.get(storeKey.homepage.subscription) && storage.get(storeKey.homepage.subscription).length;
+        isConnected.value = storage.get(storeKey.zohoInventory.connected);
 
 
         if (tab !== "connect") {
@@ -488,7 +481,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
         switch (tab) {
             case "connect":
-                response = await loadData(storeKey.connection, backendAction.get_connect);
+                response = await loader.loadData(keys.connect, actions.connect.get);
                 if (response) {
                     connection.organization_id = response.organization_id;
                     connection.client_id = response.client_id;
@@ -500,7 +493,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
             case "tax":
                 get_wc_taxes();
                 get_zoho_taxes();
-                response = await loadData(storeKey.tax, backendAction.get_tax);
+                response = await loader.loadData(keys.tax, actions.tax.get);
                 if (response) {
                     tax_settings.decimalTax = response.decimalTax;
                     tax_settings.selectedTaxRates = response.selectedTaxRates;
@@ -508,7 +501,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 }
                 break;
             case "product":
-                response = await loadData(storeKey.product, backendAction.get_product);
+                response = await loader.loadData(keys.product, actions.product.get);
                 if (response) {
                     product_settings.item_from_zoho = response.item_from_zoho;
                     product_settings.disable_stock_sync = response.disable_stock_sync;
@@ -518,7 +511,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 break;
             case "cron":
                 get_zoho_categories();
-                response = await loadData(storeKey.cron, backendAction.get_cron);
+                response = await loader.loadData(keys.cron, actions.cron.get);
                 if (response) {
                     let parsed = response.form
                     if (typeof response.form === 'string') {
@@ -539,7 +532,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 break;
             case "order":
                 get_zoho_warehouses();
-                response = await loadData(storeKey.order, backendAction.get_order);
+                response = await loader.loadData(keys.order, actions.order.get);
                 if (response) {
                     order_settings.package_sync = response.package_sync;
                     order_settings.disable_sync = response.disable_sync;
@@ -553,7 +546,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 break;
             case "price":
                 get_zoho_prices();
-                response = await loadData(storeKey.price, backendAction.get_price);
+                response = await loader.loadData(keys.price, actions.price.get);
                 if (response) {
                     price_settings.zoho_inventory_pricelist = response.zoho_inventory_pricelist;
                     price_settings.wp_user_role = response.wp_user_role;
@@ -561,7 +554,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 break;
             case "field":
                 get_all_custom_fields();
-                response = await loadData(storeKey.fields, backendAction.get_fields);
+                response = await loader.loadData(keys.order_custom_fields, actions.field.get);
                 if (response) {
                     let parsed;
                     if (typeof response.form === 'string') {
@@ -573,12 +566,12 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     Object.entries(parsed).forEach(([key, value]) => {
                         const existingObject = fields.value.some(field => field.key === key && field.value === value);
                         if (!existingObject) {
-                            fields.value.push({ key, value });
+                            fields.value.push({key, value});
                         }
 
                     });
                     if (fields.value.length === 0) {
-                        fields.value.push({ key: "", value: "" });
+                        fields.value.push({key: "", value: ""});
                     }
 
                 }
@@ -594,7 +587,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         notSubscribed,
         isConnected,
         isConnectionValid,
-        loadData,
         connection,
         connectionSettingsInvalid,
         wc_taxes,

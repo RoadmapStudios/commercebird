@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import type {Message} from '@/composables';
 
+
+import type {Message} from "@/types";
 
 interface Props {
   message: Message,
