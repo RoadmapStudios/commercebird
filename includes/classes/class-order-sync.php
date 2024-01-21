@@ -11,7 +11,7 @@ class Sync_Order_Class
      */
     public function __construct()
     {
-        add_action("woocommerce_rest_insert_shop_order_object", array($this, 'on_insert_rest_api'), 10, 3);
+        add_action("woocommerce_rest_insert_shop_order_object", array($this, 'on_insert_rest_api'), 20, 3);
         add_filter('wcs_renewal_order_created', array($this, 'sync_renewal_order'), 10, 2);
         add_action('wp_ajax_zoho_admin_order_sync', array($this, 'zi_order_sync'));
         add_action('woocommerce_update_order', array($this, 'salesorder_void'));
@@ -48,9 +48,21 @@ class Sync_Order_Class
         if (!get_option('zoho_inventory_access_token')) {
             return;
         }
-
+        // $fd = fopen(__DIR__ . '/on_insert_rest_api.txt', 'w+');
+        $request_body = $request->get_body();
+        $request_body_array = json_decode($request_body, true);
+        $order_status = $request_body_array['status'];
         $order_id = $object->get_id();
-        $this->zi_order_sync($order_id);
+
+        // Check how many keys there are in the request body array. If there are only two keys then we don't need to do anything.
+        if (count($request_body_array) === 2) {
+            if (in_array($order_status, array('cancelled', 'wc-merged'))) {
+                $this->salesorder_void($order_id);
+            }
+        } else {
+            $this->zi_order_sync($order_id);
+        }
+        // fclose($fd);
     }
 
     /**
@@ -481,22 +493,24 @@ class Sync_Order_Class
 
                 // Custom Field mapping with zoho.
                 $getmappedfields = get_option('wootozoho_custom_fields');
-                $customfield = ',"custom_fields":[{';
+                $customfield = ',"custom_fields":[';
 
                 $data = json_decode($getmappedfields, true);
                 if ($data !== null) {
+                    $count = count($data);
+                    $i = 0;
                     foreach ($data as $key => $label) {
                         // Get the meta value which is the meta_key
                         $metavalue = $order->get_meta($key);
                         // Add the custom field to the JSON string
-                        $customfield .= '"label": "' . $label . '","value":"' . $metavalue . '"';
-
-                        if (count($data) - 1 > 0) {
+                        $customfield .= '{"label": "' . $label . '","value":"' . $metavalue . '"}';
+                        // Add comma if it's not the last iteration
+                        if (++$i < $count) {
                             $customfield .= ',';
                         }
                     }
                 }
-                $pdt1 .= $customfield . '}]';
+                $pdt1 .= $customfield . ']';
 
                 // If auto order number is enabled.
                 $enabled_auto_no = get_option('zoho_enable_auto_no_status');
@@ -544,7 +558,7 @@ class Sync_Order_Class
     }
 
     /**
-     * Void the sales order if canceled in WooCommerce.
+     * Void the sales order if cancelled in WooCommerce.
      *
      * @param int $order_id Order ID.
      */
@@ -555,6 +569,10 @@ class Sync_Order_Class
         }
 
         $order = wc_get_order($order_id);
+        // return if order is already voided
+        if ($order->get_meta('zi_salesorder_void', true)) {
+            return;
+        }
         $order_status = $order->get_status();
 
         if ($order_status == 'cancelled' || $order_status == 'wc-merged') {
@@ -569,8 +587,14 @@ class Sync_Order_Class
             $json = $executeCurlCallHandle->ExecuteCurlCallPost($url, $data);
 
             $errmsg = $json->message;
-
-            return $errmsg;
+            $code = $json->code;
+            if ($code == '0' || $code == 0) {
+                // Add order meta key "zi_salesorder_void" to true
+                $order->update_meta_data('zi_salesorder_void', true);
+                $order->add_order_note("Zoho Order Void: " . $errmsg);
+                $order->save();
+                return;
+            }
         } else {
             return;
         }
