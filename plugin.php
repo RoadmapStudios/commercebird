@@ -22,32 +22,32 @@
  * WC tested up to: 8.5.1
  */
 
-if (!defined('ABSPATH')) {
-	define('ABSPATH', '') or die('No script kiddies please!');
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', '' ) or die( 'No script kiddies please!' );
 }
-if (!defined('RMS_PLUGIN_NAME')) {
-	define('RMS_PLUGIN_NAME', 'CommerceBird');
+if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
+	define( 'RMS_PLUGIN_NAME', 'CommerceBird' );
 }
-if (!defined('RMS_VERSION')) {
-	define('RMS_VERSION', '2.0.10');
+if ( ! defined( 'RMS_VERSION' ) ) {
+	define( 'RMS_VERSION', '2.0.10' );
 }
-if (!defined('RMS_DIR_PATH')) {
-	define('RMS_DIR_PATH', plugin_dir_path(__FILE__));
+if ( ! defined( 'RMS_DIR_PATH' ) ) {
+	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
 }
-if (!defined('RMS_DIR_URL')) {
-	define('RMS_DIR_URL', plugin_dir_url(__FILE__));
+if ( ! defined( 'RMS_DIR_URL' ) ) {
+	define( 'RMS_DIR_URL', plugin_dir_url( __FILE__ ) );
 }
-if (!defined('RMS_BASENAME')) {
-	define('RMS_BASENAME', plugin_basename(__FILE__));
+if ( ! defined( 'RMS_BASENAME' ) ) {
+	define( 'RMS_BASENAME', plugin_basename( __FILE__ ) );
 }
-if (!defined('RMS_MENU_SLUG')) {
-	define('RMS_MENU_SLUG', 'commercebird-app');
+if ( ! defined( 'RMS_MENU_SLUG' ) ) {
+	define( 'RMS_MENU_SLUG', 'commercebird-app' );
 }
-if (!defined('RMS_DOCUMENTATION_URL')) {
-	define('RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb/');
+if ( ! defined( 'RMS_DOCUMENTATION_URL' ) ) {
+	define( 'RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb/' );
 }
-if (!defined('RMS_PLUGIN_URL')) {
-	define('RMS_PLUGIN_URL', 'https://commercebird.com/product/commercebird/');
+if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
+	define( 'RMS_PLUGIN_URL', 'https://commercebird.com/product/commercebird/' );
 }
 
 require_once RMS_DIR_PATH . 'includes/woo-functions.php';
@@ -61,51 +61,37 @@ require_once RMS_DIR_PATH . 'libraries/action-scheduler/action-scheduler.php';
 require __DIR__ . '/vendor/autoload.php';
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
-use RMS\Admin\Ajax;
+use RMS\Admin\Actions\ExactOnline;
+use RMS\Admin\Actions\ZohoInventory;
 use RMS\Admin\Cors;
+use RMS\Admin\Order;
 use RMS\Admin\Template;
 use RMS\API\ProductWebhook;
 use RMS\API\ShippingWebhook;
 use RMS\API\Zoho;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Run;
 
-//  remove on production
-$whoops = new Run();
-$whoops->pushHandler(new PrettyPageHandler());
-$whoops->register();
-// remove on production
 
 /* Check the minimum PHP version on activation hook */
-function woozo_check_plugin_requirements()
-{
-	$php_min_version = '7.4';
+function woozo_check_plugin_requirements() {
+	$php_min_version     = '7.4';
 	$php_current_version = phpversion();
 
-	if (version_compare($php_min_version, $php_current_version, '>')) {
-		deactivate_plugins('commercebird/plugin.php');
+	if ( version_compare( $php_min_version, $php_current_version, '>' ) ) {
+		deactivate_plugins( 'commercebird/plugin.php' );
 
-		$error_message = sprintf(
-			'Your server is running PHP version %s but the commercebird plugin requires at least PHP %s. Please update your PHP version.',
-			$php_current_version,
-			$php_min_version,
-		);
+		$error_message = sprintf( 'Your server is running PHP version %s but the commercebird plugin requires at least PHP %s. Please update your PHP version.', $php_current_version, $php_min_version, );
 
-		wp_die(
-			$error_message,
-			'Plugin Activation Error',
-			array(
-				'response' => 200,
-				'back_link' => true,
-			)
-		);
+		wp_die( $error_message, 'Plugin Activation Error', array(
+			'response'  => 200,
+			'back_link' => true,
+		) );
 	}
 }
 
-add_action('admin_init', 'woozo_check_plugin_requirements');
+add_action( 'admin_init', 'woozo_check_plugin_requirements' );
 
 // Activate plugin.
-register_activation_hook(__FILE__, array('commercebird', 'activate'));
+register_activation_hook( __FILE__, array( 'commercebird', 'activate' ) );
 
 // Init hooks.
 commercebird::initHooks();
@@ -131,35 +117,30 @@ register_activation_hook(__FILE__, 'zi_create_order_log_table');
  */
 
 // Register Cronjob Hook when activating the plugin
-register_activation_hook(__FILE__, 'zi_custom_zoho_cron_activate');
+register_activation_hook( __FILE__, 'zi_custom_zoho_cron_activate' );
 
-function zi_custom_zoho_cron_activate()
-{
-	$interval = get_option('zi_cron_interval', 'daily');
-	if (!wp_next_scheduled('zi_execute_import_sync')) {
-		wp_schedule_event(time(), $interval, 'zi_execute_import_sync');
+function zi_custom_zoho_cron_activate() {
+	$interval = get_option( 'zi_cron_interval', 'daily' );
+	if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
+		wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
 	}
 }
 
 // Unschedule event upon plugin deactivation
-register_deactivation_hook(__FILE__, 'zi_zoho_cron_deactivate');
-function zi_zoho_cron_deactivate()
-{
-	wp_clear_scheduled_hook('zi_execute_import_sync');
+register_deactivation_hook( __FILE__, 'zi_zoho_cron_deactivate' );
+function zi_zoho_cron_deactivate() {
+	wp_clear_scheduled_hook( 'zi_execute_import_sync' );
 }
 
 
 /**
  * Declaring compatibility for WooCommerce HPOS
  */
-add_action(
-	'before_woocommerce_init',
-	function () {
-		if (class_exists(FeaturesUtil::class)) {
-			FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
-		}
+add_action( 'before_woocommerce_init', function () {
+	if ( class_exists( FeaturesUtil::class ) ) {
+		FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 	}
-);
+} );
 
 // register_uninstall_hook( __FILE__, 'rms_cron_unsubscribe' );
 // /**
@@ -246,38 +227,37 @@ add_action(
  * Hooks for WC Action Scheduler to import or export products
  */
 $importProductClass = new ImportProductClass();
-$importPricelist = new ImportPricelistClass();
-$productClass = new ProductClass();
-$orderClass = new Sync_Order_Class();
-add_action('import_group_items_cron', array($importProductClass, 'sync_groupitem_recursively'), 10, 2);
-add_action('import_simple_items_cron', array($importProductClass, 'sync_item_recursively'), 10, 2);
-add_action('import_variable_product_cron', array($importProductClass, 'import_variable_product_variations'), 10, 2);
-add_action('sync_zi_product_cron', array($productClass, 'zi_products_prepare_sync'), 10, 2);
-add_action('sync_zi_pricelist', array($importPricelist, 'zi_get_pricelist'), 10, 2);
-add_action('sync_zi_order', array($orderClass, 'zi_orders_prepare_sync'), 10, 2);
+$importPricelist    = new ImportPricelistClass();
+$productClass       = new ProductClass();
+$orderClass         = new Sync_Order_Class();
+add_action( 'import_group_items_cron', array( $importProductClass, 'sync_groupitem_recursively' ), 10, 2 );
+add_action( 'import_simple_items_cron', array( $importProductClass, 'sync_item_recursively' ), 10, 2 );
+add_action( 'import_variable_product_cron', array( $importProductClass, 'import_variable_product_variations' ), 10, 2 );
+add_action( 'sync_zi_product_cron', array( $productClass, 'zi_products_prepare_sync' ), 10, 2 );
+add_action( 'sync_zi_pricelist', array( $importPricelist, 'zi_get_pricelist' ), 10, 2 );
+add_action( 'sync_zi_order', array( $orderClass, 'zi_orders_prepare_sync' ), 10, 2 );
 
-if (is_admin()) {
+if ( is_admin() ) {
 	Template::instance();
-	Ajax::instance();
+	ZohoInventory::instance();
+	ExactOnline::instance();
 	Cors::instance();
+	Order::instance();
 }
 // Load Media Library Endpoints
 new WooCommerce_Media_API_By_commercebird();
 // Load License Key library
-if (class_exists('commercebird_AM_Client')) {
+if ( class_exists( 'commercebird_AM_Client' ) ) {
 	$wcam_lib_custom_menu = array(
-		'menu_type' => 'add_submenu_page',
+		'menu_type'   => 'add_submenu_page',
 		'parent_slug' => 'commercebird-app',
-		'page_title' => 'API key Activation',
-		'menu_title' => 'License Activation',
+		'page_title'  => 'API key Activation',
+		'menu_title'  => 'License Activation',
 	);
-	$wcam_lib = new commercebird_AM_Client(__FILE__, '', RMS_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false);
+	$wcam_lib             = new commercebird_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
 }
-add_action(
-	'rest_api_init',
-	function () {
-		new Zoho();
-		new ProductWebhook();
-		new ShippingWebhook();
-	}
-);
+add_action( 'rest_api_init', function () {
+	new Zoho();
+	new ProductWebhook();
+	new ShippingWebhook();
+} );

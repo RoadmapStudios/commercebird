@@ -1,5 +1,6 @@
 <template>
   <div
+      v-bind="$attrs"
       :class="{
       'sm:grid-cols-4': type !== 'toggle' && type !== 'repeater',
       'sm:grid-cols-3': type === 'toggle',
@@ -23,7 +24,11 @@
         class="grid-cols-1"
     >
       <div class="relative">
-        <slot :id="id"/>
+        <div :class="{
+          'flex items-center gap-4' : flexed
+        }">
+          <slot :id="id"/>
+        </div>
         <div
             v-if="invalid"
             class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
@@ -37,13 +42,11 @@
 </template>
 
 <script lang="ts" setup>
-import {computed} from "vue";
 import {ExclamationCircleIcon} from "@heroicons/vue/24/outline";
 
 const id = Math.random().toString(36).substring(7);
-const emit = defineEmits(["update:modelValue"]);
 
-const props = defineProps({
+defineProps({
   label: {
     type: String,
     default: "Input Label",
@@ -52,13 +55,9 @@ const props = defineProps({
     type: String,
     default: "text",
   },
-  placeholder: {
-    type: String,
-    default: "",
-  },
-  value: {
-    type: String,
-    default: "",
+  flexed: {
+    type: Boolean,
+    default: false
   },
   errorClass: {
     type: String,
@@ -68,21 +67,9 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  modelValue: {
-    type: String,
-  },
   invalid: {
     type: Boolean,
     default: false,
-  },
-});
-
-const value = computed({
-  get() {
-    return props.modelValue;
-  },
-  set(value) {
-    emit("update:modelValue", value);
   },
 });
 </script>

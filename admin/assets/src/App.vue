@@ -5,7 +5,7 @@
       {{ useRouter().currentRoute.value.name }}
     </h1>
   </div>
-  <div class="max-w-screen-xl px-4 mx-auto sm:px-8">
+  <div class="max-w-screen-xl px-4 mx-auto sm:px-8 mt-4 sm:mt-0">
     <router-view/>
   </div>
 </template>

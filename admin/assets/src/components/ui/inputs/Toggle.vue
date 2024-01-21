@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-defineProps(['modelValue'])
-
-defineEmits(['update:modelValue'])
+const  modelValue = defineModel()
 </script>
 
 <template>
@@ -9,13 +7,13 @@ defineEmits(['update:modelValue'])
     'bg-teal-600': modelValue,
     'bg-gray-200': !modelValue,
   }" aria-checked="false"
-          class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-          role="switch" type="button" @click.prevent="$emit('update:modelValue', !modelValue)">
+          class="relative inline-flex flex-shrink-0 w-10 h-5 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+          role="switch" type="button" @click.prevent="modelValue = !modelValue">
     <span :class="{
       'translate-x-5': modelValue,
       'translate-x-0': !modelValue,
     }" aria-hidden="true"
-          class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+          class="inline-block w-4 h-4 transition duration-200 ease-in-out transform bg-white rounded-full shadow pointer-events-none ring-0"></span>
   </button>
 </template>
 

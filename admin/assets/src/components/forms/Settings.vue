@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 
-import BaseButton from "@/components/ui/BaseButton.vue";
-import InputGroup from "@/components/ui/InputGroup.vue";
-import Card from "@/components/ui/Card.vue";
-import TextInput from "@/components/ui/inputs/TextInput.vue";
-import Toggle from "@/components/ui/inputs/Toggle.vue";
 import {useHomepageStore} from "@/stores/homepage";
 import {useLoadingStore} from "@/stores/loading";
+import {backendAction} from "@/keys";
+import Card from "@/components/ui/Card.vue";
 import LoaderIcon from "@/components/ui/LoaderIcon.vue";
-import {backendAction} from "@/composables";
+import InputGroup from "@/components/ui/inputs/InputGroup.vue";
+import Toggle from "@/components/ui/inputs/Toggle.vue";
+import TextInput from "@/components/ui/inputs/TextInput.vue";
+import BaseButton from "@/components/ui/BaseButton.vue";
 
+const action = backendAction.homepage.settings
 const store = useHomepageStore()
 const loader = useLoadingStore()
 </script>
@@ -30,9 +31,9 @@ const loader = useLoadingStore()
     </div>
 
     <template #footer>
-      <BaseButton :loading="loader.isLoading(backendAction.save_settings)" @click.prevent="store.save_settings()">Save
+      <BaseButton :loading="loader.isLoading(action.save)" @click.prevent="store.save_settings()">Save
       </BaseButton>
-      <BaseButton :loading="loader.isLoading(backendAction.reset_settings)" type="lite"
+      <BaseButton :loading="loader.isLoading(action.reset)" type="lite"
                   @click.prevent="store.reset_settings()">
         Reset
       </BaseButton>

@@ -17,6 +17,15 @@ trait AjaxRequest {
 	// Array to store registered AJAX errors
 	private array $errors = [];
 
+	private function load_actions() {
+		foreach ( self::ACTIONS as $action => $handler ) {
+			add_action(
+				$this->action( $action ),
+				array( $this, $handler ),
+			);
+		}
+	}
+
 	/**
 	 * Serve data to AJAX request.
 	 */
@@ -38,13 +47,13 @@ trait AjaxRequest {
 		$this->request  = array_map( 'sanitize_text_field', $_REQUEST );
 		$contents       = file_get_contents( 'php://input' );
 		$contents       = sanitize_text_field( $contents );
-		$decode         = json_decode( $contents, TRUE );
+		$decode         = json_decode( $contents, true );
 		if ( ! empty( $decode ) ) {
 			$data = $this->extract_data( $decode, $keys );
-			if ( empty( $data ) ) {
-				$this->data = [];
-			} else {
+			if ( ! empty( $data ) ) {
 				$this->data = $data;
+			} else {
+				$this->data = [];
 			}
 		}
 	}
@@ -53,7 +62,7 @@ trait AjaxRequest {
 	 * Extracts data from an array using the given keys.
 	 *
 	 * @param array $sanitized The array from which to extract data.
-	 * @param array $keys      The keys to use for extraction.
+	 * @param array $keys The keys to use for extraction.
 	 *
 	 * @return array The extracted data.
 	 */
