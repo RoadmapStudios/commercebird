@@ -1,10 +1,20 @@
 <script setup lang="ts">
 
+import BaseButton from "@/components/ui/BaseButton.vue";
+import {useExactOnlineStore} from "@/stores/exactOnline";
+import {useLoadingStore} from "@/stores/loading";
+import {backendAction} from "@/keys";
+
+const store = useExactOnlineStore();
+const loader = useLoadingStore();
+const actionKey = backendAction.exactOnline.customer;
 </script>
 
 <template>
-  <div>
-    Customer
+  <div class="inline-flex gap-6 pt-4">
+    <BaseButton :loading="loader.isLoading(actionKey.map)" @click="store.mapCustomers()">
+      Map all Customers with Exact
+    </BaseButton>
   </div>
 </template>
 

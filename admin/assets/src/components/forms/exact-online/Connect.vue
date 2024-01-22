@@ -6,6 +6,7 @@ import {useExactOnlineStore} from "@/stores/exactOnline";
 import BaseLink from "@/components/ui/BaseLink.vue";
 import BaseForm from "@/components/ui/BaseForm.vue";
 import {backendAction} from "@/keys";
+import TokenImage from "@/components/TokenImage.vue";
 
 const store = useExactOnlineStore();
 const action = backendAction.exactOnline.connect;
@@ -34,6 +35,10 @@ const action = backendAction.exactOnline.connect;
       </BaseLink>
     </InputGroup>
   </BaseForm>
+  <div class="py-4 mt-6 space-y-4">
+    <h1 class="text-xl text-gray-600 font-bold tracking-tight">How to copy token from webhook url ?</h1>
+    <TokenImage/>
+  </div>
 </template>
 
 <style scoped>

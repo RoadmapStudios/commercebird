@@ -40,14 +40,12 @@ export const backendAction: BackendAction = {
             reset: 'reset_exact_online_connect'
         },
         product: {
-            get: 'get_exact_online_product',
-            save: 'save_exact_online_product',
+            import: 'import_exact_online_product',
+            map: 'map_exact_online_product',
             reset: 'reset_exact_online_product'
         },
         customer: {
-            get: 'get_exact_online_customer',
-            save: 'save_exact_online_customer',
-            reset: 'reset_exact_online_customer'
+            map: 'map_exact_online_customer'
         },
         cost_center: {
             get: 'get_exact_online_cost_center',

@@ -6,7 +6,39 @@
 `${exact}/mapping/customer`,
 [9:34 AM] customer mapping: send company name + email id
 [9:34 AM] both endpoints need to return the item_id or account_id
-Exact Online
+
+```php
+<?php
+
+$request = new HttpRequest();
+$request->setUrl('https://api.commercebird.com/customs/exact/item');
+$request->setMethod(HTTP_METH_POST);
+
+$request->setQueryData([
+  'token' => 'b73da454-a52f-5e02-93af-07a2e6703bdc',
+  'page' => '3'
+]);
+
+$request->setHeaders([
+  'Accept' => '*/*',
+  'zohowooagent' => 'https://dev.wooventory.com',
+  'Content-Type' => 'application/json'
+]);
+
+$request->setBody('{
+  "sku": "hello-manish"
+}');
+
+try {
+  $response = $request->send();
+
+  echo $response->getBody();
+} catch (HttpException $ex) {
+  echo $ex;
+}
+```
+
+# Exact Online
 
 ## Access App Console (https://app.commercebird.com/integrations)
 

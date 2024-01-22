@@ -118,8 +118,8 @@ export type BackendAction = {
     }
     exactOnline: {
         connect: { get: string; save: string; reset: string; };
-        product: { get: string; save: string; reset: string; };
-        customer: { get: string; save: string; reset: string; };
+        product: { import: string; map: string; reset: string; };
+        customer: { map: string };
         cost_center: { get: string; save: string; reset: string; };
         cost_unit: { get: string; save: string; reset: string; };
     };

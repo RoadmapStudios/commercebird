@@ -70,6 +70,44 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
         }
     }
     watch(selectedTab, tabWatcher);
+
+    /*
+      * -----------------------------------------------------------------------------------------------------------------
+      *  Products action
+      * -----------------------------------------------------------------------------------------------------------------
+      */
+    const mapProducts = async () => {
+        if (loader.isLoading(actionKey.product.map)) return;
+        loader.setLoading(actionKey.product.map);
+        let response = await fetchData(actionKey.product.map, localKey.product);
+        if (response) {
+            notify.success(response.message);
+        }
+        loader.clearLoading(actionKey.product.map);
+    }
+    const importProducts = async () => {
+        if (loader.isLoading(actionKey.product.import)) return;
+        loader.setLoading(actionKey.product.import);
+        let response = await fetchData(actionKey.product.import, localKey.product);
+        if (response) {
+            notify.success(response.message);
+        }
+        loader.clearLoading(actionKey.product.import);
+    }
+    /*
+      * -----------------------------------------------------------------------------------------------------------------
+      *  Map Customers
+      * -----------------------------------------------------------------------------------------------------------------
+      */
+    const mapCustomers = async () => {
+        if (loader.isLoading(actionKey.customer.map)) return;
+        loader.setLoading(actionKey.customer.map);
+        let response = await fetchData(actionKey.customer.map, localKey.customer);
+        if (response) {
+            notify.success(response.message);
+        }
+        loader.clearLoading(actionKey.customer.map);
+    }
     /*
       * -----------------------------------------------------------------------------------------------------------------
       *  Form Submit
@@ -141,6 +179,9 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
         connection,
         getCenters,
         getUnits,
+        mapProducts,
+        importProducts,
+        mapCustomers,
         handleSubmit,
         handleReset
     }
