@@ -85,8 +85,9 @@ final class CommerceBird {
 	 * Generate request URL
 	 */
 	private function request( string $endpoint, string $method = 'GET', array $data = array() ) {
-		$token = ExactOnline::instance()->get_token();
-		$url   = sprintf( "%s/%s?token=%s", self::API, $endpoint, $token );
+		$token    = ExactOnline::instance()->get_token();
+		$url      = sprintf( "%s/%s?token=%s", self::API, $endpoint, $token );
+		$site_url = site_url() === 'http://commercebird.test' ? 'https://dev.wooventory.com' : site_url();
 		if ( 'POST' === $method ) {
 			$response = wp_remote_post(
 				$url,
@@ -94,26 +95,28 @@ final class CommerceBird {
 					'headers'   => array(
 						'Accept'       => 'application/json',
 						'Content-Type' => 'application/json',
-						'zohowooagent' => site_url(),
+						'zohowooagent' => $site_url,
 					),
 					'timeout'   => 60,
 					'sslverify' => false,
 					'body'      => wp_json_encode( $data ),
 				)
 			);
+		} else {
+			$response = wp_remote_get(
+				$url,
+				array(
+					'headers'   => array(
+						'Accept'       => 'application/json',
+						'zohowooagent' => $site_url,
+					),
+					'timeout'   => 60,
+					'sslverify' => false,
+				)
+			);
 		}
 
-		$response = wp_remote_get(
-			$url,
-			array(
-				'headers'   => array(
-					'Accept'       => 'application/json',
-					'zohowooagent' => site_url(),
-				),
-				'timeout'   => 60,
-				'sslverify' => false,
-			)
-		);
+
 		if ( is_wp_error( $response ) ) {
 			return false;
 		}

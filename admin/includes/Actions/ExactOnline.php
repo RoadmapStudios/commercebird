@@ -22,6 +22,9 @@ final class ExactOnline {
 		'get_exact_online_connect'      => 'connect_load',
 		'save_exact_online_cost_center' => 'cost_center_save',
 		'save_exact_online_cost_unit'   => 'cost_unit_save',
+		'import_exact_online_product'   => 'product_import',
+		'map_exact_online_product'      => 'product_map',
+		'map_exact_online_customer'     => 'customer_map',
 	);
 	private const OPTIONS = [
 		'connect'     => [
@@ -30,6 +33,24 @@ final class ExactOnline {
 		'cost_center' => 'commercebird-exact-online-cost-center',
 		'cost_unit'   => 'commercebird-exact-online-cost-unit',
 	];
+
+	public function product_import() {
+		$this->verify();
+		$this->response['message'] = __( 'Items are being imported in background. You can visit other tabs :).', 'commercebird' );
+		$this->serve();
+	}
+
+	public function product_map() {
+		$this->verify();
+		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
+		$this->serve();
+	}
+
+	public function customer_map() {
+		$this->verify();
+		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
+		$this->serve();
+	}
 
 	public function cost_center_get() {
 		return get_option( self::OPTIONS['cost_center'], array() );
@@ -51,7 +72,7 @@ final class ExactOnline {
 		} else {
 			$centers = array_map( function ( $item ) {
 				return "{$item['Code']}-{$item['Description']}";
-			}, $response );
+			}, $response['data'] );
 			update_option( self::OPTIONS['cost_center'], $centers );
 			$this->response['message'] = __( 'Cost centers saved', 'commercebird' );
 		}
@@ -66,7 +87,7 @@ final class ExactOnline {
 		} else {
 			$units = array_map( function ( $item ) {
 				return "{$item['Code']}-{$item['Description']}";
-			}, $response );
+			}, $response['data'] );
 			update_option( self::OPTIONS['cost_unit'], $units );
 			$this->response['message'] = __( 'Cost units saved', 'commercebird' );
 		}
