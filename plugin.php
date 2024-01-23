@@ -91,10 +91,10 @@ function woozo_check_plugin_requirements() {
 add_action( 'admin_init', 'woozo_check_plugin_requirements' );
 
 // Activate plugin.
-register_activation_hook( __FILE__, array( 'commercebird', 'activate' ) );
+register_activation_hook( __FILE__, array( CMReviewReminder::class, 'activate' ) );
 
 // Init hooks.
-commercebird::initHooks();
+CMreviewReminder::initHooks();
 
 /**
  * Create table if it is not available in plugin

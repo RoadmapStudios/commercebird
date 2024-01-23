@@ -1,6 +1,6 @@
 <?php
 
-class commercebird
+class CMreviewReminder
 {
 
     /**
@@ -38,24 +38,24 @@ class commercebird
     public static function initHooks()
     {
         //Init
-        add_action('init', array('commercebird', 'init'));
+        add_action('init', array(CMReviewReminder::class, 'init'));
 
         //Admin init
-        add_action('admin_init', array('commercebird', 'adminInit'));
+        add_action('admin_init', array(CMReviewReminder::class, 'adminInit'));
 
         //Admin notices
-        add_action('admin_notices', array('commercebird', 'adminNotices'));
-        add_action('wp_ajax_dismiss_rmszi_review_request_notice', array('commercebird', 'dismiss_rmszi_review_request_notice'));
-        add_action('wp_ajax_skip_rmszi_review_request_notice', array('commercebird', 'skip_rmszi_review_request_notice'));
+        add_action('admin_notices', array(CMReviewReminder::class, 'adminNotices'));
+        add_action('wp_ajax_dismiss_rmszi_review_request_notice', array(CMReviewReminder::class, 'dismiss_rmszi_review_request_notice'));
+        add_action('wp_ajax_skip_rmszi_review_request_notice', array(CMReviewReminder::class, 'skip_rmszi_review_request_notice'));
 
         //Plugins page
-        add_filter('plugin_row_meta', array('commercebird', 'pluginRowMeta'), 10, 2);
-        add_filter('plugin_action_links_' . RMS_BASENAME, array('commercebird', 'actionLinks'));
+        add_filter('plugin_row_meta', array(CMReviewReminder::class, 'pluginRowMeta'), 10, 2);
+        add_filter('plugin_action_links_' . RMS_BASENAME, array(CMReviewReminder::class, 'actionLinks'));
 
         //Admin page
         $page = filter_input(INPUT_GET, 'page');
         if (!empty($page) && $page == RMS_MENU_SLUG) {
-            add_filter('admin_footer_text', array('commercebird', 'adminFooter'));
+            add_filter('admin_footer_text', array(CMReviewReminder::class, 'adminFooter'));
         }
     }
 
