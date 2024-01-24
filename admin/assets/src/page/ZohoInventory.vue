@@ -64,7 +64,7 @@ onBeforeMount(() => {
     </div>
     <div class="relative pb-6 lg:pb-16">
       <div
-        v-if="store.notSubscribed"
+        v-if="store.notSubscribed && store.selectedTab !== 'connect'"
         class="absolute inset-0 z-10"
         @click.prevent="handleClick"
       ></div>
