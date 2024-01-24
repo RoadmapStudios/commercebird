@@ -184,7 +184,10 @@ export const notify: Notyf = new Notyf({
 export const fetchData = async (action: string, storeKey: string): Promise<any> => {
     if (action === undefined) return;
     let response = await fetch(ajaxUrl(action));
-    if (!response) return;
+    if (response.status !== 200) {
+        notify.error("Something went wrong with server. Please check the organisation id.");
+        return false;
+    };
     let data = await response.json();
     if (data.success) {
         useStorage().save(storeKey, data.data);
