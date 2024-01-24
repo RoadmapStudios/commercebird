@@ -5,3 +5,4 @@ commercebird
 commercebird.zip
 /**/*.txt
 /**/*.log
+composer.lock
