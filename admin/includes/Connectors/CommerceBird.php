@@ -2,17 +2,17 @@
 
 namespace RMS\Admin\Connectors;
 
-use RMS\Admin\Actions\ExactOnline;
+use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
 use WP_Error;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit;
 
 final class CommerceBird {
-	const COST_CENTERS = 'customs/exact/cost-centers';
-	const COST_UNITS = 'customs/exact/cost-units';
-	const ITEM = 'customs/exact/item';
-	const CUSTOMER = 'customs/exact/customer';
-	const API = "https://api.commercebird.com";
+	const COST_CENTERS  = 'customs/exact/cost-centers';
+	const COST_UNITS    = 'customs/exact/cost-units';
+	const ITEM          = 'customs/exact/bulk-items';
+	const CUSTOMER      = 'customs/exact/bulk-customers';
+	const API           = 'https://api.commercebird.com';
 	const WEBAPP_ORDERS = 'webapp/orders/synced-orders';
 
 	public function cost_centers() {
@@ -27,15 +27,9 @@ final class CommerceBird {
 	 * @return array|WP_Error array ( account_id, company_id )
 	 * @throws WP_Error Invalid customer if empty
 	 */
-	public function customer( array $customer ) {
-		if ( empty( $customer ) ) {
-			return new WP_Error( 'invalid_customer', __( 'Invalid customer', 'commercebird' ) );
-		}
-		$response = $this->request(
-			self::CUSTOMER,
-			'POST',
-			$customer
-		);
+	public function customer() {
+
+		$response = $this->request( self::CUSTOMER );
 
 		return $response['data'] ?? $response;
 	}
@@ -47,21 +41,11 @@ final class CommerceBird {
 	 *
 	 * @return array|WP_Error The ID of the item or an error object.
 	 */
-	public function item_id( int $id ) {
-		if ( empty( $id ) ) {
-			return new WP_Error( 'invalid_id', __( 'Invalid ID', 'commercebird' ) );
-		}
+	public function products() {
 
-		$response = $this->request(
-			self::ITEM,
-			'POST',
-			array(
-				'id' => $id
-			)
-		);
+		$response = $this->request( self::ITEM );
 
 		return $response['data'] ?? $response;
-
 	}
 
 	public function cost_units() {
@@ -85,8 +69,8 @@ final class CommerceBird {
 	 * Generate request URL
 	 */
 	private function request( string $endpoint, string $method = 'GET', array $data = array() ) {
-		$token    = ExactOnline::instance()->get_token();
-		$url      = sprintf( "%s/%s?token=%s", self::API, $endpoint, $token );
+		$token    = ExactOnlineAjax::instance()->get_token();
+		$url      = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
 		$site_url = site_url() === 'http://commercebird.test' ? 'https://dev.wooventory.com' : site_url();
 		if ( 'POST' === $method ) {
 			$response = wp_remote_post(
@@ -115,7 +99,6 @@ final class CommerceBird {
 				)
 			);
 		}
-
 
 		if ( is_wp_error( $response ) ) {
 			return false;

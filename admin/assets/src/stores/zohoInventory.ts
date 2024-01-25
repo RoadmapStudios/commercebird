@@ -554,7 +554,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 break;
             case "field":
                 get_all_custom_fields();
-                response = await loader.loadData(keys.order_custom_fields, actions.field.get);
+                response = await loader.loadData(keys.fields, actions.field.get);
                 if (response) {
                     let parsed;
                     if (typeof response.form === 'string') {
