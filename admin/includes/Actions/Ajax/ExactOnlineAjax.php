@@ -43,16 +43,19 @@ final class ExactOnlineAjax {
 	public function product_map() {
 		$this->verify( self::FORMS['product'] );
 		$products = ( new CommerceBird() )->products();
-		$chunked  = array_chunk( $products, 100 );
+		$chunked  = array_chunk( $products['items'], 20 );
 		foreach ( $chunked as $chunked_products ) {
-			as_schedule_single_action(
-				time(),
+			$id = as_schedule_single_action(
+				time() + 60,
 				'sync_eo_products',
 				array(
 					wp_json_encode( $chunked_products ),
 					(bool) $this->data['importProducts'],
 				)
 			);
+			if ( empty( $id ) ) {
+				break;
+			}
 		}
 
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
