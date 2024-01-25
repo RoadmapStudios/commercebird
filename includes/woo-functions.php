@@ -231,6 +231,35 @@ function zoho_item_id_variation_field($loop, $variation_data, $variation)
     );
 }
 
+//Add Exact Item ID field on Product Edit page
+add_action('woocommerce_product_options_general_product_data', 'exact_item_id_field');
+add_action('woocommerce_variation_options_pricing', 'exact_item_id_variation_field', 10, 3);
+function exact_item_id_field()
+{
+    woocommerce_wp_text_input(
+        array(
+            'id' => 'eo_item_id',
+            'label' => __('Exact Item ID'),
+            'class' => 'readonly',
+            'desc_tip' => true,
+            'description' => __('This is the Exact Item ID of this product. You cannot change this'),
+        )
+    );
+}
+function exact_item_id_variation_field( $loop, $variation_data, $variation )
+{
+    woocommerce_wp_text_input(
+        array(
+            'id' => 'eo_item_id[' . $loop . ']',
+            'class' => 'readonly',
+            'label' => __('Exact Item ID'),
+            'value' => get_post_meta($variation->ID, 'eo_item_id', true),
+            'desc_tip' => true,
+            'description' => __('This is the Exact Item ID of this product. You cannot change this'),
+        )
+    );
+}
+
 // Disable Guest Checkout if Zoho Inventory is active
 function zi_disable_guest_checkout()
 {
@@ -499,7 +528,7 @@ add_action('pre_get_posts', 'zi_sync_column_filter_query');
 
 /**
  * Prevent Webhook delivery execution when order gets updated too often per minute
- * 
+ *
  */
 add_filter('woocommerce_webhook_should_deliver', 'cm_skip_webhook_delivery', 10, 3);
 function cm_skip_webhook_delivery($should_deliver, $webhook, $arg)
@@ -507,7 +536,7 @@ function cm_skip_webhook_delivery($should_deliver, $webhook, $arg)
     //$fd = fopen(__DIR__ . '/should_skip_webhook.txt', 'a+');
     // log the order id
     // fwrite($fd, PHP_EOL . '$arg : ' . $arg);
-      
+
     $webhook_name_to_exclude = 'CommerceBird Orders';
     if ($webhook->get_name() === $webhook_name_to_exclude) {
         // Check if the order status is not "processing" or "completed"
