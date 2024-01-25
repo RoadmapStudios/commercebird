@@ -6,19 +6,26 @@ import { useLoadingStore } from "@/stores/loading";
 import { backendAction } from "@/keys";
 import InputGroup from "@/components/ui/inputs/InputGroup.vue";
 import Toggle from "@/components/ui/inputs/Toggle.vue";
+import { ConfirmModal } from "@/composable/helpers";
 
 const store = useExactOnlineStore();
 const loader = useLoadingStore();
 const actionKey = backendAction.exactOnline.product;
 const handleClick = () => {
+
   if (store.importProducts) {
-    if (confirm("Are you sure you want to import all products as simple products?")) {
-      store.mapProducts();
-    }
+    ConfirmModal.fire({
+      text: "Please note that all products will be imported as Simple Products only. Still continue?",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        store.mapProducts();
+      }
+    })
   } else {
     store.mapProducts();
   }
 };
+
 </script>
 
 <template>

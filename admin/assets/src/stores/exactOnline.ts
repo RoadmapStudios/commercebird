@@ -4,7 +4,7 @@ import { useLoadingStore } from "@/stores/loading";
 import { useStorage } from "@/composable/storage";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
-import { notify, site_url } from "@/composable/helpers";
+import { Toast, notify, site_url } from "@/composable/helpers";
 
 const actionKey = backendAction.exactOnline;
 const localKey = storeKey.exactOnline;
@@ -82,7 +82,10 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
         loader.setLoading(actionKey.product.map);
         let response = await sendData(actionKey.product.map, { importProducts: importProducts.value }, localKey.product);
         if (response) {
-            notify.success(response.message);
+            Toast.fire({
+                icon: 'success',
+                text: response.message
+            })
         }
         loader.clearLoading(actionKey.product.map);
     }
