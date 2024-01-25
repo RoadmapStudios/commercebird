@@ -1,8 +1,8 @@
 Version 2.0.11 - January 24 2024
-Fix: custom fields mapping of orders
-Fix: unusable connect tab if wrong organisation id entered
-Improvement: connection with CommerceBird app
-Improvement: reduced the number of unneccessary webhook triggers to Zoho CRM & Exact Online
+* Fix: custom fields mapping of orders
+* Fix: unusable connect tab if wrong organisation id entered
+* Improvement: connection with CommerceBird app
+* Improvement: reduced the number of unneccessary webhook triggers to Zoho CRM & Exact Online
 
 Version 2.0.10 - January 16th 2024
 * Fix: cron import simple items
