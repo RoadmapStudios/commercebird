@@ -1,10 +1,7 @@
 <template>
   <div>
-    <div
-      v-for="(field, index) in store.fields"
-      :key="index"
-      class="grid items-end grid-cols-5 gap-4"
-    >
+    <h1 class="pt-4 pb-2 text-xl font-bold tracking-tight border-b">Orders Custom Fields</h1>
+    <div v-for="(field, index) in store.fields" :key="index" class="grid items-end gap-4 sm:grid-cols-5">
       <InputGroup label="WooCommerce Field" type="repeater">
         <SelectInput v-model="field.key" :options="store.customFields" />
       </InputGroup>
@@ -18,17 +15,12 @@
     <div class="flex justify-between gap-4 mt-8">
       <BaseButton @click="store.addField()">Add Item</BaseButton>
       <div class="flex gap-4">
-        <BaseButton
-          :loading="loader.isLoading(backendAction.save_fields)"
-          @click="store.handleSubmit(backendAction.save_fields)"
-        >
+        <BaseButton :loading="loader.isLoading(backendAction.save_fields)"
+          @click="store.handleSubmit(backendAction.save_fields)">
           Save
         </BaseButton>
-        <BaseButton
-          :loading="loader.isLoading(backendAction.reset_fields)"
-          type="lite"
-          @click="store.handleReset(backendAction.reset_fields)"
-        >
+        <BaseButton :loading="loader.isLoading(backendAction.reset_fields)" type="lite"
+          @click="store.handleReset(backendAction.reset_fields)">
           Reset
         </BaseButton>
       </div>
