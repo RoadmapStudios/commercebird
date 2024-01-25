@@ -1,21 +1,25 @@
 <?php
 
-namespace RMS\Admin\Actions;
+namespace RMS\Admin\Actions\Ajax;
 
+use RMS\Admin\Actions\Sync\ExactOnlineSync;
 use RMS\Admin\Connectors\CommerceBird;
 use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\Singleton;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit;
 
-final class ExactOnline {
+final class ExactOnlineAjax {
 	use Singleton;
 	use AjaxRequest;
 
-	private const FORMS = array(
+	private const FORMS   = array(
 		'connect' => array(
 			'token',
-		)
+		),
+		'product' => array(
+			'importProducts',
+		),
 	);
 	private const ACTIONS = array(
 		'save_exact_online_connect'     => 'connect_save',
@@ -26,22 +30,31 @@ final class ExactOnline {
 		'map_exact_online_product'      => 'product_map',
 		'map_exact_online_customer'     => 'customer_map',
 	);
-	private const OPTIONS = [
-		'connect'     => [
+	private const OPTIONS = array(
+		'connect'     => array(
 			'token' => 'commercebird-exact-online-token',
-		],
+		),
 		'cost_center' => 'commercebird-exact-online-cost-center',
 		'cost_unit'   => 'commercebird-exact-online-cost-unit',
-	];
+	);
 
-	public function product_import() {
-		$this->verify();
-		$this->response['message'] = __( 'Items are being imported in background. You can visit other tabs :).', 'commercebird' );
-		$this->serve();
-	}
+
 
 	public function product_map() {
-		$this->verify();
+		$this->verify( self::FORMS['product'] );
+		$products = ( new CommerceBird() )->products();
+		$chunked  = array_chunk( $products, 100 );
+		foreach ( $chunked as $chunked_products ) {
+			as_schedule_single_action(
+				time(),
+				'sync_eo_products',
+				array(
+					wp_json_encode( $chunked_products ),
+					(bool) $this->data['importProducts'],
+				)
+			);
+		}
+
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();
 	}
@@ -70,9 +83,12 @@ final class ExactOnline {
 		if ( empty( $response ) ) {
 			$this->errors['message'] = __( 'Cost centers not found', 'commercebird' );
 		} else {
-			$centers = array_map( function ( $item ) {
-				return "{$item['Code']}-{$item['Description']}";
-			}, $response['data'] );
+			$centers = array_map(
+				function ( $item ) {
+					return "{$item['Code']}-{$item['Description']}";
+				},
+				$response['data']
+			);
 			update_option( self::OPTIONS['cost_center'], $centers );
 			$this->response['message'] = __( 'Cost centers saved', 'commercebird' );
 		}
@@ -85,9 +101,12 @@ final class ExactOnline {
 		if ( empty( $response ) ) {
 			$this->errors['message'] = __( 'Cost units not found', 'commercebird' );
 		} else {
-			$units = array_map( function ( $item ) {
-				return "{$item['Code']}-{$item['Description']}";
-			}, $response['data'] );
+			$units = array_map(
+				function ( $item ) {
+					return "{$item['Code']}-{$item['Description']}";
+				},
+				$response['data']
+			);
 			update_option( self::OPTIONS['cost_unit'], $units );
 			$this->response['message'] = __( 'Cost units saved', 'commercebird' );
 		}
@@ -116,5 +135,4 @@ final class ExactOnline {
 		$this->response['token'] = get_option( self::OPTIONS['connect']['token'], '' );
 		$this->serve();
 	}
-
 }

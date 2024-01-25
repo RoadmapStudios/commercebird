@@ -2,7 +2,7 @@
 
 namespace RMS\Admin;
 
-use RMS\Admin\Actions\ExactOnline;
+use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
 use RMS\Admin\Traits\Singleton;
 
 final class Acf {
@@ -19,7 +19,7 @@ final class Acf {
 	 * Cost center custom field customization.
 	 */
 	public function cost_centers( $field ): array {
-		$cost_centers = ExactOnline::instance()->cost_center_get();
+		$cost_centers = ExactOnlineAjax::instance()->cost_center_get();
 
 		return $this->extract_choice( $cost_centers, $field );
 	}
@@ -28,7 +28,7 @@ final class Acf {
 	 * Cost Units custom field customization.
 	 */
 	public function cost_units( $field ): array {
-		$cost_units = ExactOnline::instance()->cost_unit_get();
+		$cost_units = ExactOnlineAjax::instance()->cost_unit_get();
 
 		return $this->extract_choice( $cost_units, $field );
 	}

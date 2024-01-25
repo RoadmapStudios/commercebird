@@ -61,8 +61,9 @@ require_once RMS_DIR_PATH . 'libraries/action-scheduler/action-scheduler.php';
 require __DIR__ . '/vendor/autoload.php';
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
-use RMS\Admin\Actions\ExactOnline;
-use RMS\Admin\Actions\ZohoInventory;
+use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
+use RMS\Admin\Actions\Sync\ExactOnlineSync;
+use RMS\Admin\Actions\Ajax\ZohoInventoryAjax;
 use RMS\Admin\Cors;
 use RMS\Admin\Order;
 use RMS\Admin\Template;
@@ -81,10 +82,14 @@ function woozo_check_plugin_requirements() {
 
 		$error_message = sprintf( 'Your server is running PHP version %s but the commercebird plugin requires at least PHP %s. Please update your PHP version.', $php_current_version, $php_min_version, );
 
-		wp_die( $error_message, 'Plugin Activation Error', array(
-			'response'  => 200,
-			'back_link' => true,
-		) );
+		wp_die(
+			$error_message,
+			'Plugin Activation Error',
+			array(
+				'response'  => 200,
+				'back_link' => true,
+			)
+		);
 	}
 }
 
@@ -136,91 +141,94 @@ function zi_zoho_cron_deactivate() {
 /**
  * Declaring compatibility for WooCommerce HPOS
  */
-add_action( 'before_woocommerce_init', function () {
-	if ( class_exists( FeaturesUtil::class ) ) {
-		FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( FeaturesUtil::class ) ) {
+			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
 	}
-} );
+);
 
 // register_uninstall_hook( __FILE__, 'rms_cron_unsubscribe' );
 // /**
 //  * Unsunscribing cron at uninstall of hook.
 //  */
 // if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
-// 	function rms_cron_unsubscribe() {
-// 		// wp_clear_scheduled_hook( 'rms_cron_schedule_hook' );
-// 		$post_meta_keys = array(
-// 			'zi_item_id',
-// 			'zi_purchase_account_id',
-// 			'zi_account_id',
-// 			'zi_account_name',
-// 			'zi_inventory_account_id',
-// 			'zi_salesorder_id',
-// 			'zi_category_id',
-// 		);
-// 		$user_meta_keys = array(
-// 			'zi_contact_id',
-// 			'zi_primary_contact_id',
-// 			'zi_created_time',
-// 			'zi_last_modified_time',
-// 			'zi_billing_address_id',
-// 			'zi_shipping_address_id',
-// 			'zi_contact_persons_id',
-// 			'zi_currency_id',
-// 			'zi_currency_code',
-// 		);
-// 		$zi_option_keys = array(
-// 			'zi_cron_isactive',
-// 			'zoho_inventory_cron_class',
-// 			'zoho_sync_status',
-// 			'zoho_item_category',
-// 			'zoho_stock_sync_status',
-// 			'zoho_item_name_sync_status',
-// 			'zoho_enable_auto_no_status',
-// 			'zoho_product_sync_status',
-// 			'zoho_disable_itemimage_sync_status',
-// 			'zoho_disable_itemprice_sync_status',
-// 			'zoho_disable_itemname_sync_status',
-// 			'zoho_disable_itemdescription_sync_status',
-// 			'zoho_disable_groupitem_sync_status',
-// 			'zoho_enable_attributes_sync_status',
-// 			'zoho_enable_accounting_stock_status',
-// 			'zoho_enable_order_status',
-// 			'wootozoho_custom_fields',
-// 			'zoho_pricelist_id',
-// 			'zoho_warehouse_id',
-// 			'zoho_inventory_auth_code',
-// 			'zoho_inventory_access_token',
-// 			'zoho_inventory_refresh_token',
-// 			'zoho_inventory_timestamp',
-// 			'rms_ck',
-// 			'rms_cs',
-// 		);
+//  function rms_cron_unsubscribe() {
+//      // wp_clear_scheduled_hook( 'rms_cron_schedule_hook' );
+//      $post_meta_keys = array(
+//          'zi_item_id',
+//          'zi_purchase_account_id',
+//          'zi_account_id',
+//          'zi_account_name',
+//          'zi_inventory_account_id',
+//          'zi_salesorder_id',
+//          'zi_category_id',
+//      );
+//      $user_meta_keys = array(
+//          'zi_contact_id',
+//          'zi_primary_contact_id',
+//          'zi_created_time',
+//          'zi_last_modified_time',
+//          'zi_billing_address_id',
+//          'zi_shipping_address_id',
+//          'zi_contact_persons_id',
+//          'zi_currency_id',
+//          'zi_currency_code',
+//      );
+//      $zi_option_keys = array(
+//          'zi_cron_isactive',
+//          'zoho_inventory_cron_class',
+//          'zoho_sync_status',
+//          'zoho_item_category',
+//          'zoho_stock_sync_status',
+//          'zoho_item_name_sync_status',
+//          'zoho_enable_auto_no_status',
+//          'zoho_product_sync_status',
+//          'zoho_disable_itemimage_sync_status',
+//          'zoho_disable_itemprice_sync_status',
+//          'zoho_disable_itemname_sync_status',
+//          'zoho_disable_itemdescription_sync_status',
+//          'zoho_disable_groupitem_sync_status',
+//          'zoho_enable_attributes_sync_status',
+//          'zoho_enable_accounting_stock_status',
+//          'zoho_enable_order_status',
+//          'wootozoho_custom_fields',
+//          'zoho_pricelist_id',
+//          'zoho_warehouse_id',
+//          'zoho_inventory_auth_code',
+//          'zoho_inventory_access_token',
+//          'zoho_inventory_refresh_token',
+//          'zoho_inventory_timestamp',
+//          'rms_ck',
+//          'rms_cs',
+//      );
 
-// 		foreach ( $zi_option_keys as $zi_option ) {
-// 			delete_option( $zi_option );
-// 		}
+//      foreach ( $zi_option_keys as $zi_option ) {
+//          delete_option( $zi_option );
+//      }
 
-// 		foreach ( $post_meta_keys as $post_key ) {
-// 			delete_post_meta_by_key( $post_key );
-// 		}
+//      foreach ( $post_meta_keys as $post_key ) {
+//          delete_post_meta_by_key( $post_key );
+//      }
 
-// 		$users = get_users();
-// 		foreach ( $users as $user ) {
-// 			foreach ( $user_meta_keys as $user_key ) {
-// 				delete_user_meta( $user->ID, $user_key );
-// 			}
-// 		}
+//      $users = get_users();
+//      foreach ( $users as $user ) {
+//          foreach ( $user_meta_keys as $user_key ) {
+//              delete_user_meta( $user->ID, $user_key );
+//          }
+//      }
 
-// 		// deleting mapped categories
-// 		global $wpdb;
-// 		$table_name = $wpdb->prefix . 'options';
-// 		$sql        = $wpdb->get_results( 'SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"' );
-// 		foreach ( $sql as $key => $row ) {
-// 			$option_name = $row->option_name;
-// 			delete_option( $option_name );
-// 		}
-// 	}
+//      // deleting mapped categories
+//      global $wpdb;
+//      $table_name = $wpdb->prefix . 'options';
+//      $sql        = $wpdb->get_results( 'SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"' );
+//      foreach ( $sql as $key => $row ) {
+//          $option_name = $row->option_name;
+//          delete_option( $option_name );
+//      }
+//  }
 // }
 
 /**
@@ -236,11 +244,13 @@ add_action( 'import_variable_product_cron', array( $importProductClass, 'import_
 add_action( 'sync_zi_product_cron', array( $productClass, 'zi_products_prepare_sync' ), 10, 2 );
 add_action( 'sync_zi_pricelist', array( $importPricelist, 'zi_get_pricelist' ), 10, 2 );
 add_action( 'sync_zi_order', array( $orderClass, 'zi_orders_prepare_sync' ), 10, 2 );
+// Exact Online Hooks
+add_action( 'sync_eo_products', array( ExactOnlineSync::class, 'sync_products' ), 10, 2 );
 
 if ( is_admin() ) {
 	Template::instance();
-	ZohoInventory::instance();
-	ExactOnline::instance();
+	ZohoInventoryAjax::instance();
+	ExactOnlineAjax::instance();
 	Cors::instance();
 	Order::instance();
 }
@@ -256,8 +266,11 @@ if ( class_exists( 'commercebird_AM_Client' ) ) {
 	);
 	$wcam_lib             = new commercebird_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
 }
-add_action( 'rest_api_init', function () {
-	new Zoho();
-	new ProductWebhook();
-	new ShippingWebhook();
-} );
+add_action(
+	'rest_api_init',
+	function () {
+		new Zoho();
+		new ProductWebhook();
+		new ShippingWebhook();
+	}
+);

@@ -1,10 +1,10 @@
-import {acceptHMRUpdate, defineStore} from "pinia"
-import {reactive, ref, watch} from "vue";
-import {useLoadingStore} from "@/stores/loading";
-import {useStorage} from "@/composable/storage";
-import {backendAction, storeKey} from "@/keys";
-import {fetchData, resetData, sendData} from "@/composable/http";
-import {notify, site_url} from "@/composable/helpers";
+import { acceptHMRUpdate, defineStore } from "pinia"
+import { reactive, ref, watch } from "vue";
+import { useLoadingStore } from "@/stores/loading";
+import { useStorage } from "@/composable/storage";
+import { backendAction, storeKey } from "@/keys";
+import { fetchData, resetData, sendData } from "@/composable/http";
+import { notify, site_url } from "@/composable/helpers";
 
 const actionKey = backendAction.exactOnline;
 const localKey = storeKey.exactOnline;
@@ -76,24 +76,17 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
       *  Products action
       * -----------------------------------------------------------------------------------------------------------------
       */
+    const importProducts = ref(false);
     const mapProducts = async () => {
         if (loader.isLoading(actionKey.product.map)) return;
         loader.setLoading(actionKey.product.map);
-        let response = await fetchData(actionKey.product.map, localKey.product);
+        let response = await sendData(actionKey.product.map, { importProducts: importProducts.value }, localKey.product);
         if (response) {
             notify.success(response.message);
         }
         loader.clearLoading(actionKey.product.map);
     }
-    const importProducts = async () => {
-        if (loader.isLoading(actionKey.product.import)) return;
-        loader.setLoading(actionKey.product.import);
-        let response = await fetchData(actionKey.product.import, localKey.product);
-        if (response) {
-            notify.success(response.message);
-        }
-        loader.clearLoading(actionKey.product.import);
-    }
+
     /*
       * -----------------------------------------------------------------------------------------------------------------
       *  Map Customers

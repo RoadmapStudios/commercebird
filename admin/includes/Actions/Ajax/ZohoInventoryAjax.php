@@ -1,6 +1,6 @@
 <?php
 
-namespace RMS\Admin\Actions;
+namespace RMS\Admin\Actions\Ajax;
 
 use Classfunctions;
 use ExecutecallClass;
@@ -16,7 +16,7 @@ use function gettype;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit;
 
-final class ZohoInventory {
+final class ZohoInventoryAjax {
 
 	use Singleton;
 	use AjaxRequest;
@@ -628,7 +628,7 @@ final class ZohoInventory {
 			update_option( 'zoho_inventory_cs', $this->data['client_secret'] );
 			update_option( 'zoho_inventory_url', $inventory );
 			update_option( 'authorization_redirect_uri', $this->data['redirect_uri'] );
-			$redirect       = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoInventory.FullAccess.all&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
+			$redirect       = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoInventoryAjax.FullAccess.all&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
 			$this->response = array(
 				'redirect' => $redirect,
 				'message'  => 'We are redirecting you to zoho. please wait...',
