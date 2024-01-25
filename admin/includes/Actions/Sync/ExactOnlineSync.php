@@ -48,7 +48,7 @@ class ExactOnlineSync {
 	}
 
 	public static function update_meta( array $product ) {
-		$wc_product = wc_get_product_id_by_sku( $product['Code'] );
-		update_meta( $wc_product, 'eo_item_id', $product['ID'] );
+		$wc_product_id = wc_get_product_id_by_sku( $product['Code'] );
+		update_post_meta( $wc_product_id, 'eo_item_id', $product['ID'] );
 	}
 }
