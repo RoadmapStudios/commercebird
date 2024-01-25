@@ -35,7 +35,11 @@ class ExactOnlineSync {
 						),
 					),
 					'meta_data'      => array(
-						'eo_item_id' => $product['ID'],
+						array(
+							'key'   => 'eo_item_id',
+
+							'value' => $product['ID'],
+						),
 					),
 
 				)

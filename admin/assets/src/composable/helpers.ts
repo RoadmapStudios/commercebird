@@ -1,5 +1,6 @@
-import {Notyf} from "notyf";
-import type {PluginObject} from "@/types";
+import { Notyf } from "notyf";
+import type { PluginObject } from "@/types";
+import Swal from "sweetalert2";
 
 declare global {
     interface Window {
@@ -46,7 +47,7 @@ export function extractOptions(
 export const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
 
-    return date.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 
@@ -63,7 +64,35 @@ export const basicAuth = (): string => {
 export const uc_words = (str: string): string => str.replace(/\b\w/g, char => char.toUpperCase());
 
 export const notify: Notyf = new Notyf({
-    position: {x: 'center', y: 'bottom'},
+    position: { x: 'center', y: 'bottom' },
     dismissible: true,
     ripple: true,
 });
+
+export const Toast = Swal.mixin({
+    toast: true,
+    position: 'bottom',
+    showConfirmButton: false,
+    timer: 5000,
+    timerProgressBar: true,
+    target: '#commercebird-app',
+    customClass: {
+        container: 'w-fit mb-10',
+
+    }
+})
+
+export const ConfirmModal = Swal.mixin({
+    showConfirmButton: true,
+    showDenyButton: true,
+    confirmButtonText: 'Yes',
+    denyButtonText: 'No',
+    target: '#commercebird-app',
+    timerProgressBar: false,
+    customClass: {
+        htmlContainer: 'grid grid-cols-2',
+        actions: 'flex w-full items-center  gap-4 ',
+        confirmButton: 'py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none',
+        denyButton: 'py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none'
+    }
+})
