@@ -1,26 +1,12 @@
 <template>
-  <BaseForm @submit="store.handleSubmit(action.save)"
-            @reset="store.handleReset(action.reset)"
-            :keys="action">
+  <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
     <div v-if="store.isConnected">
-      <Alert
-          v-for="(hint, index) in hints"
-          :key="index"
-          :message="hint"
-          target="_blank"
-      />
+      <Alert v-for="(hint, index) in hints" :key="index" :message="hint" target="_blank"/>
     </div>
-    <InputGroup label="Account Domain" flexed>
-      <SelectInput
-          v-model="store.connection.account_domain"
-          :options="accountDomains"
-      />
-      <BaseLink
-          :href="`https://api-console.zoho.${store.connection.account_domain}/`"
-          v-if="store.connection.account_domain"
-          rel="noopener noreferrer"
-          target="_blank"
-      >
+    <InputGroup flexed label="Account Domain">
+      <SelectInput v-model="store.connection.account_domain" :options="accountDomains"/>
+      <BaseLink v-if="store.connection.account_domain"
+                :href="`https://api-console.zoho.${store.connection.account_domain}/`" rel="noopener noreferrer" target="_blank">
         Access zoho console
       </BaseLink>
     </InputGroup>
@@ -58,13 +44,6 @@ const hints = {
     message:
         "Please read the documentation first before you use this plugin and make sure to enable automatic updates for this plugin!",
     link: "https://support.commercebird.com/portal/en/kb/zoho-inventory-woocommerce",
-    linkText: "Visit Here",
-  },
-  zohoDoc: {
-    icon: ExclamationCircleIcon,
-    message:
-        "Please visit the Zoho OAuth Creation documentation page for usage instructions.",
-    link: "https://accounts.zoho.com/developerconsole",
     linkText: "Visit Here",
   },
 };

@@ -536,6 +536,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 if (response) {
                     order_settings.package_sync = response.package_sync;
                     order_settings.disable_sync = response.disable_sync;
+                    order_settings.enable_auto_number = response.enable_auto_number;
                     order_settings.enable_order_status = response.enable_order_status;
                     order_settings.enable_multicurrency = response.enable_multicurrency;
                     order_settings.order_prefix = response.order_prefix;
