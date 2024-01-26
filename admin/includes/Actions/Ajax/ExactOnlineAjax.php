@@ -14,11 +14,14 @@ final class ExactOnlineAjax {
 	use AjaxRequest;
 
 	private const FORMS   = array(
-		'connect' => array(
+		'connect'  => array(
 			'token',
 		),
-		'product' => array(
+		'product'  => array(
 			'importProducts',
+		),
+		'customer' => array(
+			'importCustomers',
 		),
 	);
 	private const ACTIONS = array(
@@ -46,9 +49,10 @@ final class ExactOnlineAjax {
 		$chunked  = array_chunk( $products['items'], 20 );
 		foreach ( $chunked as $chunked_products ) {
 			$id = as_schedule_single_action(
-				time() + 60,
+				time(),
 				'sync_eo_products',
 				array(
+					'product',
 					wp_json_encode( $chunked_products ),
 					(bool) $this->data['importProducts'],
 				)
@@ -57,13 +61,28 @@ final class ExactOnlineAjax {
 				break;
 			}
 		}
-
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();
 	}
 
 	public function customer_map() {
-		$this->verify();
+		$this->verify( self::FORMS['customer'] );
+		$customers = ( new CommerceBird() )->customer();
+		$chunked   = array_chunk( $customers['customers'], 20 );
+		foreach ( $chunked as $chunked_customers ) {
+			$id = as_schedule_single_action(
+				time(),
+				'sync_eo_customers',
+				array(
+					'customer',
+					wp_json_encode( $chunked_customers ),
+					(bool) $this->data['importCustomers'],
+				)
+			);
+			if ( empty( $id ) ) {
+				break;
+			}
+		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();
 	}

@@ -95,12 +95,16 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
       *  Map Customers
       * -----------------------------------------------------------------------------------------------------------------
       */
+    const importCustomers = ref(false);
     const mapCustomers = async () => {
         if (loader.isLoading(actionKey.customer.map)) return;
         loader.setLoading(actionKey.customer.map);
-        let response = await fetchData(actionKey.customer.map, localKey.customer);
+        let response = await sendData(actionKey.customer.map, { importCustomers: importCustomers.value }, localKey.customer);
         if (response) {
-            notify.success(response.message);
+            Toast.fire({
+                icon: 'success',
+                text: response.message
+            })
         }
         loader.clearLoading(actionKey.customer.map);
     }
@@ -175,8 +179,9 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
         connection,
         getCenters,
         getUnits,
-        mapProducts,
         importProducts,
+        mapProducts,
+        importCustomers,
         mapCustomers,
         handleSubmit,
         handleReset
