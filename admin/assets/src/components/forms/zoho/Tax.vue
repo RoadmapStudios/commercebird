@@ -12,12 +12,13 @@
         :message="addWCTax"
         target="_self"
     />
-    <div
+    <BaseForm
         v-if="
         taxEnabled &&
         Object.keys(store.zoho_taxes).length &&
         Object.keys(store.wc_taxes).length
-      "
+      " :keys="action" @reset="store.handleReset(action.reset)"
+        @submit="store.handleSubmit(action.save)"
     >
       <InputGroup label="Enable Decimal Tax">
         <Toggle v-model="store.tax_settings.decimalTax"/>
@@ -38,20 +39,7 @@
             :options="store.vatExemptOptions()"
         />
       </InputGroup>
-      <div class="flex gap-4 mt-4">
-        <BaseButton
-            :loading="loader.isLoading(backendAction.save_tax)"
-            @click.prevent="store.handleSubmit(backendAction.save_tax)"
-        >Save
-        </BaseButton>
-        <BaseButton
-            :loading="loader.isLoading(backendAction.reset_tax)"
-            type="lite"
-            @click.prevent="store.handleReset(backendAction.reset_tax)"
-        >Reset
-        </BaseButton>
-      </div>
-    </div>
+    </BaseForm>
   </div>
 </template>
 
@@ -65,8 +53,9 @@ import {useLoadingStore} from "@/stores/loading";
 import InputGroup from "@/components/ui/inputs/InputGroup.vue";
 import Toggle from "@/components/ui/inputs/Toggle.vue";
 import SelectInput from "@/components/ui/inputs/SelectInput.vue";
-import BaseButton from "@/components/ui/BaseButton.vue";
+import BaseForm from "@/components/ui/BaseForm.vue";
 
+const action = backendAction.zohoInventory.tax;
 const hints = {
   icon: DocumentIcon,
   message: "Please read the Tax Mapping documentation",

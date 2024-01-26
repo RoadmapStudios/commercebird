@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div v-if="b2b_enabled && useHomepageStore().subscription.variation_id.includes(18)">
+    <BaseForm v-if="b2b_enabled && useHomepageStore().subscription.variation_id.includes(18)"
+              :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
       <InputGroup v-if="b2b_enabled" label="Zoho Price List">
         <SelectInput
             v-model="store.price_settings.zoho_inventory_pricelist"
@@ -13,22 +14,7 @@
             :options="roles"
         />
       </InputGroup>
-      <div class="flex gap-4 mt-8">
-        <BaseButton
-            :loading="loader.isLoading(backendAction.save_price)"
-            @click="store.handleSubmit(backendAction.save_price)"
-        >
-          Save
-        </BaseButton>
-        <BaseButton
-            :loading="loader.isLoading(backendAction.reset_price)"
-            type="lite"
-            @click="store.handleReset(backendAction.reset_price)"
-        >
-          Reset
-        </BaseButton>
-      </div>
-    </div>
+    </BaseForm>
     <div v-else>
       <Alert :message="message" target="_blank"/>
     </div>
@@ -40,14 +26,13 @@ import {b2b_enabled, roles} from "@/composable/helpers";
 import {ExclamationCircleIcon} from "@heroicons/vue/24/outline";
 import InputGroup from "../../ui/inputs/InputGroup.vue";
 import SelectInput from "../../ui/inputs/SelectInput.vue";
-import BaseButton from "../../ui/BaseButton.vue";
 import Alert from "../../ui/Alert.vue";
 import {useZohoInventoryStore} from "@/stores/zohoInventory";
-import {useLoadingStore} from "@/stores/loading";
 import {useHomepageStore} from "@/stores/homepage";
 import type {Message} from "@/types";
+import BaseForm from "@/components/ui/BaseForm.vue";
 import {backendAction} from "@/keys";
-
+const action = backendAction.zohoInventory.price;
 const message: Message = {
   icon: ExclamationCircleIcon,
   message:
@@ -56,5 +41,4 @@ const message: Message = {
   linkText: "",
 };
 const store = useZohoInventoryStore();
-const loader = useLoadingStore();
 </script>
