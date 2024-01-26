@@ -72,7 +72,6 @@ class ExactOnlineSync {
 				$payload  = array(
 					'name'           => $data['Description'],
 					'sku'            => $data['Code'],
-					'description'    => $data['Description'],
 					'status'         => 'publish',
 					'type'           => 'simple',
 					'regular_price'  => (string) $data['StandardSalesPrice'],
@@ -94,7 +93,7 @@ class ExactOnlineSync {
 				break;
 			case 'customer':
 				if ( empty( $data['Email'] ) ) {
-					return;
+					break;
 				}
 				$endpoint   = '/wc/v3/customers';
 				$names      = explode( ' ', $data['Name'] );
@@ -151,10 +150,19 @@ class ExactOnlineSync {
 		switch ( $type ) {
 			case 'product':
 				$wc_product_id = wc_get_product_id_by_sku( $data['Code'] );
-				update_post_meta( $wc_product_id, 'eo_item_id', $data['ID'] );
+				if ( empty( $wc_product_id ) ) {
+					$wc_product_id = self::get_product_id_by_title( $data['Description'] );
+				}
+				if ( ! empty( $wc_product_id ) ) {
+					update_post_meta( $wc_product_id, 'eo_item_id', $data['ID'] );
+				}
 				break;
 			case 'customer':
-				$user_id = get_user_by( 'email', $data['Email'] )->ID;
+				$user = get_user_by( 'email', $data['Email'] );
+				if ( empty( $user ) ) {
+					break;
+				}
+				$user_id = $user->ID;
 				update_user_meta( $user_id, 'eo_customer_id', $data['ID'] );
 				if ( ! empty( $data['MainContact'] ) ) {
 					update_user_meta( $user_id, 'eo_company_id', $data['MainContact'] );
@@ -163,5 +171,27 @@ class ExactOnlineSync {
 			default:
 				break;
 		}
+	}
+
+	private static function get_product_id_by_title( string $product_title ) {
+		// Set up the query arguments
+		$args = array(
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			's'              => $product_title, // Search by product title
+		);
+
+		// Run the query
+		$query = new \WP_Query( $args );
+
+		// Get the product ID from the query results
+		$product_id = $query->post_count > 0 ? $query->posts[0] : 0;
+
+		// Reset post data
+		wp_reset_postdata();
+
+		return $product_id;
 	}
 }
