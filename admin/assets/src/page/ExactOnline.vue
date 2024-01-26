@@ -7,7 +7,7 @@ import Connect from "@/components/forms/exact-online/Connect.vue";
 import Product from "@/components/forms/exact-online/Product.vue";
 import RequiredNotice from "@/components/ui/RequiredNotice.vue";
 
-import { Toast, acf_enabled } from "@/composable/helpers";
+import { acf_enabled } from "@/composable/helpers";
 import Cost from "@/components/forms/exact-online/Cost.vue";
 import Customer from "@/components/forms/exact-online/Customer.vue";
 
@@ -21,10 +21,7 @@ const tabs = {
   cost_center_unit: { title: "Cost Centers/Units", component: Cost, icon: CurrencyDollarIcon },
 };
 
-Toast.fire({
-  icon: 'success',
-  text: 'Items are being mapped in background. You can visit other tabs :).'
-})
+
 onBeforeMount(() => {
   store.selectedTab = "connect";
 });
