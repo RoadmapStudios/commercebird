@@ -15,6 +15,7 @@ defineProps({
 <template>
   <button :class="{
     'bg-teal-600 hover:bg-teal-700 focus:ring-teal-500 text-white': type === 'primary',
+    'bg-rose-700 hover:bg-rose-700 focus:ring-rose-500 text-white': type === 'danger',
     'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-500': type === 'lite',
     'bg-gray-200 text-gray-400 hover:bg-gray-200': loading
   }"

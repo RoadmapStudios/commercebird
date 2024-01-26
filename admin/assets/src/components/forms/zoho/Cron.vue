@@ -2,19 +2,15 @@
 import {useZohoInventoryStore} from "@/stores/zohoInventory";
 import InputGroup from "../../ui/inputs/InputGroup.vue";
 import Toggle from "../../ui/inputs/Toggle.vue";
-import BaseButton from "../../ui/BaseButton.vue";
-import {useLoadingStore} from "@/stores/loading";
 import {backendAction} from "@/keys";
 import SelectInput from "@/components/ui/inputs/SelectInput.vue";
+import BaseForm from "@/components/ui/BaseForm.vue";
 
+const action = backendAction.zohoInventory.cron;
 const store = useZohoInventoryStore();
-const loader = useLoadingStore();
-const pushToStore = (index) => {
-  store.selected_categories.push(index);
-};
 </script>
 <template>
-  <div>
+  <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
     <div class="grid grid-cols-2 gap-4 my-4">
       <InputGroup label="Disable Item Name Sync for Cron" type="toggle">
         <Toggle v-model="store.cron_settings.disable_name_sync"/>
@@ -45,8 +41,8 @@ const pushToStore = (index) => {
         <div class="pl-4">
           <input
               v-if="Object.keys(store.zoho_categories).length"
-              type="checkbox"
               id="toggle-all"
+              type="checkbox"
               @change="store.toggleSelectAll"
           />
         </div>
@@ -66,20 +62,5 @@ const pushToStore = (index) => {
         />
       </div>
     </div>
-    <div class="flex gap-4 mt-8">
-      <BaseButton
-          :loading="loader.isLoading(backendAction.save_cron)"
-          @click="store.handleSubmit"
-          @click.prevent="store.handleSubmit(backendAction.save_cron)"
-      >
-        Save
-      </BaseButton>
-      <BaseButton
-          :loading="loader.isLoading(backendAction.reset_cron)"
-          type="lite"
-          @click.prevent="store.handleReset(backendAction.reset_cron)"
-      >Reset
-      </BaseButton>
-    </div>
-  </div>
+  </BaseForm>
 </template>
