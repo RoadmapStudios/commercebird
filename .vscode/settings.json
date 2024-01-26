@@ -1,6 +1,6 @@
 {
   "php.version": "8.1",
-  "workbench.sideBar.location": "right",
+  "workbench.sideBar.location": "left",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.formatOnType": true,
