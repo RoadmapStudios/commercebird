@@ -1,5 +1,7 @@
 import {acceptHMRUpdate, defineStore} from 'pinia'
 import {ref} from 'vue'
+import {useStorage} from "@/composable/storage";
+import {fetchData} from "@/composable/http";
 
 export const useLoadingStore = defineStore('loading', () => {
     const loading = ref<string[]>([])
@@ -32,13 +34,31 @@ export const useLoadingStore = defineStore('loading', () => {
     }
 
     const isRunning = () => loading.value.length !== 0
+    /**
+     * Loads data from storage based on the provided store key and action.
+     *
+     * @param {string} storeKey - The key used to identify the data in storage.
+     * @param {string} action - The action associated with the data loading.
+     * @return {Promise<any>} The loaded data from storage.
+     */
+    const loadData = async (storeKey: string, action: string) => {
+        let instore = useStorage().get(storeKey);
+        if (!instore || !instore.organization_id) {
+            if (isLoading(action)) return;
+            setLoading(action);
+            instore = await fetchData(action, storeKey);
+            clearLoading(action);
+        }
 
+        return instore;
+    };
     return {
         loading,
         setLoading,
         isLoading,
         isRunning,
-        clearLoading
+        clearLoading,
+        loadData
     }
 })
 

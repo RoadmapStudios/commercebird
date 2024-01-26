@@ -5,7 +5,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {origin} from "@/composables";
+import {origin} from "@/composable/helpers";
 import {useClipboard} from "@vueuse/core";
 import CopyableInput from "@/components/ui/inputs/CopyableInput.vue";
 

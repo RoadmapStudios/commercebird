@@ -27,7 +27,7 @@
  * require_once dirname( __FILE__ ) . '/path/to/class-tgm-plugin-activation.php';
  */
 
-use RMS\Admin\Ajax;
+use RMS\Admin\Actions;
 
 if ( ! class_exists( 'TGM_Plugin_Activation' ) ) {
 	require_once __DIR__ . '/classes/class-tgm-plugin-activation.php';
@@ -43,7 +43,7 @@ function rmsZI_register_required_plugins() {
 	 * If the source is NOT from the .org repo, then source is also required.
 	 */
 	$plugins           = array();
-	$subscription_data = Ajax::instance()->get_subscription_data();
+	$subscription_data = Actions\Ajax\ZohoInventoryAjax::instance()->get_subscription_data();
 	if ( array_key_exists( 'variation_id', $subscription_data ) ) {
 		// this IF check should check if user is using the Premium plan (variation_id = 18)
 		if ( in_array( 18, $subscription_data['variation_id'] ) ) {
