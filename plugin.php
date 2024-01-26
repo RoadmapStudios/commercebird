@@ -208,13 +208,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 		foreach ( $zi_option_keys as $zi_option ) {
 			delete_option( $zi_option );
 		}
-		foreach ( $zi_option_keys as $zi_option ) {
-			delete_option( $zi_option );
-		}
 
-		foreach ( $post_meta_keys as $post_key ) {
-			delete_post_meta_by_key( $post_key );
-		}
 		foreach ( $post_meta_keys as $post_key ) {
 			delete_post_meta_by_key( $post_key );
 		}
@@ -225,23 +219,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 				delete_user_meta( $user->ID, $user_key );
 			}
 		}
-		$users = get_users();
-		foreach ( $users as $user ) {
-			foreach ( $user_meta_keys as $user_key ) {
-				delete_user_meta( $user->ID, $user_key );
-			}
-		}
 
-		// deleting mapped categories
-		global $wpdb;
-		$table_name = $wpdb->prefix . 'options';
-		$sql        = $wpdb->get_results( 'SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"' );
-		foreach ( $sql as $key => $row ) {
-			$option_name = $row->option_name;
-			delete_option( $option_name );
-		}
-	}
-}
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
