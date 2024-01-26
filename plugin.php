@@ -5,6 +5,7 @@
  * Plugin URI:  https://commercebird.com
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
  * Version: 2.0.11
+ * Version: 2.0.11
  * Author: CommerceBird
  * Author URI:  https://commercebird.com
  * Requires PHP: 7.4
@@ -203,11 +204,71 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 			'rms_ck',
 			'rms_cs',
 		);
+register_uninstall_hook( __FILE__, 'rms_cron_unsubscribe' );
+/**
+ * Unsunscribing cron at uninstall of hook.
+ */
+if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
+	function rms_cron_unsubscribe() {
+		// wp_clear_scheduled_hook( 'rms_cron_schedule_hook' );
+		$post_meta_keys = array(
+			'zi_item_id',
+			'zi_purchase_account_id',
+			'zi_account_id',
+			'zi_account_name',
+			'zi_inventory_account_id',
+			'zi_salesorder_id',
+			'zi_category_id',
+		);
+		$user_meta_keys = array(
+			'zi_contact_id',
+			'zi_primary_contact_id',
+			'zi_created_time',
+			'zi_last_modified_time',
+			'zi_billing_address_id',
+			'zi_shipping_address_id',
+			'zi_contact_persons_id',
+			'zi_currency_id',
+			'zi_currency_code',
+		);
+		$zi_option_keys = array(
+			'zi_cron_isactive',
+			'zoho_inventory_cron_class',
+			'zoho_sync_status',
+			'zoho_item_category',
+			'zoho_stock_sync_status',
+			'zoho_item_name_sync_status',
+			'zoho_enable_auto_no_status',
+			'zoho_product_sync_status',
+			'zoho_disable_itemimage_sync_status',
+			'zoho_disable_itemprice_sync_status',
+			'zoho_disable_itemname_sync_status',
+			'zoho_disable_itemdescription_sync_status',
+			'zoho_disable_groupitem_sync_status',
+			'zoho_enable_attributes_sync_status',
+			'zoho_enable_accounting_stock_status',
+			'zoho_enable_order_status',
+			'wootozoho_custom_fields',
+			'zoho_pricelist_id',
+			'zoho_warehouse_id',
+			'zoho_inventory_auth_code',
+			'zoho_inventory_access_token',
+			'zoho_inventory_refresh_token',
+			'zoho_inventory_timestamp',
+			'rms_ck',
+			'rms_cs',
+		);
 
 		foreach ( $zi_option_keys as $zi_option ) {
 			delete_option( $zi_option );
 		}
+		foreach ( $zi_option_keys as $zi_option ) {
+			delete_option( $zi_option );
+		}
 
+		foreach ( $post_meta_keys as $post_key ) {
+			delete_post_meta_by_key( $post_key );
+		}
 		foreach ( $post_meta_keys as $post_key ) {
 			delete_post_meta_by_key( $post_key );
 		}
@@ -218,7 +279,23 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 				delete_user_meta( $user->ID, $user_key );
 			}
 		}
+		$users = get_users();
+		foreach ( $users as $user ) {
+			foreach ( $user_meta_keys as $user_key ) {
+				delete_user_meta( $user->ID, $user_key );
+			}
+		}
 
+		// deleting mapped categories
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'options';
+		$sql        = $wpdb->get_results( 'SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"' );
+		foreach ( $sql as $key => $row ) {
+			$option_name = $row->option_name;
+			delete_option( $option_name );
+		}
+	}
+}
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
