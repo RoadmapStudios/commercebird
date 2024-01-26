@@ -245,7 +245,8 @@ add_action( 'sync_zi_product_cron', array( $productClass, 'zi_products_prepare_s
 add_action( 'sync_zi_pricelist', array( $importPricelist, 'zi_get_pricelist' ), 10, 2 );
 add_action( 'sync_zi_order', array( $orderClass, 'zi_orders_prepare_sync' ), 10, 2 );
 // Exact Online Hooks
-add_action( 'sync_eo_products', array( ExactOnlineSync::class, 'sync_products' ), 10, 2 );
+add_action( 'sync_eo_products', array( ExactOnlineSync::class, 'sync' ), 10, 3 );
+add_action( 'sync_eo_customers', array( ExactOnlineSync::class, 'sync' ), 10, 3 );
 
 if ( is_admin() ) {
 	Template::instance();
