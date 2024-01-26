@@ -65,7 +65,6 @@ use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
 use RMS\Admin\Actions\Sync\ExactOnlineSync;
 use RMS\Admin\Actions\Ajax\ZohoInventoryAjax;
 use RMS\Admin\Cors;
-use RMS\Admin\Order;
 use RMS\Admin\Template;
 use RMS\API\ProductWebhook;
 use RMS\API\ShippingWebhook;
