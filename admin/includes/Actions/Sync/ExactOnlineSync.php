@@ -93,6 +93,9 @@ class ExactOnlineSync {
 				);
 				break;
 			case 'customer':
+				if ( empty( $data['Email'] ) ) {
+					return;
+				}
 				$endpoint   = '/wc/v3/customers';
 				$names      = explode( ' ', $data['Name'] );
 				$first_name = $names[0] ?? '';
@@ -136,11 +139,7 @@ class ExactOnlineSync {
 
 		$request = new \WP_REST_Request( 'POST', $endpoint );
 		$request->set_body_params( $payload );
-		$response = rest_do_request( $request );
-
-		if ( $response->is_error() ) {
-			\DevKabir\WPDebugger\write_log( $response->get_data(), __DIR__ );
-		}
+		rest_do_request( $request );
 	}
 	/**
 	 * Update data based on Exact Online.

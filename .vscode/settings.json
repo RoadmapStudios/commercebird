@@ -1,8 +1,0 @@
-{
-  "php.version": "8.1",
-  "workbench.sideBar.location": "left",
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
-  "editor.formatOnType": true,
-  "phpsab.standard": "WordPress-Extra"
-}
