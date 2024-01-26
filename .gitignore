@@ -6,3 +6,4 @@ commercebird.zip
 /**/*.txt
 /**/*.log
 composer.lock
+.vscode
