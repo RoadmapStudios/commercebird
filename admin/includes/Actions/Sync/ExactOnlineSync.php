@@ -1,0 +1,197 @@
+<?php
+
+namespace RMS\Admin\Actions\Sync;
+
+defined( 'RMS_PLUGIN_NAME' ) || exit;
+
+class ExactOnlineSync {
+
+
+	/**
+	 * Sync data from Exact Online.
+	 *
+	 * @param string $type product|customer
+	 * @param string $data to sync from Exact Online
+	 * @param bool $import import or update
+	 * @return mixed
+	 */
+	public static function sync( string $type, string $data, bool $import = false ) {
+		if ( empty( $type ) ) {
+			return false;
+		}
+		$data = json_decode( $data, true );
+		if ( empty( $data ) ) {
+			return false;
+		}
+		foreach ( $data as $item ) {
+			if ( $import ) {
+				self::import( $type, $item );
+			} else {
+				self::update( $type, $item );
+			}
+		}
+	}
+	/**
+	 * Import data from Exact Online.
+	 *
+	 * for product data will be like,
+	 * {
+	 * "Code":string,
+	 * "Description": string,
+	 * "ID": string,
+	 * "IsSalesItem": bool,
+	 * "PictureName": null|string,
+	 * "PictureUrl": string,
+	 * "StandardSalesPrice": float,
+	 * "Stock": int
+	 * },
+	 *
+	 * for Order data will be like,
+	 * {
+	 * "MainContact": null|string,
+	 * "Email": null|string,
+	 * "ID": string,
+	 * "Name": string,
+	 * "AddressLine1": null|string,
+	 * "AddressLine2": null|string,
+	 * "City": string,
+	 * "Country": string,
+	 * "Phone": null|string,
+	 * "Postcode": string
+	 * }
+	 * @param string $type of provided data;
+	 * @param array $data of import
+	 * @return mixed
+	 */
+	public static function import( string $type, array $data ) {
+		$endpoint = '';
+		$payload  = array();
+		switch ( $type ) {
+			case 'product':
+				$endpoint = '/wc/v3/products';
+				$payload  = array(
+					'name'           => $data['Description'],
+					'sku'            => $data['Code'],
+					'status'         => 'publish',
+					'type'           => 'simple',
+					'regular_price'  => (string) $data['StandardSalesPrice'],
+					'stock_quantity' => (string) $data['Stock'],
+					'images'         => array(
+						array(
+							'src' => $data['PictureUrl'],
+						),
+					),
+					'meta_data'      => array(
+						array(
+							'key'   => 'eo_item_id',
+
+							'value' => $data['ID'],
+						),
+					),
+
+				);
+				break;
+			case 'customer':
+				if ( empty( $data['Email'] ) ) {
+					break;
+				}
+				$endpoint   = '/wc/v3/customers';
+				$names      = explode( ' ', $data['Name'] );
+				$first_name = $names[0] ?? '';
+				$last_name  = $names[1] ?? '';
+				$address    = array(
+					'first_name' => $first_name,
+					'last_name'  => $last_name,
+					'address_1'  => $data['AddressLine1'] ?? '',
+					'address_2'  => $data['AddressLine2'] ?? '',
+					'city'       => $data['City'],
+					'country'    => $data['Country'],
+					'postcode'   => $data['Postcode'],
+					'phone'      => $data['Phone'] ?? '',
+					'email'      => $data['Email'],
+				);
+				$payload    = array(
+					'email'      => $data['Email'],
+					'first_name' => $first_name,
+					'last_name'  => $last_name,
+					'billing'    => $address,
+					'shipping'   => $address,
+					'meta_data'  => array(
+						array(
+							'key'   => 'eo_customer_id',
+							'value' => $data['ID'],
+						),
+						array(
+							'key'   => 'eo_account_id',
+							'value' => $data['MainContact'] ?? '',
+						),
+					),
+				);
+				break;
+			default:
+				break;
+		}
+
+		if ( empty( $endpoint ) || empty( $payload ) ) {
+			return false;
+		}
+
+		$request = new \WP_REST_Request( 'POST', $endpoint );
+		$request->set_body_params( $payload );
+		rest_do_request( $request );
+	}
+	/**
+	 * Update data based on Exact Online.
+	 * @param string $type of provided data
+	 * @param array $data to match
+	 * @return void
+	 */
+	public static function update( string $type, array $data ) {
+		switch ( $type ) {
+			case 'product':
+				$wc_product_id = wc_get_product_id_by_sku( $data['Code'] );
+				if ( empty( $wc_product_id ) ) {
+					$wc_product_id = self::get_product_id_by_title( $data['Description'] );
+				}
+				if ( ! empty( $wc_product_id ) ) {
+					update_post_meta( $wc_product_id, 'eo_item_id', $data['ID'] );
+				}
+				break;
+			case 'customer':
+				$user = get_user_by( 'email', $data['Email'] );
+				if ( empty( $user ) ) {
+					break;
+				}
+				$user_id = $user->ID;
+				update_user_meta( $user_id, 'eo_customer_id', $data['ID'] );
+				if ( ! empty( $data['MainContact'] ) ) {
+					update_user_meta( $user_id, 'eo_company_id', $data['MainContact'] );
+				}
+				break;
+			default:
+				break;
+		}
+	}
+
+	private static function get_product_id_by_title( string $product_title ) {
+		// Set up the query arguments
+		$args = array(
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			's'              => $product_title, // Search by product title
+		);
+
+		// Run the query
+		$query = new \WP_Query( $args );
+
+		// Get the product ID from the query results
+		$product_id = $query->post_count > 0 ? $query->posts[0] : 0;
+
+		// Reset post data
+		wp_reset_postdata();
+
+		return $product_id;
+	}
+}

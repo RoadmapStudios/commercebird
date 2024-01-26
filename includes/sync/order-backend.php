@@ -109,3 +109,51 @@ function sync_order_to_zoho_notices()
 		</div>';
     }
 }
+
+/**
+ * Add the product meta as order item meta to be used by Webhooks
+ * @param mixed $item_id
+ * @param mixed $values
+ * @return void
+ */
+add_action('woocommerce_add_order_item_meta', 'cm_update_order_item_meta', 10, 2);
+function cm_update_order_item_meta( $item_id, $values )
+{
+    // Get the product ID associated with the order item
+    $product_id = $values['product_id'];
+
+    // Check if the product is associated with a product
+    if ($product_id > 0) {
+        // Get the product meta value based on the product ID and meta key
+        $eo_item_id = get_post_meta($product_id, 'eo_item_id', true);
+        // Add the product meta as order item meta
+        if (!empty($eo_item_id)) {
+            wc_update_order_item_meta($item_id, 'eo_item_id', $eo_item_id);
+        }
+    }
+}
+
+/**
+ * Add Meta in the Order during Checkout to be used by Webhooks
+ * @param mixed $order_id
+ * @return void
+ */
+add_action('woocommerce_checkout_update_order_meta', 'cm_update_order_meta');
+function cm_update_order_meta( $order_id )
+{
+    // Check if the order is associated with a user
+    $order = new WC_Order( $order_id );
+    // Get the user ID associated with the order
+    $user_id = $order->get_user_id();
+
+    // Check if the order is associated with a user
+    if ($user_id > 0) {
+        // Get the user meta value based on the user ID and meta key
+        $eo_account_id = get_user_meta($user_id, 'eo_account_id', true);
+        if (!empty($eo_account_id)) {
+            $order->update_meta_data('eo_account_id', $eo_account_id);
+            $order->save();
+        }
+    }
+
+}

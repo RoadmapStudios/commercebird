@@ -1,9 +1,13 @@
-import { backendAction, fetchData, notify, resetData, sendData, storeKey, useStorage } from '@/composables'
-import { acceptHMRUpdate, defineStore } from 'pinia'
-import { reactive, ref, watch } from 'vue'
-import { useLoadingStore } from './loading'
-import type { Ref, UnwrapRef } from 'vue'
-import type { Subscription } from '@/type'
+import {acceptHMRUpdate, defineStore} from 'pinia'
+import type {Ref} from 'vue'
+import {reactive, ref, watch} from 'vue'
+import {useLoadingStore} from './loading'
+import type {Changelog, Subscription} from '@/types'
+import {useStorage} from "@/composable/storage";
+import {backendAction, storeKey} from "@/keys";
+import {fetchData, resetData, sendData} from "@/composable/http";
+import {notify} from "@/composable/helpers";
+
 export const useHomepageStore = defineStore('homepage', () => {
     const storage = useStorage()
     const loader = useLoadingStore()
@@ -12,41 +16,45 @@ export const useHomepageStore = defineStore('homepage', () => {
         id: ''
     })
     const subscription: Ref<Subscription> = ref({})
-    const changelog = ref('')
+    const changelog: Ref<Changelog[]> = ref([])
     const invalidId = ref(false)
 
 
     const get_changelog = async () => {
-        const instore = storage.get(storeKey.changelog)
+        const log = storeKey.homepage.changelog;
+        const instore = storage.get(log)
         if (instore) {
             changelog.value = instore
         }
-        if (loader.isLoading(backendAction.get_changelog)) return
-        loader.setLoading(backendAction.get_changelog)
+        const action = backendAction.homepage.changelog;
+        if (loader.isLoading(action)) return
+        loader.setLoading(action)
         await fetch('https://commercebird.com/wp-json/wp/v2/changelog')
             .then(response => response.json())
             .then(data => {
                 changelog.value = data
-                storage.save(storeKey.changelog, data)
+                storage.save(log, data)
             }).finally(() => {
-                loader.clearLoading(backendAction.get_changelog)
+                loader.clearLoading(action)
             })
     }
 
     const get_subscription = async () => {
-        const instore = storage.get(storeKey.subscription)
+        const key = storeKey.homepage.subscription;
+        const instore = storage.get(key)
         if (instore) {
             subscription.value = instore
         }
         if (settings.id === '' || settings.id === null || settings.id === undefined) return
-        if (loader.isLoading(backendAction.get_subscription)) return
-        loader.setLoading(backendAction.get_subscription)
-        const response = await fetchData(backendAction.get_subscription, storeKey.subscription);
+        const action = backendAction.homepage.subscription;
+        if (loader.isLoading(action)) return
+        loader.setLoading(action)
+        const response = await fetchData(action, key);
         if (response) {
             subscription.value = response
-            storage.save(storeKey.subscription, response)
+            storage.save(key, response)
         }
-        loader.clearLoading(backendAction.get_subscription)
+        loader.clearLoading(action)
 
     }
     const load = async () => {
@@ -55,51 +63,67 @@ export const useHomepageStore = defineStore('homepage', () => {
         await get_changelog();
     }
     const get_settings = async () => {
-        if (loader.isLoading(backendAction.get_settings)) return
-        loader.setLoading(backendAction.get_settings)
-        const store: { cors: boolean, id: string } = storage.get(storeKey.settings)
+        const action = backendAction.homepage.settings.get;
+        const key = storeKey.homepage.settings;
+        if (loader.isLoading(action)) return
+        loader.setLoading(action)
+        const store: { cors: boolean, id: string } = storage.get(key)
         if (store) {
             settings.cors = store.cors
             settings.id = store.id
         } else {
-            const response = await fetchData(backendAction.get_settings, storeKey.settings);
+            const response = await fetchData(action, key);
             if (response) {
                 settings.cors = response.cors
                 settings.id = response.id || ''
                 await get_subscription()
             }
         }
-        loader.clearLoading(backendAction.get_settings)
+        loader.clearLoading(action)
     }
 
 
     const save_settings = async () => {
-        if (loader.isLoading(backendAction.save_settings)) return
-        loader.setLoading(backendAction.save_settings)
-        const response = await sendData(backendAction.save_settings, settings, storeKey.settings);
+        const action = backendAction.homepage.settings.save;
+        const key = storeKey.homepage.settings;
+        if (loader.isLoading(action)) return
+        loader.setLoading(action)
+        const response = await sendData(action, settings, key);
         if (response) {
-            storage.save(storeKey.settings, settings)
+            storage.save(key, settings)
             if (response.message) {
                 notify.success(response.message)
             }
             await get_subscription();
         }
-        loader.clearLoading(backendAction.save_settings)
+        loader.clearLoading(action)
 
     }
 
     const reset_settings = async () => {
-        if (loader.isLoading(backendAction.reset_settings)) return
-        loader.setLoading(backendAction.reset_settings)
-        await resetData(backendAction.reset_settings, storeKey.settings).then(() => {
+        const action = backendAction.homepage.settings.reset;
+        const key = storeKey.homepage.settings;
+        if (loader.isLoading(action)) return
+        loader.setLoading(action)
+        await resetData(action, key).then(() => {
             settings.cors = false
             settings.id = ''
-            subscription.value = []
+            subscription.value = {
+                currency: "",
+                fee_lines: [],
+                needs_payment: false,
+                next_payment_date_gmt: "",
+                payment_url: "",
+                plan: [],
+                status: "",
+                total: "",
+                variation_id: []
+            }
             invalidId.value = false
-            storage.remove(storeKey.subscription)
+            storage.remove(storeKey.homepage.subscription);
         });
 
-        loader.clearLoading(backendAction.reset_settings)
+        loader.clearLoading(action)
     }
 
     watch(settings, () => {

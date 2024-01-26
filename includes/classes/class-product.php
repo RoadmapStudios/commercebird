@@ -839,7 +839,7 @@ class ProductClass
     }
 
     /**
-     * Function for adding product from zoho to woocommerce.
+     * Function for adding Simple product from Zoho to woocommerce.
      *
      * @param $prod - Product object for adding new product in woocommerce.
      * @param $user_id - Current Active user Id
