@@ -37,8 +37,7 @@ rm ./"$plugin_name"/composer.json
 rm ./"$plugin_name"/composer.lock
 
 progress_message "Removing dev data..."
-sed -i '70,77d' ./"$plugin_name"/plugin.php
-sed -i '73,76d' ./"$plugin_name"/admin/includes/Template.php
+sed -i '70,73d' ./"$plugin_name"/admin/includes/Template.php
 sed -i '53,65d' ./"$plugin_name"/includes/classes/apis/trait-api-permission.php
 ## Add index.php to every directory
 progress_message "Adding index.php to every directory..."
