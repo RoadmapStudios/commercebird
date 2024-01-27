@@ -29,8 +29,7 @@ onBeforeMount(() => {
 
 <template>
   <div>
-    <RequiredNotice v-if="!acf_enabled"
-      message='Please install and activate <a href="/wp-admin/plugin-install.php?s=acf&tab=search&type=term" class="font-medium">ACF</a> plugin' />
+    <RequiredNotice v-if="!acf_enabled" name="ACF" slug="advanced-custom-fields" type="plugin" />
     <TabComponent :tabs="tabs" v-model="store.selectedTab" />
   </div>
 </template>

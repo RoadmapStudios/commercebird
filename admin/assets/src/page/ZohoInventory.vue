@@ -16,7 +16,7 @@ import Price from "@/components/forms/zoho/Price.vue";
 import Field from "@/components/forms/zoho/Field.vue";
 import Connect from "@/components/forms/zoho/Connect.vue";
 import Webhooks from "@/components/forms/zoho/Webhooks.vue";
-import { fileinfo_enabled } from "@/composable/helpers";
+import { cosw_enabled, fileinfo_enabled } from "@/composable/helpers";
 import { useZohoInventoryStore } from "@/stores/zohoInventory";
 import { onBeforeMount } from "vue";
 import TabComponent from "@/components/ui/tabs/TabComponent.vue";
@@ -46,7 +46,8 @@ onBeforeMount(() => {
         <span class="font-medium">"fileinfo"</span> to import Product Images
     from Zoho Inventory. This can be activated via your hosting cPanel or
     please contact your hosting for this activation.' />
-
+    <RequiredNotice v-if="store.selectedTab === 'order' && !cosw_enabled" slug="custom-order-statuses-woocommerce"
+      name="Custom Order Status for WooCommerce" type="plugin" />
     <TabComponent v-model="store.selectedTab" :tabs="tabs" />
   </div>
 </template>

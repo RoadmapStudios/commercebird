@@ -1,6 +1,7 @@
 import type {BackendAction, StoreKey} from "@/types";
 
 export const storeKey: StoreKey = {
+    currentRoute: 'commercebird_current_route',
     homepage: {
         changelog: 'changelog',
         settings: 'settings',
@@ -20,7 +21,6 @@ export const storeKey: StoreKey = {
         zoho_tax: 'zoho_taxes',
         zoho_warehouses: 'zoho_warehouses',
     },
-
     exactOnline: {
         connect: 'exactOnline_connect',
         product: 'exactOnline_product',
