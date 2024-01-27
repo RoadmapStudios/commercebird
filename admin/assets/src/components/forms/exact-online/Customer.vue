@@ -6,10 +6,25 @@ import { useLoadingStore } from "@/stores/loading";
 import { backendAction } from "@/keys";
 import InputGroup from "@/components/ui/inputs/InputGroup.vue";
 import Toggle from "@/components/ui/inputs/Toggle.vue";
+import { ConfirmModal } from "@/composable/helpers";
 
 const store = useExactOnlineStore();
 const loader = useLoadingStore();
 const actionKey = backendAction.exactOnline.customer;
+const handleClick = () => {
+
+  if (store.importCustomers) {
+    ConfirmModal.fire({
+      text: "Are you sure, you want to import customers?",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        store.mapCustomers();
+      }
+    })
+  } else {
+    store.mapCustomers();
+  }
+};
 </script>
 
 <template>
@@ -17,7 +32,7 @@ const actionKey = backendAction.exactOnline.customer;
     <InputGroup label="Do you want to import customers">
       <Toggle v-model="store.importCustomers" />
     </InputGroup>
-    <BaseButton :loading="loader.isLoading(actionKey.map)" @click="store.mapCustomers">
+    <BaseButton :loading="loader.isLoading(actionKey.map)" @click="handleClick">
       Map all Customers with Exact
     </BaseButton>
   </div>

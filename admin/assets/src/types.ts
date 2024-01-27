@@ -81,6 +81,7 @@ export type PriceSettings = {
 }
 
 export type StoreKey = {
+    currentRoute: string
     homepage: {
         settings: string
         changelog: string
