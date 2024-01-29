@@ -5,7 +5,7 @@ import { useExactOnlineStore } from "@/stores/exactOnline";
 import BaseLink from "@/components/ui/BaseLink.vue";
 import BaseForm from "@/components/ui/BaseForm.vue";
 import { backendAction } from "@/keys";
-import TokenImage from "@/components/TokenImage.vue";
+
 import { ExclamationCircleIcon, QuestionMarkCircleIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 import Swal from "sweetalert2";
