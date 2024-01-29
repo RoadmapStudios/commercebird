@@ -118,11 +118,11 @@ class ExactOnlineSync {
 					'shipping'   => $address,
 					'meta_data'  => array(
 						array(
-							'key'   => 'eo_customer_id',
+							'key'   => 'eo_account_id',
 							'value' => $data['ID'],
 						),
 						array(
-							'key'   => 'eo_account_id',
+							'key'   => 'eo_contact_id',
 							'value' => $data['MainContact'] ?? '',
 						),
 					),
@@ -163,9 +163,9 @@ class ExactOnlineSync {
 					break;
 				}
 				$user_id = $user->ID;
-				update_user_meta( $user_id, 'eo_customer_id', $data['ID'] );
+				update_user_meta( $user_id, 'eo_account_id', $data['ID'] );
 				if ( ! empty( $data['MainContact'] ) ) {
-					update_user_meta( $user_id, 'eo_company_id', $data['MainContact'] );
+					update_user_meta( $user_id, 'eo_contact_id', $data['MainContact'] );
 				}
 				break;
 			default:

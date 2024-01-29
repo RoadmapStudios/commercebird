@@ -113,14 +113,14 @@ function sync_order_to_zoho_notices()
 /**
  * Add the product meta as order item meta to be used by Webhooks
  * @param mixed $item_id
- * @param mixed $values
+ * @param mixed $item
  * @return void
  */
-add_action('woocommerce_add_order_item_meta', 'cm_update_order_item_meta', 10, 2);
-function cm_update_order_item_meta( $item_id, $values )
+add_action('woocommerce_new_order_item', 'cm_update_order_item_meta', 10, 3);
+function cm_update_order_item_meta( $item_id, $item, $order_id )
 {
     // Get the product ID associated with the order item
-    $product_id = $values['product_id'];
+    $product_id = $item['product_id'];
 
     // Check if the product is associated with a product
     if ($product_id > 0) {
