@@ -47,8 +47,9 @@ function zoho_contact_check()
         $customer_email = $current_user->user_email;
         $zoho_inventory_oid = get_option('zoho_inventory_oid');
         $zoho_inventory_url = get_option('zoho_inventory_url');
+        $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
 
-        if ($customer_id == 0) {
+        if ($customer_id == 0 && $zoho_inventory_access_token) {
             $url = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $customer_email;
 
             $executeCurlCallHandle = new ExecutecallClass();
