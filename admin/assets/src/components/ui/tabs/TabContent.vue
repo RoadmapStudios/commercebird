@@ -8,7 +8,6 @@
 </template>
 <script setup lang="ts">
 import { useLoadingStore } from "@/stores/loading";
-import ScrollBar from "../ScrollBar.vue";
 const selectedTab = defineModel()
 defineProps({
   tabs: Object
