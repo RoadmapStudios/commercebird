@@ -35,6 +35,10 @@ add_action('admin_enqueue_scripts', 'load_script');
 
 function zoho_admin_metabox()
 {
+    $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
+    if (!$zoho_inventory_access_token) {
+        return;
+    }
     $screen = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
         ? wc_get_page_screen_id('shop-order')
         : 'shop_order';
