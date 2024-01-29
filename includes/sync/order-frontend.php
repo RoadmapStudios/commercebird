@@ -19,6 +19,10 @@ if (!defined('ABSPATH')) {
 add_action('woocommerce_thankyou', 'zi_sync_frontend_order');
 function zi_sync_frontend_order($order_id)
 {
+    $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
+    if (!$zoho_inventory_access_token) {
+        return;
+    }
     // Check if the transient flag is set
     if (get_transient('your_thankyou_callback_executed_' . $order_id)) {
         return;
