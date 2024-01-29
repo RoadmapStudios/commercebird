@@ -58,7 +58,7 @@ function zi_product_sync_class($product_id)
         $productHandler = new ProductClass();
         $productHandler->zi_product_sync($product_id);
     }
-    
+
     // TODO: Trigger Webhook if product is updated and webhook is enabled
     /*
     $webhookHandler = new WebhookClass();
@@ -278,16 +278,6 @@ function exact_item_id_variation_field( $loop, $variation_data, $variation )
         )
     );
 }
-
-// Disable Guest Checkout if Zoho Inventory is active
-function zi_disable_guest_checkout()
-{
-    if (get_option('zoho_inventory_access_token')) {
-        $value = 'no';
-        return $value;
-    }
-}
-add_filter('pre_option_woocommerce_enable_guest_checkout', 'zi_disable_guest_checkout');
 
 // Block wc fields in My-Account page to prevent broken sync
 add_filter('woocommerce_billing_fields', 'zoho_readonly_billing_account', 25, 1);
