@@ -3,7 +3,11 @@
 /**
  * All WooCommerce related functions.
  *
- * @package  WooZo_Inventory
+ * @category WooCommerce
+ * @package  CommerceBird
+ * @author   Fawad Tiemoerie <info@roadmapstudios.com>
+ * @license  GNU General Public License v3.0
+ * @link     https://commercebird.com
  */
 
 if (!defined('ABSPATH')) {
@@ -18,8 +22,11 @@ function commercebird_clear_product_cache($object, $request, $is_creating)
 {
     if (!$is_creating) {
         $product_id = $object->get_id();
-        $productHandler = new ProductClass();
-        $productHandler->zi_product_sync($product_id);
+        $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
+        if (!$zoho_inventory_access_token) {
+            $productHandler = new ProductClass();
+            $productHandler->zi_product_sync($product_id);
+        }
         wc_delete_product_transients($product_id);
     }
 }
@@ -33,6 +40,10 @@ add_action('woocommerce_rest_insert_product_object', 'commercebird_clear_product
  */
 function zi_update_contact_via_accountpage($user_id)
 {
+    $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
+    if (!$zoho_inventory_access_token) {
+        return;
+    }
     $contactClassHandle = new ContactClass();
     $contactClassHandle->ContactUpdateFunction($user_id);
 }
@@ -197,6 +208,10 @@ function zi_customer_unmap_hook($order_id)
  */
 function zoho_product_metabox()
 {
+    $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
+    if (!$zoho_inventory_access_token) {
+        return;
+    }
     add_meta_box(
         'zoho-product-sync',
         __('Zoho Inventory'),
@@ -283,8 +298,9 @@ function exact_item_id_variation_field( $loop, $variation_data, $variation )
 add_filter('woocommerce_billing_fields', 'zoho_readonly_billing_account', 25, 1);
 function zoho_readonly_billing_account($billing_fields)
 {
+    $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
     // Only my account billing address for logged in users
-    if (is_user_logged_in() && is_account_page()) {
+    if (is_user_logged_in() && !empty($zoho_inventory_access_token)) {
 
         $readonly = ['readonly' => 'readonly'];
 
