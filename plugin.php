@@ -135,6 +135,7 @@ function zi_custom_zoho_cron_activate() {
 register_deactivation_hook( __FILE__, 'zi_zoho_cron_deactivate' );
 function zi_zoho_cron_deactivate() {
 	wp_clear_scheduled_hook( 'zi_execute_import_sync' );
+	update_option( 'woocommerce_enable_guest_checkout', 'yes' );
 }
 
 
