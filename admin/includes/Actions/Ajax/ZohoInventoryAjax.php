@@ -653,6 +653,7 @@ final class ZohoInventoryAjax {
 				'zoho_inventory_cid',
 				'zoho_inventory_cs',
 				'zoho_inventory_url',
+				'zoho_inventory_access_token',
 			);
 			foreach ( $options as $zi_option ) {
 				delete_option( $zi_option );
