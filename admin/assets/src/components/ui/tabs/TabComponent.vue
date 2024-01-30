@@ -9,14 +9,14 @@
       <div
           class="divide-y divide-gray-200 xl:grid xl:grid-cols-12 xl:divide-y-0 xl:divide-x"
       >
-        <TabMenu :tabs="tabs" v-model="selectedTab"/>
+        <TabMenu v-model="selectedTab" :tabs="tabs"/>
 
-        <TabContent :tabs="tabs" v-model="selectedTab"/>
+        <TabContent v-model="selectedTab" :tabs="tabs"/>
       </div>
     </div>
   </div>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import TabMenu from "@/components/ui/tabs/TabMenu.vue";
 import TabContent from "@/components/ui/tabs/TabContent.vue";
 import {notify} from "@/composable/helpers";

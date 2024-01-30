@@ -16,27 +16,47 @@ import Price from "@/components/forms/zoho/Price.vue";
 import Field from "@/components/forms/zoho/Field.vue";
 import Connect from "@/components/forms/zoho/Connect.vue";
 import Webhooks from "@/components/forms/zoho/Webhooks.vue";
-import { cosw_enabled, fileinfo_enabled } from "@/composable/helpers";
-import { useZohoInventoryStore } from "@/stores/zohoInventory";
-import { onBeforeMount } from "vue";
+import {cosw_enabled, fileinfo_enabled, notify, redirect_uri} from "@/composable/helpers";
+import {useZohoInventoryStore} from "@/stores/zohoInventory";
+import {onBeforeMount, watchEffect} from "vue";
 import TabComponent from "@/components/ui/tabs/TabComponent.vue";
 import RequiredNotice from "@/components/ui/RequiredNotice.vue";
+import {ajaxUrl} from "@/composable/http";
 
 const store = useZohoInventoryStore();
 
 const tabs = {
-  connect: { title: "Connect", component: Connect, icon: LinkIcon },
-  tax: { title: "Tax", component: Tax, icon: CurrencyDollarIcon },
-  product: { title: "Product", component: Product, icon: ArchiveBoxIcon },
-  cron: { title: "Cron", component: Cron, icon: ClockIcon },
-  order: { title: "Orders", component: Orders, icon: TruckIcon },
-  price: { title: "Price List", component: Price, icon: SwatchIcon },
-  field: { title: "Custom Fields", component: Field, icon: TableCellsIcon },
-  webhooks: { title: "Webhooks", component: Webhooks, icon: LinkIcon },
+  connect: {title: "Connect", component: Connect, icon: LinkIcon},
+  tax: {title: "Tax", component: Tax, icon: CurrencyDollarIcon},
+  product: {title: "Product", component: Product, icon: ArchiveBoxIcon},
+  cron: {title: "Cron", component: Cron, icon: ClockIcon},
+  order: {title: "Orders", component: Orders, icon: TruckIcon},
+  price: {title: "Price List", component: Price, icon: SwatchIcon},
+  field: {title: "Custom Fields", component: Field, icon: TableCellsIcon},
+  webhooks: {title: "Webhooks", component: Webhooks, icon: LinkIcon},
 };
 onBeforeMount(() => {
   store.isConnectionValid();
   store.selectedTab = "connect";
+});
+
+
+let currentURL = new URL(location.href, redirect_uri);
+let hasCode = currentURL.searchParams.has("code");
+
+watchEffect(() => {
+  if (hasCode) {
+    notify.success("Verifying your connection, please wait.");
+    let code = currentURL.searchParams.get("code");
+    fetch(`${ajaxUrl("handle_code")}&code=${code}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            location.href = redirect_uri;
+            return;
+          }
+        });
+  }
 });
 </script>
 
@@ -45,9 +65,10 @@ onBeforeMount(() => {
     <RequiredNotice v-if="!fileinfo_enabled" message='Please activate the PHP module
         <span class="font-medium">"fileinfo"</span> to import Product Images
     from Zoho Inventory. This can be activated via your hosting cPanel or
-    please contact your hosting for this activation.' />
-    <RequiredNotice v-if="store.selectedTab === 'order' && !cosw_enabled" slug="custom-order-statuses-woocommerce"
-      name="Custom Order Status for WooCommerce" type="plugin" />
-    <TabComponent v-model="store.selectedTab" :tabs="tabs" />
+    please contact your hosting for this activation.'/>
+    <RequiredNotice v-if="store.selectedTab === 'order' && !cosw_enabled" name="Custom Order Status for WooCommerce"
+                    slug="custom-order-statuses-woocommerce" type="plugin"/>
+    <RequiredNotice v-if="!store.isConnected" message="Please connect to Zoho Inventory."/>
+    <TabComponent v-model="store.selectedTab" :tabs="tabs"/>
   </div>
 </template>
