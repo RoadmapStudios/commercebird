@@ -81,6 +81,149 @@ class Sync_Order_Class
     }
 
     /**
+     * Function to map customer on checkout before placing order
+     * @param int $order_id Order ID.
+     * 
+     */
+    public function zi_sync_customer_checkout($order_id)
+    {
+        $order = wc_get_order($order_id);
+        $userid = $order->get_user_id();
+        $user_company = get_user_meta($userid, 'billing_company', true);
+        $user_email = get_user_meta($userid, 'billing_email', true);
+        $zi_customer_id = get_user_meta($userid, 'zi_contact_id', true);
+
+        if ($zi_customer_id) {
+            $zoho_inventory_oid = get_option('zoho_inventory_oid');
+            $zoho_inventory_url = get_option('zoho_inventory_url');
+            $get_url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
+
+            $executeCurlCallHandle = new ExecutecallClass();
+            $json = $executeCurlCallHandle->ExecuteCurlCallGet($get_url);
+
+            // fwrite($fd,PHP_EOL.'customer_json: '.print_r($json, true));
+
+            $code = $json->code;
+            if ($code != 0 || $code != '0') {
+                delete_user_meta($userid, 'zi_contact_id');
+                delete_user_meta($userid, 'zi_billing_address_id');
+                delete_user_meta($userid, 'zi_primary_contact_id');
+                delete_user_meta($userid, 'zi_shipping_address_id');
+                delete_user_meta($userid, 'zi_created_time');
+                delete_user_meta($userid, 'zi_last_modified_time');
+            } else {
+                $contactClassHandle = new ContactClass();
+                $contactClassHandle->ContactUpdateFunction($userid, $order_id);
+            }
+        }
+
+        /**
+         * syncing customer if its not in Zoho yet
+         */
+        if (!$zi_customer_id) {
+
+            // First check based on customer email address
+            $zoho_inventory_oid = get_option('zoho_inventory_oid');
+            $zoho_inventory_url = get_option('zoho_inventory_url');
+            // fwrite($fd,PHP_EOL.'$zi_customer_id : '.$user_email);
+            $url = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
+
+            $executeCurlCallHandle = new ExecutecallClass();
+            $json = $executeCurlCallHandle->ExecuteCurlCallGet($url);
+
+            $code = $json->code;
+            $message = $json->message;
+            if ($code == 0 || $code == '0') {
+                if (empty($json->contacts)) {
+
+                    // Second check based on Company Name
+                    if ($user_company) {
+                        $company_name = str_replace(" ", "%20", $user_company);
+                        $url = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&search_text=' . $company_name;
+
+                        $executeCurlCallHandle = new ExecutecallClass();
+                        $json = $executeCurlCallHandle->ExecuteCurlCallGet($url);
+
+                        $code = $json->code;
+                        if ($code == 0 || $code == '0') {
+                            if (empty($json->contacts)) {
+                                $contactClassHandle = new ContactClass();
+                                $zi_customer_id = $contactClassHandle->ContactCreateFunction($userid);
+                            } else {
+                                foreach ($json->contacts[0] as $key => $value) {
+                                    if ($key == 'contact_id') {
+                                        $zi_customer_id = $value;
+                                        update_user_meta($userid, 'zi_contact_id', $zi_customer_id);
+                                    }
+                                }
+                                $contactClassHandle = new ContactClass();
+                                $zi_customer_id = $contactClassHandle->Create_contact_person($userid);
+                            }
+                        }
+                    }
+                    $contactClassHandle = new ContactClass();
+                    $zi_customer_id = $contactClassHandle->ContactCreateFunction($userid);
+                } else {
+                    // fwrite($fd,PHP_EOL.'Contacts : '.print_r($json->contacts,true));
+                    foreach ($json->contacts[0] as $key => $value) {
+                        if ($key == 'contact_id') {
+                            $zi_customer_id = $value;
+                            update_user_meta($userid, 'zi_contact_id', $zi_customer_id);
+                        }
+                    }
+                }
+            }
+            // Http request not processed properly.
+            // echo $message;
+            return $zi_customer_id;
+        } else {
+            $zoho_inventory_oid = get_option('zoho_inventory_oid');
+            $zoho_inventory_url = get_option('zoho_inventory_url');
+            $get_url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
+
+            $executeCurlCallHandle = new ExecutecallClass();
+            $contactp_res = $executeCurlCallHandle->ExecuteCurlCallGet($get_url);
+
+            // fwrite($fd, PHP_EOL . 'Contact Response: ' . print_r($contactp_res->code, true));
+
+            // first check within contactpersons endpoint and then map it with that contactperson if email-id matches
+            if ($contactp_res->code == 0 || $contactp_res->code == '0') {
+                if (!empty($contactp_res->contact_persons)) {
+                    foreach ($contactp_res->contact_persons as $key => $contact_persons) {
+                        $person_email = trim($contact_persons->email);
+                        if ($person_email == trim($user_email)) {
+                            /* Match Contact */
+                            $contactid = $contact_persons->contact_person_id;
+                            update_user_meta($userid, 'zi_contactperson_id_' . $key, $contactid);
+                            if ($contact_persons->is_primary_contact == true || $contact_persons->is_primary_contact == 1) {
+                                $contactClassHandle = new ContactClass();
+                                $contactClassHandle->ContactUpdateFunction($userid, $order_id);
+                            } else {
+                                $contactClassHandle = new ContactClass();
+                                $res = $contactClassHandle->Update_contact_person($userid, $contactid);
+                            }
+                        }
+                    }
+                } else {
+                    $get_url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
+                    $contact_res = $executeCurlCallHandle->ExecuteCurlCallGet($get_url);
+                    if (($contact_res->code == 0 || $contact_res->code == '0') && !empty($contact_res->contact)) {
+                        foreach ($contact_res as $contact_) {
+                            if (trim($contact_->email) == trim($user_email)) {
+                                $contactClassHandle = new ContactClass();
+                                $contactClassHandle->ContactUpdateFunction($userid, $order_id);
+                            } else {
+                                $contactClassHandle = new ContactClass();
+                                $contactClassHandle->Create_contact_person($userid);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Function for admin zoho sync call.
      *
      * @param int $order_id Order ID.
@@ -166,142 +309,14 @@ class Sync_Order_Class
             $shipping_id = get_user_meta($userid, 'zi_shipping_address_id', true);
             $discount_amount = ($discount_amt) ? $discount_amt : 0;
             $user_email = get_user_meta($userid, 'billing_email', true);
-            $user_company = get_user_meta($userid, 'billing_company', true);
             $enable_incl_tax = get_option('woocommerce_prices_include_tax');
 
             if ($order_status != 'failed') {
+
+                if(empty($zi_customer_id)) {
+                    $zi_customer_id = $this->zi_sync_customer_checkout($order_id);
+                }
                 // fwrite($fd,PHP_EOL.'$zi_customer_id : '.$zi_customer_id);
-
-                // Quick check to see if contact still exists in Zoho
-                if ($zi_customer_id) {
-                    $zoho_inventory_oid = get_option('zoho_inventory_oid');
-                    $zoho_inventory_url = get_option('zoho_inventory_url');
-                    $get_url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
-
-                    $executeCurlCallHandle = new ExecutecallClass();
-                    $json = $executeCurlCallHandle->ExecuteCurlCallGet($get_url);
-
-                    // fwrite($fd,PHP_EOL.'customer_json: '.print_r($json, true));
-
-                    $code = $json->code;
-                    if ($code != 0 || $code != '0') {
-                        delete_user_meta($userid, 'zi_contact_id');
-                        delete_user_meta($userid, 'zi_billing_address_id');
-                        delete_user_meta($userid, 'zi_primary_contact_id');
-                        delete_user_meta($userid, 'zi_shipping_address_id');
-                        delete_user_meta($userid, 'zi_created_time');
-                        delete_user_meta($userid, 'zi_last_modified_time');
-                    } else {
-                        $contactClassHandle = new ContactClass();
-                        $contactClassHandle->ContactUpdateFunction($userid, $order_id);
-                    }
-                }
-
-                /**
-                 * syncing customer if its not in Zoho yet
-                 */
-                if (!$zi_customer_id) {
-
-                    // First check based on customer email address
-                    $zoho_inventory_oid = get_option('zoho_inventory_oid');
-                    $zoho_inventory_url = get_option('zoho_inventory_url');
-                    // fwrite($fd,PHP_EOL.'$zi_customer_id : '.$user_email);
-                    $url = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
-
-                    $executeCurlCallHandle = new ExecutecallClass();
-                    $json = $executeCurlCallHandle->ExecuteCurlCallGet($url);
-
-                    $code = $json->code;
-                    $message = $json->message;
-                    if ($code == 0 || $code == '0') {
-                        if (empty($json->contacts)) {
-
-                            // Second check based on Company Name
-                            if ($user_company) {
-                                $company_name = str_replace(" ", "%20", $user_company);
-                                $url = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&search_text=' . $company_name;
-
-                                $executeCurlCallHandle = new ExecutecallClass();
-                                $json = $executeCurlCallHandle->ExecuteCurlCallGet($url);
-
-                                $code = $json->code;
-                                if ($code == 0 || $code == '0') {
-                                    if (empty($json->contacts)) {
-                                        $contactClassHandle = new ContactClass();
-                                        $zi_customer_id = $contactClassHandle->ContactCreateFunction($userid);
-                                    } else {
-                                        foreach ($json->contacts[0] as $key => $value) {
-                                            if ($key == 'contact_id') {
-                                                $zi_customer_id = $value;
-                                                update_user_meta($userid, 'zi_contact_id', $zi_customer_id);
-                                            }
-                                        }
-                                        $contactClassHandle = new ContactClass();
-                                        $zi_customer_id = $contactClassHandle->Create_contact_person($userid);
-                                    }
-                                }
-                            }
-                            $contactClassHandle = new ContactClass();
-                            $zi_customer_id = $contactClassHandle->ContactCreateFunction($userid);
-                        } else {
-                            // fwrite($fd,PHP_EOL.'Contacts : '.print_r($json->contacts,true));
-                            foreach ($json->contacts[0] as $key => $value) {
-                                if ($key == 'contact_id') {
-                                    $zi_customer_id = $value;
-                                    update_user_meta($userid, 'zi_contact_id', $zi_customer_id);
-                                }
-                            }
-                        }
-                    }
-                    // Http request not processed properly.
-                    // echo $message;
-                    // return;
-                } else {
-                    $zoho_inventory_oid = get_option('zoho_inventory_oid');
-                    $zoho_inventory_url = get_option('zoho_inventory_url');
-                    $get_url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
-
-                    $executeCurlCallHandle = new ExecutecallClass();
-                    $contactp_res = $executeCurlCallHandle->ExecuteCurlCallGet($get_url);
-
-                    // fwrite($fd, PHP_EOL . 'Contact Response: ' . print_r($contactp_res->code, true));
-
-                    // first check within contactpersons endpoint and then map it with that contactperson if email-id matches
-                    if ($contactp_res->code == 0 || $contactp_res->code == '0') {
-                        if (!empty($contactp_res->contact_persons)) {
-                            foreach ($contactp_res->contact_persons as $key => $contact_persons) {
-                                $person_email = trim($contact_persons->email);
-                                if ($person_email == trim($user_email)) {
-                                    /* Match Contact */
-                                    $contactid = $contact_persons->contact_person_id;
-                                    update_user_meta($userid, 'zi_contactperson_id_' . $key, $contactid);
-                                    if ($contact_persons->is_primary_contact == true || $contact_persons->is_primary_contact == 1) {
-                                        $contactClassHandle = new ContactClass();
-                                        $contactClassHandle->ContactUpdateFunction($userid, $order_id);
-                                    } else {
-                                        $contactClassHandle = new ContactClass();
-                                        $res = $contactClassHandle->Update_contact_person($userid, $contactid);
-                                    }
-                                }
-                            }
-                        } else {
-                            $get_url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
-                            $contact_res = $executeCurlCallHandle->ExecuteCurlCallGet($get_url);
-                            if (($contact_res->code == 0 || $contact_res->code == '0') && !empty($contact_res->contact)) {
-                                foreach ($contact_res as $contact_) {
-                                    if (trim($contact_->email) == trim($user_email)) {
-                                        $contactClassHandle = new ContactClass();
-                                        $contactClassHandle->ContactUpdateFunction($userid, $order_id);
-                                    } else {
-                                        $contactClassHandle = new ContactClass();
-                                        $contactClassHandle->Create_contact_person($userid);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
                 $order_items = $order->get_items('coupon');
                 $discount_type = '';
                 foreach ($order->get_coupon_codes() as $coupon_code) {

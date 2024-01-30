@@ -20,13 +20,17 @@ add_action('woocommerce_thankyou', 'zi_sync_frontend_order');
 function zi_sync_frontend_order($order_id)
 {
     $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
-    if (!$zoho_inventory_access_token) {
+    if (empty($zoho_inventory_access_token)) {
         return;
     }
     // Check if the transient flag is set
     if (get_transient('your_thankyou_callback_executed_' . $order_id)) {
         return;
     }
+    // First sync the customer to Zoho Inventory
+    $zi_order_class = new Sync_Order_Class();
+    $zi_order_class->zi_sync_customer_checkout($order_id);
+
     // Use WC Action Scheduler to sync the order to Zoho Inventory
     $existing_schedule = as_has_scheduled_action('sync_zi_order', array($order_id));
     if (!$existing_schedule) {
