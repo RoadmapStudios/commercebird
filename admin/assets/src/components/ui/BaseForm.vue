@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import BaseButton from "@/components/ui/BaseButton.vue";
 import {useLoadingStore} from "@/stores/loading";
 
@@ -6,6 +6,10 @@ const loader = useLoadingStore();
 defineProps({
   keys: {
     type: Object
+  },
+  submitLabel: {
+    type: String,
+    default: "Save"
   }
 })
 </script>
@@ -19,7 +23,7 @@ defineProps({
           :loading="loader.isLoading(keys?.save)"
           @click="$emit('submit')"
       >
-        Save
+        {{ submitLabel }}
       </BaseButton>
       <BaseButton
           :loading="loader.isLoading(keys?.reset)"

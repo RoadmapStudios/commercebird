@@ -175,6 +175,51 @@ final class ZohoInventoryAjax {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function get_subscription_data(): array {
+		$data            = array();
+		$subscription_id = get_option( 'zoho_id_status', 0 );
+		if ( $subscription_id ) {
+			$response = wp_safe_remote_get(
+				sprintf( 'https://commercebird.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ),
+				array(
+					'headers' => array(
+						'Accept'        => 'application/json',
+						'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
+					),
+				),
+			);
+			if ( is_wp_error( $response ) ) {
+				$this->errors = array( 'message' => $response->get_error_messages() );
+			} else {
+				$body   = wp_remote_retrieve_body( $response );
+				$decode = json_decode( $body, true );
+				if ( $decode && array_key_exists( 'line_items', $decode ) ) {
+					$data                 = $this->extract_data(
+						$decode,
+						array(
+							'fee_lines',
+							'total',
+							'currency',
+							'next_payment_date_gmt',
+							'needs_payment',
+							'payment_url',
+							'status',
+							'variation_id',
+							'line_items',
+						),
+					);
+					$data['variation_id'] = array_column( $data['line_items'], 'variation_id' );
+					$data['plan']         = array_column( $data['line_items'], 'name' );
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Resets the settings details.
 	 *
 	 * @return void
@@ -718,68 +763,23 @@ final class ZohoInventoryAjax {
 	public function handle_code(): void {
 		$this->verify();
 		if ( array_key_exists( 'code', $this->request ) ) {
-			$classFunctions = new Classfunctions();
+			$class_functions = new Classfunctions();
 			$code           = $this->request['code'];
 			try {
-				$ZI_access_token = $classFunctions->GetServiceZIAccessToken( $code );
-				if ( array_key_exists( 'access_token', $ZI_access_token ) ) {
+				$access_token = $class_functions->GetServiceZIAccessToken( $code );
+				if ( array_key_exists( 'access_token', $access_token ) ) {
 					update_option( 'zoho_inventory_auth_code', $code );
-					update_option( 'zoho_inventory_access_token', $ZI_access_token['access_token'] );
-					update_option( 'zoho_inventory_refresh_token', $ZI_access_token['refresh_token'] );
-					update_option( 'zoho_inventory_timestamp', strtotime( date( 'Y-m-d H:i:s' ) ) + $ZI_access_token['expires_in'] );
-					$this->response = (array) $ZI_access_token;
+					update_option( 'zoho_inventory_access_token', $access_token['access_token'] );
+					update_option( 'zoho_inventory_refresh_token', $access_token['refresh_token'] );
+					update_option( 'zoho_inventory_timestamp', strtotime( date( 'Y-m-d H:i:s' ) ) + $access_token['expires_in'] );
+					$this->response = (array) $access_token;
 				} else {
-					$this->errors = (array) $ZI_access_token;
+					$this->errors = (array) $access_token;
 				}
 			} catch ( Throwable $throwable ) {
 				$this->errors = array( 'message' => $throwable->getMessage() );
 			}
 		}
 		$this->serve();
-	}
-
-	/**
-	 * @return array
-	 */
-	public function get_subscription_data(): array {
-		$data            = array();
-		$subscription_id = get_option( 'zoho_id_status', 0 );
-		if ( $subscription_id ) {
-			$response = wp_safe_remote_get(
-				sprintf( 'https://commercebird.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ),
-				array(
-					'headers' => array(
-						'Accept'        => 'application/json',
-						'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
-					),
-				),
-			);
-			if ( is_wp_error( $response ) ) {
-				$this->errors = array( 'message' => $response->get_error_messages() );
-			} else {
-				$body   = wp_remote_retrieve_body( $response );
-				$decode = json_decode( $body, true );
-				if ( $decode && array_key_exists( 'line_items', $decode ) ) {
-					$data                 = $this->extract_data(
-						$decode,
-						array(
-							'fee_lines',
-							'total',
-							'currency',
-							'next_payment_date_gmt',
-							'needs_payment',
-							'payment_url',
-							'status',
-							'variation_id',
-							'line_items',
-						),
-					);
-					$data['variation_id'] = array_column( $data['line_items'], 'variation_id' );
-					$data['plan']         = array_column( $data['line_items'], 'name' );
-				}
-			}
-		}
-
-		return $data;
 	}
 }
