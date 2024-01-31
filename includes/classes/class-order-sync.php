@@ -93,6 +93,14 @@ class Sync_Order_Class
         $user_email = get_user_meta($userid, 'billing_email', true);
         $zi_customer_id = get_user_meta($userid, 'zi_contact_id', true);
 
+        // Get currency code of the order
+        $currency_id = intval(get_user_meta($userid, 'zi_currency_id', true));
+        if (empty($currency_id)) {
+            $currency_code = $order->get_currency();
+            $multiCurrencyHandle = new MulticurrencyClass();
+            $currency_id = $multiCurrencyHandle->ZohoCurrencyData($currency_code, $userid);
+        }
+
         if ($zi_customer_id) {
             $zoho_inventory_oid = get_option('zoho_inventory_oid');
             $zoho_inventory_url = get_option('zoho_inventory_url');
@@ -111,6 +119,7 @@ class Sync_Order_Class
                 delete_user_meta($userid, 'zi_shipping_address_id');
                 delete_user_meta($userid, 'zi_created_time');
                 delete_user_meta($userid, 'zi_last_modified_time');
+                $zi_customer_id = '';
             } else {
                 $contactClassHandle = new ContactClass();
                 $contactClassHandle->ContactUpdateFunction($userid, $order_id);
@@ -294,13 +303,6 @@ class Sync_Order_Class
                 $order->add_order_note('Zoho Order Sync: guest orders are not supported');
                 $order->save();
                 return;
-            }
-            // Get currency code of the order
-            $currency_id = intval(get_user_meta($userid, 'zi_currency_id', true));
-            if(empty($currency_id)) {
-                $currency_code = $order->get_currency();
-                $multiCurrencyHandle = new MulticurrencyClass();
-                $currency_id = $multiCurrencyHandle->ZohoCurrencyData($currency_code, $userid);
             }
             $valOrder = array_shift($sale_order);
             // fwrite($fd, PHP_EOL . 'USER ID : ' . $userid);
