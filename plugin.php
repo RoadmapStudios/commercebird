@@ -5,7 +5,6 @@
  * Plugin URI:  https://commercebird.com
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
  * Version: 2.0.11
- * Version: 2.0.11
  * Author: CommerceBird
  * Author URI:  https://commercebird.com
  * Requires PHP: 7.4
@@ -135,6 +134,7 @@ function zi_custom_zoho_cron_activate() {
 register_deactivation_hook( __FILE__, 'zi_zoho_cron_deactivate' );
 function zi_zoho_cron_deactivate() {
 	wp_clear_scheduled_hook( 'zi_execute_import_sync' );
+	update_option( 'woocommerce_enable_guest_checkout', 'yes' );
 }
 
 

@@ -1,26 +1,30 @@
 <template>
-  <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
-    <div v-if="store.isConnected">
-      <Alert v-for="(hint, index) in hints" :key="index" :message="hint" target="_blank"/>
-    </div>
-    <InputGroup flexed label="Account Domain">
-      <SelectInput v-model="store.connection.account_domain" :options="accountDomains"/>
-      <BaseLink v-if="store.connection.account_domain"
-                :href="`https://api-console.zoho.${store.connection.account_domain}/`" rel="noopener noreferrer" target="_blank">
-        Access zoho console
-      </BaseLink>
-    </InputGroup>
-    <InputGroup label="Organization ID">
-      <TextInput v-model="store.connection.organization_id"/>
-    </InputGroup>
-    <InputGroup label="Client ID">
-      <TextInput v-model="store.connection.client_id"/>
-    </InputGroup>
-    <InputGroup label="Client Secret">
-      <TextInput v-model="store.connection.client_secret"/>
-    </InputGroup>
-    <CopyableInput :value="store.connection.redirect_uri"/>
-  </BaseForm>
+  <div>
+    <BaseForm :keys="action" submit-label="Connect" @reset="store.handleReset(action.reset)"
+              @submit="store.handleSubmit(action.save)">
+      <div v-if="store.isConnected">
+        <Alert v-for="(hint, index) in hints" :key="index" :message="hint" target="_blank"/>
+      </div>
+      <InputGroup flexed label="Account Domain">
+        <SelectInput v-model="store.connection.account_domain" :options="accountDomains"/>
+        <BaseLink v-if="store.connection.account_domain"
+                  :href="`https://api-console.zoho.${store.connection.account_domain}/`" rel="noopener noreferrer"
+                  target="_blank">
+          Access zoho console
+        </BaseLink>
+      </InputGroup>
+      <InputGroup label="Organization ID">
+        <TextInput v-model="store.connection.organization_id"/>
+      </InputGroup>
+      <InputGroup label="Client ID">
+        <TextInput v-model="store.connection.client_id"/>
+      </InputGroup>
+      <InputGroup label="Client Secret">
+        <TextInput v-model="store.connection.client_secret"/>
+      </InputGroup>
+      <CopyableInput :value="store.connection.redirect_uri"/>
+    </BaseForm>
+  </div>
 </template>
 <script lang="ts" setup>
 import {ExclamationCircleIcon} from "@heroicons/vue/24/outline";
@@ -30,7 +34,6 @@ import InputGroup from "../../ui/inputs/InputGroup.vue";
 import TextInput from "../../ui/inputs/TextInput.vue";
 import SelectInput from "../../ui/inputs/SelectInput.vue";
 import Alert from "@/components/ui/Alert.vue";
-import {useClipboard} from "@vueuse/core";
 import {redirect_uri} from "@/composable/helpers";
 import {onBeforeMount} from "vue";
 import CopyableInput from "@/components/ui/inputs/CopyableInput.vue";
@@ -58,7 +61,6 @@ const accountDomains = {
 const store = useZohoInventoryStore();
 const loader = useLoadingStore();
 const source = store.connection.redirect_uri;
-const {copy, copied} = useClipboard({source});
 const action = backendAction.zohoInventory.connect;
 onBeforeMount(async () => {
   const response = await loader.loadData(

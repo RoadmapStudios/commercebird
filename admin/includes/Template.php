@@ -7,7 +7,7 @@ use RMS\Admin\Connectors\CommerceBird;
 defined( 'RMS_PLUGIN_NAME' ) || exit();
 
 final class Template {
-	const NAME = 'commercebird-app';
+	const NAME               = 'commercebird-app';
 	private static $instance = null;
 
 	public function __construct() {
@@ -74,6 +74,7 @@ final class Template {
 		wp_register_style( self::NAME, RMS_DIR_URL . 'admin/assets/dist/index.css', array(), RMS_VERSION );
 		wp_register_script( self::NAME, RMS_DIR_URL . 'admin/assets/dist/index.js', array(), RMS_VERSION, true );
 		wp_add_inline_style( self::NAME, '#wpcontent, .auto-fold #wpcontent{padding-left: 0px} #wpcontent .notice, #wpcontent #message{display: none} input[type=checkbox]:checked::before{content:unset}' );
+		$active_plugins = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
 		wp_localize_script(
 			self::NAME,
 			'commercebird_admin',
@@ -86,6 +87,7 @@ final class Template {
 				'b2b_enabled'      => class_exists( 'Addify_B2B_Plugin' ),
 				'fileinfo_enabled' => extension_loaded( 'fileinfo' ),
 				'acf_enabled'      => class_exists( 'ACF' ),
+				'cosw_enabled'     => in_array( 'custom-order-statuses-woocommerce/custom-order-statuses-for-woocommerce.php', $active_plugins, true ),
 				'site_url'         => site_url(),
 			),
 		);

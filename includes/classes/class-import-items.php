@@ -335,7 +335,7 @@ class ImportProductClass
      */
     public function sync_groupitem_recursively()
     {
-        // $fd = fopen(__DIR__ . '/sync_groupitem_recursively.txt', 'w');
+        // $fd = fopen(__DIR__ . '/sync_groupitem_recursively.txt', 'a+');
 
         $args = func_get_args();
         if (!empty($args)) {
@@ -357,7 +357,7 @@ class ImportProductClass
             $zoho_inventory_oid = $this->config['ProductZI']['OID'];
             $zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-            $url = $zoho_inventory_url . 'api/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
+            $url = $zoho_inventory_url . 'api/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&filter_by=Status.Active';
             // fwrite($fd, PHP_EOL . '$url : ' . $url);
 
             $executeCurlCallHandle = new ExecutecallClass();
@@ -373,9 +373,7 @@ class ImportProductClass
                 foreach ($json->itemgroups as $gpArr) {
                     $zi_group_id = $gpArr->group_id;
                     $zi_group_name = $gpArr->group_name;
-
                     // fwrite($fd, PHP_EOL . '$itemGroup : ' . print_r($gpArr, true));
-
                     // skip if there is no first attribute
                     $zi_group_attribute1 = $gpArr->attribute_id1;
                     if (empty($zi_group_attribute1)) {
