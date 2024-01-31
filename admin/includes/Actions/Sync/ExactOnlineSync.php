@@ -177,7 +177,6 @@ class ExactOnlineSync {
 		// Set up the query arguments
 		$args = array(
 			'post_type'      => 'product',
-			'post_status'    => 'publish',
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
 			's'              => $product_title, // Search by product title
