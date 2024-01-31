@@ -120,9 +120,6 @@ class Sync_Order_Class
                 delete_user_meta($userid, 'zi_created_time');
                 delete_user_meta($userid, 'zi_last_modified_time');
                 $zi_customer_id = '';
-            } else {
-                $contactClassHandle = new ContactClass();
-                $contactClassHandle->ContactUpdateFunction($userid, $order_id);
             }
         }
 

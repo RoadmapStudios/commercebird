@@ -115,49 +115,48 @@ function sync_order_to_zoho_notices()
 }
 
 /**
- * Add the product meta as order item meta to be used by Webhooks
- * @param mixed $item_id
- * @param mixed $item
- * @return void
+ * Add the product meta as line item meta to the Order Webhook Payload
+ * @param: $payload
+ * @param: $resource
+ * @param: $resource_id
+ * @param: $id
+ * @return: $payload 
  */
-add_action('woocommerce_new_order_item', 'cm_update_order_item_meta', 10, 3);
-function cm_update_order_item_meta( $item_id, $item, $order_id )
+add_filter('woocommerce_webhook_payload', 'cm_modify_order_webhook_payload', 10, 4);
+function cm_modify_order_webhook_payload($payload, $resource, $resource_id, $id)
 {
-    // Get the product ID associated with the order item
-    $product_id = $item['product_id'];
+    if ($resource !== 'order') {
+        return $payload;
+    }
 
-    // Check if the product is associated with a product
-    if ($product_id > 0) {
+    $eo_account_id = '';
+    $customer_id = (int) $payload['customer_id'];
+
+    // All guest users will have the customer_id field set to 0
+    if ($customer_id > 0) {
+        $eo_account_id = (string) get_user_meta($customer_id, 'eo_account_id', true);
+        if(!empty($eo_account_id)) {
+            $payload['meta_data'][] = array(
+                'key' => 'eo_account_id',
+                'value' => $eo_account_id,
+            );
+        }
+    }
+    // Loop through line items in and add the eo_item_id to the line item
+    foreach ($payload['line_items'] as &$item) {
+        // Get the product ID associated with the line item
+        $product_id = $item['product_id'];
         // Get the product meta value based on the product ID and meta key
         $eo_item_id = get_post_meta($product_id, 'eo_item_id', true);
-        // Add the product meta as order item meta
+        // Add the product meta to the line item
         if (!empty($eo_item_id)) {
-            wc_update_order_item_meta($item_id, 'eo_item_id', $eo_item_id);
-        }
-    }
-}
-
-/**
- * Add Meta in the Order during Checkout to be used by Webhooks
- * @param mixed $order_id
- * @return void
- */
-add_action('woocommerce_checkout_update_order_meta', 'cm_update_order_meta');
-function cm_update_order_meta( $order_id )
-{
-    // Check if the order is associated with a user
-    $order = new WC_Order( $order_id );
-    // Get the user ID associated with the order
-    $user_id = $order->get_user_id();
-
-    // Check if the order is associated with a user
-    if ($user_id > 0) {
-        // Get the user meta value based on the user ID and meta key
-        $eo_account_id = get_user_meta($user_id, 'eo_account_id', true);
-        if (!empty($eo_account_id)) {
-            $order->update_meta_data('eo_account_id', $eo_account_id);
-            $order->save();
+            $item['meta'][] = array(
+                'key' => 'eo_item_id',
+                'value' => $eo_item_id,
+            );
         }
     }
 
+    return $payload;
 }
+
