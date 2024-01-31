@@ -335,7 +335,7 @@ class ImportProductClass
      */
     public function sync_groupitem_recursively()
     {
-        // $fd = fopen(__DIR__ . '/sync_groupitem_recursively.txt', 'w');
+        // $fd = fopen(__DIR__ . '/sync_groupitem_recursively.txt', 'a+');
 
         $args = func_get_args();
         if (!empty($args)) {
@@ -373,11 +373,13 @@ class ImportProductClass
                 foreach ($json->itemgroups as $gpArr) {
                     $zi_group_id = $gpArr->group_id;
                     $zi_group_name = $gpArr->group_name;
-
+                    // $zi_group_status = $gpArr->status;
                     // fwrite($fd, PHP_EOL . '$itemGroup : ' . print_r($gpArr, true));
-
+                    // fwrite($fd, PHP_EOL . 'Group Id : ' . $zi_group_id . ' Group Name : ' . $zi_group_name . ' Group Status : ' . $zi_group_status);
                     // skip if there is no first attribute
                     $zi_group_attribute1 = $gpArr->attribute_id1;
+                    // TODO: check if group is active
+                    // if (empty($zi_group_attribute1) || $zi_group_status != 'active') {
                     if (empty($zi_group_attribute1)) {
                         continue;
                     }
