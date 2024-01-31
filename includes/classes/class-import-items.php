@@ -357,7 +357,7 @@ class ImportProductClass
             $zoho_inventory_oid = $this->config['ProductZI']['OID'];
             $zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-            $url = $zoho_inventory_url . 'api/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
+            $url = $zoho_inventory_url . 'api/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&filter_by=Status.Active';
             // fwrite($fd, PHP_EOL . '$url : ' . $url);
 
             $executeCurlCallHandle = new ExecutecallClass();
@@ -373,13 +373,9 @@ class ImportProductClass
                 foreach ($json->itemgroups as $gpArr) {
                     $zi_group_id = $gpArr->group_id;
                     $zi_group_name = $gpArr->group_name;
-                    // $zi_group_status = $gpArr->status;
                     // fwrite($fd, PHP_EOL . '$itemGroup : ' . print_r($gpArr, true));
-                    // fwrite($fd, PHP_EOL . 'Group Id : ' . $zi_group_id . ' Group Name : ' . $zi_group_name . ' Group Status : ' . $zi_group_status);
                     // skip if there is no first attribute
                     $zi_group_attribute1 = $gpArr->attribute_id1;
-                    // TODO: check if group is active
-                    // if (empty($zi_group_attribute1) || $zi_group_status != 'active') {
                     if (empty($zi_group_attribute1)) {
                         continue;
                     }
