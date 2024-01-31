@@ -25,7 +25,6 @@
       <CopyableInput :value="store.connection.redirect_uri"/>
     </BaseForm>
   </div>
-
 </template>
 <script lang="ts" setup>
 import {ExclamationCircleIcon} from "@heroicons/vue/24/outline";
