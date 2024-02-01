@@ -553,7 +553,10 @@ add_action('pre_get_posts', 'zi_sync_column_filter_query');
 
 /**
  * Prevent Webhook delivery execution when order gets updated too often per minute
- *
+ * @param bool $should_deliver
+ * @param WC_Webhook $webhook
+ * @param array $arg
+ * @return bool
  */
 add_filter('woocommerce_webhook_should_deliver', 'cm_skip_webhook_delivery', 10, 3);
 function cm_skip_webhook_delivery($should_deliver, $webhook, $arg)
@@ -578,3 +581,13 @@ function cm_skip_webhook_delivery($should_deliver, $webhook, $arg)
 
     return $should_deliver; // Continue with normal webhook delivery
 }
+
+/**
+ * Change Action Scheduler default purge to 1 week
+ * @return int
+ */
+function commercebird_action_scheduler_purge()
+{
+    return WEEK_IN_SECONDS;
+}
+add_filter('action_scheduler_retention_period', 'commercebird_action_scheduler_purge');
