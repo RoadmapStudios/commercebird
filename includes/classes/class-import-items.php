@@ -162,8 +162,10 @@ class ImportProductClass
                             // Save the changes
                             $product->save();
                         }
-
-                        wc_delete_product_transients($pdt_id); // Clear/refresh cache
+                        // Sync ACF Fields
+                        $this->sync_item_custom_fields($arr->custom_fields, $pdt_id);
+                        // Clear/refresh cache
+                        wc_delete_product_transients($pdt_id); 
 
                     }
                 }
@@ -326,6 +328,35 @@ class ImportProductClass
     }
 
     /**
+     * Update or Create Custom Fields of Product
+     *
+     * @param $custom_fields - item object coming in from simple item recursive
+     * @return void
+     */
+    protected function sync_item_custom_fields($custom_fields, $pdt_id)
+    {
+        if (empty($custom_fields) || empty($pdt_id)) {
+            return;
+        }
+
+        foreach ($custom_fields as $customField) {
+            $apiName = $customField->api_name;
+            $value = $customField->value;
+            $data_type = $customField->data_type;
+
+            // Check if the Zoho API is a multiline type
+            if (!empty($value) && $data_type == 'multiline') {
+                // Check if ACF function exists
+                if (function_exists('update_field')) {
+                    update_field($apiName, $value, $pdt_id);
+                } else {
+                    update_post_meta($pdt_id, $apiName, $value);
+                }
+            }
+        }
+    }
+
+    /**
      * Function to add group items recursively by manual sync
      *
      * @param [number] $page  - Page number for getting group item with pagination.
@@ -420,6 +451,8 @@ class ImportProductClass
                             $final_tags = explode(',', $item_tags);
                             wp_set_object_terms($group_id, $final_tags, 'product_tag');
                         }
+                        // ACF Fields
+                        $this->sync_item_custom_fields($gpArr->custom_fields, $group_id);
                     } else {
                         // Create the parent variable product
                         $parent_product = new WC_Product_Variable();
@@ -430,6 +463,8 @@ class ImportProductClass
                         $group_id = $parent_product->save();
 
                         // fwrite($fd, PHP_EOL . 'New $group_id ' . $group_id);
+                        // ACF Fields
+                        $this->sync_item_custom_fields($gpArr->custom_fields, $group_id);
 
                         // Create or Update the Attributes
                         $attr_created = $this->sync_attributes_of_group($gpArr, $group_id);
