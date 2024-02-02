@@ -1,8 +1,12 @@
+Version 2.1.1 - Februari 2nd 2024
+* Tweak: restored Item's custom fields in cron
+* Improvement: purge action scheduler log after a week
+
 Version 2.1.0 - Februari 1 2024
-New: Exact Online tab for bulk mapping & import items and customers
-Tweak: improved error handling in case of bad Zoho connection
-Tweak: improved Zoho order sync by separating customer sync
-Fix: only import active group items
+* New: Exact Online tab for bulk mapping & import items and customers
+* Tweak: improved error handling in case of bad Zoho connection
+* Tweak: improved Zoho order sync by separating customer sync
+* Fix: only import active group items
 
 Version 2.0.11 - January 24 2024
 * Fix: custom fields mapping of orders
