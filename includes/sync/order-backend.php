@@ -143,7 +143,7 @@ function cm_modify_order_webhook_payload($payload, $resource, $resource_id, $id)
         }
     }
     // Loop through line items in and add the eo_item_id to the line item
-    foreach ($payload['line_items'] as &$item) {
+    foreach ($payload['line_items'] as $item) {
         // Get the product ID associated with the line item
         $product_id = $item['product_id'];
         // Get the product meta value based on the product ID and meta key
