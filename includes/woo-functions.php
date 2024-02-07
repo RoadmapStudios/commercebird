@@ -23,7 +23,7 @@ function commercebird_clear_product_cache($object, $request, $is_creating)
     if (!$is_creating) {
         $product_id = $object->get_id();
         $zoho_inventory_access_token = get_option('zoho_inventory_access_token');
-        if (!$zoho_inventory_access_token) {
+        if (!empty($zoho_inventory_access_token)) {
             $productHandler = new ProductClass();
             $productHandler->zi_product_sync($product_id);
         }

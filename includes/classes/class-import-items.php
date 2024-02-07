@@ -331,9 +331,10 @@ class ImportProductClass
      * Update or Create Custom Fields of Product
      *
      * @param $custom_fields - item object coming in from simple item recursive
+     * @param $pdt_id - product id
      * @return void
      */
-    protected function sync_item_custom_fields($custom_fields, $pdt_id)
+    public function sync_item_custom_fields($custom_fields, $pdt_id)
     {
         if (empty($custom_fields) || empty($pdt_id)) {
             return;
