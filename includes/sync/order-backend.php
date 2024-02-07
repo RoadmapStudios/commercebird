@@ -125,8 +125,9 @@ function sync_order_to_zoho_notices()
 add_filter('woocommerce_webhook_payload', 'cm_modify_order_webhook_payload', 10, 4);
 function cm_modify_order_webhook_payload($payload, $resource, $resource_id, $id)
 {
-    if ($resource !== 'order') {
-        return $payload;
+    $webhook = wc_get_webhook($id);
+    if ($webhook && $webhook->get_name() != 'CommerceBird Orders') {
+        return;
     }
 
     $eo_account_id = '';
@@ -143,11 +144,16 @@ function cm_modify_order_webhook_payload($payload, $resource, $resource_id, $id)
         }
     }
     // Loop through line items in and add the eo_item_id to the line item
-    foreach ($payload['line_items'] as $item) {
+    foreach ($payload['line_items'] as &$item) {
         // Get the product ID associated with the line item
         $product_id = $item['product_id'];
+        $variation_id = $item['variation_id'];
         // Get the product meta value based on the product ID and meta key
-        $eo_item_id = get_post_meta($product_id, 'eo_item_id', true);
+        if($variation_id) {
+            $eo_item_id = get_post_meta($variation_id, 'eo_item_id', true);
+        } else {
+            $eo_item_id = get_post_meta($product_id, 'eo_item_id', true);
+        }
         // Add the product meta to the line item
         if (!empty($eo_item_id)) {
             $item['meta'][] = array(
