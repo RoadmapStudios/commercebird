@@ -343,6 +343,14 @@ class Sync_Order_Class
                         $product_response = $productHandler->zi_product_sync($proid);
                         // fwrite($fd,PHP_EOL.'Product sync: '.print_r($product_response, true));
                     }
+                    // Skip bundled order items
+                    if(function_exists('wc_pb_is_bundled_order_item')) {
+                        $order_item = $order->get_item($val['order_id']);
+                        $is_bundled = wc_pb_is_bundled_order_item( $order_item, $order );
+                        if( $is_bundled ) {
+                            continue;
+                        }
+                    }
 
                     $product_description = isset($val['product_desc']) ? $val['product_desc'] : '';
                     $product_desc = str_replace('"', '', $product_description);
