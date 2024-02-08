@@ -343,10 +343,14 @@ class ImportProductClass
         foreach ($custom_fields as $customField) {
             $apiName = $customField->api_name;
             $value = $customField->value;
-            $data_type = $customField->data_type;
+            // $data_type = $customField->data_type;
+            if(is_array($customField)) {
+                $apiName = $customField['api_name'];
+                $value = $customField['value'];
+            }
 
             // Check if the Zoho API is a multiline type
-            if (!empty($value) && $data_type == 'multiline') {
+            if (!empty($value)) {
                 // Check if ACF function exists
                 if (function_exists('update_field')) {
                     update_field($apiName, $value, $pdt_id);

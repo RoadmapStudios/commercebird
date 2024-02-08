@@ -334,7 +334,7 @@ class ProductWebhook
                 $sale_price = get_post_meta($pdt_id, '_sale_price', true);
                 $simple_product->set_regular_price($item_price);
                 if (empty($sale_price) ) {
-                    $simple_product->update_meta_data('_price', $item_price);
+                    $simple_product->set_price($item_price);
                 }
 
                 // description
