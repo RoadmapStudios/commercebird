@@ -1,3 +1,9 @@
+Version 2.1.2 - Februari 8 2024
+* New: item custom fields via webhook sync
+* Improvement: order with bundle item will now skip its child items
+* Fix: duplication of images import
+* Fix: description will be imported as short description
+
 Version 2.1.1 - Februari 2nd 2024
 * Tweak: restored Item's custom fields in cron
 * Improvement: purge action scheduler log after a week
