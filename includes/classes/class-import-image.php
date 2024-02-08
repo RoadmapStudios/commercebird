@@ -171,43 +171,41 @@ class ImageClass
         return;
     }
 
-    /**
-     * Compare the image with existing media library images based on titles.
-     *
-     * @param string $imagePath The path to the image to be checked.
-     * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
-     * @since 1.0.0
-     */
-    protected function compareImageWithMediaLibrary($imagePath)
-    {
-        // Get the title of the image you want to check
-        $compareImageTitle = sanitize_file_name(pathinfo($imagePath, PATHINFO_FILENAME));
+/**
+ * Compare the image with existing media library images based on titles.
+ *
+ * @param string $imagePath The path to the image to be checked.
+ * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
+ * @since 1.0.0
+ */
+protected function compareImageWithMediaLibrary($imagePath)
+{
+    // Get the title of the image you want to check
+    $compareImageTitle = sanitize_file_name(pathinfo($imagePath, PATHINFO_FILENAME));
 
-        if (!empty($compareImageTitle)) {
-            $args = array(
-                'post_type' => 'attachment',
-                'post_mime_type' => 'image',
-                'posts_per_page' => -1,
-            );
-            $mediaLibraryImages = get_posts($args);
+    if (!empty($compareImageTitle)) {
+        $args = array(
+            'post_type' => 'attachment',
+            'post_mime_type' => 'image',
+            'posts_per_page' => -1,
+        );
+        $mediaLibraryImages = get_posts($args);
 
-            foreach ($mediaLibraryImages as $mediaImage) {
-                // Get the title of the existing image
-                $existingImagePath = get_attached_file($mediaImage->ID);
-                $existingImageTitle = get_the_title(pathinfo($existingImagePath)['filename']);
+        foreach ($mediaLibraryImages as $mediaImage) {
+            // Get the title of the existing image
+            $existingImagePath = get_attached_file($mediaImage->ID);
+            $existingImageTitle = get_the_title(pathinfo($existingImagePath)['filename']);
 
-                // Compare the titles
-                if ($compareImageTitle === $existingImageTitle) {
-
-                    return $mediaImage->ID; // Return the ID of the existing image
-                } else {
-                    return false;
-                }
+            // Compare the titles
+            if ($compareImageTitle === $existingImageTitle) {
+                return $mediaImage->ID; // Return the ID of the existing image
             }
-        } else {
-            return false;
         }
     }
+
+    // If no match is found in the loop, return false
+    return false;
+}
 
     /**
      * Get image file extension from mimetype
