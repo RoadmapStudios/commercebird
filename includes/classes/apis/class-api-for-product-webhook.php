@@ -340,7 +340,7 @@ class ProductWebhook
                 // description
                 $zi_disable_itemdescription_sync = get_option('zoho_disable_itemdescription_sync_status');
                 if (! empty($item_description) && 'true' !== $zi_disable_itemdescription_sync ) {
-                    $simple_product->set_description($item_description);
+                    $simple_product->set_short_description($item_description);
                 }
 
                 // Tags

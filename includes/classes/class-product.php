@@ -862,7 +862,7 @@ class ProductClass
             $product->set_status($status);
             $product->set_name($item['name']);
             $product->set_regular_price($item['rate']);
-            $product->set_description($item['description']);
+            $product->set_short_description($item['description']);
             $product->set_sku($item['sku']);
 
             // Set the stock management properties
