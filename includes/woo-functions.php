@@ -572,7 +572,7 @@ function cm_skip_webhook_delivery($should_deliver, $webhook, $arg)
         $order_status = $order->get_status();
         // fwrite($fd, PHP_EOL . '$order_status : ' . $order_status);
 
-        if (!in_array($order_status, array('refunded', 'cancelled', 'processing', 'completed'))) {
+        if (in_array($order_status, array('failed', 'pending'))) {
             // fwrite($fd, PHP_EOL . 'Skipping webhook delivery for order ' . $arg);
             return false; // Skip webhook delivery for this order
         }
