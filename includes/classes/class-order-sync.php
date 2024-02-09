@@ -27,10 +27,7 @@ class Sync_Order_Class
     {
         $args = func_get_args();
         $order_id = $args[0];
-        if(!get_option('zoho_inventory_access_token')) {
-            return;
-        }
-        if (!$order_id) {
+        if(!get_option('zoho_inventory_access_token') || !$order_id) {
             return;
         }
         $this->zi_order_sync($order_id);
@@ -87,10 +84,12 @@ class Sync_Order_Class
      */
     public function zi_sync_customer_checkout($order_id)
     {
+        // $fd = fopen(__DIR__ . '/zi_sync_customer_checkout.txt', 'w+');
+
         $order = wc_get_order($order_id);
         $userid = $order->get_user_id();
-        $user_company = get_user_meta($userid, 'billing_company', true);
-        $user_email = get_user_meta($userid, 'billing_email', true);
+        $user_company = $order->get_billing_company();
+        $user_email = $order->get_billing_email();
         $zi_customer_id = get_user_meta($userid, 'zi_contact_id', true);
 
         // Get currency code of the order
@@ -131,7 +130,7 @@ class Sync_Order_Class
             // First check based on customer email address
             $zoho_inventory_oid = get_option('zoho_inventory_oid');
             $zoho_inventory_url = get_option('zoho_inventory_url');
-            // fwrite($fd,PHP_EOL.'$zi_customer_id : '.$user_email);
+            // fwrite($fd,PHP_EOL.'$user_mail : '.$user_email);
             $url = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
 
             $executeCurlCallHandle = new ExecutecallClass();
@@ -140,8 +139,8 @@ class Sync_Order_Class
             $code = $json->code;
             $message = $json->message;
             if ($code == 0 || $code == '0') {
+                // fwrite($fd, PHP_EOL . 'customer_json: ' . print_r($json, true));
                 if (empty($json->contacts)) {
-
                     // Second check based on Company Name
                     if ($user_company) {
                         $company_name = str_replace(" ", "%20", $user_company);
@@ -227,6 +226,7 @@ class Sync_Order_Class
                 }
             }
         }
+        // fclose($fd);
     }
 
     /**
