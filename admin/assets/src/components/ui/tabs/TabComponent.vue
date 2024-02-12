@@ -5,7 +5,7 @@
         class="absolute inset-0 z-10"
         @click.prevent="handleClick"
     ></div>
-    <div class="overflow-hidden bg-white rounded-lg shadow">
+    <div class="bg-white rounded-lg shadow">
       <div
           class="divide-y divide-gray-200 xl:grid xl:grid-cols-12 xl:divide-y-0 xl:divide-x"
       >

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CurrencyDollarIcon, LinkIcon, ShoppingBagIcon, UsersIcon } from "@heroicons/vue/24/outline";
+import { CurrencyDollarIcon, LinkIcon, ShoppingBagIcon, UsersIcon, TruckIcon } from "@heroicons/vue/24/outline";
 import { onBeforeMount } from "vue";
 import { useExactOnlineStore } from "@/stores/exactOnline";
 import TabComponent from "@/components/ui/tabs/TabComponent.vue";
@@ -10,6 +10,7 @@ import RequiredNotice from "@/components/ui/RequiredNotice.vue";
 import { acf_enabled } from "@/composable/helpers";
 import Cost from "@/components/forms/exact-online/Cost.vue";
 import Customer from "@/components/forms/exact-online/Customer.vue";
+import Order from "@/components/forms/exact-online/Order.vue";
 
 const store = useExactOnlineStore()
 
@@ -17,6 +18,7 @@ const store = useExactOnlineStore()
 const tabs = {
   connect: { title: "Connect", component: Connect, icon: LinkIcon },
   product: { title: "Products", component: Product, icon: ShoppingBagIcon },
+  order: { title: "Orders", component: Order, icon: TruckIcon },
   customers: { title: "Customers", component: Customer, icon: UsersIcon },
   cost_center_unit: { title: "Cost Centers/Units", component: Cost, icon: CurrencyDollarIcon },
 };

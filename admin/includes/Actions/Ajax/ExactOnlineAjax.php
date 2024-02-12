@@ -20,6 +20,7 @@ final class ExactOnlineAjax {
 		'product'  => array(
 			'importProducts',
 		),
+		'order'    => array( 'range' ),
 		'customer' => array(
 			'importCustomers',
 		),
@@ -32,6 +33,7 @@ final class ExactOnlineAjax {
 		'import_exact_online_product'   => 'product_import',
 		'map_exact_online_product'      => 'product_map',
 		'map_exact_online_customer'     => 'customer_map',
+		'save_exact_online_order'       => 'order_save',
 	);
 	private const OPTIONS = array(
 		'connect'     => array(
@@ -41,7 +43,11 @@ final class ExactOnlineAjax {
 		'cost_unit'   => 'commercebird-exact-online-cost-unit',
 	);
 
-
+	public function order_save() {
+		$this->verify( self::FORMS['order'] );
+		$this->response['data'] = $this->data['range'];
+		$this->serve();
+	}
 
 	public function product_map() {
 		$this->verify( self::FORMS['product'] );

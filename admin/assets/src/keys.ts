@@ -24,6 +24,7 @@ export const storeKey: StoreKey = {
     exactOnline: {
         connect: 'exactOnline_connect',
         product: 'exactOnline_product',
+        order: 'exactOnline_order',
         customer: 'exactOnline_customer',
         cost_center: 'exactOnline_cost_center',
         cost_unit: 'exactOnline_cost_unit',
@@ -44,6 +45,9 @@ export const backendAction: BackendAction = {
         },
         customer: {
             map: 'map_exact_online_customer'
+        },
+        order: {
+            save: 'save_exact_online_order'
         },
         cost_center: {
             get: 'get_exact_online_cost_center',

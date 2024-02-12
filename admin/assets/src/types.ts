@@ -93,6 +93,7 @@ export type StoreKey = {
         cost_unit: string;
         customer: string;
         product: string;
+        order: string;
     };
 
     zohoInventory: {
@@ -121,6 +122,7 @@ export type BackendAction = {
         connect: { get: string; save: string; reset: string; };
         product: { map: string}
         customer: { map: string };
+        order: { save: string };
         cost_center: { get: string; save: string; reset: string; };
         cost_unit: { get: string; save: string; reset: string; };
     };
