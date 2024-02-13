@@ -33,7 +33,8 @@ final class ExactOnlineAjax {
 		'import_exact_online_product'   => 'product_import',
 		'map_exact_online_product'      => 'product_map',
 		'map_exact_online_customer'     => 'customer_map',
-		'save_exact_online_order'       => 'order_save',
+		'map_exact_online_order'        => 'order_map',
+		'export_exact_online_order'     => 'order_export',
 	);
 	private const OPTIONS = array(
 		'connect'     => array(
@@ -43,9 +44,23 @@ final class ExactOnlineAjax {
 		'cost_unit'   => 'commercebird-exact-online-cost-unit',
 	);
 
-	public function order_save() {
+	public function order_map() {
 		$this->verify( self::FORMS['order'] );
-		$this->response['data'] = $this->data['range'];
+		if ( empty( $this->data ) || empty( $this->data['range'] ) ) {
+			$this->response['success'] = false;
+			$this->response['message'] = __( 'Select dates', 'commercebird' );
+			$this->serve();
+		}
+		$this->response['success'] = true;
+		$this->response['data']    = $this->data['range'];
+		$this->response['message'] = __( 'Mapped', 'commercebird' );
+		$this->serve();
+	}
+
+	public function order_export() {
+		$this->verify();
+		$this->response['success'] = true;
+		$this->response['message'] = __( 'Exported', 'commercebird' );
 		$this->serve();
 	}
 
@@ -56,7 +71,7 @@ final class ExactOnlineAjax {
 		foreach ( $chunked as $chunked_products ) {
 			$id = as_schedule_single_action(
 				time(),
-				'sync_eo_products',
+				'sync_eo',
 				array(
 					'product',
 					wp_json_encode( $chunked_products ),
@@ -76,18 +91,18 @@ final class ExactOnlineAjax {
 		$customers = ( new CommerceBird() )->customer();
 		$chunked   = array_chunk( $customers['customers'], 20 );
 		foreach ( $chunked as $chunked_customers ) {
-			$id = as_schedule_single_action(
-				time(),
-				'sync_eo_customers',
-				array(
-					'customer',
-					wp_json_encode( $chunked_customers ),
-					(bool) $this->data['importCustomers'],
-				)
-			);
-			if ( empty( $id ) ) {
-				break;
-			}
+		 $id = as_schedule_single_action(
+		     time(),
+		     'sync_eo',
+		     array(
+		         'customer',
+		         wp_json_encode( $chunked_customers ),
+		         (bool) $this->data['importCustomers'],
+		     )
+		 );
+		 if ( empty( $id ) ) {
+		     break;
+		 }
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();

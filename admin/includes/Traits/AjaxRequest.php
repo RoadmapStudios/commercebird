@@ -9,13 +9,13 @@ defined( 'RMS_PLUGIN_NAME' ) || exit;
 trait AjaxRequest {
 
 	// Array to store registered AJAX requests
-	private array $request = [];
+	private array $request = array();
 	// Array to store registered AJAX response
-	private array $response = [ 'message' => 'Saved' ];
+	private array $response = array( 'message' => 'Saved' );
 	// Array to store registered AJAX posted data
-	private array $data = [];
+	private array $data = array();
 	// Array to store registered AJAX errors
-	private array $errors = [];
+	private array $errors = array();
 
 	private function load_actions() {
 		foreach ( self::ACTIONS as $action => $handler ) {
@@ -40,10 +40,12 @@ trait AjaxRequest {
 	/**
 	 * Verify AJAX request.
 	 */
-	private function verify( array $keys = [] ): void {
+	private function verify( array $keys = array() ): void {
 		check_ajax_referer( Template::NAME, 'security_token' );
-		$this->response = [];
-		$this->errors   = [];
+		$this->response = array(
+			'success' => true,
+		);
+		$this->errors   = array();
 		$this->request  = array_map( 'sanitize_text_field', $_REQUEST );
 		$contents       = file_get_contents( 'php://input' );
 		$contents       = sanitize_text_field( $contents );
@@ -53,7 +55,7 @@ trait AjaxRequest {
 			if ( ! empty( $data ) ) {
 				$this->data = $data;
 			} else {
-				$this->data = [];
+				$this->data = array();
 			}
 		}
 	}
@@ -76,5 +78,4 @@ trait AjaxRequest {
 	private function action( $action ): string {
 		return sprintf( 'wp_ajax_%s-%s', Template::NAME, $action );
 	}
-
 }

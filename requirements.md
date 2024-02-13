@@ -97,3 +97,17 @@ $product_id = $item->get_product_id();
 
 }
 ```
+
+## Order Sync
+
+Not at home now
+But please add the tab Orders in exact online page
+And with two date fields for date range
+Start Date & End Date
+Those needs to be sent in request body
+It will return the ID and Description (edited)
+Description is the order id (edited)
+Find the order and save it as eo_order_id
+Manish will push the server to live tomorrow morning
+Then we can test and finish it
+Also add one more button called “Export Orders” and connect with a php function. I will write the php logic myself cause I need to make sure it doesn’t overload the server

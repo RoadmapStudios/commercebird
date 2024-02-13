@@ -12,7 +12,7 @@ final class CommerceBird {
 	const COST_UNITS    = 'customs/exact/cost-units';
 	const ITEM          = 'customs/exact/bulk-items';
 	const CUSTOMER      = 'customs/exact/bulk-customers';
-	const API           = 'https://api.commercebird.com';
+		const API       = 'https://api.commercebird.com';
 	const WEBAPP_ORDERS = 'webapp/orders/synced-orders';
 
 	public function cost_centers() {
@@ -30,6 +30,21 @@ final class CommerceBird {
 	public function customer() {
 
 		$response = $this->request( self::CUSTOMER );
+
+		return $response['data'] ?? $response;
+	}
+	/**
+	 * Collect customer or account id
+	 *
+	 * @param array $customer array ( customer_email, company_name )
+	 *
+	 * @return array|WP_Error array ( account_id, company_id )
+	 * @throws WP_Error Invalid customer if empty
+	 */
+	public function order( array $range ) {
+		$start    = $range[0];
+		$end      = $range[1];
+		$response = $this->request( self::ORDER );
 
 		return $response['data'] ?? $response;
 	}

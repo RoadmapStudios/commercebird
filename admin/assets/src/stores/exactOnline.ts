@@ -87,20 +87,7 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    */
   const importProducts = ref(false);
   const mapProducts = async () => {
-    if (loader.isLoading(actionKey.product.map)) return;
-    loader.setLoading(actionKey.product.map);
-    let response = await sendData(
-      actionKey.product.map,
-      { importProducts: importProducts.value },
-      localKey.product
-    );
-    if (response) {
-      Toast.fire({
-        icon: "success",
-        text: response.message
-      });
-    }
-    loader.clearLoading(actionKey.product.map);
+    handleMap(actionKey.product.map, { importProducts: importProducts.value }, localKey.product)
   };
 
   /*
@@ -109,6 +96,12 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    * -----------------------------------------------------------------------------------------------------------------
    */
   const dateRange = ref([]);
+  const mapOrders = async () => {
+   handleMap(actionKey.order.map, { range: dateRange.value}, localKey.order)
+  }
+  const exportOrders = async () => {
+    handleMap(actionKey.order.export, { range: dateRange.value }, localKey.order)    
+  }
   /*
    * -----------------------------------------------------------------------------------------------------------------
    *  Map Customers
@@ -116,27 +109,29 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    */
   const importCustomers = ref(false);
   const mapCustomers = async () => {
-    if (loader.isLoading(actionKey.customer.map)) return;
-    loader.setLoading(actionKey.customer.map);
-    let response = await sendData(
-      actionKey.customer.map,
-      { importCustomers: importCustomers.value },
-      localKey.customer
-    );
-    if (response) {
-      Toast.fire({
-        icon: "success",
-        text: response.message
-      });
-    }
-    loader.clearLoading(actionKey.customer.map);
+    handleMap(actionKey.customer.map, { importCustomers: importCustomers.value }, localKey.customer)
   };
   /*
    * -----------------------------------------------------------------------------------------------------------------
    *  Form Submit
    * -----------------------------------------------------------------------------------------------------------------
    */
+  const handleMap = async (key: string, data: any, storage: string) => {
+    if (loader.isLoading(key)) return;
 
+    loader.setLoading(key);
+
+    let response = await sendData(key, data, storage);
+
+    if (response) {
+      Toast.fire({
+        icon: response.success ? "success" : "error",
+        text: response.message
+      });
+    }
+
+    loader.clearLoading(key);
+  };
   const handleSubmit = async (action: string) => {
     if (loader.isLoading(action)) return;
     loader.setLoading(action);
@@ -149,10 +144,6 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
       case actionKey.connect.save:
         data = connection;
         store = localKey.connect;
-        break;
-      case actionKey.order.save:
-        data = { range: dateRange.value };
-        store = localKey.order;
         break;
       default:
         break;
@@ -208,6 +199,8 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
     importProducts,
     mapProducts,
     dateRange,
+    mapOrders,
+    exportOrders,
     importCustomers,
     mapCustomers,
     handleSubmit,

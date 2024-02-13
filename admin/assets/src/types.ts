@@ -122,7 +122,7 @@ export type BackendAction = {
         connect: { get: string; save: string; reset: string; };
         product: { map: string}
         customer: { map: string };
-        order: { save: string };
+        order: { map: string, export:string };
         cost_center: { get: string; save: string; reset: string; };
         cost_unit: { get: string; save: string; reset: string; };
     };

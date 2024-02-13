@@ -47,7 +47,8 @@ export const backendAction: BackendAction = {
             map: 'map_exact_online_customer'
         },
         order: {
-            save: 'save_exact_online_order'
+            map: 'map_exact_online_order',
+            export: 'export_exact_online_order'
         },
         cost_center: {
             get: 'get_exact_online_cost_center',
