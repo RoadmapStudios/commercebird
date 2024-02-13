@@ -12,6 +12,7 @@ final class CommerceBird {
 	const COST_UNITS    = 'customs/exact/cost-units';
 	const ITEM          = 'customs/exact/bulk-items';
 	const CUSTOMER      = 'customs/exact/bulk-customers';
+	const ORDER         = 'customs/exact/bulk-orders';
 		const API       = 'https://api.commercebird.com';
 	const WEBAPP_ORDERS = 'webapp/orders/synced-orders';
 
@@ -42,12 +43,18 @@ final class CommerceBird {
 	 * @throws WP_Error Invalid customer if empty
 	 */
 	public function order( array $range ) {
-		$start    = $range[0];
-		$end      = $range[1];
-		$response = $this->request( self::ORDER );
+
+		$response = $this->request(
+			self::ORDER,
+			'GET',
+			array(),
+			$range
+		);
 
 		return $response['data'] ?? $response;
 	}
+
+
 
 	/**
 	 * Get item ID by product ID
@@ -83,10 +90,15 @@ final class CommerceBird {
 	/**
 	 * Generate request URL
 	 */
-	private function request( string $endpoint, string $method = 'GET', array $data = array() ) {
-		$token    = ExactOnlineAjax::instance()->get_token();
-		$url      = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
-		$site_url = site_url() === 'http://commercebird.test' ? 'https://dev.wooventory.com' : site_url();
+	private function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
+		$token = ExactOnlineAjax::instance()->get_token();
+		$url   = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
+		if ( ! empty( $params ) ) {
+			$url .= '&' . http_build_query( $params );
+		}
+
+		$site_url = site_url() === 'http://commercebird.test' ? 'https://dev.commercebird.com' : site_url();
+
 		if ( 'POST' === $method ) {
 			$response = wp_remote_post(
 				$url,

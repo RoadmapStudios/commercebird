@@ -51,6 +51,33 @@ final class ExactOnlineAjax {
 			$this->response['message'] = __( 'Select dates', 'commercebird' );
 			$this->serve();
 		}
+		$orders  = ( new CommerceBird() )->order(
+			array(
+				'start_date' => date(
+					'Y-m-d\TH:i:s.000\Z',
+					strtotime( $this->data['range'][0] )
+				),
+				'end_date'   => date(
+					'Y-m-d\TH:i:s.000\Z',
+					strtotime( $this->data['range'][1] )
+				),
+			),
+		);
+		$chunked = array_chunk( $orders['orders'], 20 );
+		foreach ( $chunked as $chunked_order ) {
+			$id = as_schedule_single_action(
+				time(),
+				'sync_eo',
+				array(
+					'orders',
+					wp_json_encode( $chunked_order ),
+					false,
+				)
+			);
+			if ( empty( $id ) ) {
+				break;
+			}
+		}
 		$this->response['success'] = true;
 		$this->response['data']    = $this->data['range'];
 		$this->response['message'] = __( 'Mapped', 'commercebird' );
@@ -58,7 +85,48 @@ final class ExactOnlineAjax {
 	}
 
 	public function order_export() {
-		$this->verify();
+		$this->verify( self::FORMS['order'] );
+		if ( empty( $this->data ) || empty( $this->data['range'] ) ) {
+			$this->response['success'] = false;
+			$this->response['message'] = __( 'Select dates', 'commercebird' );
+			$this->serve();
+		}
+			// Set the date range to last 30 days
+			$start_date = $this->data['range'][0];
+			$end_date   = $this->data['range'][1];
+
+			// Define the order statuses to exclude
+			$exclude_statuses = array( 'failed', 'pending', 'on-hold', 'cancelled' );
+
+			// Query to get orders
+			$orders = wc_get_orders(
+				array(
+					'date_created'   => '>=' . strtotime( $start_date ),
+					'date_created'   => '<=' . strtotime( $end_date ),
+					'status'         => array_diff( wc_get_order_statuses(), $exclude_statuses ),
+					'posts_per_page' => -1,
+				)
+			);
+
+			// Loop through orders and add customer note
+		foreach ( $orders as $order ) {
+			// Check if the note already exists
+			$existing_notes         = $order->get_customer_order_notes();
+			$exact_sync_note_exists = false;
+
+			foreach ( $existing_notes as $note ) {
+				if ( strpos( $note->content, 'Exact sync' ) !== false ) {
+					$exact_sync_note_exists = true;
+					break;
+				}
+			}
+
+			// Add note if it doesn't exist
+			if ( ! $exact_sync_note_exists ) {
+				$order->add_order_note( 'Exact sync', 'customer' );
+			}
+		}
+
 		$this->response['success'] = true;
 		$this->response['message'] = __( 'Exported', 'commercebird' );
 		$this->serve();
@@ -91,18 +159,18 @@ final class ExactOnlineAjax {
 		$customers = ( new CommerceBird() )->customer();
 		$chunked   = array_chunk( $customers['customers'], 20 );
 		foreach ( $chunked as $chunked_customers ) {
-		 $id = as_schedule_single_action(
-		     time(),
-		     'sync_eo',
-		     array(
-		         'customer',
-		         wp_json_encode( $chunked_customers ),
-		         (bool) $this->data['importCustomers'],
-		     )
-		 );
-		 if ( empty( $id ) ) {
-		     break;
-		 }
+			$id = as_schedule_single_action(
+				time(),
+				'sync_eo',
+				array(
+					'customer',
+					wp_json_encode( $chunked_customers ),
+					(bool) $this->data['importCustomers'],
+				)
+			);
+			if ( empty( $id ) ) {
+				break;
+			}
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();

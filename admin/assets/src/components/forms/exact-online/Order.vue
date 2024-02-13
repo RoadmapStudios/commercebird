@@ -18,7 +18,7 @@ const action = backendAction.exactOnline.order;
 <template>
     <div class="pt-4 space-y-4">
         <InputGroup label="Date Range">
-            <vue-tailwind-datepicker v-model="store.dateRange" :formatter="formatter" />
+            <vue-tailwind-datepicker v-model="store.dateRange" :formatter="formatter" as-single use-range />
         </InputGroup>
         <div class="flex gap-4">
             <BaseButton :loading="loader.isLoading(action.map)" @click="store.mapOrders()">

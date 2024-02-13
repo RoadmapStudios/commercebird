@@ -168,6 +168,14 @@ class ExactOnlineSync {
 					update_user_meta( $user_id, 'eo_contact_id', $data['MainContact'] );
 				}
 				break;
+                case 'orders':
+                    $order = wc_get_order( $data['Description'] );
+                    if ( empty( $order ) ) {
+                        break;
+                    }
+                    $order->update_meta_data( 'eo_order_id', $data['OrderID'] );
+                    $order->save();
+                    break;
 			default:
 				break;
 		}
