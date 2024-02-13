@@ -104,6 +104,12 @@ final class ExactOnlineAjax {
 					'date_created'   => '>=' . strtotime( $start_date ),
 					'date_created'   => '<=' . strtotime( $end_date ),
 					'status'         => array_diff( wc_get_order_statuses(), $exclude_statuses ),
+					'meta_query'     => array(
+						array(
+							'key'     => 'eo_order_id', // Meta key to exclude
+							'compare' => 'NOT EXISTS',    // Exclude orders with this meta key
+						),
+					),
 					'posts_per_page' => -1,
 				)
 			);
