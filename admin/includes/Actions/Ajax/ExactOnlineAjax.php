@@ -91,47 +91,35 @@ final class ExactOnlineAjax {
 			$this->response['message'] = __( 'Select dates', 'commercebird' );
 			$this->serve();
 		}
-			// Set the date range to last 30 days
-			$start_date = $this->data['range'][0];
-			$end_date   = $this->data['range'][1];
+		// Set the date range to last 30 days
+		$start_date = strtotime( $this->data['range'][0] );
+		$end_date   = strtotime( $this->data['range'][1] );
 
-			// Define the order statuses to exclude
-			$exclude_statuses = array( 'failed', 'pending', 'on-hold', 'cancelled' );
+		// Define the order statuses to exclude
+		$exclude_statuses = array( 'failed', 'pending', 'on-hold', 'cancelled', 'refunded' );
+		$posts_per_page   = 50;
 
+		$paged = 1;
+		do {
 			// Query to get orders
-			$orders = wc_get_orders(
-				array(
-					'date_created'   => '>=' . strtotime( $start_date ),
-					'date_created'   => '<=' . strtotime( $end_date ),
-					'status'         => array_diff( wc_get_order_statuses(), $exclude_statuses ),
-					'meta_query'     => array(
-						array(
-							'key'     => 'eo_order_id', // Meta key to exclude
-							'compare' => 'NOT EXISTS',    // Exclude orders with this meta key
-						),
-					),
-					'posts_per_page' => -1,
-				)
+			$args   = array(
+				'date_created'   => $start_date . '...' . $end_date,
+				'status'         => array_diff( wc_get_order_statuses(), $exclude_statuses ),
+				'meta_key'       => 'eo_order_id',
+				'meta_compare'   => 'NOT EXISTS',
+				'posts_per_page' => $posts_per_page,
+				'paged'          => $paged,
 			);
+			$orders = wc_get_orders( $args );
 
 			// Loop through orders and add customer note
-		foreach ( $orders as $order ) {
-			// Check if the note already exists
-			$existing_notes         = $order->get_customer_order_notes();
-			$exact_sync_note_exists = false;
-
-			foreach ( $existing_notes as $note ) {
-				if ( strpos( $note->content, 'Exact sync' ) !== false ) {
-					$exact_sync_note_exists = true;
-					break;
-				}
+			foreach ( $orders as $order ) {
+				$order->set_status( $order->get_status() );
+				$order->save();
 			}
 
-			// Add note if it doesn't exist
-			if ( ! $exact_sync_note_exists ) {
-				$order->add_order_note( 'Exact sync', 'customer' );
-			}
-		}
+			++$paged;
+		} while ( ! empty( $orders ) );
 
 		$this->response['success'] = true;
 		$this->response['message'] = __( 'Exported', 'commercebird' );
