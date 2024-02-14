@@ -574,7 +574,12 @@ function cm_skip_webhook_delivery($should_deliver, $webhook, $arg)
 
         if (in_array($order_status, array('failed', 'pending', 'on-hold'))) {
             // fwrite($fd, PHP_EOL . 'Skipping webhook delivery for order ' . $arg);
-            return false; // Skip webhook delivery for this order
+            return false;
+        }
+        $webhook_status = $webhook->get_status();
+        // also return false if webhoook status is disabled or paused
+        if ($webhook_status === 'disabled' || $webhook_status === 'paused') {
+            return false;
         }
     }
     // fclose($fd);
