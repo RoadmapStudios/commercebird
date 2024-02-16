@@ -547,9 +547,11 @@ function cm_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 		// Check if the order status is not "processing" or "completed"
 		$order        = wc_get_order( $arg );
 		$order_status = $order->get_status();
-		// fwrite($fd, PHP_EOL . '$order_status : ' . $order_status);
-
-		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold' ) ) ) {
+		// check if order contains meta eo_order_id
+		if ( $order->get_meta( 'eo_order_id' ) ) {
+			return false;
+		}
+		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
 			// fwrite($fd, PHP_EOL . 'Skipping webhook delivery for order ' . $arg);
 			return false;
 		}
