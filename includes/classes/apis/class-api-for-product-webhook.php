@@ -249,7 +249,7 @@ class ProductWebhook {
 
 				// Prices
 				$variation->set_regular_price( $variation_data['regular_price'] );
-				$variation_sale_price = get_post_meta( $variation_id, '_sale_price', true );
+				$variation_sale_price = $variation->get_sale_price();
 				if ( empty( $variation_sale_price ) ) {
 					$variation->set_price( $variation_data['regular_price'] );
 				}
@@ -278,10 +278,10 @@ class ProductWebhook {
 			}
 			if ( $variation_id ) {
 				// weight & dimensions
-				update_post_meta( $variation_id, '_weight', $weight );
-				update_post_meta( $variation_id, '_length', $length );
-				update_post_meta( $variation_id, '_width', $width );
-				update_post_meta( $variation_id, '_height', $height );
+				$variation->set_weight( $weight );
+				$variation->set_length( $length );
+				$variation->set_width( $width );
+				$variation->set_height( $height );
 			}
 			wc_delete_product_transients( $group_id ); // Clear/refresh cache
 			// end of grouped item creation
@@ -333,7 +333,7 @@ class ProductWebhook {
 				// Update the product SKU
 				$simple_product->set_sku( $item_sku );
 				// price
-				$sale_price = get_post_meta( $pdt_id, '_sale_price', true );
+				$sale_price = $simple_product->get_sale_price();
 				$simple_product->set_regular_price( $item_price );
 				if ( empty( $sale_price ) ) {
 					$simple_product->set_price( $item_price );
@@ -412,16 +412,16 @@ class ProductWebhook {
 						wp_remove_object_terms( $pdt_id, $uncategorized_term->term_id, 'product_cat' );
 					}
 					if ( ! is_wp_error( $term_id ) && isset( $term->term_id ) ) {
-						$existingTerms = wp_get_object_terms( $pdt_id, 'product_cat' );
-						if ( $existingTerms && count( $existingTerms ) > 0 ) {
-							$importClass  = new ImportProductClass();
-							$isTermsExist = $importClass->zi_check_terms_exists( $existingTerms, $term_id );
-							if ( ! $isTermsExist ) {
-								update_post_meta( $pdt_id, 'zi_category_id', $item['category_id'] );
+						$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
+						if ( $existing_terms && count( $existing_terms ) > 0 ) {
+							$import_class  = new ImportProductClass();
+							$is_term_exist = $import_class->zi_check_terms_exists( $existing_terms, $term_id );
+							if ( ! $is_term_exist ) {
+								$simple_product->update_meta_data( 'zi_category_id', $item['category_id'] );
 								wp_add_object_terms( $pdt_id, $term_id, 'product_cat' );
 							}
 						} else {
-							update_post_meta( $pdt_id, 'zi_category_id', $item['category_id'] );
+							$simple_product->update_meta_data( 'zi_category_id', $item['category_id'] );
 							wp_set_object_terms( $pdt_id, $term_id, 'product_cat' );
 						}
 					}
@@ -441,7 +441,7 @@ class ProductWebhook {
 					$simple_product->set_tax_class( $woo_tax_class );
 				}
 				$simple_product->save();
-				wc_delete_product_transients( $pdt_id ); // Clear/refresh cache
+				wc_delete_product_transients( $pdt_id );
 			}
 		}
 		$response = new WP_REST_Response();
