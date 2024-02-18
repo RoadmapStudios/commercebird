@@ -1,3 +1,7 @@
+Version 2.1.4 - Februari 18 2024
+* Fix: webhook sync item status
+* Fix: bulk export orders to Exact Online date range
+
 Version 2.1.3 - Februari 13 2024
 * New: bulk map orders with Exact Online
 * New: bulk export orders to Exact Online
