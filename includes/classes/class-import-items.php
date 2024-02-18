@@ -547,7 +547,7 @@ class ImportProductClass {
 					$attribute_arr  = array();
 
 					$zi_item_id   = $item->item_id;
-					$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = '%s' LIMIT 1", $zi_item_id ) );
+					$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $zi_item_id ) );
 
 					if ( ! empty( $variation_id ) ) {
 						$product      = wc_get_product( $variation_id );
@@ -913,7 +913,7 @@ class ImportProductClass {
 		$item = $item_arr;
 		// Stock mode check
 		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
-		if ( $accounting_stock == 'true' ) {
+		if ( $accounting_stock === 'true' ) {
 			$stock = $item->available_stock;
 		} else {
 			$stock = $item->actual_available_stock;
@@ -927,7 +927,7 @@ class ImportProductClass {
 			// fwrite($fd, PHP_EOL . 'Inside item sync : ' . $item_name);
 			// find parent variable product
 			global $wpdb;
-			$group_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = '%s' LIMIT 1", $groupid ) );
+			$group_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $groupid ) );
 			// fwrite($fd, PHP_EOL . 'Row Data : ' . print_r($row, true));
 			// fwrite($fd, PHP_EOL . 'Row $group_id : ' . $group_id);
 
@@ -951,7 +951,7 @@ class ImportProductClass {
 				wp_set_object_terms( $group_id, $item_brand, 'product_brand' );
 			}
 
-			$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = '%s' LIMIT 1", $item_id ) );
+			$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $item_id ) );
 			if ( $variation_id ) {
 				$variation = new WC_Product_Variation( $variation_id );
 				// SKU - Imported
@@ -974,7 +974,7 @@ class ImportProductClass {
 					$variation->set_stock_status( 'instock' );
 				} else {
 					$variation->set_manage_stock( false );
-                    $variation->set_stock_quantity( $stock_quantity );
+					$variation->set_stock_quantity( $stock_quantity );
 					$stock_status = $variation->backorders_allowed() ? 'onbackorder' : 'outofstock';
 					$variation->set_stock_status( $stock_status );
 				}
@@ -1090,7 +1090,7 @@ class ImportProductClass {
 	 */
 	public function get_product_by_sku( $sku ) {
 		global $wpdb;
-		$product_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku ) );
+		$product_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value=%s LIMIT 1", $sku ) );
 		return $product_id;
 	}
 
@@ -1104,10 +1104,10 @@ class ImportProductClass {
 			foreach ( $json->item_group as $key => $arr ) {
 				// fwrite($fd, PHP_EOL . '$term_id 3 : ' . $term_id);
 
-				if ( $key == 'category_id' ) {
+				if ( $key === 'category_id' ) {
 					$zi_category_id = $arr;
 				}
-				if ( $key == 'category_name' ) {
+				if ( $key === 'category_name' ) {
 					$zi_category_name = $arr;
 				}
 
@@ -1236,19 +1236,19 @@ class ImportProductClass {
 	public function add_bundle_product( $product_id, $bundle_id, $menu_order = 0 ) {
 		global $wpdb;
 		$table        = $wpdb->prefix . 'woocommerce_bundled_items';
-		$bundle_items = $wpdb->get_results( "SELECT * FROM $table WHERE bundle_id = $bundle_id AND product_id = $product_id" );
+		$bundle_items = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %s WHERE bundle_id = %d AND product_id = %d', $table, $bundle_id, $product_id ) );
 
 		if ( count( $bundle_items ) > 0 ) {
-			$wpdb->get_results( "UPDATE $table SET menu_order = $menu_order WHERE product_id = $product_id AND bundle_id = $bundle_id" );
+			$wpdb->get_results( $wpdb->prepare( 'UPDATE %s SET menu_order = %d WHERE product_id = %d AND bundle_id = %d', $table, $menu_order, $product_id, $bundle_id ) );
 			return $bundle_items[0]->bundled_item_id;
 		} else {
-			$wpdb->get_results( "INSERT INTO $table (product_id, bundle_id, menu_order) VALUES ( $product_id, $bundle_id, $menu_order)" );
+			$wpdb->get_results( $wpdb->prepare( 'INSERT INTO $table (product_id, bundle_id, menu_order) VALUES ( %d, %d, %d)', $product_id, $bundle_id, $menu_order ) );
 
-			$bundle_items = $wpdb->get_results( "SELECT * FROM $table WHERE bundle_id = $bundle_id AND product_id = $product_id" );
+			$bundle_items = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM $table WHERE bundle_id = %d AND product_id = %d', $bundle_id, $product_id ) );
 			if ( count( $bundle_items ) > 0 ) {
 				return $bundle_items[0]->bundled_item_id;
 			} else {
-				return false;
+				return null;
 			}
 		}
 	}
@@ -1265,11 +1265,11 @@ class ImportProductClass {
 	public function zi_update_bundle_meta( $bundle_item_id, $key, $value ) {
 		global $wpdb;
 		$table    = $wpdb->prefix . 'woocommerce_bundled_itemmeta';
-		$metadata = $wpdb->get_results( "SELECT * FROM $table WHERE bundled_item_id = $bundle_item_id AND meta_key = '$key'" );
+		$metadata = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM $table WHERE bundled_item_id = %d AND meta_key = %s', $bundle_item_id, $key ) );
 		if ( count( $metadata ) > 0 ) {
-			$wpdb->get_results( "UPDATE $table SET meta_value = '$value' WHERE bundled_item_id = $bundle_item_id AND meta_key = '$key'" );
+			$wpdb->get_results( $wpdb->prepare( 'UPDATE $table SET meta_value = %s WHERE bundled_item_id = %d AND meta_key = %s', $value, $bundle_item_id, $key ) );
 		} else {
-			$wpdb->get_results( "INSERT INTO $table (bundled_item_id, meta_key, meta_value) VALUES ( $bundle_item_id, '$key', '$value')" );
+			$wpdb->get_results( $wpdb->prepare( 'INSERT INTO $table (bundled_item_id, meta_key, meta_value) VALUES ( %d, %s, %s)', $bundle_item_id, $key, $value ) );
 		}
 	}
 
@@ -1489,12 +1489,10 @@ class ImportProductClass {
 								$term_id = $term['term_id'];
 							}
 							if ( $term_id ) {
-								// update_post_meta($com_prod_id, 'zi_category_id', $category);
-								// wp_set_object_terms($com_prod_id, $term_id, 'product_cat');
-								$existingTerms = wp_get_object_terms( $com_prod_id, 'product_cat' );
-								if ( $existingTerms && count( $existingTerms ) > 0 ) {
-									$isTermsExist = $this->zi_check_terms_exists( $existingTerms, $term_id );
-									if ( ! $isTermsExist ) {
+								$existing_terms = wp_get_object_terms( $com_prod_id, 'product_cat' );
+								if ( $existing_terms && count( $existing_terms ) > 0 ) {
+									$is_terms_exist = $this->zi_check_terms_exists( $existing_terms, $term_id );
+									if ( ! $is_terms_exist ) {
 										update_post_meta( $com_prod_id, 'zi_category_id', $category );
 										wp_add_object_terms( $com_prod_id, $term_id, 'product_cat' );
 									}
@@ -1505,8 +1503,8 @@ class ImportProductClass {
 							}
 							// Remove "uncategorized" category if assigned
 							$uncategorized_term = get_term_by( 'slug', 'uncategorized', 'product_cat' );
-							if ( $uncategorized_term && has_term( $uncategorized_term->term_id, 'product_cat', $pdt_id ) ) {
-								wp_remove_object_terms( $pdt_id, $uncategorized_term->term_id, 'product_cat' );
+							if ( $uncategorized_term && has_term( $uncategorized_term->term_id, 'product_cat', $com_prod_id ) ) {
+								wp_remove_object_terms( $com_prod_id, $uncategorized_term->term_id, 'product_cat' );
 							}
 						}
 					}
