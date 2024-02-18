@@ -545,12 +545,12 @@ function cm_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 	$webhook_name_to_exclude = 'CommerceBird Orders';
 	if ( $webhook->get_name() === $webhook_name_to_exclude ) {
 		// Check if the order status is not "processing" or "completed"
-		$order        = wc_get_order( $arg );
-		$order_status = $order->get_status();
+		$order = wc_get_order( $arg );
 		// check if order contains meta eo_order_id
 		if ( $order->get_meta( 'eo_order_id' ) ) {
 			return false;
 		}
+		$order_status = $order->get_status();
 		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
 			// fwrite($fd, PHP_EOL . 'Skipping webhook delivery for order ' . $arg);
 			return false;

@@ -120,7 +120,7 @@ function sync_order_to_zoho_notices() {
 add_filter( 'woocommerce_webhook_payload', 'cm_modify_order_webhook_payload', 10, 4 );
 function cm_modify_order_webhook_payload( $payload, $resource, $resource_id, $id ) {
 	$webhook = wc_get_webhook( $id );
-	if ( $webhook && $webhook->get_name() != 'CommerceBird Orders' ) {
+	if ( $webhook && $webhook->get_name() !== 'CommerceBird Orders' ) {
 		return $payload;
 	}
 
