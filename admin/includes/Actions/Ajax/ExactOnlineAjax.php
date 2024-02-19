@@ -105,8 +105,6 @@ final class ExactOnlineAjax {
 			$args   = array(
 				'date_created'   => $start_date . '...' . $end_date,
 				'status'         => array_diff( wc_get_order_statuses(), $exclude_statuses ),
-				'meta_key'       => 'eo_order_id',
-				'meta_compare'   => 'NOT EXISTS',
 				'posts_per_page' => $posts_per_page,
 				'paged'          => $paged,
 			);
