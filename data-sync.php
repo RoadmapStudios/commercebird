@@ -25,40 +25,16 @@ function error_log_api_email( $subject, $message ) {
 
 	$to = get_bloginfo( 'admin_email' );
 
-	$headers = 'From: ' . $to . "\r\n";
+	$headers  = 'From: ' . $to . "\r\n";
 	$headers .= "MIME-Version: 1.0\r\n";
 	$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-	$messages = '<html><body>';
+	$messages  = '<html><body>';
 	$messages .= '<p>' . $message . '</p>';
 	$messages .= '<p>' . $to . '</p>';
 	$messages .= '</body></html>';
 
 	wp_mail( $to, $subject, $messages, $headers );
-}
-
-/**
- * Background sync all customers to Zoho
- */
-function zoho_all_contacts_api_func() {
-	$args = array(
-		'role__in' => array( 'customer', 'subscriber' ),
-		'number'   => - 1,
-	);
-
-	$user_query = new WP_User_Query( $args );
-	$users      = $user_query->get_results();
-
-	// $bg_process = new WP_Zoho_Background_Process('contact');
-	foreach ( $users as $user ) {
-		// $bg_process->push_to_queue($user);
-	}
-	// $bg_process->save()->dispatch();
-	$response            = array();
-	$response['message'] = 'success';
-	$response['code']    = 200;
-	echo json_encode( $response, true );
-	exit();
 }
 
 /**
@@ -127,9 +103,7 @@ function zoho_ajax_call_variable_item_from_zoho() {
 		$loop_completed = true;
 	}
 
-
-	wp_send_json_success( [ 'message' => 'Items are being imported in background. You can visit other tabs :).' ] );
-
+	wp_send_json_success( array( 'message' => 'Items are being imported in background. You can visit other tabs :).' ) );
 }
 
 
@@ -209,7 +183,7 @@ function zoho_ajax_call_item_from_zoho_func() {
 	}
 
 	// Terminate the AJAX call
-	wp_send_json_success( [ 'message' => 'Items are being imported in background. You can visit other tabs :).' ] );
+	wp_send_json_success( array( 'message' => 'Items are being imported in background. You can visit other tabs :).' ) );
 }
 
 /**
@@ -264,18 +238,6 @@ function zoho_ajax_call_item() {
 	wp_die();
 }
 
-/**
- * Function to be called at contact sync ajax call
- */
-// TODO: refactor to use WC Action Scheduler
-add_action( 'wp_ajax_zoho_ajax_call_contact', 'zoho_ajax_call_contact' );
-add_action( 'wp_ajax_nopriv_zoho_ajax_call_contact', 'zoho_ajax_call_contact' );
-function zoho_ajax_call_contact() {
-	// Function calling for contact sync.
-	zoho_all_contacts_api_func();
-	wp_die();
-}
-
 /* Importing Zoho contact function */
 add_action( 'wp_ajax_import_zoho_contacts', 'zoho_contacts_import' );
 add_action( 'wp_ajax_nopriv_import_zoho_contacts', 'zoho_contacts_import' );
@@ -283,77 +245,22 @@ function zoho_contacts_import( $page = '' ) {
 	if ( empty( $page ) ) {
 		$page = 1;
 	}
+	$data_arr          = (object) array();
+	$data_arr->page    = $page;
+	$existing_schedule = as_has_scheduled_action( 'sync_zi_import_contacts', array( $data_arr ) );
 
 	/* Get Zoho contacts using new contact function */
-	$contact_class = new ContactClass();
-	$res           = $contact_class->Get_Zoho_Contacts( $page );
-
-	if ( $res->message == 'success' ) {
-		//if success and have contacts
-		if ( ! empty( $res->contacts ) ) {
-			foreach ( $res->contacts as $contacts ) {
-				$contact_type   = trim( $contacts->contact_type );
-				$zohocontact_id = $contacts->contact_id;
-				$phone          = $contacts->phone;
-				$company_name   = $contacts->company_name;
-				$first_name     = $contacts->first_name;
-				$last_name      = $contacts->last_name;
-				$email          = trim( $contacts->email );
-				//check if user type is customer
-				if ( ! empty( $email ) && ! empty( $first_name ) && ! empty( $last_name ) ) {
-					if ( $contact_type == 'customer' && ! email_exists( $email ) ) {
-						/* Create Wp User */
-						$userData = array(
-							"user_login"   => $first_name . '.' . $last_name,
-							"display_name" => $first_name . ' ' . $last_name,
-							"user_email"   => $email,
-							"first_name"   => $first_name,
-							"last_name"    => $last_name,
-							"role"         => "customer",
-						);
-						$user_id  = wp_insert_user( $userData );
-						if ( ! is_wp_error( $user_id ) ) {
-							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
-							update_user_meta( $user_id, 'billing_company', $company_name );
-							update_user_meta( $user_id, 'billing_phone', $phone );
-						} else {
-							echo $user_id->get_error_message();
-						}
-					} elseif ( email_exists( $email ) ) {
-						/* Update Wp User if already exist */
-						$user_data = get_user_by( 'email', $email );
-						$user_id   = $user_data->ID;
-						$is_err    = wp_update_user(
-							array(
-								'ID'           => $user_id,
-								"display_name" => $first_name . ' ' . $last_name,
-								'user_email'   => $email,
-								'first_name'   => $first_name,
-								'last_name'    => $last_name,
-							)
-						);
-						if ( ! is_wp_error( $is_err ) ) {
-							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
-							update_user_meta( $user_id, 'billing_company', $company_name );
-							update_user_meta( $user_id, 'billing_phone', $phone );
-						} else {
-							echo $is_err->get_error_message();
-						}
-					}
-				}
-			}
+	// Wrap this via Action Scheduler per page
+	if ( ! $existing_schedule ) {
+		// Schedule the cron job
+		$response = as_schedule_single_action( time(), 'sync_zi_import_contacts', array( $data_arr ) );
+		if ( is_wp_error( $response ) ) {
+			// return error message
+			wp_send_json_error( 'Something went wrong.' );
 		}
-		foreach ( $res->page_context as $key => $has_more ) {
-			if ( $key === 'has_more_page' ) {
-				if ( $has_more ) {
-					$page ++;
-					zoho_contacts_import( $page );
-				}
-			}
-		}
-	} else {
-		return false;
 	}
+	wp_send_json_success();
+	wp_die();
 }
 
 /**
@@ -388,7 +295,7 @@ function zi_sync_composite_item_from_zoho() {
  * @return void
  */
 function send_log_message_to_admin( $sync_logs, $subject, $message ) {
-	$table_root = "<h3>$message</h3>";
+	$table_root  = "<h3>$message</h3>";
 	$table_root .= '<table><thead><tr><th>Action</th><th> Log message</th></tr></thead><tbody>';
 
 	foreach ( $sync_logs as $logs ) {
@@ -524,7 +431,13 @@ function ajax_subcategory_sync_call() {
 	}
 	// Closing of import of category from woo to zoho .
 
-	$categories_terms = get_terms( 'product_cat', array( 'parent' => 0, 'hide_empty' => false ) );
+	$categories_terms = get_terms(
+		'product_cat',
+		array(
+			'parent'     => 0,
+			'hide_empty' => false,
+		)
+	);
 	$log_head         = '---Exporting Sub Category to zoho---';
 	array_push( $response, zi_response_message( '-', '-', $log_head ) );
 	$c = 0;
@@ -532,9 +445,13 @@ function ajax_subcategory_sync_call() {
 
 		foreach ( $categories_terms as $parent_term ) {
 
-			$subcategories_terms = get_terms( 'product_cat', array( 'parent'     => $parent_term->term_id,
-			                                                        'hide_empty' => false
-			) );
+			$subcategories_terms = get_terms(
+				'product_cat',
+				array(
+					'parent'     => $parent_term->term_id,
+					'hide_empty' => false,
+				)
+			);
 
 			if ( $subcategories_terms && count( $subcategories_terms ) > 0 ) {
 
@@ -551,7 +468,7 @@ function ajax_subcategory_sync_call() {
 					} else {
 						array_push( $response, zi_response_message( $zoho_cat_id, 'Sub Category name : "' . $term->name . '" already synced with zoho', $term->term_id ) );
 					}
-					$c ++;
+					++$c;
 				}
 			}
 		}
@@ -616,7 +533,13 @@ function ajax_category_sync_call() {
 		}
 	}
 	// Closing of import of category from woo to zoho .
-	$categories_terms = get_terms( 'product_cat', array( 'parent' => 0, 'hide_empty' => false ) );
+	$categories_terms = get_terms(
+		'product_cat',
+		array(
+			'parent'     => 0,
+			'hide_empty' => false,
+		)
+	);
 	$log_head         = '---Exporting Category to zoho---';
 	array_push( $response, zi_response_message( '-', '-', $log_head ) );
 	if ( $categories_terms && count( $categories_terms ) > 0 ) {
@@ -730,7 +653,7 @@ function subcategories_term_id( $option_value ) {
 	global $wpdb;
 
 	$table_prefix = $wpdb->prefix;
-	$row          = $wpdb->get_row( "select * from " . $table_prefix . "options where option_value = '" . $option_value . "'" );
+	$row          = $wpdb->get_row( 'select * from ' . $table_prefix . "options where option_value = '" . $option_value . "'" );
 
 	if ( ! empty( $row->option_name ) ) {
 

@@ -234,16 +234,18 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 /**
  * Hooks for WC Action Scheduler to import or export products
  */
-$importProductClass = new ImportProductClass();
-$importPricelist    = new ImportPricelistClass();
-$productClass       = new ProductClass();
-$orderClass         = new Sync_Order_Class();
-add_action( 'import_group_items_cron', array( $importProductClass, 'sync_groupitem_recursively' ), 10, 2 );
-add_action( 'import_simple_items_cron', array( $importProductClass, 'sync_item_recursively' ), 10, 2 );
-add_action( 'import_variable_product_cron', array( $importProductClass, 'import_variable_product_variations' ), 10, 2 );
-add_action( 'sync_zi_product_cron', array( $productClass, 'zi_products_prepare_sync' ), 10, 2 );
-add_action( 'sync_zi_pricelist', array( $importPricelist, 'zi_get_pricelist' ), 10, 2 );
-add_action( 'sync_zi_order', array( $orderClass, 'zi_orders_prepare_sync' ), 10, 2 );
+$import_products  = new ImportProductClass();
+$import_pricelist = new ImportPricelistClass();
+$product_class    = new ProductClass();
+$order_class      = new Sync_Order_Class();
+$contact_class    = new ContactClass();
+add_action( 'import_group_items_cron', array( $import_products, 'sync_groupitem_recursively' ), 10, 2 );
+add_action( 'import_simple_items_cron', array( $import_products, 'sync_item_recursively' ), 10, 2 );
+add_action( 'import_variable_product_cron', array( $import_products, 'import_variable_product_variations' ), 10, 2 );
+add_action( 'sync_zi_product_cron', array( $product_class, 'zi_products_prepare_sync' ), 10, 2 );
+add_action( 'sync_zi_pricelist', array( $import_pricelist, 'zi_get_pricelist' ), 10, 2 );
+add_action( 'sync_zi_order', array( $order_class, 'zi_orders_prepare_sync' ), 10, 2 );
+add_action( 'sync_zi_import_contacts', array( $contact_class, 'get_zoho_contacts' ), 10, 2 );
 // Exact Online Hooks
 add_action( 'sync_eo', array( ExactOnlineSync::class, 'sync' ), 10, 3 );
 
