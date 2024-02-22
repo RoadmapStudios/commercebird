@@ -253,12 +253,10 @@ function zoho_contacts_import( $page = '' ) {
 	// Wrap this via Action Scheduler per page
 	if ( ! $existing_schedule ) {
 		// Schedule the cron job
-		$response = as_schedule_single_action( time(), 'sync_zi_import_contacts', array( $data_arr ) );
-		if ( is_wp_error( $response ) ) {
-			// return error message
-			wp_send_json_error( 'Something went wrong.' );
-		}
+		as_schedule_single_action( time(), 'sync_zi_import_contacts', array( $data_arr ) );
 	}
+
+	// send success response to admin and terminate AJAX call.
 	wp_send_json_success();
 	wp_die();
 }

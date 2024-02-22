@@ -518,12 +518,13 @@ class ContactClass {
 					}
 				}
 			}
-			foreach ( $json->page_context as $key => $has_more ) {
-				if ( $key === 'has_more_page' ) {
-					if ( $has_more ) {
-						++$page;
-						zoho_contacts_import( $page );
-					}
+			if ( $json->page_context['has_more_page'] === true ) {
+				++$page;
+				$data_arr          = (object) array();
+				$data_arr->page    = $page;
+				$existing_schedule = as_has_scheduled_action( 'sync_zi_import_contacts', array( $data_arr ) );
+				if ( ! $existing_schedule ) {
+					as_schedule_single_action( time(), 'sync_zi_import_contacts', array( $data_arr ) );
 				}
 			}
 		}
