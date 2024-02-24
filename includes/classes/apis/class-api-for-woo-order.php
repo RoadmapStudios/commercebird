@@ -2,9 +2,7 @@
 
 namespace RMS\API;
 
-use ExecutecallClass;
 use WP_REST_Response;
-use WP_REST_Server;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit();
 
@@ -114,8 +112,9 @@ class CreateOrderWebhook {
 		$order->set_discount_total( $order_data['discount'] );
 		$order->add_item( $shipping );
 		$order->calculate_totals();
+		$order->set_customer_note( $order_data['notes'] );
 		$order->save();
-		$order->update_meta_data( 'zoho_order_id', $order_data['salesorder_id'] );
+		$order->update_meta_data( 'zi_salesorder_id', $order_data['salesorder_id'] );
 		$response->set_data( $order->get_data() );
 		return $response;
 	}
