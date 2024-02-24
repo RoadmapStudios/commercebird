@@ -91,7 +91,7 @@ final class ZohoInventoryAjax {
 		'get_zoho_warehouses'   => 'zoho_warehouses_collect',
 		'get_zoho_prices'       => 'zoho_prices_collect',
 		'get_all_custom_fields' => 'wc_custom_fields_collect',
-		'handle_code'           => 'handle_code'
+		'handle_code'           => 'handle_code',
 	);
 
 	public function __construct() {
@@ -178,43 +178,64 @@ final class ZohoInventoryAjax {
 	 * @return array
 	 */
 	public function get_subscription_data(): array {
-		$data            = array();
-		$subscription_id = get_option( 'zoho_id_status', 0 );
-		if ( $subscription_id ) {
-			$response = wp_safe_remote_get(
-				sprintf( 'https://commercebird.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ),
-				array(
-					'headers' => array(
-						'Accept'        => 'application/json',
-						'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
-					),
-				),
-			);
-			if ( is_wp_error( $response ) ) {
-				$this->errors = array( 'message' => $response->get_error_messages() );
-			} else {
-				$body   = wp_remote_retrieve_body( $response );
-				$decode = json_decode( $body, true );
-				if ( $decode && array_key_exists( 'line_items', $decode ) ) {
-					$data                 = $this->extract_data(
-						$decode,
-						array(
-							'fee_lines',
-							'total',
-							'currency',
-							'next_payment_date_gmt',
-							'needs_payment',
-							'payment_url',
-							'status',
-							'variation_id',
-							'line_items',
-						),
-					);
-					$data['variation_id'] = array_column( $data['line_items'], 'variation_id' );
-					$data['plan']         = array_column( $data['line_items'], 'name' );
-				}
-			}
+		$transient = get_transient( 'zoho_subscription' );
+		if ( ! empty( $transient ) ) {
+			return $transient;
 		}
+
+		$data = $this->get_subscription_data_from_api();
+
+		if ( ! empty( $data ) ) {
+			set_transient( 'zoho_subscription', $data, DAY_IN_SECONDS );
+		}
+
+		return $data;
+	}
+
+	private function get_subscription_data_from_api(): array {
+		$subscription_id = get_option( 'zoho_id_status', 0 );
+		if ( ! $subscription_id ) {
+			return array();
+		}
+
+		$response = wp_safe_remote_get(
+			sprintf( 'https://commercebird.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ),
+			array(
+				'headers' => array(
+					'Accept'        => 'application/json',
+					'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
+				),
+			),
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$this->errors = array( 'message' => $response->get_error_messages() );
+			return array();
+		}
+
+		$body   = wp_remote_retrieve_body( $response );
+		$decode = json_decode( $body, true );
+
+		if ( ! $decode || ! array_key_exists( 'line_items', $decode ) ) {
+			return array();
+		}
+
+		$data                 = $this->extract_data(
+			$decode,
+			array(
+				'fee_lines',
+				'total',
+				'currency',
+				'next_payment_date_gmt',
+				'needs_payment',
+				'payment_url',
+				'status',
+				'variation_id',
+				'line_items',
+			),
+		);
+		$data['variation_id'] = array_column( $data['line_items'], 'variation_id' );
+		$data['plan']         = array_column( $data['line_items'], 'name' );
 
 		return $data;
 	}
@@ -252,6 +273,7 @@ final class ZohoInventoryAjax {
 			$this->verify( self::FORMS['settings'] );
 			if ( $this->data ) {
 				$this->option_status_update( $this->data );
+				delete_transient( 'zoho_subscription' );
 			} else {
 				$this->errors = array(
 					'message' => 'Invalid Inputs',
@@ -502,7 +524,7 @@ final class ZohoInventoryAjax {
 		$categories = get_zoho_item_categories();
 		if ( gettype( $categories ) === 'array' && array_key_exists( 'categories', $categories ) ) {
 			$filtered = wp_list_pluck( $categories['categories'], 'name', 'category_id' );
-			unset( $filtered[ - 1 ] );
+			unset( $filtered[-1] );
 			$this->response = $filtered;
 		}
 		$this->serve();
@@ -521,12 +543,10 @@ final class ZohoInventoryAjax {
 		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );
+		} elseif ( empty( $json ) ) {
+			$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
 		} else {
-			if ( empty( $json ) ) {
-				$this->errors = array( 'message' => "We lost connection with zoho. please refresh page." );
-			} else {
-				$this->response = $json->organizations;
-			}
+			$this->response = $json->organizations;
 		}
 		$this->serve();
 	}
@@ -764,7 +784,7 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		if ( array_key_exists( 'code', $this->request ) ) {
 			$class_functions = new Classfunctions();
-			$code           = $this->request['code'];
+			$code            = $this->request['code'];
 			try {
 				$access_token = $class_functions->GetServiceZIAccessToken( $code );
 				if ( array_key_exists( 'access_token', $access_token ) ) {

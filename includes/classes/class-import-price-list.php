@@ -174,7 +174,7 @@ class ImportPricelistClass {
 					if ( ! is_array( $postmeta_array ) || empty( $postmeta_array ) ) {
 						$postmetaArr = array();
 					}
-					$postmetaArr[] === $metavalue;
+					$postmetaArr[] = $metavalue;
 				}
 				update_post_meta( $post_id, '_role_base_price', $postmeta_array );
 			}

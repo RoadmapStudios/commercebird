@@ -151,18 +151,15 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
             .then((response) => response.json())
             .then((response) => {
                 if (!response) return;
-                const data = response.data;
-                if (data?.success) {
-                    notify.success("Done!");
+                if (response.success){
+                    notify.success(response.data.message)
                     return;
                 } else {
-                    if (data?.message) {
-                        notify.success(data.message);
-                        return;
-                    }
+                    notify.error(response.data.message)
+                    return;
                 }
+                syncResponse.value = response;
 
-                syncResponse.value = data;
             })
             .finally(() => {
                 loader.clearLoading(action);

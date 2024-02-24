@@ -19,13 +19,13 @@ class ProductWebhook {
 
 	use Api;
 
-	private string $endpoint = 'zoho-product';
+	private static string $endpoint = 'zoho-product';
 
 
 	public function __construct() {
 		register_rest_route(
-			$this->namespace,
-			$this->endpoint,
+			self::$namespace,
+			self::$endpoint,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'handle' ),
@@ -365,11 +365,11 @@ class ProductWebhook {
 						// Update stock for simple product
 						$simple_product->set_stock_quantity( number_format( $item_stock, 0, '.', '' ) );
 						if ( $item_stock > 0 ) {
-								// fwrite($fd, PHP_EOL . 'Inside2');
-								$stock_status = 'instock';
-								// Update stock status
-								$simple_product->set_stock_status( $stock_status );
-								wp_set_post_terms( $pdt_id, $stock_status, 'product_visibility', true );
+							// fwrite($fd, PHP_EOL . 'Inside2');
+							$stock_status = 'instock';
+							// Update stock status
+							$simple_product->set_stock_status( $stock_status );
+							wp_set_post_terms( $pdt_id, $stock_status, 'product_visibility', true );
 						} else {
 							// fwrite($fd, PHP_EOL . 'Inside3');
 							$stock_status = $simple_product->backorders_allowed() ? 'onbackorder' : 'outofstock';

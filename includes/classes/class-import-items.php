@@ -99,7 +99,7 @@ class ImportProductClass {
 							$product->set_category_ids( $final_tags );
 						}
 
-						if ( ! empty( $arr->image_document_id ) ) {
+						if ( ! empty( $arr->image_document_id ) && property_exists( $arr, 'image_name' ) ) {
 							$image_class = new ImageClass();
 							$image_class->args_attach_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name, $admin_author_id );
 						}
@@ -206,13 +206,13 @@ class ImportProductClass {
 			$urlitem            = $zoho_inventory_url . 'api/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
 			$execute_curl_call  = new ExecutecallClass();
 			$json               = $execute_curl_call->ExecuteCurlCallGet( $urlitem );
-			$code               = $json->code;
+			$code               = (int) property_exists( $json, 'code' ) ? $json->code : '0';
 
 			global $wpdb;
 
 			/* Response for item sync with sync button. For cron sync blank array will return. */
 			$response_msg = array();
-			if ( $code == '0' || $code == 0 ) {
+			if ( empty( $code ) && property_exists( $json, 'items' ) ) {
 				$item_ids = array();
 				// fwrite($fd, PHP_EOL . 'Items : ' . print_r($json, true));
 				foreach ( $json->items as $arr ) {
@@ -301,20 +301,22 @@ class ImportProductClass {
 						$item_ids[] = $arr->item_id;
 					} // end of wpdb post_id check
 				}
-				$item_id_str = implode( ',', $item_ids );
-				// fwrite($fd, PHP_EOL . 'Before Bulk sync');
-				$item_details_url = "{$zoho_inventory_url}api/v1/itemdetails?item_ids={$item_id_str}&organization_id={$zoho_inventory_oid}";
-				$this->zi_item_bulk_sync( $item_details_url );
+				if ( ! empty( $item_ids ) ) {
+					$item_id_str = implode( ',', $item_ids );
+					// fwrite($fd, PHP_EOL . 'Before Bulk sync');
+					$item_details_url = "{$zoho_inventory_url}api/v1/itemdetails?item_ids={$item_id_str}&organization_id={$zoho_inventory_oid}";
+					$this->zi_item_bulk_sync( $item_details_url );
 
-				if ( $json->page_context->has_more_page ) {
-					$data['page'] = $page + 1;
-					$this->sync_item_recursively( $data );
-				} else {
-					// If there is no more page to sync last backup page will be starting from 1.
-					// This we have used because in shared hosting only 1000 records are syncing.
-					update_option( 'simple_item_sync_page_cat_id_' . $category, 1 );
+					if ( $json->page_context['has_more_page'] ) {
+						$data['page'] = $page + 1;
+						$this->sync_item_recursively( $data );
+					} else {
+						// If there is no more page to sync last backup page will be starting from 1.
+						// This we have used because in shared hosting only 1000 records are syncing.
+						update_option( 'simple_item_sync_page_cat_id_' . $category, 1 );
+					}
+					array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 				}
-				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
 			// fclose($fd);
 			return $response_msg;
@@ -920,7 +922,7 @@ class ImportProductClass {
 		}
 		$item_id = $item->item_id;
 		// $item_category = $item->category_name;
-		$groupid        = $item->group_id;
+		$groupid        = property_exists( $item, 'group_id' ) ? $item->group_id : 0;
 		$stock_quantity = $stock < 0 ? 0 : $stock;
 		// fwrite($fd, PHP_EOL . 'Before group item sync : ' . $groupid);
 		if ( ! empty( $groupid ) ) {

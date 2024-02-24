@@ -7,9 +7,11 @@ declare global {
     commercebird_admin: PluginObject;
   }
 }
+export const webhooks = window.commercebird_admin.webhooks;
 export const baseurl = window.commercebird_admin.url;
 export const site_url = window.commercebird_admin.site_url;
 export const security_token = window.commercebird_admin.security_token;
+export const api_token = window.commercebird_admin.api_token;
 export const taxEnabled = window.commercebird_admin.wc_tax_enabled === "1";
 export const roles = window.commercebird_admin.roles;
 export const b2b_enabled = window.commercebird_admin.b2b_enabled === "1";

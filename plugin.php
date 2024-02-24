@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: CommerceBird
  * Plugin URI:  https://commercebird.com
@@ -67,9 +66,9 @@ use RMS\Admin\Actions\Ajax\ZohoInventoryAjax;
 use RMS\Admin\Cors;
 use RMS\Admin\Template;
 use RMS\API\ProductWebhook;
+use RMS\API\CreateOrderWebhook;
 use RMS\API\ShippingWebhook;
 use RMS\API\Zoho;
-
 
 /* Check the minimum PHP version on activation hook */
 function woozo_check_plugin_requirements() {
@@ -250,6 +249,9 @@ add_action( 'sync_zi_import_contacts', array( $contact_class, 'get_zoho_contacts
 add_action( 'sync_eo', array( ExactOnlineSync::class, 'sync' ), 10, 3 );
 
 if ( is_admin() ) {
+	if ( ! get_option( 'zi_webhook_password', false ) ) {
+		update_option( 'zi_webhook_password', password_hash( 'commercebird-zi-webhook-token', PASSWORD_BCRYPT ) );
+	}
 	Template::instance();
 	ZohoInventoryAjax::instance();
 	ExactOnlineAjax::instance();
@@ -273,5 +275,6 @@ add_action(
 		new Zoho();
 		new ProductWebhook();
 		new ShippingWebhook();
+		new CreateOrderWebhook();
 	}
 );

@@ -11,13 +11,13 @@ defined( 'RMS_PLUGIN_NAME' ) || exit();
 class ShippingWebhook {
 	use Api;
 
-	private string $endpoint = 'zoho-shipping-status';
+	private static string $endpoint = 'zoho-shipping-status';
 
 
 	public function __construct() {
 		register_rest_route(
-			$this->namespace,
-			$this->endpoint,
+			self::$namespace,
+			self::$endpoint,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'handle' ),
@@ -47,7 +47,7 @@ class ShippingWebhook {
 				array(
 					'meta_key'    => 'zi_salesorder_id',
 					'meta_value'  => $salesorder_id,
-					'numberposts' => - 1,
+					'numberposts' => -1,
 				)
 			);
 			// Loop through the found orders

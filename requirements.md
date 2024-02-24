@@ -1,113 +1,435 @@
 # Requirements for Exact Online
 
-## APIs
+## Order Webhook payload.
 
-`${exact}/mapping/item`,
-`${exact}/mapping/customer`,
-[9:34 AM] customer mapping: send company name + email id
-[9:34 AM] both endpoints need to return the item_id or account_id
-
-```php
-<?php
-
-$request = new HttpRequest();
-$request->setUrl('https://api.commercebird.com/customs/exact/item');
-$request->setMethod(HTTP_METH_POST);
-
-$request->setQueryData([
-  'token' => 'b73da454-a52f-5e02-93af-07a2e6703bdc',
-  'page' => '3'
-]);
-
-$request->setHeaders([
-  'Accept' => '*/*',
-  'zohowooagent' => 'https://dev.wooventory.com',
-  'Content-Type' => 'application/json'
-]);
-
-$request->setBody('{
-  "sku": "hello-manish"
-}');
-
-try {
-  $response = $request->send();
-
-  echo $response->getBody();
-} catch (HttpException $ex) {
-  echo $ex;
+```json
+{
+  "salesorder": {
+    "can_send_in_mail": false,
+    "zcrm_potential_id": "",
+    "discount": 0,
+    "taxes": [
+      {
+        "tax_amount": 0.63,
+        "tax_name": "BTW Laag Exclusief",
+        "tax_amount_formatted": "€0,63"
+      },
+      {
+        "tax_amount": 15.75,
+        "tax_name": "BTW Hoog Exclusief",
+        "tax_amount_formatted": "€15,75"
+      }
+    ],
+    "shipment_date": "",
+    "billing_address": {
+      "zip": "1234 AH",
+      "country": "NL",
+      "country_code": "NL",
+      "address": "Mundian Kalan",
+      "city": "Ludhiana",
+      "phone": "",
+      "attention": "Mukesh Singh",
+      "street2": "",
+      "state": "",
+      "state_code": "",
+      "fax": ""
+    },
+    "total_quantity_formatted": "2,00",
+    "line_items": [
+      {
+        "line_item_id": "69497000005636937",
+        "discount_amount": 0,
+        "item_type": "inventory",
+        "item_type_formatted": "Inventory Items",
+        "discount": 0,
+        "document_id": "",
+        "quantity_cancelled": 0,
+        "image_name": "",
+        "track_serial_number": false,
+        "sales_rate_formatted": "€25,00",
+        "discounts": [],
+        "project_id": "",
+        "product_id": "69497000002680002",
+        "attribute_option_name2": "",
+        "attribute_option_name3": "",
+        "is_fulfillable": 0,
+        "is_returnable": false,
+        "sku": "YKEUK",
+        "pricebook_id": "",
+        "image_type": "",
+        "attribute_name2": "",
+        "attribute_name3": "",
+        "bcy_rate_formatted": "€25,00",
+        "image_document_id": "",
+        "group_name": "25June2021",
+        "attribute_name1": "",
+        "item_total": 25,
+        "tax_id": "69497000002395146",
+        "tags": [],
+        "unit": "pcs",
+        "warehouse_name": "Magazijn",
+        "tax_type": "tax",
+        "name": "25June2021",
+        "track_batch_number": false,
+        "item_sub_total_formatted": "€25,00",
+        "discount_amount_formatted": "€0,00",
+        "bcy_rate": 25,
+        "item_total_formatted": "€25,00",
+        "is_combo_product": false,
+        "quantity_shipped": 0,
+        "quantity_returned": 0,
+        "rate_formatted": "€25,00",
+        "header_id": "",
+        "quantity_invoiced_cancelled": 0,
+        "attribute_option_data3": "",
+        "description": "",
+        "attribute_option_data2": "",
+        "attribute_option_data1": "",
+        "quantity_dropshipped": 0,
+        "item_order": 1,
+        "is_unconfirmed_product": false,
+        "item_sub_total": 25,
+        "variant_id": "69497000002680002",
+        "rate": 25,
+        "custom_field_hash": {},
+        "package_details": {
+          "weight_unit": "g",
+          "length": 120,
+          "width": 300,
+          "weight": 205.58,
+          "dimension_unit": "cm",
+          "height": 400
+        },
+        "quantity_packed": 0,
+        "line_item_type": "goods",
+        "sales_rate": 25,
+        "quantity": 1,
+        "quantity_manuallyfulfilled": 0,
+        "item_id": "69497000002680002",
+        "attribute_option_name1": "",
+        "tax_name": "BTW Hoog Exclusief",
+        "quantity_delivered": 0,
+        "header_name": "",
+        "item_custom_fields": [],
+        "line_item_taxes": [],
+        "is_invoiced": false,
+        "product_type": "goods",
+        "quantity_invoiced": 0,
+        "quantity_backordered": 0,
+        "tax_percentage": 21,
+        "warehouse_id": "69497000000049265"
+      },
+      {
+        "line_item_id": "69497000005636939",
+        "discount_amount": 0,
+        "item_type": "inventory",
+        "item_type_formatted": "Inventory Items",
+        "discount": 0,
+        "document_id": "",
+        "quantity_cancelled": 0,
+        "image_name": "",
+        "track_serial_number": false,
+        "sales_rate_formatted": "€50,00",
+        "discounts": [],
+        "project_id": "",
+        "product_id": "69497000005434032",
+        "attribute_option_name2": "",
+        "attribute_option_name3": "",
+        "is_fulfillable": 0,
+        "is_returnable": false,
+        "sku": "",
+        "pricebook_id": "",
+        "image_type": "",
+        "attribute_name2": "",
+        "attribute_name3": "",
+        "bcy_rate_formatted": "€50,00",
+        "image_document_id": "",
+        "group_name": "Adidas Sneakers",
+        "attribute_name1": "",
+        "item_total": 50,
+        "tax_id": "69497000002395146",
+        "tags": [],
+        "unit": "",
+        "warehouse_name": "Magazijn",
+        "tax_type": "tax",
+        "name": "Adidas Sneakers",
+        "track_batch_number": false,
+        "item_sub_total_formatted": "€50,00",
+        "discount_amount_formatted": "€0,00",
+        "bcy_rate": 50,
+        "item_total_formatted": "€50,00",
+        "is_combo_product": false,
+        "quantity_shipped": 0,
+        "quantity_returned": 0,
+        "rate_formatted": "€50,00",
+        "header_id": "",
+        "quantity_invoiced_cancelled": 0,
+        "attribute_option_data3": "",
+        "description": "",
+        "attribute_option_data2": "",
+        "attribute_option_data1": "",
+        "quantity_dropshipped": 0,
+        "item_order": 2,
+        "is_unconfirmed_product": false,
+        "item_sub_total": 50,
+        "variant_id": "69497000005434032",
+        "rate": 50,
+        "custom_field_hash": {},
+        "package_details": {
+          "weight_unit": "kg",
+          "length": "",
+          "width": "",
+          "weight": "",
+          "dimension_unit": "cm",
+          "height": ""
+        },
+        "quantity_packed": 0,
+        "line_item_type": "goods",
+        "sales_rate": 50,
+        "quantity": 1,
+        "quantity_manuallyfulfilled": 0,
+        "item_id": "69497000005434032",
+        "attribute_option_name1": "",
+        "tax_name": "BTW Hoog Exclusief",
+        "quantity_delivered": 0,
+        "header_name": "",
+        "item_custom_fields": [],
+        "line_item_taxes": [],
+        "is_invoiced": false,
+        "product_type": "goods",
+        "quantity_invoiced": 0,
+        "quantity_backordered": 0,
+        "tax_percentage": 21,
+        "warehouse_id": "69497000000049265"
+      }
+    ],
+    "is_test_order": false,
+    "submitted_by_email": "",
+    "order_status": "confirmed",
+    "invoices": [],
+    "balance": 98.38,
+    "terms": "",
+    "bcy_shipping_charge_tax": 0.63,
+    "created_time_formatted": "23-02-2024 02:29 PM",
+    "total_quantity": 2,
+    "picklists": [],
+    "has_qty_cancelled": false,
+    "sub_total_inclusive_of_tax": 0,
+    "exchange_rate": 1,
+    "approver_id": "",
+    "estimate_id": "",
+    "submitted_date_formatted": "",
+    "contact_person_details": [],
+    "sales_channel": "direct_sales",
+    "merchant_name": "",
+    "shipping_charge_formatted": "€7,00",
+    "status_formatted": "Confirmed",
+    "packages": [],
+    "reference_number": "",
+    "shipping_charge_tax_id": "69497000000038041",
+    "sub_total_exclusive_of_discount": 75,
+    "purchaseorders": [],
+    "shipped_status_formatted": "Pending",
+    "is_dropshipped": false,
+    "has_discount": false,
+    "discount_percent": 0,
+    "page_height": "11.69in",
+    "shipping_charge_tax_name": "BTW Laag Exclusief (9%)",
+    "status": "confirmed",
+    "discount_total": 0,
+    "integration_id": "",
+    "tax_total": 16.38,
+    "invoiced_status": "not_invoiced",
+    "shipped_status": "pending",
+    "adjustment_formatted": "€0,00",
+    "balance_formatted": "€98,38",
+    "payments": [],
+    "salesorder_id": "69497000005636933",
+    "shipping_details": {},
+    "currency_code": "EUR",
+    "page_width": "8.27in",
+    "shipment_date_formatted": "",
+    "refunds": [],
+    "sub_statuses": [],
+    "tax_override_preference": "no_override",
+    "bcy_total": 98.38,
+    "is_adv_tracking_in_package": false,
+    "delivery_method_id": "",
+    "date_formatted": "23-02-2024",
+    "delivery_method": "",
+    "tracking_url": "",
+    "tax_rounding": "entity_level",
+    "adjustment_description": "Adj",
+    "last_modified_time": "2024-02-23T14:29:50+0100",
+    "currency_symbol": "€",
+    "paid_status_formatted": "Unpaid",
+    "discount_type": "item_level",
+    "transaction_rounding_type": "no_rounding",
+    "template_name": "",
+    "roundoff_value": 0,
+    "sales_channel_formatted": "Direct Sales",
+    "salesorder_number": "SO-00549",
+    "has_unconfirmed_line_item": false,
+    "template_id": "69497000000000111",
+    "customer_name": "Chauhan Infotech",
+    "customer_id": "69497000001444133",
+    "roundoff_value_formatted": "€0,00",
+    "total_formatted": "€98,38",
+    "discount_total_formatted": "€0,00",
+    "invoiced_status_formatted": "Not Invoiced",
+    "payment_terms_label": "Due on Receipt",
+    "date": "2024-02-23",
+    "submitted_date": "",
+    "shipping_charges": {
+      "bcy_rate": 7,
+      "item_total_formatted": "€7,00",
+      "bcy_rate_formatted": "€7,00",
+      "rate_formatted": "€7,00",
+      "tax_name": "BTW Laag Exclusief",
+      "description": "Shipping charge",
+      "item_total": 7,
+      "tax_id": "69497000000038041",
+      "tax_total_fcy": 0.63,
+      "rate": 7,
+      "tax_type": "tax",
+      "tax_percentage": 9,
+      "tax_total_fcy_formatted": "€0,63"
+    },
+    "notes": "test",
+    "template_type_formatted": "Standard",
+    "documents": [],
+    "pickup_location_id": "",
+    "source": "Client",
+    "created_by_name": "",
+    "order_status_formatted": "Confirmed",
+    "entity_tags": "",
+    "tds_override_preference": "no_override",
+    "shipping_charge_inclusive_of_tax": 7.63,
+    "last_modified_by_id": "69497000000030001",
+    "contact": {
+      "is_credit_limit_migration_completed": false,
+      "unused_customer_credits_formatted": "€0,00",
+      "credit_limit_formatted": "€0,00",
+      "customer_balance_formatted": "€0,00",
+      "unused_customer_credits": 0,
+      "credit_limit": 0,
+      "customer_balance": 0
+    },
+    "contact_category": "",
+    "template_type": "standard",
+    "color_code": "",
+    "contact_persons": [],
+    "billing_address_id": "69497000001444136",
+    "shipping_charge_tax": 0.63,
+    "created_time": "2024-02-23T14:29:31+0100",
+    "bcy_tax_total": 16.38,
+    "created_date_formatted": "23-02-2024",
+    "shipping_address_id": "69497000001444138",
+    "is_inclusive_tax": false,
+    "custom_fields": [],
+    "salesreturns": [],
+    "price_precision": 2,
+    "bcy_shipping_charge_tax_formatted": "€0,63",
+    "sub_total_inclusive_of_tax_formatted": "€0,00",
+    "submitted_by_photo_url": "",
+    "current_sub_status_formatted": "Confirmed",
+    "so_cycle_preference": {
+      "socycle_status": "not_triggered",
+      "is_feature_enabled": false,
+      "can_create_invoice": false,
+      "invoice_preference": {
+        "mark_as_sent": false,
+        "payment_type": "",
+        "record_payment": false
+      },
+      "can_create_package": false,
+      "socycle_status_formatted": "Not Triggered",
+      "shipment_preference": {
+        "default_carrier": "",
+        "deliver_shipments": false,
+        "send_notification": false
+      },
+      "can_create_shipment": false
+    },
+    "approvers_list": [],
+    "shipping_charge_tax_percentage": 9,
+    "zcrm_potential_name": "",
+    "adjustment": 0,
+    "submitted_by_name": "",
+    "created_by_id": "69497000000030001",
+    "current_sub_status": "confirmed",
+    "offline_created_date_with_time_formatted": "",
+    "is_discount_before_tax": true,
+    "attachment_name": "",
+    "shipping_charge_inclusive_of_tax_formatted": "€7,63",
+    "merchant_id": "",
+    "payment_terms": 0,
+    "is_backordered": false,
+    "shipping_charge_exclusive_of_tax": 7,
+    "sub_total_exclusive_of_discount_formatted": "€75,00",
+    "total": 98.38,
+    "shipping_charge_exclusive_of_tax_formatted": "€7,00",
+    "tax_total_formatted": "€16,38",
+    "creditnotes": [],
+    "current_sub_status_id": "",
+    "custom_field_hash": {},
+    "sub_total_formatted": "€75,00",
+    "shipping_address": {
+      "zip": "1234 AH",
+      "country": "NL",
+      "country_code": "NL",
+      "address": "Mundian Kalan",
+      "city": "Ludhiana",
+      "phone": "",
+      "attention": "",
+      "street2": "",
+      "state": "",
+      "state_code": "",
+      "fax": ""
+    },
+    "bcy_shipping_charge": 7,
+    "can_manually_fulfill": true,
+    "created_by_email": "",
+    "shipping_charge_tax_formatted": "€0,63",
+    "bcy_discount_total": 0,
+    "orientation": "portrait",
+    "shipping_charge_tax_type": "tax",
+    "paid_status": "unpaid",
+    "discount_applied_on_amount": 0,
+    "is_manually_fulfilled": false,
+    "last_modified_time_formatted": "23-02-2024 02:29 PM",
+    "account_identifier": "",
+    "warehouses": [
+      {
+        "zip": "3813SE",
+        "country": "Netherlands",
+        "address": "Koppelweg 226",
+        "is_primary": true,
+        "city": "Amersfoort",
+        "status_formatted": "Active",
+        "warehouse_name": "Magazijn",
+        "phone": "",
+        "sales_channels": [],
+        "state": "Utrecht",
+        "email": "roadmapzoho@gmail.com",
+        "warehouse_id": "69497000000049265",
+        "status": "active"
+      }
+    ],
+    "submitter_id": "",
+    "submitted_by": "",
+    "is_emailed": false,
+    "bcy_sub_total": 75,
+    "offline_created_date_with_time": "",
+    "has_shipping_address": true,
+    "salesperson_name": "Fawad Tiemoerie",
+    "salesperson_id": "69497000000059027",
+    "shipping_charge": 7,
+    "bcy_adjustment": 0,
+    "sub_total": 75,
+    "computation_type": "basic",
+    "created_date": "2024-02-23",
+    "currency_id": "69497000000000071"
+  }
 }
 ```
-
-# Exact Online
-
-## Access App Console (https://app.commercebird.com/integrations)
-
-## Tabs needed:
-
-Connect
-Products
-Customers
-CostCenters/Units
-
-## Once we have the Exact Item ID saved as product meta (key = eo_item_id) > include that meta as order line items meta
-
-```php
-add_action( 'woocommerce_checkout_update_order_meta', 'my_custom_checkout_field_update_order_meta' );
-
-function my_custom_checkout_field_update_order_meta( $order_id ) {
-$order = new WC_Order( $order_id );
-// Get the user ID associated with the order
-$user_id = $order->get_user_id();
-
-    // Check if the order is associated with a user
-    if ($user_id > 0) {
-        // Get the user meta value based on the user ID and meta key
-        $user_meta_value = get_user_meta($user_id, 'eo_account_id', true);
-
-        // Add the user meta as order meta
-        if (!empty($user_meta_value)) {
-            $order->update_meta_data('eo_account_id', $user_meta_value);
-            $order->save();
-        }
-    }
-
-}
-```
-
-## Have updated the above code according to real functions in woocommerce plugin
-
-```php
-// Add eo_item_id as line item meta when order is created
-add_action('woocommerce_new_order_item', 'update_order_item_with_product_meta', 10, 3);
-
-function update_order_item_with_product_meta($item_id, $item, $order_id) {
-// Get the product ID associated with the order item
-$product_id = $item->get_product_id();
-
-    // Check if the product is associated with a product
-    if ($product_id > 0) {
-        // Get the product meta value based on the product ID and meta key
-        $product_meta_value = get_post_meta($product_id, 'eo_item_id', true);
-
-        // Add the product meta as order item meta
-        if (!empty($product_meta_value)) {
-            wc_add_order_item_meta($product_id, 'eo_item_id', $product_meta_value);
-        }
-    }
-
-}
-```
-
-## Order Sync
-
-Not at home now
-But please add the tab Orders in exact online page
-And with two date fields for date range
-Start Date & End Date
-Those needs to be sent in request body
-It will return the ID and Description (edited)
-Description is the order id (edited)
-Find the order and save it as eo_order_id
-Manish will push the server to live tomorrow morning
-Then we can test and finish it
-Also add one more button called “Export Orders” and connect with a php function. I will write the php logic myself cause I need to make sure it doesn’t overload the server

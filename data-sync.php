@@ -64,8 +64,8 @@ function zoho_ajax_call_variable_item_from_zoho() {
 	$last_synced_category_index = get_option( 'last_synced_category_index_groupitems', 0 );
 
 	// Slice the category array to start from the last synced category index
-	$opt_category = array_slice( $opt_category, $last_synced_category_index );
-
+	$opt_category   = array_slice( $opt_category, $last_synced_category_index );
+	$category_index = 0;
 	if ( ! empty( $opt_category ) ) {
 		foreach ( $opt_category as $category_index => $category_id ) {
 			$data_arr = (object) array();
@@ -89,18 +89,15 @@ function zoho_ajax_call_variable_item_from_zoho() {
 			// Update the last synced category index in the options
 			update_option( 'last_synced_category_index_groupitems', $last_synced_category_index + $category_index + 1 );
 		}
-		// Set the loop completion flag to true
-		$loop_completed = true;
-	}
+		// Check if all categories have been imported or passed to the loop
+		$total_categories     = count( $opt_category );
+		$processed_categories = $last_synced_category_index + $category_index + 1;
 
-	// Check if all categories have been imported or passed to the loop
-	$total_categories     = count( $opt_category );
-	$processed_categories = $last_synced_category_index + $category_index + 1;
-
-	if ( $processed_categories >= $total_categories ) {
-		// Reset the last synced category index
-		update_option( 'last_synced_category_index_groupitems', 0 );
-		$loop_completed = true;
+		if ( $processed_categories >= $total_categories ) {
+			// Reset the last synced category index
+			update_option( 'last_synced_category_index_groupitems', 0 );
+			$loop_completed = true;
+		}
 	}
 
 	wp_send_json_success( array( 'message' => 'Items are being imported in background. You can visit other tabs :).' ) );
@@ -117,73 +114,42 @@ add_action( 'zi_execute_import_sync', 'zoho_ajax_call_item_from_zoho_func' );
 add_action( 'wp_ajax_zoho_ajax_call_item_from_zoho', 'zoho_ajax_call_item_from_zoho_func' );
 add_action( 'wp_ajax_nopriv_zoho_ajax_call_item_from_zoho', 'zoho_ajax_call_item_from_zoho_func' );
 function zoho_ajax_call_item_from_zoho_func() {
-	// $fd = fopen(__DIR__ . '/simple_items_from_zoho.txt', 'a+');
-
-	// get category to filter by category
-	$opt_category = get_option( 'zoho_item_category' );
-
-	if ( $opt_category ) {
-		$opt_category = unserialize( $opt_category );
-	} else {
-		$opt_category = array();
-	}
-
-	// fwrite($fd, PHP_EOL . 'opt_category: '. print_r($opt_category, true));
-	// $item_add_resp = array();
-	$loop_completed = false; // Flag to track loop completion
-
-	// Retrieve the last synced category index from the previous run
+	$zoho_item_category         = get_option( 'zoho_item_category' );
 	$last_synced_category_index = get_option( 'last_synced_category_index', 0 );
 
-	// Slice the category array to start from the last synced category index
-	$opt_category = array_slice( $opt_category, $last_synced_category_index );
+	if ( $zoho_item_category ) {
+		$categories = unserialize( $zoho_item_category );
+		$categories = array_slice( $categories, $last_synced_category_index );
+	} else {
+		$categories = array();
+	}
 
-	if ( ! empty( $opt_category ) ) {
-		foreach ( $opt_category as $category_index => $category_id ) {
-			$data_arr = (object) array();
-
-			// get last backed up page number for particular category Id.
-			// And start syncing from last synced page.
-			// If no page number available, it will start from zero.
+	if ( empty( $categories ) ) {
+		wp_send_json_error( array( 'message' => __( 'Please select at least one category from cron tab', 'commercebird' ) ) );
+	} else {
+		foreach ( $categories as $index => $category_id ) {
+			$data             = (object) array();
 			$last_synced_page = get_option( 'simple_item_sync_page_cat_id_' . $category_id );
 
-			$data_arr->page     = $last_synced_page;
-			$data_arr->category = $category_id;
-			$existing_schedule  = as_has_scheduled_action( 'import_simple_items_cron', array( $data_arr ) );
+			$data->page        = $last_synced_page;
+			$data->category    = $category_id;
+			$existing_schedule = as_has_scheduled_action( 'import_simple_items_cron', array( $data ) );
 
-			// Check if the scheduled action exists
 			if ( ! $existing_schedule ) {
-				// Schedule the cron job
-				$response = as_schedule_single_action( time(), 'import_simple_items_cron', array( $data_arr ) );
-				if ( $response !== null ) {
-					// $item_add_resp = array_merge($item_add_resp, $response);
-				}
+				as_schedule_single_action( time(), 'import_simple_items_cron', array( $data ) );
 			}
 
-			// Update the last synced category index in the options
-			update_option( 'last_synced_category_index', $last_synced_category_index + $category_index + 1 );
+			update_option( 'last_synced_category_index', $last_synced_category_index + $index + 1 );
 		}
-		// Set the loop completion flag to true
-		$loop_completed = true;
+
+		$total_categories     = count( $categories );
+		$processed_categories = $last_synced_category_index + $index + 1;
+
+		if ( $processed_categories >= $total_categories ) {
+			update_option( 'last_synced_category_index', 0 );
+		}
 	}
-
-	// Check if all categories have been imported or passed to the loop
-	$total_categories     = count( $opt_category );
-	$processed_categories = $last_synced_category_index + $category_index + 1;
-
-	if ( $processed_categories >= $total_categories ) {
-		// Reset the last synced category index
-		update_option( 'last_synced_category_index', 0 );
-		$loop_completed = true;
-	}
-
-	// Send log message to admin only if the loop completed
-	if ( $loop_completed ) {
-		// send_log_message_to_admin($item_add_resp, 'Log for manual sync of simple item', 'Simple item sync from zoho');
-	}
-
-	// Terminate the AJAX call
-	wp_send_json_success( array( 'message' => 'Items are being imported in background. You can visit other tabs :).' ) );
+	wp_send_json_success( array( 'message' => __( 'Items are being imported in background. You can visit other tabs :).', 'commercebird' ) ) );
 }
 
 /**
@@ -389,21 +355,20 @@ function ajax_subcategory_sync_call() {
 	$response           = array(); // Response array.
 	$zoho_subcategories = get_zoho_item_categories();
 	// Import category from zoho to woocommerce.
-	array_push( $response, zi_response_message( '-', '-', '--- Importing Sub Category from zoho ---' ) );
+	$response[]         = zi_response_message( '-', '-', '--- Importing Sub Category from zoho ---' );
 	$zoho_subcategories = $zoho_subcategories['categories'];
 	//echo '<pre>'; print_r($zoho_categories);
 	foreach ( $zoho_subcategories as $subcategory ) {
 		if ( $subcategory['parent_category_id'] > 0 ) {
 			if ( $subcategory['category_id'] != '-1' && $subcategory['category_id'] > 0 ) {
-				$term    = get_term_by( 'name', $subcategory['name'], 'product_cat' );
-				$term_id = $term->term_id;
+				$term = get_term_by( 'name', $subcategory['name'], 'product_cat' );
 
 				if ( $subcategory['parent_category_id'] > 0 ) {
 
 					$zoho_pid = intval( subcategories_term_id( $subcategory['parent_category_id'] ) );
 				}
 
-				if ( empty( $term_id ) && $zoho_pid > 0 ) {
+				if ( empty( $term ) && $zoho_pid > 0 ) {
 					$child_term = wp_insert_term(
 						$subcategory['name'],
 						'product_cat',
@@ -413,17 +378,20 @@ function ajax_subcategory_sync_call() {
 					);
 					// Check if there is error in creating child category add message.
 					if ( is_wp_error( $child_term ) ) {
-						array_push( $response, zi_response_message( $subcategory['category_id'], $child_term->get_error_message(), '-' ) );
+						$response[] = zi_response_message( $subcategory['category_id'], $child_term->get_error_message(), '-' );
 					} else {
 						$term_id = $child_term['term_id'];
 					}
+				} else {
+
+					$term_id = $term->term_id;
 				}
 
 				if ( $term_id && $zoho_pid > 0 ) {
 					// Update zoho sub category id for term(sub category) of woocommerce.
 					update_option( 'zoho_id_for_term_id_' . $term_id, $subcategory['category_id'] );
 				}
-				array_push( $response, zi_response_message( $subcategory['category_id'], $subcategory['name'], $term_id ) );
+				$response[] = zi_response_message( $subcategory['category_id'], $subcategory['name'], $term_id );
 			}
 		}
 	}
@@ -437,8 +405,8 @@ function ajax_subcategory_sync_call() {
 		)
 	);
 	$log_head         = '---Exporting Sub Category to zoho---';
-	array_push( $response, zi_response_message( '-', '-', $log_head ) );
-	$c = 0;
+	$response[]       = zi_response_message( '-', '-', $log_head );
+	$c                = 0;
 	if ( $categories_terms && count( $categories_terms ) > 0 ) {
 
 		foreach ( $categories_terms as $parent_term ) {
@@ -462,9 +430,9 @@ function ajax_subcategory_sync_call() {
 						$pid         = $zoho_cat_id;
 
 						$addresponse = create_woo_cat_to_zoho( $term->name, $term->term_id, $pid );
-						array_push( $response, $addresponse );
+						$response[]  = $addresponse;
 					} else {
-						array_push( $response, zi_response_message( $zoho_cat_id, 'Sub Category name : "' . $term->name . '" already synced with zoho', $term->term_id ) );
+						$response[] = zi_response_message( $zoho_cat_id, 'Sub Category name : "' . $term->name . '" already synced with zoho', $term->term_id );
 					}
 					++$c;
 				}
@@ -473,7 +441,7 @@ function ajax_subcategory_sync_call() {
 	}
 
 	if ( $c == 0 ) {
-		array_push( $response, zi_response_message( '-', 'Sub Categories not available to export', '-' ) );
+		$response[] = zi_response_message( '-', 'Sub Categories not available to export', '-' );
 	}
 	echo json_encode( $response );
 	exit();
@@ -497,7 +465,7 @@ function ajax_category_sync_call() {
 	$response        = array(); // Response array.
 	$zoho_categories = get_zoho_item_categories();
 	// Import category from zoho to woocommerce.
-	array_push( $response, zi_response_message( '-', '-', '--- Importing Category from zoho ---' ) );
+	$response[] = zi_response_message( '-', '-', '--- Importing Category from zoho ---' );
 
 	$zoho_categories = $zoho_categories['categories'];
 
@@ -506,9 +474,10 @@ function ajax_category_sync_call() {
 		if ( $category['parent_category_id'] == '-1' ) {
 
 			if ( $category['category_id'] != '-1' && $category['category_id'] > 0 ) {
-				$term    = get_term_by( 'name', $category['name'], 'product_cat' );
-				$term_id = $term->term_id;
-				if ( empty( $term_id ) ) {
+				$term = get_term_by( 'name', $category['name'], 'product_cat' );
+				if ( ! empty( $term ) ) {
+					$term_id = $term->term_id;
+				} else {
 					$term = wp_insert_term(
 						$category['name'],
 						'product_cat',
@@ -517,7 +486,7 @@ function ajax_category_sync_call() {
 						)
 					);
 					if ( is_wp_error( $term ) ) {
-						array_push( $response, zi_response_message( $category['category_id'], $term->get_error_message(), '-' ) );
+						$response[] = zi_response_message( $category['category_id'], $term->get_error_message(), '-' );
 					} else {
 						$term_id = $term['term_id'];
 					}
@@ -526,11 +495,11 @@ function ajax_category_sync_call() {
 					// Update zoho category id for term(category) of woocommerce.
 					update_option( 'zoho_id_for_term_id_' . $term_id, $category['category_id'] );
 				}
-				array_push( $response, zi_response_message( $category['category_id'], $category['name'], $term_id ) );
+				$response[] = zi_response_message( $category['category_id'], $category['name'], $term_id );
 			}
 		}
 	}
-	// Closing of import of category from woo to zoho .
+	// Closing of import of category from woo to zoho.
 	$categories_terms = get_terms(
 		'product_cat',
 		array(
@@ -539,7 +508,7 @@ function ajax_category_sync_call() {
 		)
 	);
 	$log_head         = '---Exporting Category to zoho---';
-	array_push( $response, zi_response_message( '-', '-', $log_head ) );
+	$response[]       = zi_response_message( '-', '-', $log_head );
 	if ( $categories_terms && count( $categories_terms ) > 0 ) {
 
 		foreach ( $categories_terms as $term ) {
@@ -547,13 +516,13 @@ function ajax_category_sync_call() {
 			$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $term->term_id );
 			if ( empty( $zoho_cat_id ) ) {
 				$addresponse = create_woo_cat_to_zoho( $term->name, $term->term_id );
-				array_push( $response, $addresponse );
+				$response[]  = $addresponse;
 			} else {
-				array_push( $response, zi_response_message( $zoho_cat_id, 'Category name : "' . $term->name . '" already synced with zoho', $term->term_id ) );
+				$response[] = zi_response_message( $zoho_cat_id, 'Category name : "' . $term->name . '" already synced with zoho', $term->term_id );
 			}
 		}
 	} else {
-		array_push( $response, zi_response_message( '-', 'Categories not available to export', '-' ) );
+		$response[] = zi_response_message( '-', 'Categories not available to export', '-' );
 	}
 	echo json_encode( $response );
 	exit();

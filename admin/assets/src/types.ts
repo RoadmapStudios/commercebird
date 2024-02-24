@@ -4,6 +4,11 @@ export type PluginObject = {
     security_token: string;
     redirect_uri: string;
     url: string;
+    webhooks: {
+        'Items': string,
+        'Order Create': string,
+        'Shipping Status': string
+    }
     wc_tax_enabled: string;
     roles: {
         editor: string;

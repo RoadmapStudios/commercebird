@@ -57,6 +57,10 @@ export const useHomepageStore = defineStore('homepage', () => {
         loader.clearLoading(action)
 
     }
+    const isPremiumSubscription = async () => {
+        if (!subscription.value) await get_subscription();
+        return subscription.value.plan.includes('Wooventory - Premium')
+    }
     const load = async () => {
         await get_settings();
         await get_subscription();
@@ -134,6 +138,8 @@ export const useHomepageStore = defineStore('homepage', () => {
     return {
         save_settings,
         reset_settings,
+        get_subscription,
+        isPremiumSubscription,
         settings,
         subscription,
         changelog,
