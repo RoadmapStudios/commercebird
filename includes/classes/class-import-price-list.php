@@ -7,6 +7,7 @@
 
 class ImportPricelistClass {
 
+	private array $config;
 
 	public function __construct() {
 		$this->config = array(
@@ -17,183 +18,151 @@ class ImportPricelistClass {
 		);
 	}
 
-	/**
-	 * Function to get all Pricelists from Zoho
-	 *
-	 * @return mixed - json result
-	 */
 	public function zi_get_all_pricelist() {
-		// $fd = fopen(__DIR__ . '/zi_get_all_pricelist.txt', 'w+');
+		$in_cache = get_transient( 'zoho_pricelist' );
+		if ( $in_cache ) {
+			return $in_cache;
+		}
 
-		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
-		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$url                = $zoho_inventory_url . 'api/v1/pricebooks?organization_id=' . $zoho_inventory_oid;
-
+		$url                   = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks?organization_id=' . $this->config['ProductZI']['OID'];
 		$executeCurlCallHandle = new ExecutecallClass();
 		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
-		// fwrite($fd, PHP_EOL . 'json: ' . print_r($json, true));
-		$json2 = json_encode( $json );
-		// fclose($fd);
 
-		return json_decode( $json2, true );
+		if ( isset( $json->pricebooks ) ) {
+			set_transient( 'zoho_pricelist', $json->pricebooks, MINUTE_IN_SECONDS );
+			return $json->pricebooks;
+		}
+
+		return array();
 	}
 
-	/**
-	 * Function to get a specific chosen Pricelist from Zoho
-	 *
-	 * @param $pricebook_id - the ID of the chosen pricelist
-	 * @return mixed - json response of the pricelist
-	 */
+
 	public function get_zi_pricelist( $pricebook_id ) {
-		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
-		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$url                = $zoho_inventory_url . 'api/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $zoho_inventory_oid;
-
+		$url                   = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $this->config['ProductZI']['OID'];
 		$executeCurlCallHandle = new ExecutecallClass();
 		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
-		$json2                 = json_encode( $json );
-
-		$data = json_decode( $json2, true );
-		return $data;
+		return json_decode( json_encode( $json ), true );
 	}
 
 	/**
-	 * Function to apply the pricelist
+	 * Apply Zoho price list to products.
 	 *
+	 * @param array $post The post data.
+	 * @return array The updated price lists.
 	 */
-	public function apply_zoho_pricelist( $post ) {
-		// $fd = fopen(__DIR__ . '/apply_zoho_pricelist.txt', 'w+');
-
-		$pricelist_id = $post['zoho_inventory_pricelist'];
-		update_option( 'zoho_pricelist_id', $pricelist_id );
+	public function apply_zoho_pricelist( array $post ): array {
+		$pricelist_id   = $post['zoho_inventory_pricelist'];
 		$data           = $this->get_zi_pricelist( $pricelist_id );
-		$pricebook_type = $data['pricebook']['pricebook_type'];
+		$pricebook_type = isset( $data['pricebook']['pricebook_type'] ) ? $data['pricebook']['pricebook_type'] : '';
 
-		// fwrite($fd, PHP_EOL . 'pricelist: ' . print_r($data, true));
+		update_option( 'zoho_pricelist_id', $pricelist_id );
+
+		$newpricelists = array();
 
 		if ( ! empty( $data ) ) {
-			if ( $pricebook_type == 'fixed_percentage' ) {
-				$percentage       = $data['pricebook']['percentage'];
-				$is_increase      = $data['pricebook']['is_increase'];
-				$query            = new WC_Product_Query(
-					array(
-						'limit'  => -1,
-						'return' => 'ids',
-					)
-				);
-				$ids              = $query->get_products();
-				$percentage_order = '';
-				if ( $is_increase == true ) {
-					$percentage_order = 'percentage_increase';
-				} else {
-					$percentage_order = 'percentage_decrease';
-				}
-				$newpricelists['orderby'] = $percentage_order;
-				foreach ( $ids as $id ) {
-					$zi_item_id = intval( get_post_meta( $id, 'zi_item_id', true ) );
+			if ( $pricebook_type === 'fixed_percentage' ) {
+				$percentage = isset( $data['pricebook']['percentage'] ) ? $data['pricebook']['percentage'] : 0;
+				$products   = wc_get_products( array( 'status' => 'publish' ) );
+
+				foreach ( $products as $product ) {
+					$zi_item_id = intval( get_post_meta( $product->get_id(), 'zi_item_id', true ) );
 					if ( $zi_item_id > 0 ) {
 						$newpricelists['ids'][ $zi_item_id ] = $percentage;
 					}
 				}
+
+				$is_increase              = isset( $data['pricebook']['is_increase'] ) ? $data['pricebook']['is_increase'] : false;
+				$newpricelists['orderby'] = $is_increase ? 'percentage_increase' : 'percentage_decrease';
 			} else {
 				$newpricelists['orderby'] = 'fixed_price';
+
 				foreach ( $data['pricebook']['pricebook_items'] as $itemlist ) {
+					$item_id = isset( $itemlist['item_id'] ) ? $itemlist['item_id'] : 0;
+
 					if ( is_array( $itemlist['price_brackets'] ) && ! empty( $itemlist['price_brackets'] ) ) {
-						$priceBracket                                 = $itemlist['price_brackets'][0];
-						$newpricelists['ids'][ $itemlist['item_id'] ] = array(
-							'start_quantity' => $priceBracket['start_quantity'],
-							'end_quantity'   => $priceBracket['end_quantity'],
-							'pricebook_rate' => $priceBracket['pricebook_rate'],
+						$priceBracket = $itemlist['price_brackets'][0];
+
+						$newpricelists['ids'][ $item_id ] = array(
+							'start_quantity' => isset( $priceBracket['start_quantity'] ) ? $priceBracket['start_quantity'] : 0,
+							'end_quantity'   => isset( $priceBracket['end_quantity'] ) ? $priceBracket['end_quantity'] : 0,
+							'pricebook_rate' => isset( $priceBracket['pricebook_rate'] ) ? $priceBracket['pricebook_rate'] : 0,
 						);
 					} else {
-						$newpricelists['ids'][ $itemlist['item_id'] ] = $itemlist['pricebook_rate'];
+						$newpricelists['ids'][ $item_id ] = isset( $itemlist['pricebook_rate'] ) ? $itemlist['pricebook_rate'] : 0;
 					}
 				}
 			}
 		}
-		// fclose($fd); //end of logging
+
 		return $newpricelists;
 	}
 
 	/**
-	 * Function executed when Save Pricelist Selection is clicked
+	 * Save pricelist function to update prices and discounts for user roles.
 	 *
-	 * @param $post - the
+	 * @param array $post The post data containing user role and price information.
 	 */
-	public function save_pricelist( $post ) {
-		// $fd = fopen(__DIR__ . '/save_pricelist.txt', 'w+');
-
+	public function save_pricelist( array $post ): void {
 		$zoho_pricelists_ids = $this->apply_zoho_pricelist( $post );
 
-		// fwrite($fd, PHP_EOL . 'zoho_pricelists_ids: ' . print_r($zoho_pricelists_ids, true));
-
 		global $wpdb;
-		$array_keys = array_keys( $zoho_pricelists_ids['ids'] );
-		foreach ( $array_keys as $key ) {
-			$zoho_pricelists_price = $zoho_pricelists_ids['ids'][ $key ];
 
-			$post_id                = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = '%s' LIMIT 1", $key ) );
-			$formatted_price        = wc_get_price_decimal_separator();
-			$zoho_pricelists_price2 = str_replace( '.', $formatted_price, $zoho_pricelists_price );
-			if ( $post_id > 0 ) {
-				$postmeta_array = get_post_meta( $post_id, '_role_base_price', true );
+		if ( isset( $zoho_pricelists_ids['ids'] ) && is_array( $zoho_pricelists_ids['ids'] ) ) {
+			foreach ( $zoho_pricelists_ids['ids'] as $key => $zoho_pricelists_price ) {
+				$post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = '%s' LIMIT 1", $key ) );
 
-				$metavalue                  = array(
-					'discount_type' => $zoho_pricelists_ids['orderby'],
-				);
-				$metavalue['discount_type'] = $zoho_pricelists_ids['orderby'];
+				if ( $post_id > 0 ) {
+					$formatted_price = str_replace( '.', wc_get_price_decimal_separator(), $zoho_pricelists_price );
 
-				// Check if the price value is an array
-				if ( is_array( $zoho_pricelists_price2 ) ) {
-					$metavalue['discount_value'] = $zoho_pricelists_price2['pricebook_rate'];
-					$metavalue['min_qty']        = $zoho_pricelists_price2['start_quantity'];
-					$metavalue['max_qty']        = $zoho_pricelists_price2['end_quantity'];
-				} else {
-					$metavalue['discount_value'] = $zoho_pricelists_price2;
-					$metavalue['min_qty']        = '';
-					$metavalue['max_qty']        = '';
-				}
-
-				$metavalue['user_role'] = $post['wp_user_role'];
-
-				$updated = false;
-
-				if ( is_array( $postmeta_array ) && ! empty( $postmeta_array ) ) {
-					foreach ( $postmeta_array as &$postmeta ) {
-						if ( $postmeta['user_role'] === $post['wp_user_role'] ) {
-							$postmeta = $metavalue; // Update the existing meta value
-							$updated  = true;
-							break;
-						}
+					$metavalue = array(
+						'discount_type'  => $zoho_pricelists_ids['orderby'],
+						'user_role'      => $post['wp_user_role'],
+						'discount_value' => is_array( $formatted_price ) ? $formatted_price['pricebook_rate'] : $formatted_price,
+						'min_qty'        => is_array( $formatted_price ) ? $formatted_price['start_quantity'] : '',
+						'max_qty'        => is_array( $formatted_price ) ? $formatted_price['end_quantity'] : '',
+					);
+					if ( class_exists( 'Addify_B2B_Plugin' ) ) {
+						$this->updateRoleBasedPriceForAddify( $post_id, $metavalue, $post['wp_user_role'] );
 					}
 				}
+			}
+		}
+	}
 
-				if ( ! $updated ) {
-					// Append the new meta value if not updated and array has content.
-					// Check if post meta array is empty.
-					if ( ! is_array( $postmeta_array ) || empty( $postmeta_array ) ) {
-						$postmetaArr = array();
-					}
-					$postmetaArr[] = $metavalue;
+	private function updateRoleBasedPriceForAddify( $post_id, $metavalue, $wp_user_role ) {
+		$postmeta_array = get_post_meta( $post_id, '_role_base_price', true );
+		$updated        = false;
+
+		if ( is_array( $postmeta_array ) && ! empty( $postmeta_array ) ) {
+			foreach ( $postmeta_array as &$postmeta ) {
+				if ( $postmeta['user_role'] === $wp_user_role ) {
+					$postmeta = $metavalue; // Update the existing meta value
+					$updated  = true;
+					break;
 				}
-				update_post_meta( $post_id, '_role_base_price', $postmeta_array );
 			}
 		}
 
-		// fclose($fd); // end log
+		if ( ! $updated ) {
+			$postmeta_array[] = $metavalue; // Append the new meta value if not updated
+		}
+
+		update_post_meta( $post_id, '_role_base_price', $postmeta_array );
 	}
 
 	/**
-	 * Function to check if role based price exists
+	 * Checks if a role-based price exists in the given postmeta array.
+	 *
+	 * @param array $postmeta_array The array of postmeta to check.
+	 * @param string $role The role to check for.
+	 * @return bool
 	 */
-	protected function zi_check_role_based_price_exists( $postmeta_array, $role ) {
+	protected function zi_check_role_based_price_exists( array $postmeta_array, string $role ): bool {
 		foreach ( $postmeta_array as $postmeta ) {
 			if ( $postmeta['user_role'] === $role ) {
 				return true;
-			} else {
-				return false;
 			}
 		}
+		return false;
 	}
 }
-$import_pricelist = new ImportPricelistClass();

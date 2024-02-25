@@ -20,6 +20,7 @@ export const fileinfo_enabled =
 export const redirect_uri = window.commercebird_admin.redirect_uri;
 export const acf_enabled = window.commercebird_admin.acf_enabled === "1";
 export const cosw_enabled = window.commercebird_admin.cosw_enabled === "1";
+export const wcb2b_enabled = window.commercebird_admin.wcb2b_enabled === "1";
 export const origin = window.location.origin;
 
 /**

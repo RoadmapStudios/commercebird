@@ -251,7 +251,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         if (instore) {
             zoho_prices.value = instore;
         }
-        const action = actions.price.get;
+        const action = actions.zoho_prices;
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
         zoho_prices.value = await fetchData(

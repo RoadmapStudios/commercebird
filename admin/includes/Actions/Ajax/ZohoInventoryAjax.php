@@ -358,12 +358,13 @@ final class ZohoInventoryAjax {
 	public function price_set(): void {
 		$this->verify( self::FORMS['price'] );
 		try {
-			global $importPricelist;
-			$importPricelist->save_pricelist( $this->data );
+			$import_pricelist = new ImportPricelistClass();
+			$import_pricelist->save_pricelist( $this->data );
 			update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
 			$this->response = array( 'message' => 'saved' );
 		} catch ( Throwable $throwable ) {
-			$this->errors = array( 'message' => 'Something went wrong with zoho!' );
+			$this->errors = array( 'message' => $throwable->getMessage() );
+			error_log( json_encode( $throwable->getTrace(), 128 ) . PHP_EOL, 3, __DIR__ . '/error.log' );
 		}
 
 		$this->serve();
@@ -378,9 +379,7 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$price_list_class = new ImportPricelistClass();
 		$prices           = $price_list_class->zi_get_all_pricelist();
-		if ( gettype( $prices ) === 'array' && array_key_exists( 'pricebooks', $prices ) ) {
-			$this->response = wp_list_pluck( $prices['pricebooks'], 'name', 'pricebook_id' );
-		}
+		$this->response   = wp_list_pluck( $prices, 'name', 'pricebook_id' );
 		$this->serve();
 	}
 

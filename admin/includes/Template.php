@@ -90,6 +90,7 @@ final class Template {
 				'fileinfo_enabled' => extension_loaded( 'fileinfo' ),
 				'acf_enabled'      => class_exists( 'ACF' ),
 				'cosw_enabled'     => in_array( 'custom-order-statuses-woocommerce/custom-order-statuses-for-woocommerce.php', $active_plugins, true ),
+				'wcb2b_enabled'    => class_exists( 'WooCommerceB2B' ),
 				'site_url'         => site_url(),
 			),
 		);

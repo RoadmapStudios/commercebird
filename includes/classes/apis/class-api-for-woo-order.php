@@ -10,7 +10,7 @@ class CreateOrderWebhook {
 
 	use Api;
 
-	private static string $endpoint = 'zoho-woo-order';
+	private static string $endpoint = 'create-woo-order';
 
 
 	public function __construct() {

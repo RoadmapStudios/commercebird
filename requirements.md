@@ -1,5 +1,45 @@
 # Requirements for Exact Online
 
+Task Lists are,
+
+1. ensure the pricelist import also supports this b2b plugin
+   - meta `"outstanding_receivable_amount": 250,`
+   - WooCommerce b2b >. Unpaid amount limit
+   - if above plugin is active > then update the unpaid amount limit with that value
+   ```php
+      if(class_exists(woo-b2b)){
+      update_user_meta( 'unpaid_amount_limit', 250);
+      else {
+        update_user_meta( 'outstanding_receivable_amount', 250);
+      }
+   ```
+   - When percentage > save it in Group but not in product meta
+   - When fixed rate > save it in Group and in product meta (including min_qnt and max_qnt)!
+   - pricebook_id & pricebook_name > save it in group as meta
+1. import customers via cron
+   - The customer import needs to be enabled via a new tab called "Customers"
+   - Sync it only once per day
+1. manage the imported pricelists in the pricelist tab of vue
+1. custom endpoint to receive the Zoho Order and create it as Woo order
+
+Table:
+The Group1 | Retailer Prices
+The Group2 | Wholesale Prices
+7:59
+Creating Woo Order:
+8:00
+check customer based on email > if exists, use that customer_id else > create customer
+8:01
+Product > check if exists via SKU and if it does not exists > check on zi_item_id > else do not create order (edited)
+8:02
+Return message "Item Shoe-XX-123 does not exists in WooCommerce"
+8:04
+include customer_note if it has value
+8:04
+Order statuses "Draft" or "Confirmed"
+Draft = Pending Payment
+Confirmed = Completed
+
 ## Order Webhook payload.
 
 ```json

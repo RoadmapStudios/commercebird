@@ -22,6 +22,7 @@ export type PluginObject = {
     b2b_enabled: string;
     fileinfo_enabled: string;
     acf_enabled: string;
+    wcb2b_enabled: string;
     site_url: string;
 }
 
