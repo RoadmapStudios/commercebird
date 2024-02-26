@@ -24,9 +24,9 @@ class ImportPricelistClass {
 			return $in_cache;
 		}
 
-		$url                   = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks?organization_id=' . $this->config['ProductZI']['OID'];
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
+		$url                      = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks?organization_id=' . $this->config['ProductZI']['OID'];
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 		if ( isset( $json->pricebooks ) ) {
 			set_transient( 'zoho_pricelist', $json->pricebooks, MINUTE_IN_SECONDS );
@@ -38,9 +38,9 @@ class ImportPricelistClass {
 
 
 	public function get_zi_pricelist( $pricebook_id ) {
-		$url                   = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $this->config['ProductZI']['OID'];
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
+		$url                      = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $this->config['ProductZI']['OID'];
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 		return json_decode( json_encode( $json ), true );
 	}
 
@@ -122,14 +122,14 @@ class ImportPricelistClass {
 						'max_qty'        => is_array( $formatted_price ) ? $formatted_price['end_quantity'] : '',
 					);
 					if ( class_exists( 'Addify_B2B_Plugin' ) ) {
-						$this->updateRoleBasedPriceForAddify( $post_id, $metavalue, $post['wp_user_role'] );
+						$this->update_role_based_price_for_addify( $post_id, $metavalue, $post['wp_user_role'] );
 					}
 				}
 			}
 		}
 	}
 
-	private function updateRoleBasedPriceForAddify( $post_id, $metavalue, $wp_user_role ) {
+	private function update_role_based_price_for_addify( $post_id, $metavalue, $wp_user_role ) {
 		$postmeta_array = get_post_meta( $post_id, '_role_base_price', true );
 		$updated        = false;
 
