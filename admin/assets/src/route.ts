@@ -5,6 +5,7 @@ import type { Subscription } from "@/types";
 import ExactOnline from "@/page/ExactOnline.vue";
 import { useStorage } from "@/composable/storage";
 import { storeKey } from "@/keys";
+import ZohoCRM from "./page/ZohoCRM.vue";
 
 const router = createRouter({
   history: createMemoryHistory(
@@ -30,6 +31,27 @@ const router = createRouter({
             subscription.status === "active" &&
             subscription.fee_lines.find(
               (item) => item.name === "ZohoInventory"
+            ) !== undefined &&
+            (subscription.variation_id.includes(18) ||
+              subscription.variation_id.includes(16));
+        }
+        return pass;
+      },
+    },
+    {
+      path: "/zoho-crm",
+      name: "Zoho CRM",
+      component: ZohoCRM,
+      beforeEnter: (to, from) => {
+        let subscription: Subscription = useStorage().get(
+          storeKey.homepage.subscription
+        );
+        let pass = false;
+        if (subscription) {
+          pass =
+            subscription.status === "active" &&
+            subscription.fee_lines.find(
+              (item) => item.name === "ZohoCRM"
             ) !== undefined &&
             (subscription.variation_id.includes(18) ||
               subscription.variation_id.includes(16));

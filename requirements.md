@@ -473,3 +473,11 @@ Confirmed = Completed
   }
 }
 ```
+
+## Duplicate the exact online tab
+
+1. duplicate the exact online tab and name it Zoho CRM
+1. Add connect and orders tab
+
+- orders tab same content but without the import button same date range and same export orders button linked to same function
+- connect tab also same linked to same functions
