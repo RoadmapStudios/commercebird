@@ -59,7 +59,7 @@ export const useHomepageStore = defineStore('homepage', () => {
     }
     const isPremiumSubscription = async () => {
         if (!subscription.value) await get_subscription();
-        return subscription.value.plan.includes('Wooventory - Premium')
+        return subscription.value.plan.includes('Premium')
     }
     const load = async () => {
         await get_settings();

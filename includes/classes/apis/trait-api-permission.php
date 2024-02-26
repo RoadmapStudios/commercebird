@@ -43,7 +43,7 @@ trait Api {
 	public function permission_check( WP_REST_Request $request ) {
 		$authorization = $request->get_header( 'Authorization' );
 		$subscription  = ZohoInventoryAjax::instance()->get_subscription_data();
-		$premium       = isset( $subscription['plan'] ) ? in_array( 'Wooventory - Premium', $subscription['plan'] ) : false;
+		$premium       = isset( $subscription['plan'] ) ? in_array( 'Premium', $subscription['plan'] ) : false;
 		return password_verify( 'commercebird-zi-webhook-token', $authorization ) && $premium;
 	}
 
