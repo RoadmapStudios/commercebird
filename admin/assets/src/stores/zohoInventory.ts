@@ -241,6 +241,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     * -----------------------------------------------------------------------------------------------------------------
     */
     const zoho_prices = ref({});
+    const wcb2b = ref({});
     const price_settings = reactive(<PriceSettings>{
         zoho_inventory_pricelist: '',
         wp_user_role: ''
@@ -361,6 +362,9 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     if (fields.value.length === 0) {
                         fields.value.push({key: "", value: ""});
                     }
+                    break;
+                case actions.price.save:
+                    wcb2b.value = response.wcb2b;
                     break;
                 default:
                     break;
@@ -548,6 +552,9 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 if (response) {
                     price_settings.zoho_inventory_pricelist = response.zoho_inventory_pricelist;
                     price_settings.wp_user_role = response.wp_user_role;
+                    if (response.wcb2b) {
+                        wcb2b.value = response.wcb2b
+                    }
                 }
                 break;
             case "field":
@@ -604,6 +611,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         zoho_warehouses,
         zoho_prices,
         price_settings,
+        wcb2b,
         customFields,
         fields,
         addField,

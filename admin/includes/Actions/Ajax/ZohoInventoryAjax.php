@@ -9,6 +9,7 @@ use RMS\Admin\Template;
 use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
+use RMS\Admin\Traits\LogWriter;
 use Throwable;
 use WC_Tax;
 use WpOrg\Requests\Exception;
@@ -21,6 +22,7 @@ final class ZohoInventoryAjax {
 	use Singleton;
 	use AjaxRequest;
 	use OptionStatus;
+	use LogWriter;
 
 	private const FORMS = array(
 		'settings' => array(
@@ -347,7 +349,10 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$this->response['zoho_inventory_pricelist'] = get_option( 'zoho_pricelist_id' );
 		$this->response['wp_user_role']             = get_option( 'zoho_pricelist_role' );
-
+		if ( class_exists( 'WooCommerceB2B' ) ) {
+			$import_pricelist        = new ImportPricelistClass();
+			$this->response['wcb2b'] = $import_pricelist->wcb2b_synced_groups();
+		}
 		$this->serve();
 	}
 
@@ -359,12 +364,21 @@ final class ZohoInventoryAjax {
 		$this->verify( self::FORMS['price'] );
 		try {
 			$import_pricelist = new ImportPricelistClass();
-			$import_pricelist->save_pricelist( $this->data );
+			$import_pricelist->save_price_list( $this->data );
 			update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
-			$this->response = array( 'message' => 'saved' );
+			$this->response = array( 'message' => 'Saved' );
+			if ( class_exists( 'WooCommerceB2B' ) ) {
+				$this->response['wcb2b'] = $import_pricelist->wcb2b_synced_groups();
+			}
 		} catch ( Throwable $throwable ) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
-			error_log( json_encode( $throwable->getTrace(), 128 ) . PHP_EOL, 3, __DIR__ . '/error.log' );
+			$this->write_log(
+				array(
+					'message' => $throwable->getMessage(),
+					'files'   => wp_list_pluck( $throwable->getTrace(), 'file', 'line' ),
+				),
+				'zoho-ajax-error'
+			);
 		}
 
 		$this->serve();

@@ -6,13 +6,28 @@
       <InputGroup label="Zoho Price List">
         <SelectInput v-model="store.price_settings.zoho_inventory_pricelist" :options="store.zoho_prices" />
       </InputGroup>
-      <InputGroup v-if="Object.keys(roles).length" label="Users Role">
+      <InputGroup v-if="Object.keys(roles).length && b2b_enabled" label="Users Role">
         <SelectInput v-model="store.price_settings.wp_user_role" :options="roles" />
       </InputGroup>
     </BaseForm>
     <div v-else>
       <Alert :message="message" target="_blank" />
     </div>
+    <table class="mt-4">
+      <tr>
+        <td colspan="2">
+          <h1 class="text-xl font-bold">Synced Groups</h1>
+        </td>
+      </tr>
+      <tr v-for="(row, index) in store.wcb2b" :key="index" class="border-b border-gray-300">
+        <td class="p-2 font-medium text-gray-900">
+          {{ row.group_name }}
+        </td>
+        <td class="p-2 font-medium text-gray-600">
+          {{ row.pricebook }}
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
