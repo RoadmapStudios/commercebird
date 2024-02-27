@@ -31,9 +31,7 @@ const router = createRouter({
             subscription.status === "active" &&
             subscription.fee_lines.find(
               (item) => item.name === "ZohoInventory"
-            ) !== undefined &&
-            (subscription.variation_id.includes(18) ||
-              subscription.variation_id.includes(16));
+            ) !== undefined
         }
         return pass;
       },
@@ -52,9 +50,7 @@ const router = createRouter({
             subscription.status === "active" &&
             subscription.fee_lines.find(
               (item) => item.name === "ZohoCRM"
-            ) !== undefined &&
-            (subscription.variation_id.includes(18) ||
-              subscription.variation_id.includes(16));
+            ) !== undefined
         }
         return pass;
       },
@@ -73,9 +69,7 @@ const router = createRouter({
             subscription.status === "active" &&
             subscription.fee_lines.find(
               (item) => item.name === "ExactOnline"
-            ) !== undefined &&
-            (subscription.variation_id.includes(18) ||
-              subscription.variation_id.includes(16));
+            ) !== undefined
         }
         return pass;
       },
