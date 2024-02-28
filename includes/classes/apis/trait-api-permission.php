@@ -79,10 +79,10 @@ trait Api {
 	 */
 	private function write_log( $data ): void {
 		$timestamp = gmdate( 'Y-m-d H:i:s' );
-		$jsonData  = wp_json_encode( $data, JSON_PRETTY_PRINT );
-		$logDir    = __DIR__ . '/' . self::$endpoint . '-webhook.log';
+		$json_data = wp_json_encode( $data, JSON_PRETTY_PRINT );
+		$log_dir   = __DIR__ . '/' . self::$endpoint . '-webhook.log';
 
-		$logMessage = sprintf( '%s - %s %s', $timestamp, $jsonData, PHP_EOL );
-		error_log( $logMessage, 3, $logDir );
+		$log_message = sprintf( '%s - %s %s', $timestamp, $jsonData, PHP_EOL );
+		error_log( $log_message, 3, $log_dir );
 	}
 }
