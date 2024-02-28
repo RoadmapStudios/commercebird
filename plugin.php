@@ -4,21 +4,19 @@
  * Plugin URI:  https://commercebird.com
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
  * Version: 2.1.4
- * Author: CommerceBird
- * Author URI:  https://commercebird.com
  * Requires PHP: 7.4
- * Text Domain: rmsZI
+ *
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
- * @category Fulfillment
- * @package  CommerceBird
- * @author   Fawad Tiemoerie <info@roadmapstudios.com>
- * @license  GNU General Public License v3.0
- * @link     https://commercebird.com
+ * @category  Fulfillment
+ * @package   CommerceBird
+ * @author    Fawad Tiemoerie <info@roadmapstudios.com>
+ * @copyright Copyright (c) 2024, CommerceBird
+ * @license   https://www.gnu.org/licenses/gpl-3.0.html GPL-3.0-or-later
  *
  * WC requires at least: 8.0.0
- * WC tested up to: 8.5.2
+ * WC tested up to: 8.6.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
