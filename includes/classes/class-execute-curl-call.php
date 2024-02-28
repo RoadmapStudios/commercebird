@@ -33,36 +33,39 @@ class ExecutecallClass {
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
 		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
-		$current_time = strtotime( date( 'Y-m-d H:i:s' ) );
+		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respoAtJs = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
-			if ( empty( $respoAtJs ) || ! array_key_exists( 'access_token', $respoAtJs ) ) {
+			$respo_at_js = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			if ( empty( $respo_at_js ) || ! array_key_exists( 'access_token', $respo_at_js ) ) {
 				return new WP_Error( 403, 'Access denied!' );
 			}
-			$zoho_inventory_access_token = $respoAtJs['access_token'];
-			update_option( 'zoho_inventory_access_token', $respoAtJs['access_token'] );
-			update_option( 'zoho_inventory_timestamp', strtotime( date( 'Y-m-d H:i:s' ) ) + $respoAtJs['expires_in'] );
+			$zoho_inventory_access_token = $respo_at_js['access_token'];
+			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
+			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 
 		}
 
-		$curl = curl_init();
-		curl_setopt_array(
-			$curl,
-			array(
-				CURLOPT_URL            => $url,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_CUSTOMREQUEST  => 'GET',
-				CURLOPT_HTTPHEADER     => array(
-					'Authorization: Bearer ' . $zoho_inventory_access_token,
-				),
-			)
+		$args     = array(
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
+			),
 		);
-		$response = curl_exec( $curl );
-		curl_close( $curl );
+		$response = wp_remote_get( $url, $args );
 
-		return json_decode( $response );
+		// Check if the request was successful
+		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+			// If successful, get the body of the response
+			$body = wp_remote_retrieve_body( $response );
+
+			// Decode JSON response
+			return json_decode( $body );
+		} else {
+			// If there was an error, handle it
+			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
+			return 'Error: ' . $error_message;
+		}
 	}
 
 	// Post Call Zoho
@@ -75,37 +78,36 @@ class ExecutecallClass {
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
 		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
-		$current_time = strtotime( date( 'Y-m-d H:i:s' ) );
+		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respoAtJs = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
 
-			$zoho_inventory_access_token = $respoAtJs['access_token'];
-			update_option( 'zoho_inventory_access_token', $respoAtJs['access_token'] );
-			update_option( 'zoho_inventory_timestamp', strtotime( date( 'Y-m-d H:i:s' ) ) + $respoAtJs['expires_in'] );
+			$zoho_inventory_access_token = $respo_at_js['access_token'];
+			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
+			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 
 		}
 
-		$curl = curl_init( $url );
-		curl_setopt_array(
-			$curl,
-			array(
-				CURLOPT_POST           => 1,
-				CURLOPT_POSTFIELDS     => $data,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_HTTPHEADER     => array(
-					'Authorization: Bearer ' . $zoho_inventory_access_token,
-				),
+		$args     = array(
+			'body'    => $data,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
 			),
 		);
-
-		$response = curl_exec( $curl );
-		curl_close( $curl );
-
-		$json = json_decode( $response );
-
-		return $json;
+		$response = wp_remote_post( $url, $args );
+		// Check if the request was successful
+		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+			// If successful, get the body of the response
+			$body = wp_remote_retrieve_body( $response );
+			// Decode JSON response
+			return json_decode( $body );
+		} else {
+			// If there was an error, handle it
+			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
+			return 'Error: ' . $error_message;
+		}
 	}
 
 	// Put Call Zoho
@@ -118,37 +120,39 @@ class ExecutecallClass {
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
 		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
-		$current_time = strtotime( date( 'Y-m-d H:i:s' ) );
+		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respoAtJs                   = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
-			$zoho_inventory_access_token = $respoAtJs['access_token'];
-			update_option( 'zoho_inventory_access_token', $respoAtJs['access_token'] );
-			update_option( 'zoho_inventory_timestamp', strtotime( date( 'Y-m-d H:i:s' ) ) + $respoAtJs['expires_in'] );
+			$respo_at_js                 = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			$zoho_inventory_access_token = $respo_at_js['access_token'];
+			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
+			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 		}
 
-		$curl = curl_init( $url );
-		curl_setopt_array(
-			$curl,
-			array(
-				CURLOPT_POSTFIELDS     => $data,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_HTTPHEADER     => array(
-					'Authorization: Bearer ' . $zoho_inventory_access_token,
-				),
-
+		$args     = array(
+			'body'    => $data,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
 			),
+			'method'  => 'PUT',
 		);
-		curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, 'PUT' );
-		$response = curl_exec( $curl );
-		$json     = json_decode( $response );
-
-		return $json;
+		$response = wp_remote_request( $url, $args );
+		// Check if the request was successful
+		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+			// If successful, get the body of the response
+			$body = wp_remote_retrieve_body( $response );
+			// Decode JSON response
+			return json_decode( $body );
+		} else {
+			// If there was an error, handle it
+			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
+			return 'Error: ' . $error_message;
+		}
 	}
 
 	/**
-	 * 
+	 *
 	 * Get Call Zoho Image
 	 * @param mixed $url
 	 * @param mixed $image_name
@@ -162,52 +166,52 @@ class ExecutecallClass {
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
 		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
-		$current_time = strtotime( date( 'Y-m-d H:i:s' ) );
+		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respoAtJs = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
 
-			$zoho_inventory_access_token = $respoAtJs['access_token'];
-			update_option( 'zoho_inventory_access_token', $respoAtJs['access_token'] );
-			update_option( 'zoho_inventory_timestamp', strtotime( date( 'Y-m-d H:i:s' ) ) + $respoAtJs['expires_in'] );
+			$zoho_inventory_access_token = $respo_at_js['access_token'];
+			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
+			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 
 		}
-
-		$curl = curl_init();
-		curl_setopt_array(
-			$curl,
-			array(
-				CURLOPT_URL            => $url,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_ENCODING       => '',
-				CURLOPT_MAXREDIRS      => 10,
-				CURLOPT_TIMEOUT        => 0,
-				CURLOPT_FOLLOWLOCATION => true,
-				CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-				CURLOPT_CUSTOMREQUEST  => 'GET',
-				CURLOPT_HTTPHEADER     => array(
-					'Authorization: Bearer ' . $zoho_inventory_access_token,
-				),
-			)
+		$args     = array(
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
+			),
 		);
-		$response = curl_exec( $curl );
-		curl_close( $curl );
+		$response = wp_remote_get( $url, $args );
 
-		$upload               = wp_upload_dir();
-		$absolute_upload_path = $upload['basedir'] . '/zoho_image/';
-		$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
+		// Check if the request was successful
+		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+			// If successful, get the body of the response
+			$body = wp_remote_retrieve_body( $response );
 
-		$img = 'image_' . rand() . '_' . $image_name;
-		$upload_dir = $absolute_upload_path . '/' . $img;
+			// Set up the upload directory
+			$upload               = wp_upload_dir();
+			$absolute_upload_path = $upload['basedir'] . '/zoho_image/';
+			$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
 
-		if (!is_dir($absolute_upload_path)) {
-			mkdir($absolute_upload_path);
+			// Generate a unique image name
+			$img        = 'image_' . rand() . '_' . $image_name;
+			$upload_dir = $absolute_upload_path . '/' . $img;
+
+			// Create the directory if it doesn't exist
+			if ( ! is_dir( $absolute_upload_path ) ) {
+				mkdir( $absolute_upload_path );
+			}
+
+			// Save the image file
+			file_put_contents( $upload_dir, $body );
+
+			// Use trailingslashit to make sure the URL ends with a single slash
+			return trailingslashit( $url_upload_path ) . $img;
+		} else {
+			// If there was an error, handle it
+			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
+			return 'Error: ' . $error_message;
 		}
-
-		file_put_contents($upload_dir, $response);
-
-		// Use trailingslashit to make sure the URL ends with a single slash
-		return trailingslashit($url_upload_path) . $img;
 	}
 }

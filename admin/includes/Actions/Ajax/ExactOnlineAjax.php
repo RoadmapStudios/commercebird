@@ -100,11 +100,11 @@ final class ExactOnlineAjax {
 		}
 		$result                    = $this->process_orders(
 			array(
-				'start_date' => date(
+				'start_date' => gmdate(
 					'Y-m-d\TH:i:s.000\Z',
 					strtotime( $this->data['range'][0] )
 				),
-				'end_date'   => date(
+				'end_date'   => gmdate(
 					'Y-m-d\TH:i:s.000\Z',
 					strtotime( $this->data['range'][1] )
 				),

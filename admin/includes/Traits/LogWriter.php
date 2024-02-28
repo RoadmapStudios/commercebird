@@ -13,13 +13,13 @@ trait LogWriter {
 	 */
 	private function write_log( $data, $filename ): void {
 		$timestamp = gmdate( 'Y-m-d H:i:s' );
-		$jsonData  = wp_json_encode( $data, JSON_PRETTY_PRINT );
-		$logDir    = RMS_DIR_PATH . 'logs/';
-		if ( ! file_exists( $logDir ) ) {
-			wp_mkdir_p( $logDir );
+		$json_data = wp_json_encode( $data, JSON_PRETTY_PRINT );
+		$log_dir   = RMS_DIR_PATH . 'logs/';
+		if ( ! file_exists( $log_dir ) ) {
+			wp_mkdir_p( $log_dir );
 		}
-		$logDir     = $logDir . $filename . '.log';
-		$logMessage = sprintf( '%s - %s %s', $timestamp, $jsonData, PHP_EOL );
-		error_log( $logMessage, 3, $logDir );
+		$log_dir     = $log_dir . $filename . '.log';
+		$log_message = sprintf( '%s - %s %s', $timestamp, $json_data, PHP_EOL );
+		error_log( $log_message, 3, $log_dir );
 	}
 }

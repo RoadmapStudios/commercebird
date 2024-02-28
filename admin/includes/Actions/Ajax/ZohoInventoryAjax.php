@@ -804,7 +804,7 @@ final class ZohoInventoryAjax {
 					update_option( 'zoho_inventory_auth_code', $code );
 					update_option( 'zoho_inventory_access_token', $access_token['access_token'] );
 					update_option( 'zoho_inventory_refresh_token', $access_token['refresh_token'] );
-					update_option( 'zoho_inventory_timestamp', strtotime( date( 'Y-m-d H:i:s' ) ) + $access_token['expires_in'] );
+					update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $access_token['expires_in'] );
 					$this->response = (array) $access_token;
 				} else {
 					$this->errors = (array) $access_token;
