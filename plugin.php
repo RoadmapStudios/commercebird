@@ -252,9 +252,9 @@ if ( is_admin() ) {
 	}
 	Template::instance();
 	ZohoInventoryAjax::instance();
-	ExactOnlineAjax::instance();
 	Cors::instance();
 }
+ExactOnlineAjax::instance();
 // Load Media Library Endpoints
 new WooCommerce_Media_API_By_commercebird();
 // Load License Key library

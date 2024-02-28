@@ -260,7 +260,7 @@ final class ExactOnlineAjax {
 
 	public function sync_via_cron() {
 		$start_date = strtotime( '-1 day' );
-		$end_date   = strtotime( '+1 day' );
+		$end_date   = strtotime( 'now' );
 
 		$continue = $this->process_orders(
 			array(
