@@ -321,7 +321,7 @@ function zi_sync_composite_item_to_zoho() {
 	$response            = array();
 	$response['message'] = 'Sync Started';
 	$response['code']    = 200;
-	echo json_encode( $response, true );
+	echo wp_json_encode( $response );
 
 	exit();
 }
@@ -443,7 +443,7 @@ function ajax_subcategory_sync_call() {
 	if ( $c == 0 ) {
 		$response[] = zi_response_message( '-', 'Sub Categories not available to export', '-' );
 	}
-	echo json_encode( $response );
+	echo wp_json_encode( $response );
 	exit();
 }
 
@@ -524,7 +524,7 @@ function ajax_category_sync_call() {
 	} else {
 		$response[] = zi_response_message( '-', 'Categories not available to export', '-' );
 	}
-	echo json_encode( $response );
+	echo wp_json_encode( $response );
 	exit();
 }
 
@@ -586,7 +586,7 @@ function get_zoho_item_categories() {
 	$executeCurlCallHandle = new ExecutecallClass();
 	$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
 
-	$response = json_encode( $json, true );
+	$response = wp_json_encode( $json );
 
 	return json_decode( $response, true );
 }

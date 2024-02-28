@@ -247,7 +247,7 @@ class ImportProductClass {
 
 					if ( empty( $pdt_id ) && $allow_to_import == true ) {
 						$product_class = new ProductClass();
-						$item_array    = json_decode( json_encode( $arr ), true );
+						$item_array    = json_decode( wp_json_encode( $arr ), true );
 						$pdt_id        = $product_class->zi_product_to_woocommerce( $item_array, '', '' );
 						if ( $pdt_id ) {
 							update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );

@@ -735,7 +735,7 @@ class Sync_Order_Class {
 
 				if ( $key == 'line_items' ) {
 
-					$array1 = json_encode( $value );
+					// $array1 = wp_json_encode( $value );
 
 					foreach ( $value as $kk => $vv ) {
 

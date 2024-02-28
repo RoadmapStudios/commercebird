@@ -121,7 +121,7 @@ class ProductClass
             $dimensions->width = $product->get_width();
             $dimensions->height = $product->get_height();
             $dimensions->weight = $product->get_weight();
-            $zidata .= '"package_details" : ' . json_encode($dimensions) . ',';
+            $zidata .= '"package_details" : ' . wp_json_encode($dimensions) . ',';
 
             // Send category only if category ID available.
             $zi_category_id = $this->get_prod_updated_category($post_id);
@@ -379,7 +379,7 @@ class ProductClass
             $tax_rate = reset($tax_rates);
         }
 
-        $pdt1 = '"name" : "' . $name . '","mapped_items":' . json_encode($child_items) . ', "product_type" : "' . $product_type . '","tax_id" : "' . $tax_id . '","rate" : "' . $rate . '","sku" : "' . $sku . '","item_type" : "' . $item_type . '"';
+        $pdt1 = '"name" : "' . $name . '","mapped_items":' . wp_json_encode($child_items) . ', "product_type" : "' . $product_type . '","tax_id" : "' . $tax_id . '","rate" : "' . $rate . '","sku" : "' . $sku . '","item_type" : "' . $item_type . '"';
         // If zoho category id is not mapped to product, then assign mapped product category with zoho.
 
         // $zi_category_id = $this->get_prod_updated_category($post_id);
@@ -399,7 +399,7 @@ class ProductClass
         $dimensions->width = $item->get_width();
         $dimensions->height = $item->get_height();
         $dimensions->weight = $item->get_weight();
-        $pdt1 .= ',"package_details" : ' . json_encode($dimensions) . ',';
+        $pdt1 .= ',"package_details" : ' . wp_json_encode($dimensions) . ',';
 
         $zoho_inventory_oid = $this->config['ProductZI']['OID'];
         $zoho_inventory_url = $this->config['ProductZI']['APIURL'];
@@ -723,7 +723,7 @@ class ProductClass
         $dimensions->height = $product_variable->get_height();
         $dimensions->weight = $product_variable->get_weight();
         if (!empty($dimensions)) {
-            $zidata .= '"package_details" : ' . json_encode($dimensions);
+            $zidata .= '"package_details" : ' . wp_json_encode($dimensions);
         }
 
         // $fd = fopen(__DIR__ . '/variations.txt', 'a+');
