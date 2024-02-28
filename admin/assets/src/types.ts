@@ -24,6 +24,7 @@ export type PluginObject = {
     acf_enabled: string;
     wcb2b_enabled: string;
     site_url: string;
+    eo_sync: string;
 }
 
 

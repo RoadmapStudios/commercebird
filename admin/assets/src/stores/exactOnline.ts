@@ -4,7 +4,7 @@ import { useLoadingStore } from "@/stores/loading";
 import { useStorage } from "@/composable/storage";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
-import { Toast, notify, site_url } from "@/composable/helpers";
+import { Toast, eo_sync, notify, site_url } from "@/composable/helpers";
 
 const actionKey = backendAction.exactOnline;
 const localKey = storeKey.exactOnline;
@@ -100,7 +100,7 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    * -----------------------------------------------------------------------------------------------------------------
    */
   const dateRange = ref([]);
-  const sync_order = ref(false);
+  const sync_order = ref(eo_sync);
   const mapOrders = async () => {
     handleMap(actionKey.order.map, { range: dateRange.value }, localKey.order);
   };

@@ -92,6 +92,7 @@ final class Template {
 				'cosw_enabled'     => in_array( 'custom-order-statuses-woocommerce/custom-order-statuses-for-woocommerce.php', $active_plugins, true ),
 				'wcb2b_enabled'    => class_exists( 'WooCommerceB2B' ),
 				'site_url'         => site_url(),
+				'eo_sync'          => get_option( 'commmercebird_exact_online_sync_orders' ),
 			),
 		);
 	}

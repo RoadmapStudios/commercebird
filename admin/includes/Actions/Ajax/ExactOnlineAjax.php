@@ -56,6 +56,7 @@ final class ExactOnlineAjax {
 		} else {
 			wp_clear_scheduled_hook( 'commmercebird_exact_online_sync_orders' );
 		}
+		update_option( 'commmercebird_exact_online_sync_orders', (bool) $this->data['sync'] );
 		$this->response = array(
 			'success' => true,
 			'message' => __( 'Synced', 'commercebird' ),
