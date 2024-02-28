@@ -81,9 +81,7 @@ function zoho_ajax_call_variable_item_from_zoho() {
 			if ( ! $existing_schedule ) {
 				// Schedule the cron job
 				$response = as_schedule_single_action( time(), 'import_group_items_cron', array( $data_arr ) );
-				if ( $response !== null ) {
-					// $item_add_resp = array_merge($item_add_resp, $response);
-				}
+
 			}
 
 			// Update the last synced category index in the options
