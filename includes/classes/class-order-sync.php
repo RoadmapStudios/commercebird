@@ -230,7 +230,7 @@ class Sync_Order_Class {
 	 * @param int $order_id Order ID.
 	 */
 	public function zi_order_sync( $order_id ) {
-		// $fd = fopen(__DIR__ . '/backend_order.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/backend_order.txt', 'a+' );
 
 		if ( ! $order_id ) {
 			$order_id = $_POST['arg_order_data'];
@@ -529,12 +529,12 @@ class Sync_Order_Class {
 				$pdt1 .= $customfield . ']';
 
 				// If auto order number is enabled.
-				$enabled_auto_no = get_option( 'zoho_enable_auto_no_status' );
+				$enabled_auto_no = get_option( 'zoho_enable_auto_number_status' );
 				$transaction_id  = $order->get_transaction_id();
 				if ( empty( $transaction_id ) ) {
 					$transaction_id = $order->get_meta( '_order_number', true );
 				}
-				$order_prefix = get_option( 'order-prefix' );
+				$order_prefix = get_option( 'zoho_order_prefix_status' );
 				$reference_no = '';
 				if ( class_exists( 'WCJ_Order_Numbers' ) || class_exists( 'WC_Seq_Order_Number_Pro' ) ) {
 					$reference_no = $order_prefix . $transaction_id;
@@ -544,7 +544,7 @@ class Sync_Order_Class {
 					$reference_no = 'WC-' . $order_id;
 				}
 
-				if ( $enabled_auto_no == 'true' ) {
+				if ( $enabled_auto_no ) {
 					$pdt1 .= ',"reference_number": "' . $reference_no . '"';
 				} else {
 					$pdt1 .= ',"salesorder_number": "' . $order_id . '"';
@@ -624,7 +624,7 @@ class Sync_Order_Class {
 	 */
 	public function single_saleorder_zoho_inventory( $order_id, $pdt1 ) {
 		//start logging
-		// $fd = fopen(__DIR__ . '/order-sync-backend.txt', 'w+');
+		// $fd = fopen( __DIR__ . '/order-sync-backend.txt', 'w+' );
 
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
@@ -637,12 +637,12 @@ class Sync_Order_Class {
 		//logging
 		// fwrite($fd, PHP_EOL . 'Data log : ' . print_r($data, true));
 
-		$enabled_auto_no = get_option( 'zoho_enable_auto_no_status' );
-		$ignore_auto_no  = ( 'true' === $enabled_auto_no ) ? 'false' : 'true';
-		$url             = $zoho_inventory_url . 'api/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
+		$enabled_auto_no = get_option( 'zoho_enable_auto_number_status' );
+		$ignore_auto_no  = ( $enabled_auto_no ) ? 'false' : 'true';
+		$url = $zoho_inventory_url . 'api/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallPost( $url, $data );
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 		// fwrite($fd, PHP_EOL . 'Data log : ' . print_r($json, true));
 		$response = array();
@@ -659,16 +659,16 @@ class Sync_Order_Class {
 				// saleorder package code
 				$zoho_package_status = get_option( 'zoho_package_zoho_sync_status' );
 				if ( $zoho_package_status === 'true' ) {
-					$packageCurlCallHandle = new PackageClass();
-					$json                  = $packageCurlCallHandle->PackageCreateFunction( $order_id, $json );
+					$package_curl_call_handle = new PackageClass();
+					$json                     = $package_curl_call_handle->PackageCreateFunction( $order_id, $json );
 				}
 			}
 		}
 		$errmsg              = $json->message;
 		$response['message'] = $errmsg;
+		// fclose( $fd );
+
 		return $response;
-		// end logging
-		// fclose($fd);
 	}
 
 	/**
@@ -695,8 +695,8 @@ class Sync_Order_Class {
 
 		// fwrite($fd, PHP_EOL. print_r($data, true)); //logging response
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallPut( $url, $data );
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
 
 		// $code = $json->code;
 		$errmsg                       = $json->message;
@@ -710,8 +710,8 @@ class Sync_Order_Class {
 		if ( empty( $package_id ) && 'true' === $zoho_package_status ) {
 			// fwrite($fd, PHP_EOL. 'inside new package create');
 			// create new package
-			$packageCurlCallHandle = new PackageClass();
-			$resp_package          = $packageCurlCallHandle->PackageCreateFunction( $order_id, $json );
+			$package_curl_call_handle = new PackageClass();
+			$resp_package             = $package_curl_call_handle->PackageCreateFunction( $order_id, $json );
 			// save response
 			$resp_msg = $resp_package->message;
 			$order->add_order_note( 'Zoho Package: ' . $resp_msg );
@@ -751,7 +751,7 @@ class Sync_Order_Class {
 						'organization_id' => $zoho_inventory_oid,
 					);
 
-					$res_package = $executeCurlCallHandle->ExecuteCurlCallPut( $url_package, $data3 );
+					$res_package = $execute_curl_call_handle->ExecuteCurlCallPut( $url_package, $data3 );
 				}
 			}
 		}
