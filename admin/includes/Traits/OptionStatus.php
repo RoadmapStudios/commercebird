@@ -15,7 +15,7 @@ trait OptionStatus {
 	 */
 	private function option_status_update( array $form ): bool {
 		foreach ( $form as $key => $value ) {
-			update_option( $this->getName( $key ), $value ?? false );
+			update_option( $this->getName( $key ), $value ?? '' );
 		}
 
 		return true;
@@ -40,9 +40,9 @@ trait OptionStatus {
 	 * @return array The array containing the status of the options.
 	 */
 	private function option_status_get( array $keys ): array {
-		$options = [];
+		$options = array();
 		foreach ( $keys as $key ) {
-			$options[ $key ] = get_option( $this->getName( $key ) );
+			$options[ $key ] = get_option( $this->getName( $key ), '' );
 		}
 
 		return $options;
