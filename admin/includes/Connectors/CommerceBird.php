@@ -3,11 +3,14 @@
 namespace RMS\Admin\Connectors;
 
 use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
+use RMS\Admin\Traits\LogWriter;
 use WP_Error;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit;
 
 final class CommerceBird {
+	use LogWriter;
+
 	const COST_CENTERS  = 'customs/exact/cost-centers';
 	const COST_UNITS    = 'customs/exact/cost-units';
 	const ITEM          = 'customs/exact/bulk-items';
@@ -32,7 +35,7 @@ final class CommerceBird {
 
 		$response = $this->request( self::CUSTOMER );
 
-		return $response['data'] ?? $response;
+		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 	/**
 	 * Collect customer or account id
@@ -50,8 +53,8 @@ final class CommerceBird {
 			array(),
 			$range
 		);
-
-		return $response['data'] ?? $response;
+		$this->write_log( $response, 'order-response' );
+		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
 
@@ -67,7 +70,7 @@ final class CommerceBird {
 
 		$response = $this->request( self::ITEM );
 
-		return $response['data'] ?? $response;
+		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
 	public function cost_units() {
@@ -80,6 +83,9 @@ final class CommerceBird {
 			return '';
 		}
 		$response = $this->request( self::WEBAPP_ORDERS );
+		if ( $response['code'] !== 200 ) {
+			return $response['message'];
+		}
 		foreach ( $response as $item ) {
 			update_post_meta( $item['wooId'], 'eo_order_id', $item['zohoId'] );
 		}
@@ -128,9 +134,11 @@ final class CommerceBird {
 		}
 
 		if ( is_wp_error( $response ) ) {
-			return false;
+			$this->write_log( $response->get_error_message(), 'commercebird-connector' );
+			return;
 		}
-
-		return json_decode( $response['body'], true );
+		$response = wp_remote_retrieve_body( $response );
+		$this->write_log( $response, 'commercebird-connector' );
+		return json_decode( $response, true );
 	}
 }

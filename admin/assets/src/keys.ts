@@ -48,7 +48,8 @@ export const backendAction: BackendAction = {
         },
         order: {
             map: 'map_exact_online_order',
-            export: 'export_exact_online_order'
+            export: 'export_exact_online_order',
+            sync: 'save_sync_order_via_cron'
         },
         cost_center: {
             get: 'get_exact_online_cost_center',

@@ -87,7 +87,11 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    */
   const importProducts = ref(false);
   const mapProducts = async () => {
-    handleMap(actionKey.product.map, { importProducts: importProducts.value }, localKey.product)
+    handleMap(
+      actionKey.product.map,
+      { importProducts: importProducts.value },
+      localKey.product
+    );
   };
 
   /*
@@ -96,12 +100,27 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    * -----------------------------------------------------------------------------------------------------------------
    */
   const dateRange = ref([]);
+  const sync_order = ref(false);
   const mapOrders = async () => {
-   handleMap(actionKey.order.map, { range: dateRange.value}, localKey.order)
-  }
+    handleMap(actionKey.order.map, { range: dateRange.value }, localKey.order);
+  };
   const exportOrders = async () => {
-    handleMap(actionKey.order.export, { range: dateRange.value }, localKey.order)    
-  }
+    handleMap(
+      actionKey.order.export,
+      { range: dateRange.value },
+      localKey.order
+    );
+  };
+
+  watch(sync_order, value => {
+    if (value) {
+      handleMap(
+        actionKey.order.sync,
+        { sync: sync_order.value },
+        localKey.order
+      );
+    }
+  });
   /*
    * -----------------------------------------------------------------------------------------------------------------
    *  Map Customers
@@ -109,7 +128,11 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    */
   const importCustomers = ref(false);
   const mapCustomers = async () => {
-    handleMap(actionKey.customer.map, { importCustomers: importCustomers.value }, localKey.customer)
+    handleMap(
+      actionKey.customer.map,
+      { importCustomers: importCustomers.value },
+      localKey.customer
+    );
   };
   /*
    * -----------------------------------------------------------------------------------------------------------------
@@ -199,6 +222,7 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
     importProducts,
     mapProducts,
     dateRange,
+    sync_order,
     mapOrders,
     exportOrders,
     importCustomers,
