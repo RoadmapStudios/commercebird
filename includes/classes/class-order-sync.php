@@ -644,7 +644,7 @@ class Sync_Order_Class {
 		$execute_curl_call_handle = new ExecutecallClass();
 		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
-		// fwrite($fd, PHP_EOL . 'Data log : ' . print_r($json, true));
+		// fwrite( $fd, PHP_EOL . 'Data log : ' . print_r( $json, true ) );
 		$response = array();
 		$code     = $json->code;
 		// fwrite($fd, PHP_EOL . 'Code : ' . $code);

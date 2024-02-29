@@ -71,7 +71,6 @@ class ExecutecallClass {
 	// Post Call Zoho
 
 	public function ExecuteCurlCallPost( $url, $data ) {
-
 		$handlefunction = new Classfunctions();
 
 		$zoho_inventory_access_token  = $this->config['ExecutecallZI']['ATOKEN'];
@@ -98,7 +97,7 @@ class ExecutecallClass {
 		);
 		$response = wp_remote_post( $url, $args );
 		// Check if the request was successful
-		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
 			$body = wp_remote_retrieve_body( $response );
 			// Decode JSON response
@@ -195,14 +194,13 @@ class ExecutecallClass {
 			$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
 
 			// Generate a unique image name
-			$img        = 'image_' . rand() . '_' . $image_name;
+			$img        = 'image_' . wp_rand() . '_' . $image_name;
 			$upload_dir = $absolute_upload_path . '/' . $img;
 
 			// Create the directory if it doesn't exist
 			if ( ! is_dir( $absolute_upload_path ) ) {
 				mkdir( $absolute_upload_path );
 			}
-
 			// Save the image file
 			file_put_contents( $upload_dir, $body );
 
