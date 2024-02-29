@@ -50,8 +50,8 @@ class ImageClass {
 		$url               .= '?organization_id=' . $zoho_inventory_oid;
 
 		// fwrite($fd, PHP_EOL . '$url : ' . $url);
-		$executeCurlCallHandle = new ExecutecallClass();
-		$image_url             = $executeCurlCallHandle->ExecuteCurlCallImageGet( $url, $image_name );
+		$execute_curl_call_handle = new ExecutecallClass();
+		$image_url                = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url, $image_name );
 		// fwrite($fd, PHP_EOL . 'Sync init');
 		$temp_file = download_url( $image_url );
 		// Get the MIME type of the downloaded image
@@ -72,11 +72,11 @@ class ImageClass {
 			return;
 		}
 
-		$attach_id            = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
-		$imageExistsInLibrary = $this->compareImageWithMediaLibrary( $temp_file );
+		$attach_id               = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
+		$image_exists_in_library = $this->compareImageWithMediaLibrary( $temp_file );
 
-		if ( $imageExistsInLibrary ) {
-			$attach_id = $imageExistsInLibrary;
+		if ( $image_exists_in_library ) {
+			$attach_id = $image_exists_in_library;
 			wp_delete_file( $temp_file );
 		} else {
 			$image_post_id        = $wpdb->get_var(
@@ -85,8 +85,8 @@ class ImageClass {
 					'%' . $wpdb->esc_like( $image_name ) . '%'
 				)
 			);
-			$image_post_scaled_id = intval( $wpdb->get_var( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' and meta_value LIKE '%" . $image_name_scaled . "%'" ) );
-			$image_post_id        = ( $image_post_id == 0 ) ? $image_post_scaled_id : $image_post_id;
+			$image_post_scaled_id = intval( $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' and meta_value LIKE %s", '%' . $image_name_scaled . '%' ) ) );
+			$image_post_id = ( 0 === $image_post_id ) ? $image_post_scaled_id : $image_post_id;
 		}
 		// fwrite($fd,PHP_EOL.'$image_post_id : '.$image_post_id);
 		// fwrite($fd, PHP_EOL . '$image_post_id: ' . $image_post_id);

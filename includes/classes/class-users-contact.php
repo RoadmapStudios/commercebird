@@ -125,8 +125,8 @@ class ContactClass {
 
 		$url = $zoho_inventory_url . 'api/v1/contacts';
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallPost( $url, $data );
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 		$code = $json->code;
 
@@ -274,8 +274,8 @@ class ContactClass {
 		// fwrite($fd,PHP_EOL.'data: '.print_r($data, true));
 		$url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id;
 		// fwrite($fd,PHP_EOL.'URL: '. $url);
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallPut( $url, $data );
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
 		// fwrite($fd, PHP_EOL.'Response log : '.print_r($json, true));
 		$code   = $json->code;
 		$errmsg = $json->message;
@@ -362,11 +362,11 @@ class ContactClass {
 			'organization_id' => $zoho_inventory_oid,
 		);
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$update_url            = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id;
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallPut( $update_url, $jsonData );
-		$res_msg               = $json->message;
-		$code                  = $json->code;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$update_url               = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id;
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $update_url, $jsonData );
+		$res_msg                  = $json->message;
+		$code                     = $json->code;
 
 		if ( $code == '0' || $code == 0 ) {
 			foreach ( $json->contact as $key => $value ) {
@@ -409,8 +409,8 @@ class ContactClass {
 
 		$url = $zoho_inventory_url . 'api/v1/contacts/contactpersons';
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallPost( $url, $data );
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 		// fwrite($fd, PHP_EOL.'JSON : '.print_r($json, true));
 

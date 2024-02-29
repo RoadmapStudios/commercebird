@@ -10,8 +10,6 @@
  * @link     https://commercebird.com
  */
 
-// require RMS_DIR_PATH . 'background-process.php';
-
 /**
  * Zoho Api Error Email
  *
@@ -57,9 +55,6 @@ function zoho_ajax_call_variable_item_from_zoho() {
 		$opt_category = array();
 	}
 
-	$item_add_resp  = array();
-	$loop_completed = false; // Flag to track loop completion
-
 	// Retrieve the last synced category index from the previous run
 	$last_synced_category_index = get_option( 'last_synced_category_index_groupitems', 0 );
 
@@ -94,7 +89,6 @@ function zoho_ajax_call_variable_item_from_zoho() {
 		if ( $processed_categories >= $total_categories ) {
 			// Reset the last synced category index
 			update_option( 'last_synced_category_index_groupitems', 0 );
-			$loop_completed = true;
 		}
 	}
 
@@ -249,8 +243,8 @@ function zi_sync_composite_item_from_zoho() {
 
 	$item_add_resp = array();
 	foreach ( $opt_category as $category_id ) {
-		$productClass  = new ImportProductClass();
-		$response      = $productClass->recursively_sync_composite_item_from_zoho( 1, $category_id, 'sync' );
+		$product_class = new ImportProductClass();
+		$response      = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id, 'sync' );
 		$item_add_resp = array_merge( $item_add_resp, $response );
 	}
 	send_log_message_to_admin( $item_add_resp, 'Log Message for manual sync', 'Composite item sync from zoho' );
@@ -401,11 +395,9 @@ function ajax_subcategory_sync_call() {
 	}
 	// Closing of import of category from woo to zoho .
 
+	// Get product categories from woocommerce.
 	$categories_terms = get_terms(
 		'product_cat',
-		array(
-			'parent' => 0,
-		)
 	);
 	$log_head         = '---Exporting Sub Category to zoho---';
 	$response[]       = zi_response_message( '-', '-', $log_head );
@@ -442,7 +434,7 @@ function ajax_subcategory_sync_call() {
 		}
 	}
 
-	if ( $c == 0 ) {
+	if ( 0 === $c ) {
 		$response[] = zi_response_message( '-', 'Sub Categories not available to export', '-' );
 	}
 	echo wp_json_encode( $response );
@@ -504,10 +496,6 @@ function ajax_category_sync_call() {
 	// Closing of import of category from woo to zoho.
 	$categories_terms = get_terms(
 		'product_cat',
-		array(
-			'parent'     => 0,
-			'hide_empty' => false,
-		)
 	);
 	$log_head         = '---Exporting Category to zoho---';
 	$response[]       = zi_response_message( '-', '-', $log_head );
@@ -552,14 +540,14 @@ function create_woo_cat_to_zoho( $cat_name, $term_id = '0', $pid = '' ) {
 
 	$url = $zoho_inventory_url . 'api/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
-	$executeCurlCallHandle = new ExecutecallClass();
-	$json                  = $executeCurlCallHandle->ExecuteCurlCallPost( $url, $data );
+	$execute_curl_call_handle = new ExecutecallClass();
+	$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 	$code = $json->code;
 
 	if ( '0' == $code || 0 == $code ) {
 		foreach ( $json->category as $key => $value ) {
-			if ( $key == 'category_id' ) {
+			if ( $key === 'category_id' ) {
 
 				update_option( 'zoho_id_for_term_id_' . $term_id, $value );
 			}
@@ -585,8 +573,8 @@ function get_zoho_item_categories() {
 
 	$url = $zoho_inventory_url . 'api/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
-	$executeCurlCallHandle = new ExecutecallClass();
-	$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
+	$execute_curl_call_handle = new ExecutecallClass();
+	$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 	$response = wp_json_encode( $json );
 
@@ -603,8 +591,10 @@ function savecustomfields() {
 	$response          = (object) array();
 	$response->message = 'Error';
 	$response->code    = 200;
-	$field             = $_POST['data'];
-	update_option( 'wootozoho_custom_fields', $field );
+	if ( isset( $_POST['data'] ) && wp_verify_nonce( $_POST['nonce'], 'save_custom_fields_nonce' ) ) {
+		$field = $_POST['data'];
+		update_option( 'wootozoho_custom_fields', $field );
+	}
 	$response->message = 'Success';
 	$response->data    = $field;
 	echo wp_json_encode( $response );
@@ -621,8 +611,7 @@ function subcategories_term_id( $option_value ) {
 
 	global $wpdb;
 
-	$table_prefix = $wpdb->prefix;
-	$row          = $wpdb->get_row( 'select * from ' . $table_prefix . "options where option_value = '" . $option_value . "'" );
+	$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM {$wpdb->prefix} options WHERE option_value = %s', $option_value ) );
 
 	if ( ! empty( $row->option_name ) ) {
 
@@ -641,7 +630,9 @@ function subcategories_term_id( $option_value ) {
  * @return void
  */
 function disable_zoho_sync() {
-	$sync_status = $_POST['sync_status'];
+	if ( isset( $_POST['sync_status'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'my_nonce_action' ) ) {
+		$sync_status = $_POST['sync_status'];
+	}
 	update_option( 'zoho_sync_status', $sync_status );
 }
 

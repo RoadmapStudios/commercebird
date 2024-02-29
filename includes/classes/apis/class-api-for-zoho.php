@@ -52,9 +52,9 @@ class Zoho {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url            = $zoho_inventory_url . 'api/v1/organizations/' . $zoho_inventory_oid . '?organization_id=' . $zoho_inventory_oid;
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $get_url );
-		$code                  = $json->code;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$code                     = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['zi_org_name']  = $json->organization->name;
 			$response['zi_org_email'] = $json->organization->email;
@@ -82,9 +82,9 @@ class Zoho {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url            = $zoho_inventory_url . 'api/v1/invoices/' . '?organization_id=' . $zoho_inventory_oid;
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $get_url );
-		$code                  = $json->code;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$code                     = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['invoices'] = $json->invoices;
 			$rest_response->set_data( $response );
@@ -111,9 +111,9 @@ class Zoho {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url            = $zoho_inventory_url . 'api/v1/invoices/' . $invoice_id . '?organization_id=' . $zoho_inventory_oid;
 
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $get_url );
-		$code                  = $json->code;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$code                     = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['invoice'] = $json->invoice;
 			$rest_response->set_data( $response );

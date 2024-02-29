@@ -445,12 +445,12 @@ final class ZohoInventoryAjax {
 	 */
 	public function zoho_warehouses_collect(): void {
 		$this->verify();
-		$zoho_inventory_oid    = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url    = get_option( 'zoho_inventory_url' );
-		$url                   = $zoho_inventory_url . 'api/v1/settings/warehouses?organization_id=' . $zoho_inventory_oid;
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
-		$this->response        = wp_list_pluck( $json->warehouses, 'warehouse_name', 'warehouse_id' );
+		$zoho_inventory_oid       = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url       = get_option( 'zoho_inventory_url' );
+		$url                      = $zoho_inventory_url . 'api/v1/settings/warehouses?organization_id=' . $zoho_inventory_oid;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$this->response           = wp_list_pluck( $json->warehouses, 'warehouse_name', 'warehouse_id' );
 		$this->serve();
 	}
 
@@ -549,11 +549,11 @@ final class ZohoInventoryAjax {
 	 */
 	public function connection_done(): void {
 		$this->verify();
-		$zoho_inventory_url    = get_option( 'zoho_inventory_url' );
-		$zoho_inventory_oid    = get_option( 'zoho_inventory_oid' );
-		$url                   = $zoho_inventory_url . 'api/v1/organizations/?organization_id=' . $zoho_inventory_oid;
-		$executeCurlCallHandle = new ExecutecallClass();
-		$json                  = $executeCurlCallHandle->ExecuteCurlCallGet( $url );
+		$zoho_inventory_url       = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid       = get_option( 'zoho_inventory_oid' );
+		$url                      = $zoho_inventory_url . 'api/v1/organizations/?organization_id=' . $zoho_inventory_oid;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );
 		} elseif ( empty( $json ) ) {
@@ -762,8 +762,8 @@ final class ZohoInventoryAjax {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$url                = $zoho_inventory_url . 'api/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
 		try {
-			$executeCurlCallHandle = new ExecutecallClass();
-			$json                  = (array) $executeCurlCallHandle->ExecuteCurlCallGet( $url );
+			$execute_curl_call_handle = new ExecutecallClass();
+			$json                     = (array) $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 			if ( array_key_exists( 'taxes', $json ) ) {
 				$this->response = $json['taxes'];
 			} else {

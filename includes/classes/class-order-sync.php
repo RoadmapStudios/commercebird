@@ -595,11 +595,11 @@ class Sync_Order_Class {
 			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 
-			$url                   = $zoho_inventory_url . 'api/v1/salesorders/' . $zi_sales_order_id . '/status/void?organization_id=' .
+			$url                      = $zoho_inventory_url . 'api/v1/salesorders/' . $zi_sales_order_id . '/status/void?organization_id=' .
 				$zoho_inventory_oid;
-			$data                  = '';
-			$executeCurlCallHandle = new ExecutecallClass();
-			$json                  = $executeCurlCallHandle->ExecuteCurlCallPost( $url, $data );
+			$data                     = '';
+			$execute_curl_call_handle = new ExecutecallClass();
+			$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 			$errmsg = $json->message;
 			$code   = $json->code;

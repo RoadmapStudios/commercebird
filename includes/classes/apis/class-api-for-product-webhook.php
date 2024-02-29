@@ -82,7 +82,7 @@ class ProductWebhook {
 		$item_price       = $item['rate'];
 		$item_sku         = $item['sku'];
 		$item_description = $item['description'];
-		$item_status      = $item['status'] == 'active' ? 'publish' : 'draft';
+		$item_status      = $item['status'] === 'active' ? 'publish' : 'draft';
 		$item_brand       = $item['brand'];
 		$custom_fields    = $item['custom_fields'];
 		$item_tags_hash   = $item['custom_field_hash'];
@@ -135,7 +135,7 @@ class ProductWebhook {
 		if ( ! empty( $groupid ) ) {
 			// fwrite($fd, PHP_EOL . 'Inside grouped items');
 			// find parent variable product
-			$row      = $wpdb->get_row( 'SELECT * FROM ' . $wpdb->prefix . "postmeta WHERE meta_key='zi_item_id' AND meta_value='" . $groupid . "'" );
+			$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $groupid ) );
 			$group_id = $row->post_id;
 
 			if ( ! empty( $group_id ) ) {
@@ -171,7 +171,7 @@ class ProductWebhook {
 				$existing_parent_product->save();
 			}
 
-			$row_item     = $wpdb->get_row( 'SELECT * FROM ' . $wpdb->prefix . "postmeta WHERE meta_key='zi_item_id' AND meta_value='" . $item_id . "'" );
+			$row_item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $item_id ) );
 			$variation_id = $row_item->post_id;
 			if ( $variation_id ) {
 				// updating existing variations
@@ -288,7 +288,7 @@ class ProductWebhook {
 		} else {
 			// fwrite($fd, PHP_EOL . 'Inside simple items');
 			// fwrite($fd, PHP_EOL . 'Item description Simple : ' . $item_description);
-			$row_item          = $wpdb->get_row( 'SELECT * FROM ' . $wpdb->prefix . "postmeta WHERE meta_key='zi_item_id' AND meta_value='" . $item_id . "'" );
+			$row_item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s", $item_id ) );
 			$mapped_product_id = $row_item->post_id;
 			// simple product
 			// fwrite($fd, PHP_EOL . 'Before Match check');
@@ -465,7 +465,12 @@ class ProductWebhook {
 		$item_id        = $line_items[0]['item_id'];
 		$adjusted_stock = $line_items[0]['quantity_adjusted'];
 
-		$row_item          = $wpdb->get_row( 'SELECT * FROM ' . $wpdb->prefix . "postmeta WHERE meta_key='zi_item_id' AND meta_value='" . $item_id . "'" );
+		$row_item = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s",
+				$item_id
+			)
+		);
 		$mapped_product_id = $row_item->post_id;
 
 		if ( ! empty( $mapped_product_id ) ) {
