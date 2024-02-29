@@ -538,30 +538,30 @@ add_action( 'pre_get_posts', 'zi_sync_column_filter_query' );
  */
 add_filter( 'woocommerce_webhook_should_deliver', 'cm_skip_webhook_delivery', 10, 3 );
 function cm_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
-	//$fd = fopen(__DIR__ . '/should_skip_webhook.txt', 'a+');
-	// log the order id
-	// fwrite($fd, PHP_EOL . '$arg : ' . $arg);
+	// $fd = fopen( __DIR__ . '/should_skip_webhook.txt', 'a+' );
+	// fwrite( $fd, PHP_EOL . 'Order-id : ' . $arg );
 
 	$webhook_name_to_exclude = 'CommerceBird Orders';
 	if ( $webhook->get_name() === $webhook_name_to_exclude ) {
-		// Check if the order status is not "processing" or "completed"
 		$order = wc_get_order( $arg );
 		// check if order contains meta eo_order_id
 		if ( $order->get_meta( 'eo_order_id' ) ) {
-			return false;
+			$should_deliver = false;
 		}
+		// check if order status is failed, pending, on-hold or cancelled
 		$order_status = $order->get_status();
 		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
 			// fwrite($fd, PHP_EOL . 'Skipping webhook delivery for order ' . $arg);
-			return false;
+			$should_deliver = false;
 		}
 		$webhook_status = $webhook->get_status();
 		// also return false if webhoook status is disabled or paused
 		if ( $webhook_status === 'disabled' || $webhook_status === 'paused' ) {
-			return false;
+			$should_deliver = false;
 		}
 	}
-	// fclose($fd);
+	// fwrite( $fd, PHP_EOL . 'should deliver: ' . $should_deliver );
+	// fclose( $fd );
 
 	return $should_deliver; // Continue with normal webhook delivery
 }
