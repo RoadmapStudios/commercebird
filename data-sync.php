@@ -151,7 +151,7 @@ function zoho_ajax_call_item_from_zoho_func() {
 }
 
 /**
- * ZohoInventory Function sync items from WooCommerce to Zoho in Background
+ * Zoho Inventory Function sync items from WooCommerce to Zoho in Background
  */
 add_action( 'wp_ajax_zoho_ajax_call_item', 'zoho_ajax_call_item' );
 add_action( 'wp_ajax_nopriv_zoho_ajax_call_item', 'zoho_ajax_call_item' );
@@ -160,16 +160,16 @@ function zoho_ajax_call_item() {
 
 	global $wpdb;
 
-	$query = $wpdb->prepare(
-		"SELECT p.ID
+	$post_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT p.ID
         FROM {$wpdb->prefix}posts AS p
         LEFT JOIN {$wpdb->prefix}postmeta AS pm ON p.ID = pm.post_id AND pm.meta_key = 'zi_item_id'
         WHERE p.post_type = 'product'
         AND p.post_status = 'publish'
         AND pm.meta_id IS NULL"
+		)
 	);
-
-	$post_ids = $wpdb->get_col( $query );
 
 	// Create an array to hold the product IDs
 	$product_ids = array();
