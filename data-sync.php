@@ -163,11 +163,11 @@ function zoho_ajax_call_item() {
 	$post_ids = $wpdb->get_col(
 		$wpdb->prepare(
 			"SELECT p.ID
-        FROM {$wpdb->prefix}posts AS p
-        LEFT JOIN {$wpdb->prefix}postmeta AS pm ON p.ID = pm.post_id AND pm.meta_key = 'zi_item_id'
-        WHERE p.post_type = 'product'
-        AND p.post_status = 'publish'
-        AND pm.meta_id IS NULL"
+			FROM {$wpdb->prefix}posts AS p
+			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON p.ID = pm.post_id AND pm.meta_key = 'zi_item_id'
+			WHERE p.post_type = 'product'
+			AND p.post_status = 'publish'
+			AND pm.meta_id IS NULL"
 		)
 	);
 
@@ -399,7 +399,6 @@ function ajax_subcategory_sync_call() {
 		'product_cat',
 		array(
 			'parent'     => 0,
-			'hide_empty' => false,
 		)
 	);
 	$log_head         = '---Exporting Sub Category to zoho---';
@@ -413,7 +412,6 @@ function ajax_subcategory_sync_call() {
 				'product_cat',
 				array(
 					'parent'     => $parent_term->term_id,
-					'hide_empty' => false,
 				)
 			);
 
@@ -603,7 +601,7 @@ function savecustomfields() {
 	update_option( 'wootozoho_custom_fields', $field );
 	$response->message = 'Success';
 	$response->data    = $field;
-	echo json_encode( $response );
+	echo wp_json_encode( $response );
 	exit;
 }
 
