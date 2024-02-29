@@ -55,7 +55,7 @@ class ExecutecallClass {
 		$response = wp_remote_get( $url, $args );
 
 		// Check if the request was successful
-		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
 			$body = wp_remote_retrieve_body( $response );
 
@@ -138,7 +138,7 @@ class ExecutecallClass {
 		);
 		$response = wp_remote_request( $url, $args );
 		// Check if the request was successful
-		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
 			$body = wp_remote_retrieve_body( $response );
 			// Decode JSON response
@@ -184,7 +184,7 @@ class ExecutecallClass {
 		$response = wp_remote_get( $url, $args );
 
 		// Check if the request was successful
-		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
 			$body = wp_remote_retrieve_body( $response );
 

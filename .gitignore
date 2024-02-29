@@ -3,7 +3,7 @@ vendor
 build
 commercebird
 commercebird.zip
-/**/*.txt
+admin/*.txt
 /**/*.log
 composer.lock
 .vscode
