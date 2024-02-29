@@ -160,16 +160,22 @@ function zoho_ajax_call_item() {
 
 	global $wpdb;
 
+	$meta_key = 'zi_item_id';
 	$post_ids = $wpdb->get_col(
-		$wpdb->prepare(
-			"SELECT p.ID
-			FROM {$wpdb->prefix}posts AS p
-			LEFT JOIN {$wpdb->prefix}postmeta AS pm ON p.ID = pm.post_id AND pm.meta_key = 'zi_item_id'
-			WHERE p.post_type = 'product'
-			AND p.post_status = 'publish'
-			AND pm.meta_id IS NULL"
-		)
-	);
+    	$wpdb->prepare(
+        "SELECT p.ID
+        FROM {$wpdb->prefix}posts AS p
+        WHERE p.post_type = 'product'
+        AND p.post_status = 'publish'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM {$wpdb->prefix}postmeta AS pm
+            WHERE p.ID = pm.post_id
+            AND pm.meta_key = %s
+        )",
+        $meta_key
+    )
+);
 
 	// Create an array to hold the product IDs
 	$product_ids = array();
