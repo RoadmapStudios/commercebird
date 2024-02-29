@@ -27,7 +27,6 @@ trait Api {
 			'http://localhost:8100',
 			'https://app.commercebird.com',
 			'capacitor://localhost',
-			'http://localhost',
 		);
 		$origin         = $request->get_header( 'Origin' );
 		// check if the origin is in our array of allowed domains

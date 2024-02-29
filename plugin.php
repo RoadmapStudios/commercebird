@@ -219,10 +219,10 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
-		$sql        = $wpdb->get_results( 'SELECT * FROM ' . $table_name . ' WHERE option_name LIKE "%zoho_id_for_term_id_%"' );
+		$sql = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s', $table_name, '%zoho_id_for_term_id_%' ) );
 		foreach ( $sql as $key => $row ) {
 			$option_name = $row->option_name;
-			delete_option( $option_name );
+			$wpdb->delete( $table_name, array( 'option_name' => $option_name ), array( '%s' ) );
 		}
 	}
 }

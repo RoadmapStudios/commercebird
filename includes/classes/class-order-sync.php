@@ -273,9 +273,9 @@ class Sync_Order_Class {
 			if ( ! empty( $formatted_meta_data ) ) {
 				foreach ( $formatted_meta_data as $metavalue ) {
 
-					$metaArr[] = $metavalue->display_key . ' : ' . trim( strip_tags( $metavalue->display_value ) ) . '\n';
+					$meta_array[] = $metavalue->display_key . ' : ' . trim( wp_strip_all_tags( $metavalue->display_value ) ) . '\n';
 				}
-				$product_meta_str = implode( '', $metaArr );
+				$product_meta_str = implode( '', $meta_array );
 
 				if ( $product_meta_str ) {
 					$sale_order['order']['suborder'][ $i ]['product_desc'] = $product_meta_str;
@@ -295,7 +295,7 @@ class Sync_Order_Class {
 				$order->save();
 				return;
 			}
-			$valOrder = array_shift( $sale_order );
+			$val_order = array_shift( $sale_order );
 			// fwrite($fd, PHP_EOL . 'USER ID : ' . $userid);
 			$zi_customer_id  = get_user_meta( $userid, 'zi_contact_id', true );
 			$billing_id      = get_user_meta( $userid, 'zi_billing_address_id', true );
@@ -304,7 +304,7 @@ class Sync_Order_Class {
 			$user_email      = get_user_meta( $userid, 'billing_email', true );
 			$enable_incl_tax = get_option( 'woocommerce_prices_include_tax' );
 
-			if ( $order_status != 'failed' ) {
+			if ( $order_status !== 'failed' ) {
 
 				if ( empty( $zi_customer_id ) ) {
 					$zi_customer_id = $this->zi_sync_customer_checkout( $order_id );
@@ -319,7 +319,7 @@ class Sync_Order_Class {
 				}
 				// fwrite($fd,PHP_EOL.'Discount coupon type: '.$discount_type);
 				$index = 0;
-				foreach ( $valOrder['suborder'] as $key => $val ) {
+				foreach ( $val_order['suborder'] as $key => $val ) {
 
 					$proid            = $val['product_id'];
 					$proidv           = $val['variation_id'];
@@ -333,8 +333,8 @@ class Sync_Order_Class {
 						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
-						$productHandler   = new ProductClass();
-						$product_response = $productHandler->zi_product_sync( $proid );
+						$product_handler  = new ProductClass();
+						$product_response = $product_handler->zi_product_sync( $proid );
 						// fwrite($fd,PHP_EOL.'Product sync: '.print_r($product_response, true));
 					}
 					// Skip bundled order items
@@ -368,9 +368,9 @@ class Sync_Order_Class {
 						// fwrite($fd, PHP_EOL.'$tb : '.$tb.' | $order_id : '.$order_id.'| $proid : '.$proid);
 						do {
 							if ( $is_variable_item ) {
-								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from ' . $table . ' where order_id = ' . $order_id . ' and variation_id = ' . $proid ), ARRAY_A );
+								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from %s where order_id = %d and variation_id = %d', $table, $order_id, $proid ), ARRAY_A );
 							} else {
-								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from ' . $table . ' where order_id = ' . $order_id . ' and product_id = ' . $proid ), ARRAY_A );
+								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from %s where order_id = %d and product_id = %d', $table, $order_id, $proid ), ARRAY_A );
 							}
 						} while ( empty( $res_coupon ) );
 						// fwrite($fd, PHP_EOL.'$res_coupon : '. print_r($res_coupon, true));
@@ -406,7 +406,7 @@ class Sync_Order_Class {
 							$tax_percent       = WC_Tax::get_rate_percent( $tax_rate_id );
 							$tax_total         = $item_price1 * ( $tax_percent / 100 );
 							$option_table      = $wpdb->prefix . 'options';
-							$tax_option_object = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $option_table WHERE option_value LIKE '%s' LIMIT 1", "%##tax##$tax_percent" ) );
+							$tax_option_object = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM {$option_table} WHERE option_value LIKE %s LIMIT 1', "%##tax##{$tax_percent}" ) );
 							$tax_option        = $tax_option_object->option_value;
 							if ( $tax_option ) {
 								// fwrite($fd, PHP_EOL.'Inside Tax Option: '. $tax_option);
@@ -447,7 +447,7 @@ class Sync_Order_Class {
 
 					$table_prefix = $wpdb->prefix;
 
-					$row_match = $wpdb->get_row( 'select * from ' . $table_prefix . "options where option_name LIKE '%zoho_inventory_tax_rate_%' and option_value LIKE '%##" . $percentage . "%'", ARRAY_A );
+					$row_match = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s AND option_value LIKE %s', $table_prefix . 'options', '%zoho_inventory_tax_rate_%', '%##' . $percentage . '%' ), ARRAY_A );
 
 					//  fwrite($fd,PHP_EOL.'$row_match : '.print_r($row_match,true));
 					if ( $row_match['option_value'] ) {
@@ -639,7 +639,7 @@ class Sync_Order_Class {
 
 		$enabled_auto_no = get_option( 'zoho_enable_auto_number_status' );
 		$ignore_auto_no  = ( $enabled_auto_no ) ? 'false' : 'true';
-		$url = $zoho_inventory_url . 'api/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
+		$url             = $zoho_inventory_url . 'api/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
 
 		$execute_curl_call_handle = new ExecutecallClass();
 		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );

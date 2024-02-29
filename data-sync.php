@@ -162,8 +162,8 @@ function zoho_ajax_call_item() {
 
 	$meta_key = 'zi_item_id';
 	$post_ids = $wpdb->get_col(
-    	$wpdb->prepare(
-        "SELECT p.ID
+		$wpdb->prepare(
+			"SELECT p.ID
         FROM {$wpdb->prefix}posts AS p
         WHERE p.post_type = 'product'
         AND p.post_status = 'publish'
@@ -173,9 +173,9 @@ function zoho_ajax_call_item() {
             WHERE p.ID = pm.post_id
             AND pm.meta_key = %s
         )",
-        $meta_key
-    )
-);
+			$meta_key
+		)
+	);
 
 	// Create an array to hold the product IDs
 	$product_ids = array();
@@ -404,7 +404,7 @@ function ajax_subcategory_sync_call() {
 	$categories_terms = get_terms(
 		'product_cat',
 		array(
-			'parent'     => 0,
+			'parent' => 0,
 		)
 	);
 	$log_head         = '---Exporting Sub Category to zoho---';
@@ -417,7 +417,7 @@ function ajax_subcategory_sync_call() {
 			$subcategories_terms = get_terms(
 				'product_cat',
 				array(
-					'parent'     => $parent_term->term_id,
+					'parent' => $parent_term->term_id,
 				)
 			);
 
