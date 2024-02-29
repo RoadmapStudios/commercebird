@@ -53,7 +53,6 @@ require_once RMS_DIR_PATH . 'includes/sync/order-frontend.php';
 require_once RMS_DIR_PATH . 'data-sync.php';
 require_once RMS_DIR_PATH . 'includes/wc-am-client.php';
 require_once RMS_DIR_PATH . 'includes/tgm-plugin-activation.php';
-require_once RMS_DIR_PATH . 'libraries/action-scheduler/action-scheduler.php';
 
 require __DIR__ . '/vendor/autoload.php';
 
