@@ -57,6 +57,7 @@ final class ZohoInventoryAjax {
 		'price'    => array(
 			'wp_user_role',
 			'zoho_inventory_pricelist',
+			'wcb2b',
 		),
 	);
 
@@ -336,6 +337,7 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		delete_option( 'zoho_pricelist_id' );
 		delete_option( 'zoho_pricelist_role' );
+		delete_option( 'zoho_pricelist_wcb2b_groups' );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
@@ -350,8 +352,7 @@ final class ZohoInventoryAjax {
 		$this->response['zoho_inventory_pricelist'] = get_option( 'zoho_pricelist_id' );
 		$this->response['wp_user_role']             = get_option( 'zoho_pricelist_role' );
 		if ( class_exists( 'WooCommerceB2B' ) ) {
-			$import_pricelist        = new ImportPricelistClass();
-			$this->response['wcb2b'] = $import_pricelist->wcb2b_synced_groups();
+			$this->response['wcb2b'] = get_option( 'zoho_pricelist_wcb2b_groups' );
 		}
 		$this->serve();
 	}
@@ -364,11 +365,19 @@ final class ZohoInventoryAjax {
 		$this->verify( self::FORMS['price'] );
 		try {
 			$import_pricelist = new ImportPricelistClass();
-			$import_pricelist->save_price_list( $this->data );
-			update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
-			$this->response = array( 'message' => 'Saved' );
-			if ( class_exists( 'WooCommerceB2B' ) ) {
-				$this->response['wcb2b'] = $import_pricelist->wcb2b_synced_groups();
+			$success          = $import_pricelist->save_price_list( $this->data );
+			if ( class_exists( 'Addify_B2B_Plugin' ) ) {
+				update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
+			} else {
+				update_option( 'zoho_pricelist_wcb2b_groups', $this->data['wcb2b'] );
+			}
+			if ( $success ) {
+				$this->response = array( 'message' => 'Saved' );
+				if ( class_exists( 'WooCommerceB2B' ) ) {
+					$this->response['wcb2b'] = $this->data['wcb2b'];
+				}
+			} else {
+				$this->errors = array( 'message' => 'Failed to save' );
 			}
 		} catch ( Throwable $throwable ) {
 			$this->errors = array( 'message' => $throwable->getMessage() );

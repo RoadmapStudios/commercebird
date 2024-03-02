@@ -1,38 +1,59 @@
 <template>
   <div>
-
-    <BaseForm v-if="(b2b_enabled || wcb2b_enabled) && homePafe.isPremiumSubscription" :keys="action"
-      @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
+    <Alert
+      v-if="!((b2b_enabled || wcb2b_enabled) && homePafe.isPremiumSubscription)"
+      :message="message"
+      target="_blank"
+    />
+    <BaseForm
+      v-if="b2b_enabled && homePafe.isPremiumSubscription"
+      :keys="action"
+      @reset="store.handleReset(action.reset)"
+      @submit="store.handleSubmit(action.save)"
+    >
       <InputGroup label="Zoho Price List">
-        <SelectInput v-model="store.price_settings.zoho_inventory_pricelist" :options="store.zoho_prices" />
+        <SelectInput
+          v-model="store.price_settings.zoho_inventory_pricelist"
+          :options="store.zoho_prices"
+        />
       </InputGroup>
-      <InputGroup v-if="Object.keys(roles).length && b2b_enabled" label="Users Role">
-        <SelectInput v-model="store.price_settings.wp_user_role" :options="roles" />
+      <InputGroup
+        v-if="Object.keys(roles).length && b2b_enabled"
+        label="Users Role"
+      >
+        <SelectInput
+          v-model="store.price_settings.wp_user_role"
+          :options="roles"
+        />
       </InputGroup>
     </BaseForm>
-    <div v-else>
-      <Alert :message="message" target="_blank" />
-    </div>
-    <table class="mt-4">
-      <tr>
-        <td colspan="2">
-          <h1 class="text-xl font-bold">Synced Groups</h1>
-        </td>
-      </tr>
-      <tr v-for="(row, index) in store.wcb2b" :key="index" class="border-b border-gray-300">
-        <td class="p-2 font-medium text-gray-900">
-          {{ row.group_name }}
-        </td>
-        <td class="p-2 font-medium text-gray-600">
-          {{ row.pricebook }}
-        </td>
-      </tr>
-    </table>
+    <BaseForm
+      :keys="action"
+      @reset="store.handleReset(action.reset)"
+      @submit="store.handleSubmit(action.save)"
+    >
+      <div
+        v-for="(field, index) in store.wcb2b_groups"
+        :key="index"
+        class="grid items-end gap-4 sm:grid-cols-5"
+      >
+        <InputGroup label="WooCommerce B2B Group" type="repeater">
+          <SelectInput v-model="field.key" :options="wcb2b_groups" />
+        </InputGroup>
+        <InputGroup label="Zoho Price Book" type="repeater">
+          <SelectInput v-model="field.value" :options="store.zoho_prices" />
+        </InputGroup>
+        <div class="pb-[11px] inline-flex gap-1">
+          <BaseButton @click="store.removeGroup(index)">Remove</BaseButton>
+          <BaseButton @click="store.addGroup()">Add</BaseButton>
+        </div>
+      </div>
+    </BaseForm>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { b2b_enabled, roles, wcb2b_enabled } from "@/composable/helpers";
+import { b2b_enabled, roles, wcb2b_enabled, wcb2b_groups } from "@/composable/helpers";
 import { ExclamationCircleIcon } from "@heroicons/vue/24/outline";
 import InputGroup from "../../ui/inputs/InputGroup.vue";
 import SelectInput from "../../ui/inputs/SelectInput.vue";
@@ -42,6 +63,7 @@ import { useHomepageStore } from "@/stores/homepage";
 import type { Message } from "@/types";
 import BaseForm from "@/components/ui/BaseForm.vue";
 import { backendAction } from "@/keys";
+import BaseButton from "@/components/ui/BaseButton.vue";
 const action = backendAction.zohoInventory.price;
 const message: Message = {
   icon: ExclamationCircleIcon,

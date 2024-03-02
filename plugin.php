@@ -219,7 +219,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
-		$sql = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s', $table_name, '%zoho_id_for_term_id_%' ) );
+		$sql        = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s', $table_name, '%zoho_id_for_term_id_%' ) );
 		foreach ( $sql as $key => $row ) {
 			$option_name = $row->option_name;
 			$wpdb->delete( $table_name, array( 'option_name' => $option_name ), array( '%s' ) );
@@ -235,6 +235,7 @@ $import_pricelist = new ImportPricelistClass();
 $product_class    = new ProductClass();
 $order_class      = new Sync_Order_Class();
 $contact_class    = new ContactClass();
+$import_pricelist->wc_b2b_groups();
 add_action( 'import_group_items_cron', array( $import_products, 'sync_groupitem_recursively' ), 10, 2 );
 add_action( 'import_simple_items_cron', array( $import_products, 'sync_item_recursively' ), 10, 2 );
 add_action( 'import_variable_product_cron', array( $import_products, 'import_variable_product_variations' ), 10, 2 );
@@ -274,4 +275,16 @@ add_action(
 		new ShippingWebhook();
 		new CreateOrderWebhook();
 	}
+);
+
+
+add_action(
+	'save_post',
+	function ( $post_id, $post ) {
+		if ( $post->post_type === 'wcb2b_group' ) {
+			delete_transient( 'wc_b2b_groups' );
+		}
+	},
+	10,
+	2
 );

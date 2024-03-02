@@ -9,14 +9,14 @@ import type {
     WcTax,
     ZohoTax
 } from '@/types'
-import {acceptHMRUpdate, defineStore} from "pinia";
-import type {Ref, UnwrapRef} from "vue";
-import {reactive, ref, watch} from "vue";
-import {useLoadingStore} from "@/stores/loading";
-import {extractOptions, notify, redirect_uri} from "@/composable/helpers";
-import {backendAction, storeKey} from "@/keys";
-import {fetchData, resetData, sendData} from "@/composable/http";
-import {useStorage} from "@/composable/storage";
+import { acceptHMRUpdate, defineStore } from "pinia";
+import type { Ref, UnwrapRef } from "vue";
+import { reactive, ref, watch } from "vue";
+import { useLoadingStore } from "@/stores/loading";
+import { extractOptions, notify, redirect_uri, wcb2b_enabled } from "@/composable/helpers";
+import { backendAction, storeKey } from "@/keys";
+import { fetchData, resetData, sendData } from "@/composable/http";
+import { useStorage } from "@/composable/storage";
 
 const actions = backendAction.zohoInventory;
 const keys = storeKey.zohoInventory;
@@ -151,7 +151,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
             .then((response) => response.json())
             .then((response) => {
                 if (!response) return;
-                if (response.success){
+                if (response.success) {
                     notify.success(response.data.message)
                     return;
                 } else {
@@ -246,6 +246,15 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         zoho_inventory_pricelist: '',
         wp_user_role: ''
     })
+    const wcb2b_groups: Ref<UnwrapRef<{ key: string, value: string }[]>> = ref([]);
+    function addGroup() {
+        wcb2b_groups.value.push({ key: "", value: "" });
+    }
+
+    function removeGroup(index: number) {
+        if (index === 0) return;
+        wcb2b_groups.value.splice(index, 1);
+    }
     const get_zoho_prices = async () => {
         const key = keys.price;
         const instore = storage.get(key);
@@ -270,7 +279,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const fields: Ref<UnwrapRef<{ key: string, value: string }[]>> = ref([])
 
     function addField() {
-        fields.value.push({key: "", value: ""});
+        fields.value.push({ key: "", value: "" });
     }
 
     function removeField(index: number) {
@@ -332,7 +341,11 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 store = keys.order
                 break;
             case actions.price.save:
-                data = price_settings
+                if (wcb2b_enabled) {
+                    data = { wcb2b: JSON.stringify(wcb2b_groups.value)}
+                } else {
+                    data = price_settings
+                }
                 store = keys.price
                 break;
             case actions.field.save:
@@ -360,7 +373,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     break;
                 case actions.field.save:
                     if (fields.value.length === 0) {
-                        fields.value.push({key: "", value: ""});
+                        fields.value.push({ key: "", value: "" });
                     }
                     break;
                 case actions.price.save:
@@ -454,6 +467,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 case actions.price.reset:
                     price_settings.zoho_inventory_pricelist = '';
                     price_settings.wp_user_role = ''
+                    wcb2b_groups.value = [{ key: '', value: '' }];
                     break;
                 case actions.field.reset:
                     fields.value = [];
@@ -550,12 +564,36 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 get_zoho_prices();
                 response = await loader.loadData(keys.price, actions.price.get);
                 if (response) {
-                    price_settings.zoho_inventory_pricelist = response.zoho_inventory_pricelist;
-                    price_settings.wp_user_role = response.wp_user_role;
+                    if (response.zoho_inventory_pricelist && response.wp_user_role) {
+                        price_settings.zoho_inventory_pricelist = response.zoho_inventory_pricelist;
+                        price_settings.wp_user_role = response.wp_user_role;
+                    }
+
                     if (response.wcb2b) {
-                        wcb2b.value = response.wcb2b
+                        wcb2b_groups.value = [];
+                        let parsed;
+                        if (typeof response.wcb2b === 'string') {
+                            parsed = JSON.parse(response.wcb2b);
+                        } else {
+                            parsed = response.wcb2b
+                        }
+                        console.log(parsed, response.wcb2b);
+                        
+                        Object.entries(parsed).forEach(([key, value]) => {
+                            const existingObject = wcb2b_groups.value.some(field => field.key === value.key && field.value === value.value);
+                            if (!existingObject) {
+                                wcb2b_groups.value.push(value);
+                            }
+
+                        });
+                        console.log(wcb2b_groups.value);
+                        
                     }
                 }
+                if (wcb2b_groups.value.length === 0) {
+                    wcb2b_groups.value.push({ key: "", value: "" });
+                }
+
                 break;
             case "field":
                 get_all_custom_fields();
@@ -571,12 +609,12 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     Object.entries(parsed).forEach(([key, value]) => {
                         const existingObject = fields.value.some(field => field.key === key && field.value === value);
                         if (!existingObject) {
-                            fields.value.push({key, value});
+                            fields.value.push({ key, value });
                         }
 
                     });
                     if (fields.value.length === 0) {
-                        fields.value.push({key: "", value: ""});
+                        fields.value.push({ key: "", value: "" });
                     }
 
                 }
@@ -612,6 +650,9 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         zoho_prices,
         price_settings,
         wcb2b,
+        wcb2b_groups,
+        addGroup,
+        removeGroup,
         customFields,
         fields,
         addField,

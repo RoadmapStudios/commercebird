@@ -53,7 +53,6 @@ final class CommerceBird {
 			array(),
 			$range
 		);
-		$this->write_log( $response, 'order-response' );
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
@@ -138,7 +137,6 @@ final class CommerceBird {
 			return;
 		}
 		$response = wp_remote_retrieve_body( $response );
-		$this->write_log( $response, 'commercebird-connector' );
 		return json_decode( $response, true );
 	}
 }

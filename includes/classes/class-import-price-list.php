@@ -6,7 +6,7 @@
  */
 
 class ImportPricelistClass {
-	use \RMS\Admin\Traits\LogWriter;
+	use RMS\Admin\Traits\LogWriter;
 
 	private array $config;
 
@@ -75,12 +75,13 @@ class ImportPricelistClass {
 	 *      "wp_user_role": WordPress user role
 	 * }
 	 */
-	public function save_price_list( array $post ) {
+	public function save_price_list( array $post ): bool {
 		if ( class_exists( 'Addify_B2B_Plugin' ) ) {
-			$this->addify_b2b( $post['zoho_inventory_pricelist'], $post['wp_user_role'] );
+			$success = $this->addify_b2b( $post['zoho_inventory_pricelist'], $post['wp_user_role'] );
 		} elseif ( class_exists( 'WooCommerceB2B' ) ) {
-			$this->wc_b2b( $post['zoho_inventory_pricelist'] );
+			$success = $this->wc_b2b( $post['wcb2b'] );
 		}
+		return $success;
 	}
 
 	/**
@@ -145,12 +146,12 @@ class ImportPricelistClass {
 	 * @param int $pricebook_id pricebook id
 	 * @param string $role user role
 	 */
-	private function addify_b2b( int $pricebook_id, string $role ) {
+	private function addify_b2b( int $pricebook_id, string $role ): bool {
 		$price_book  = $this->get_zoho_pricebook( $pricebook_id );
 		$zi_item_ids = $this->get_zoho_products();
 
 		if ( empty( $price_book ) ) {
-			return;
+			return false;
 		}
 
 		$meta_collection = array();
@@ -178,7 +179,7 @@ class ImportPricelistClass {
 		}
 
 		if ( empty( $meta_collection['ids'] ) ) {
-			return;
+			return false;
 		}
 
 		foreach ( $meta_collection['ids'] as $product_id => $price ) {
@@ -208,55 +209,39 @@ class ImportPricelistClass {
 
 			update_post_meta( $product_id, '_role_base_price', $postmeta_array );
 		}
+		return true;
 	}
 
-	public function wcb2b_synced_groups() {
-		$in_cache = get_transient( 'wcb2b_synced_groups' );
-		if ( ! empty( $in_cache ) ) {
-			return $in_cache;
+
+
+	private function wc_b2b( $group_settings ): bool {
+		$group_settings = json_decode( $group_settings, true );
+		if ( empty( $group_settings ) ) {
+			return false;
 		}
-		global $wpdb;
-
-		$results = $wpdb->get_results(
-			"SELECT p.post_title AS group_name, pm.meta_value AS pricebook
-				FROM {$wpdb->posts} p
-				INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
-				WHERE pm.meta_key = 'pricebook_name'
-				AND p.post_type = 'wcb2b_group'",
-			ARRAY_A
-		);
-
-		set_transient( 'wcb2b_synced_groups', $results, DAY_IN_SECONDS );
-
-		return $results;
-	}
-
-	private function wc_b2b( $pricebook_id ) {
-		delete_transient( 'wcb2b_synced_groups' );
-		$price_book  = $this->get_zoho_pricebook( $pricebook_id );
-		$zi_item_ids = $this->get_zoho_products();
-		$groups      = $this->wc_b2b_groups();
-		if ( empty( $price_book ) ) {
-			return;
-		}
-
-		switch ( $price_book['pricebook_type'] ) {
-			case 'fixed_percentage':
-				$discount = wcb2b_price_format( $price_book['percentage'] );
-				foreach ( $groups['global'] as $id ) {
-					update_post_meta( $id, 'wcb2b_group_discount', $discount );
-					update_post_meta( $id, 'pricebook_id', $pricebook_id );
-					update_post_meta( $id, 'pricebook_name', $price_book['name'] );
-				}
-				break;
-			case 'per_item':
-				foreach ( $price_book['pricebook_items'] as $pricebook_item ) {
-					if ( ! isset( $zi_item_ids[ $pricebook_item['item_id'] ] ) ) {
-						continue;
-					}
-					$product_id           = $zi_item_ids[ $pricebook_item['item_id'] ];
-					$product_group_prices = $product_group_min = $product_group_max = array();
-					foreach ( $groups['single'] as $group_id ) {
+		foreach ( $group_settings as $group_setting ) {
+			$group_id     = $group_setting['key'];
+			$pricebook_id = $group_setting['value'];
+			delete_transient( 'wcb2b_synced_groups' );
+			$price_book = $this->get_zoho_pricebook( $pricebook_id );
+			if ( empty( $price_book ) ) {
+				continue;
+			}
+			$zi_item_ids = $this->get_zoho_products();
+			switch ( $price_book['pricebook_type'] ) {
+				case 'fixed_percentage':
+					$discount = wcb2b_price_format( $price_book['percentage'] );
+					update_post_meta( $group_id, 'wcb2b_group_discount', $discount );
+					update_post_meta( $group_id, 'pricebook_id', $pricebook_id );
+					update_post_meta( $group_id, 'pricebook_name', $price_book['name'] );
+					break;
+				case 'per_item':
+					foreach ( $price_book['pricebook_items'] as $pricebook_item ) {
+						if ( ! isset( $zi_item_ids[ $pricebook_item['item_id'] ] ) ) {
+							continue;
+						}
+						$product_id           = $zi_item_ids[ $pricebook_item['item_id'] ];
+						$product_group_prices = $product_group_min = $product_group_max = array();
 						if ( is_array( $pricebook_item['price_brackets'] ) && count( $pricebook_item['price_brackets'] ) > 0 ) {
 							$price = $pricebook_item['price_brackets'][0]['pricebook_rate'];
 							$product_group_prices[ $group_id ]['regular_price'] = wcb2b_price_format( $price );
@@ -267,29 +252,26 @@ class ImportPricelistClass {
 						}
 						update_post_meta( $group_id, 'pricebook_id', $pricebook_id );
 						update_post_meta( $group_id, 'pricebook_name', $price_book['name'] );
+						if ( ! empty( $product_group_prices ) ) {
+							update_post_meta( $product_id, 'wcb2b_product_group_prices', $product_group_prices );
+						}
+						if ( ! empty( $product_group_min ) ) {
+							update_post_meta( $product_id, 'wcb2b_product_group_min', $product_group_min );
+						}
+						if ( ! empty( $product_group_max ) ) {
+							update_post_meta( $product_id, 'wcb2b_product_group_max', $product_group_max );
+						}
 					}
-					if ( ! empty( $product_group_prices ) ) {
-						update_post_meta( $product_id, 'wcb2b_product_group_prices', $product_group_prices );
-					}
-					if ( ! empty( $product_group_min ) ) {
-						update_post_meta( $product_id, 'wcb2b_product_group_min', $product_group_min );
-					}
-					if ( ! empty( $product_group_max ) ) {
-						update_post_meta( $product_id, 'wcb2b_product_group_max', $product_group_max );
-					}
-				}
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
+			}
 		}
+
+		return true;
 	}
 
-	/**
-	 * Retrieves and caches the B2B groups from the database.
-	 *
-	 * @return array The B2B groups data.
-	 */
-	private function wc_b2b_groups() {
+	public function wc_b2b_groups() {
 		$in_cache = get_transient( 'wc_b2b_groups' );
 		if ( ! empty( $in_cache ) ) {
 			return $in_cache;
@@ -297,11 +279,40 @@ class ImportPricelistClass {
 		global $wpdb;
 
 		$results = $wpdb->get_results(
-			"SELECT p.ID AS id, pm.meta_value AS rule
+			"SELECT ID AS id, post_title AS label
 			        FROM {$wpdb->posts} p
-			        INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
 			        WHERE p.post_type = 'wcb2b_group'
-			        AND pm.meta_key = 'wcb2b_group_price_rule'",
+			        AND p.post_status = 'publish'",
+			ARRAY_A // Return results as an associative array
+		);
+
+		if ( empty( $results ) ) {
+			return array();
+		}
+		$groups = wp_list_pluck( $results, 'label', 'id' );
+		set_transient( 'wc_b2b_groups', $groups, DAY_IN_SECONDS );
+
+		return $groups;
+	}
+
+	/**
+	 * Retrieves and caches the B2B groups from the database.
+	 *
+	 * @return array The B2B groups data.
+	 */
+	private function wc_b2b_groups_by_rule() {
+		$in_cache = get_transient( 'wc_b2b_groups' );
+		if ( ! empty( $in_cache ) ) {
+			return $in_cache;
+		}
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			"SELECT p . ID as id, pm . meta_value as rule
+					FROM {$wpdb->posts} p
+					INNER JOIN {$wpdb->postmeta} pm ON p . ID = pm . post_id
+					WHERE p . post_type                       = 'wcb2b_group'
+					and pm . meta_key                         = 'wcb2b_group_price_rule'",
 			ARRAY_A // Return results as an associative array
 		);
 
