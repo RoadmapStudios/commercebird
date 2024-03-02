@@ -39,11 +39,17 @@ trait Api {
 		return new WP_Error( 'rest_forbidden', 'Sorry, this API endpoint is not accessible from your domain.', array( 'status' => 403 ) );
 	}
 
-	public function permission_check( WP_REST_Request $request ) {
-		$authorization = $request->get_header( 'Authorization' );
-		$subscription  = ZohoInventoryAjax::instance()->get_subscription_data();
-		$premium       = isset( $subscription['plan'] ) ? in_array( 'Premium', $subscription['plan'] ) : false;
-		return password_verify( 'commercebird-zi-webhook-token', $authorization ) && $premium;
+	public function permission_check() {
+		// Get all headers
+		$headers = getallheaders();
+		// Check if the Authorization header is present
+		if ( isset( $headers['Authorization'] ) ) {
+			$authorization = $headers['Authorization'];
+			$subscription  = ZohoInventoryAjax::instance()->get_subscription_data();
+			$premium       = isset( $subscription['plan'] ) ? in_array( 'Premium', $subscription['plan'] ) : false;
+			return password_verify( 'commercebird-zi-webhook-token', $authorization );
+		}
+		return false;
 	}
 
 	public function handle( WP_REST_Request $request ) {
