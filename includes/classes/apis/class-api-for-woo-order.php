@@ -68,6 +68,8 @@ class CreateOrderWebhook {
 			'delivery_method',
 			'currency_code',
 			'line_items',
+			'contact_person_details',
+			'shipping_charges',
 			'order_status',
 			'paid_status',
 			'discount',
@@ -75,7 +77,18 @@ class CreateOrderWebhook {
 			'notes',
 		);
 
-		$order_data = array_intersect_key( $order_data['salesorder'], array_flip( $allowed_keys ) );
+		$order_data       = array_intersect_key( $order_data['salesorder'], array_flip( $allowed_keys ) );
+		$billing_address  = $this->format_address( $order_data['billing_address'] );
+		$shipping_address = $this->format_address( $order_data['shipping_address'] );
+		if ( isset( $order_data['contact_person_details'][0]['email'] ) ) {
+			$customer_data = $order_data['contact_person_details'][0];
+			$customer_mail = $customer_data['email'];
+			$customer      = get_user_by( 'email', $customer_mail );
+			if ( empty( $customer ) ) {
+				$customer_id = wc_create_new_customer( $customer_mail );
+				$customer    = get_user_by( 'id', $customer_id );
+			}
+		}
 
 		if ( empty( $order_data['line_items'] ) ) {
 			$message = sprintf( __( 'Zoho order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['salesorder_number'], get_bloginfo( 'name' ) );
@@ -94,24 +107,25 @@ class CreateOrderWebhook {
 			$response->set_data( $message );
 			return $response;
 		}
-		// $customer = get_user_by( 'email', $order_data['billing_address']['email'] );
 		// create shipping object
 		$shipping = new \WC_Order_Item_Shipping();
 		$shipping->set_method_title( $order_data['delivery_method'] );
+		$shipping->set_total( $order_data['shipping_charges']['item_total'] );
 		$order = wc_create_order();
-		// if ( $customer ) {
-		//  $order->set_customer_id( $customer->ID );
-		// }
+		if ( $customer ) {
+			$order->set_customer_id( $customer->ID );
+		}
 		foreach ( $order_data['line_items'] as $order_data_item ) {
 			$order->add_product( wc_get_product( $line_items[ $order_data_item['item_id'] ] ), $order_data_item['quantity'] );
 		}
-		$order->set_address( $this->format_address( $order_data['billing_address'] ), 'billing' );
-		$order->set_address( $this->format_address( $order_data['shipping_address'] ), 'shipping' );
+		$order->set_address( $billing_address, 'billing' );
+		$order->set_address( $shipping_address, 'shipping' );
 		$order->set_currency( $order_data['currency_code'] );
 		$order->set_status( $this->map_status( $order_data['order_status'] ) );
 		$order->set_discount_total( $order_data['discount'] );
 		$order->add_item( $shipping );
 		$order->calculate_totals();
+		$order->set_shipping_tax( $order_data['shipping_charges']['tax_total_fcy'] ?? 0 );
 		$order->set_customer_note( $order_data['notes'] );
 		$order->save();
 		$order->update_meta_data( 'zi_salesorder_id', $order_data['salesorder_id'] );

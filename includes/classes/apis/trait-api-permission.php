@@ -45,11 +45,24 @@ trait Api {
 		// Check if the Authorization header is present
 		if ( isset( $headers['Authorization'] ) ) {
 			$authorization = $headers['Authorization'];
-			$subscription  = ZohoInventoryAjax::instance()->get_subscription_data();
-			$premium       = isset( $subscription['plan'] ) ? in_array( 'Premium', $subscription['plan'] ) : false;
-			return password_verify( 'commercebird-zi-webhook-token', $authorization );
+			if ( ! password_verify( 'commercebird-zi-webhook-token', $authorization ) ) {
+				return new WP_Error(
+					'rest_forbidden',
+					'You are not header to access this endpoint',
+					array(
+						'status' => 403,
+						'header' => $authorization,
+					)
+				);
+			}
 		}
-		return false;
+		$subscription = ZohoInventoryAjax::instance()->get_subscription_data();
+		if ( isset( $subscription['plan'] ) ) {
+			if ( ! in_array( 'Premium', $subscription['plan'] ) && ! in_array( 'Wooventory - Premium', $subscription['plan'] ) ) {
+				return new WP_Error( 'rest_forbidden', 'You are not subscribed to access this endpoint', array( 'status' => 403 ) );
+			}
+		}
+		return true;
 	}
 
 	public function handle( WP_REST_Request $request ) {
@@ -83,11 +96,11 @@ trait Api {
 	 * @return void
 	 */
 	private function write_log( $data ): void {
-		$timestamp = gmdate( 'Y-m-d H:i:s' );
+		$timestamp = gmdate( 'Y - m - d H:i:s' );
 		$json_data = wp_json_encode( $data, JSON_PRETTY_PRINT );
-		$log_dir   = __DIR__ . '/' . self::$endpoint . '-webhook.log';
+		$log_dir   = __DIR__ . ' / ' . self::$endpoint . ' - webhook . log';
 
-		$log_message = sprintf( '%s - %s %s', $timestamp, $jsonData, PHP_EOL );
+		$log_message = sprintf( ' % s - % s % s', $timestamp, $jsonData, PHP_EOL );
 		error_log( $log_message, 3, $log_dir );
 	}
 }
