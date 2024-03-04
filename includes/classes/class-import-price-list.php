@@ -230,8 +230,7 @@ class ImportPricelistClass {
 			$zi_item_ids = $this->get_zoho_products();
 			switch ( $price_book['pricebook_type'] ) {
 				case 'fixed_percentage':
-					$discount = wcb2b_price_format( $price_book['percentage'] );
-					update_post_meta( $group_id, 'wcb2b_group_discount', $discount );
+					update_post_meta( $group_id, 'wcb2b_group_discount', $price_book['percentage'] );
 					update_post_meta( $group_id, 'pricebook_id', $pricebook_id );
 					update_post_meta( $group_id, 'pricebook_name', $price_book['name'] );
 					break;
