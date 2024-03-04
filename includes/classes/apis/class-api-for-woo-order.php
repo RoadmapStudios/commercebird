@@ -2,6 +2,7 @@
 
 namespace RMS\API;
 
+use RMS\Admin\Traits\LogWriter;
 use WP_REST_Response;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit();
@@ -9,6 +10,7 @@ defined( 'RMS_PLUGIN_NAME' ) || exit();
 class CreateOrderWebhook {
 
 	use Api;
+	use LogWriter;
 
 	private static string $endpoint = 'create-woo-order';
 
@@ -111,25 +113,39 @@ class CreateOrderWebhook {
 		$shipping = new \WC_Order_Item_Shipping();
 		$shipping->set_method_title( $order_data['delivery_method'] );
 		$shipping->set_total( $order_data['shipping_charges']['item_total'] );
-		$order = wc_create_order();
-		if ( $customer ) {
-			$order->set_customer_id( $customer->ID );
+		$id            = $this->get_order_id( $order_data['salesorder_id'] );
+		$exiting_order = wc_get_order( $id );
+		if ( $exiting_order ) {
+			$exiting_order->set_address( $shipping_address, 'shipping' );
+			foreach ( $order_data['line_items'] as $order_data_item ) {
+				$exiting_order->add_product( wc_get_product( $line_items[ $order_data_item['item_id'] ] ), $order_data_item['quantity'] );
+			}
+			$exiting_order->set_customer_note( $order_data['notes'] );
+			$exiting_order->save();
+			$response->set_data( $exiting_order->get_data() );
+		} else {
+			$order = wc_create_order();
+			if ( $customer ) {
+				$order->set_customer_id( $customer->ID );
+			}
+			foreach ( $order_data['line_items'] as $order_data_item ) {
+				$order->add_product( wc_get_product( $line_items[ $order_data_item['item_id'] ] ), $order_data_item['quantity'] );
+			}
+			$order->set_address( $billing_address, 'billing' );
+			$order->set_address( $shipping_address, 'shipping' );
+			$order->set_currency( $order_data['currency_code'] );
+			$order->set_status( $this->map_status( $order_data['order_status'] ) );
+			$order->set_discount_total( $order_data['discount'] );
+			$order->add_item( $shipping );
+			$order->calculate_totals();
+			$order->set_shipping_tax( $order_data['shipping_charges']['tax_total_fcy'] ?? 0 );
+			$order->set_customer_note( $order_data['notes'] );
+			$order->save();
+			$order->update_meta_data( 'zi_salesorder_id', $order_data['salesorder_id'] );
+			$order->save();
+			$response->set_data( $order->get_data() );
 		}
-		foreach ( $order_data['line_items'] as $order_data_item ) {
-			$order->add_product( wc_get_product( $line_items[ $order_data_item['item_id'] ] ), $order_data_item['quantity'] );
-		}
-		$order->set_address( $billing_address, 'billing' );
-		$order->set_address( $shipping_address, 'shipping' );
-		$order->set_currency( $order_data['currency_code'] );
-		$order->set_status( $this->map_status( $order_data['order_status'] ) );
-		$order->set_discount_total( $order_data['discount'] );
-		$order->add_item( $shipping );
-		$order->calculate_totals();
-		$order->set_shipping_tax( $order_data['shipping_charges']['tax_total_fcy'] ?? 0 );
-		$order->set_customer_note( $order_data['notes'] );
-		$order->save();
-		$order->update_meta_data( 'zi_salesorder_id', $order_data['salesorder_id'] );
-		$response->set_data( $order->get_data() );
+
 		return $response;
 	}
 
@@ -160,10 +176,30 @@ class CreateOrderWebhook {
 
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT p.ID AS product_id, pm.meta_value AS zoho_id FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type = 'product' AND pm.meta_key = 'zi_item_id' AND pm.meta_value IN ($placeholders)",
+				"SELECT p.ID AS product_id, pm.meta_value AS zoho_id FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type in ('product', 'product_variation') AND pm.meta_key = 'zi_item_id' AND pm.meta_value IN ($placeholders)",
 				$meta_ids
 			)
 		);
 		return wp_list_pluck( $results, 'product_id', 'zoho_id' );
+	}
+
+	private function get_order_id( $zi_id ): int {
+		// Define your meta query arguments
+		$args = array(
+			'meta_query' => array(
+				array(
+					'key'     => 'zi_salesorder_id',
+					'value'   => $zi_id,
+					'compare' => '=',
+				),
+			),
+		);
+
+		// Get orders based on meta query
+		$orders = wc_get_orders( $args );
+		if ( count( $orders ) > 0 ) {
+			return $orders[0]->get_id();
+		}
+		return 0;
 	}
 }

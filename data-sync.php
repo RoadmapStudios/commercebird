@@ -373,8 +373,7 @@ function ajax_subcategory_sync_call() {
 					} else {
 						$term_id = $child_term['term_id'];
 					}
-				} else {
-
+				} else if ($term instanceof WP_Term ) {
 					$term_id = $term->term_id;
 				}
 

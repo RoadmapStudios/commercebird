@@ -127,7 +127,7 @@ class ImportPricelistClass {
            				 FROM {$wpdb->postmeta} pm
            				 INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
            				 WHERE pm.meta_key = 'zi_item_id'
-           				 AND p.post_type = 'product'
+           				 AND p.post_type in ('product', 'product_variation') 
            				 AND p.post_status = 'publish'
            				 AND pm.meta_value != ''",
 			ARRAY_A
@@ -244,11 +244,11 @@ class ImportPricelistClass {
 						$product_group_prices = $product_group_min = $product_group_max = array();
 						if ( is_array( $pricebook_item['price_brackets'] ) && count( $pricebook_item['price_brackets'] ) > 0 ) {
 							$price = $pricebook_item['price_brackets'][0]['pricebook_rate'];
-							$product_group_prices[ $group_id ]['regular_price'] = wcb2b_price_format( $price );
+							$product_group_prices[ $group_id ]['regular_price'] = $price;
 							$product_group_min[ $group_id ]                     = $pricebook_item['price_brackets'][0]['start_quantity'];
 							$product_group_max[ $group_id ]                     = $pricebook_item['price_brackets'][0]['end_quantity'];
 						} else {
-							$product_group_prices[ $group_id ]['regular_price'] = wcb2b_price_format( $pricebook_item['pricebook_rate'] );
+							$product_group_prices[ $group_id ]['regular_price'] = $pricebook_item['pricebook_rate'];
 						}
 						update_post_meta( $group_id, 'pricebook_id', $pricebook_id );
 						update_post_meta( $group_id, 'pricebook_name', $price_book['name'] );
