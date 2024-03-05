@@ -51,6 +51,27 @@ class CreateOrderWebhook {
 		);
 	}
 
+	private function get_product_from_order_items_by_id( $product_id ) {
+		global $wpdb;
+
+		// Table name for order items
+		$order_items_table = $wpdb->prefix . 'woocommerce_order_items';
+
+		// Query to retrieve product from order items by product ID
+		$query = $wpdb->prepare(
+			"SELECT order_item_id, order_id, order_item_name, order_item_type
+        FROM $order_items_table
+        WHERE order_item_type = 'line_item'
+        AND order_item_name LIKE %s",
+			'%' . $wpdb->esc_like( $product_id ) . '%'
+		);
+
+		// Execute the query
+		$results = $wpdb->get_results( $query );
+
+		// Return the product details
+		return $results;
+	}
 
 	private function process( array $order_data ): WP_REST_Response {
 		$response = new WP_REST_Response();
@@ -113,16 +134,32 @@ class CreateOrderWebhook {
 		$shipping = new \WC_Order_Item_Shipping();
 		$shipping->set_method_title( $order_data['delivery_method'] );
 		$shipping->set_total( $order_data['shipping_charges']['item_total'] );
-		$id            = $this->get_order_id( $order_data['salesorder_id'] );
-		$exiting_order = wc_get_order( $id );
-		if ( $exiting_order ) {
-			$exiting_order->set_address( $shipping_address, 'shipping' );
-			foreach ( $order_data['line_items'] as $order_data_item ) {
-				$exiting_order->add_product( wc_get_product( $line_items[ $order_data_item['item_id'] ] ), $order_data_item['quantity'] );
+		$id             = $this->get_order_id( $order_data['salesorder_id'] );
+		$existing_order = wc_get_order( $id );
+		// $existing_order->delete();
+		if ( $existing_order ) {
+			$existing_order->set_address( $shipping_address, 'shipping' );
+
+			$order_items = wp_list_pluck( $order_data['line_items'], 'quantity', 'sku' );
+
+			foreach ( $existing_order->get_items() as  $item_id => $item ) {
+				$product_id = $item->get_product_id(); // Product ID
+				$product    = wc_get_product( $product_id );
+				$sku        = $product->get_sku();
+				$quantity   = $order_items[ $sku ];
+				if ( empty( $quantity ) ) {
+					continue;
+				}
+				$item->set_total( $product->get_price() * $quantity );
+				$item->set_quantity( $quantity );
 			}
-			$exiting_order->set_customer_note( $order_data['notes'] );
-			$exiting_order->save();
-			$response->set_data( $exiting_order->get_data() );
+			// Save the changes to the order
+			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
+			$existing_order->calculate_totals();
+			$existing_order->save();
+			$response->set_data(
+				$existing_order->get_data()
+			);
 		} else {
 			$order = wc_create_order();
 			if ( $customer ) {
@@ -162,7 +199,7 @@ class CreateOrderWebhook {
 
 	private function get_items( $line_items ): array {
 		$meta_ids    = array_column( $line_items, 'item_id' );
-		$product_ids = $this->get_products( $meta_ids );
+		$product_ids = $this->get_products_by_id( $meta_ids );
 		if ( count( $product_ids ) !== count( $meta_ids ) ) {
 			return array( 'not_found' => array_diff( $meta_ids, array_keys( $product_ids ) ) );
 		}
@@ -170,7 +207,7 @@ class CreateOrderWebhook {
 		return $product_ids;
 	}
 
-	private function get_products( array $meta_ids ): array {
+	private function get_products_by_id( array $meta_ids ): array {
 		global $wpdb;
 		$placeholders = implode( ',', array_fill( 0, count( $meta_ids ), '%d' ) );
 
