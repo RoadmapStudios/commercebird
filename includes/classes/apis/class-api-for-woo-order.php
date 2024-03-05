@@ -140,21 +140,45 @@ class CreateOrderWebhook {
 		if ( $existing_order ) {
 			$existing_order->set_address( $shipping_address, 'shipping' );
 
-			$order_items = wp_list_pluck( $order_data['line_items'], 'quantity', 'sku' );
+			// Get existing order items
+			$existing_items = $existing_order->get_items();
+			$order_items    = wp_list_pluck( $order_data['line_items'], 'quantity', 'sku' );
 
-			foreach ( $existing_order->get_items() as  $item_id => $item ) {
-				$product_id = $item->get_product_id(); // Product ID
+			// Create an array to track existing SKUs
+			$existing_skus = array();
+
+			foreach ( $existing_items as $item_id => $item ) {
+				$product_id = $item->get_product_id();
 				$product    = wc_get_product( $product_id );
 				$sku        = $product->get_sku();
-				$quantity   = $order_items[ $sku ];
-				if ( empty( $quantity ) ) {
-					continue;
+				$quantity   = $order_items['quantity'] ?? 0;
+
+				// Update existing item quantity.
+				if ( in_array( $sku, $order_items['sku'], true ) ) {
+					$item->set_quantity( $quantity );
+					$item->set_total( $product->get_price() * $quantity );
+					$existing_skus[] = $sku;
+				} else {
+					// Remove item if quantity is zero
+					$existing_order->remove_item( $item_id );
 				}
-				$item->set_total( $product->get_price() * $quantity );
-				$item->set_quantity( $quantity );
+			}
+			// Add new items to the order
+			foreach ( $order_data['line_items'] as $order_data_item ) {
+				$sku = $order_data_item['sku'];
+
+				if ( ! in_array( $sku, $existing_skus, true ) ) {
+					$product = wc_get_product( $line_items[ $sku ] );
+
+					if ( $product ) {
+						$quantity = $order_data_item['quantity'];
+						$existing_order->add_product( $product, $quantity );
+					}
+				}
 			}
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
+			$existing_order->set_status( $this->map_status( $order_data['paid_status'] ) );
 			$existing_order->calculate_totals();
 			$existing_order->save();
 			$response->set_data(
@@ -166,12 +190,12 @@ class CreateOrderWebhook {
 				$order->set_customer_id( $customer->ID );
 			}
 			foreach ( $order_data['line_items'] as $order_data_item ) {
-				$order->add_product( wc_get_product( $line_items[ $order_data_item['item_id'] ] ), $order_data_item['quantity'] );
+				$order->add_product( wc_get_product( $line_items[ $order_data_item['sku'] ] ), $order_data_item['quantity'] );
 			}
 			$order->set_address( $billing_address, 'billing' );
 			$order->set_address( $shipping_address, 'shipping' );
 			$order->set_currency( $order_data['currency_code'] );
-			$order->set_status( $this->map_status( $order_data['order_status'] ) );
+			$order->set_status( $this->map_status( $order_data['paid_status'] ) );
 			$order->set_discount_total( $order_data['discount'] );
 			$order->add_item( $shipping );
 			$order->calculate_totals();
@@ -189,7 +213,7 @@ class CreateOrderWebhook {
 
 	private function map_status( $status ): string {
 		switch ( $status ) {
-			case 'confirmed':
+			case 'paid':
 				return 'wc-completed';
 			default:
 				return 'wc-pending';
@@ -198,8 +222,14 @@ class CreateOrderWebhook {
 
 
 	private function get_items( $line_items ): array {
-		$meta_ids    = array_column( $line_items, 'item_id' );
-		$product_ids = $this->get_products_by_id( $meta_ids );
+		$meta_ids    = array_column( $line_items, 'sku' );
+		$product_ids = array();
+		foreach ( $line_items as $item ) {
+			$product_id = wc_get_product_id_by_sku( $item['sku'] );
+			if ( $product_id ) {
+				$product_ids[] = $product_id;
+			}
+		}
 		if ( count( $product_ids ) !== count( $meta_ids ) ) {
 			return array( 'not_found' => array_diff( $meta_ids, array_keys( $product_ids ) ) );
 		}
@@ -213,11 +243,11 @@ class CreateOrderWebhook {
 
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT p.ID AS product_id, pm.meta_value AS zoho_id FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type in ('product', 'product_variation') AND pm.meta_key = 'zi_item_id' AND pm.meta_value IN ($placeholders)",
+				"SELECT p.ID AS product_id, pm.meta_value AS sku FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type in ('product', 'product_variation') AND pm.meta_key = '_sku' AND pm.meta_value IN ($placeholders)",
 				$meta_ids
 			)
 		);
-		return wp_list_pluck( $results, 'product_id', 'zoho_id' );
+		return wp_list_pluck( $results, 'product_id', 'sku' );
 	}
 
 	private function get_order_id( $zi_id ): int {
