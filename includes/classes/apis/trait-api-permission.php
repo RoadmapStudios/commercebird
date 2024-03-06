@@ -59,7 +59,7 @@ trait Api {
 		$subscription = ZohoInventoryAjax::instance()->get_subscription_data();
 		if ( isset( $subscription['plan'] ) ) {
 			$subscription_plan = implode( ' ', $subscription['plan'] );
-			if ( stripos( $subscription_plan, 'Premium' ) !== false ) {
+			if ( stripos( $subscription_plan, 'Premium' ) === false ) {
 				return new WP_Error(
 					'rest_forbidden',
 					$subscription_plan,
