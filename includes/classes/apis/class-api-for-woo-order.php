@@ -164,18 +164,18 @@ class CreateOrderWebhook {
 				}
 			}
 			// Add new items to the order
-			foreach ( $order_data['line_items'] as $order_data_item ) {
-				$sku = $order_data_item['sku'];
+			// foreach ( $order_data['line_items'] as $order_data_item ) {
+			// 	$sku = $order_data_item['sku'];
 
-				if ( ! in_array( $sku, $existing_skus, true ) ) {
-					$product = wc_get_product( $line_items[ $sku ] );
+			// 	if ( ! in_array( $sku, $existing_skus, true ) ) {
+			// 		$product = wc_get_product( $line_items[ $sku ] );
 
-					if ( $product ) {
-						$quantity = $order_data_item['quantity'];
-						$existing_order->add_product( $product, $quantity );
-					}
-				}
-			}
+			// 		if ( $product ) {
+			// 			$quantity = $order_data_item['quantity'];
+			// 			$existing_order->add_product( $product, $quantity );
+			// 		}
+			// 	}
+			// }
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
 			$existing_order->set_status( $this->map_status( $order_data['paid_status'] ) );
@@ -222,6 +222,8 @@ class CreateOrderWebhook {
 
 
 	private function get_items( $line_items ): array {
+		$fd = fopen( __DIR__ . '/get_items.txt', 'w+' );
+
 		$meta_ids    = array_column( $line_items, 'sku' );
 		$product_ids = array();
 		foreach ( $line_items as $item ) {
@@ -230,6 +232,9 @@ class CreateOrderWebhook {
 				$product_ids[] = $product_id;
 			}
 		}
+		fwrite( $fd, PHP_EOL . print_r( $product_ids, true ) );
+
+		fclose( $fd );
 		if ( count( $product_ids ) !== count( $meta_ids ) ) {
 			return array( 'not_found' => array_diff( $meta_ids, array_keys( $product_ids ) ) );
 		}
@@ -237,18 +242,18 @@ class CreateOrderWebhook {
 		return $product_ids;
 	}
 
-	private function get_products_by_id( array $meta_ids ): array {
-		global $wpdb;
-		$placeholders = implode( ',', array_fill( 0, count( $meta_ids ), '%d' ) );
+	// private function get_products_by_id( array $meta_ids ): array {
+	//  global $wpdb;
+	//  $placeholders = implode( ',', array_fill( 0, count( $meta_ids ), '%d' ) );
 
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT p.ID AS product_id, pm.meta_value AS sku FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type in ('product', 'product_variation') AND pm.meta_key = '_sku' AND pm.meta_value IN ($placeholders)",
-				$meta_ids
-			)
-		);
-		return wp_list_pluck( $results, 'product_id', 'sku' );
-	}
+	//  $results = $wpdb->get_results(
+	//      $wpdb->prepare(
+	//          "SELECT p.ID AS product_id, pm.meta_value AS sku FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type in ('product', 'product_variation') AND pm.meta_key = '_sku' AND pm.meta_value IN ($placeholders)",
+	//          $meta_ids
+	//      )
+	//  );
+	//  return wp_list_pluck( $results, 'product_id', 'sku' );
+	// }
 
 	private function get_order_id( $zi_id ): int {
 		// Define your meta query arguments

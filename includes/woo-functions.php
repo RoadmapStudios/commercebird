@@ -43,7 +43,7 @@ function zi_update_contact_via_accountpage( $user_id ) {
 		return;
 	}
 	$contactClassHandle = new ContactClass();
-	$contactClassHandle->ContactUpdateFunction( $user_id );
+	$contactClassHandle->contact_update_function( $user_id );
 }
 add_action( 'profile_update', 'zi_update_contact_via_accountpage' );
 

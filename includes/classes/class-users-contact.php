@@ -10,7 +10,7 @@
  */
 class ContactClass {
 
-
+	private array $config;
 	public function __construct() {
 		$config = array(
 
@@ -22,10 +22,10 @@ class ContactClass {
 
 		);
 
-		return $this->config = $config;
+		$this->config = $config;
 	}
 
-	public function ContactCreateFunction( $userid ) {
+	public function contact_create_function( $userid ) {
 		if ( empty( $userid ) ) {
 			return '';
 		}
@@ -88,9 +88,9 @@ class ContactClass {
 		if ( empty( $currency_id ) && $userid ) {
 			$user_order = wc_get_customer_last_order( $userid );
 			if ( ! empty( $user_order ) ) {
-				$user_currency       = $user_order->get_currency();
-				$multiCurrencyHandle = new MulticurrencyClass();
-				$multiCurrencyHandle->ZohoCurrencyData( $user_currency, $userid );
+				$user_currency         = $user_order->get_currency();
+				$multi_currency_handle = new MulticurrencyClass();
+				$multi_currency_handle->ZohoCurrencyData( $user_currency, $userid );
 			}
 		}
 
@@ -166,7 +166,7 @@ class ContactClass {
 		return $zi_customer_id;
 	}
 
-	public function ContactUpdateFunction( $userid, $order_id = '' ) {
+	public function contact_update_function( $userid, $order_id = '' ) {
 		//start logging
 		// $fd=fopen(__DIR__.'/contact-update-sync.txt','w+');
 
@@ -287,13 +287,13 @@ class ContactClass {
 
 		if ( $code == '0' || $code == 0 ) {
 			/* Update Create a contactperson within that contact if email_id do not match */
-			$res_msg = $this->UpdateContactEmailAddress( $userid );
+			$res_msg = $this->update_contact_email_address( $userid );
 		}
 
 		return $res_msg;
 	}
 
-	public function UpdateContactEmailAddress( $userid ) {
+	public function update_contact_email_address( $userid ) {
 		// Re-add contact email address after updating contact
 		$zi_customer_id      = get_user_meta( $userid, 'zi_contact_id', true );
 		$fname               = get_user_meta( $userid, 'billing_first_name', true );
@@ -389,8 +389,8 @@ class ContactClass {
 		return $res_msg;
 	}
 
-	public function Create_contact_person( $userid ) {
-		// $fd=fopen(__DIR__.'/Create_contact_person.txt','w+');
+	public function create_contact_person( $userid ) {
+		// $fd=fopen(__DIR__.'/create_contact_person.txt','w+');
 
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
 		$fname          = get_user_meta( $userid, 'first_name', true );

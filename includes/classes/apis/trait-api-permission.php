@@ -50,7 +50,7 @@ trait Api {
 					'rest_forbidden',
 					'You are not header to access this endpoint',
 					array(
-						'status' => 403,
+						'status' => 400,
 						'header' => $authorization,
 					)
 				);
@@ -58,13 +58,13 @@ trait Api {
 		}
 		$subscription = ZohoInventoryAjax::instance()->get_subscription_data();
 		if ( isset( $subscription['plan'] ) ) {
-			if ( ! in_array( 'Premium', $subscription['plan'] ) && ! in_array( 'Wooventory - Premium', $subscription['plan'] ) ) {
-				return new WP_Error( 'rest_forbidden', 'You are not subscribed to access this endpoint', array( 'status' => 403 ) );
+			$subscription_plan = implode( ' ', $subscription['plan'] );
+			if ( strpos( 'Premium', $subscription_plan ) === false ) {
+				return new WP_Error( 'rest_forbidden', $subscription_plan, array( 'status' => 403 ) );
 			}
+			return true;
 		}
-		return true;
 	}
-
 	public function handle( WP_REST_Request $request ) {
 		$response = new WP_REST_Response();
 		$response->set_data( $this->empty_response );
@@ -80,7 +80,6 @@ trait Api {
 			try {
 				$response = $this->process( $data );
 			} catch ( Exception $exception ) {
-				$this->write_log( $exception );
 				$response->set_data( $exception->getMessage() );
 				$response->set_status( 500 );
 			}
