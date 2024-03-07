@@ -136,53 +136,44 @@ class CreateOrderWebhook {
 		$shipping->set_total( $order_data['shipping_charges']['item_total'] );
 		$id             = $this->get_order_id( $order_data['salesorder_id'] );
 		$existing_order = wc_get_order( $id );
-		// $existing_order->delete();
-		if ( $existing_order ) {
+		if ( ! empty( $existing_order ) ) {
 			$existing_order->set_address( $shipping_address, 'shipping' );
 
 			// Get existing order items
-			$existing_items = $existing_order->get_items();
-			$order_items    = wp_list_pluck( $order_data['line_items'], 'quantity', 'sku' );
-
-			// Create an array to track existing SKUs
-			$existing_skus = array();
-
-			foreach ( $existing_items as $item_id => $item ) {
-				$product_id = $item->get_product_id();
-				$product    = wc_get_product( $product_id );
-				$sku        = $product->get_sku();
-				$quantity   = $order_items['quantity'] ?? 0;
-
-				// Update existing item quantity.
-				if ( in_array( $sku, $order_items['sku'], true ) ) {
-					$item->set_quantity( $quantity );
-					$item->set_total( $product->get_price() * $quantity );
-					$existing_skus[] = $sku;
-				} else {
-					// Remove item if quantity is zero
-					$existing_order->remove_item( $item_id );
+			$order_items = array_column( $order_data['line_items'], 'quantity', 'sku' );
+			$existing_order->remove_order_items( 'line_item' );
+			foreach ( $order_items as $sku => $quantity ) {
+				$product_id = wc_get_product_id_by_sku( $sku );
+				if ( empty( $product_id ) ) {
+					continue;
 				}
+				$product = wc_get_product( $product_id );
+				if ( empty( $product_id ) ) {
+					continue;
+				}
+				$existing_order->add_product( $product, $quantity );
 			}
-			// Add new items to the order
-			// foreach ( $order_data['line_items'] as $order_data_item ) {
-			// 	$sku = $order_data_item['sku'];
-
-			// 	if ( ! in_array( $sku, $existing_skus, true ) ) {
-			// 		$product = wc_get_product( $line_items[ $sku ] );
-
-			// 		if ( $product ) {
-			// 			$quantity = $order_data_item['quantity'];
-			// 			$existing_order->add_product( $product, $quantity );
-			// 		}
-			// 	}
-			// }
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
 			$existing_order->set_status( $this->map_status( $order_data['paid_status'] ) );
 			$existing_order->calculate_totals();
 			$existing_order->save();
+			wc_delete_shop_order_transients( $existing_order );
 			$response->set_data(
-				$existing_order->get_data()
+				array(
+					'id'    => $existing_order->get_id(),
+					'items' => array_map(
+						function ( $item ) {
+							return array(
+								'product_id' => $item->get_product_id(),
+								'quantity'   => $item->get_quantity(),
+								'price'      => $item->get_total(),
+							);
+						},
+						$existing_order->get_items()
+					),
+					'total' => $existing_order->get_total(),
+				)
 			);
 		} else {
 			$order = wc_create_order();
@@ -190,7 +181,15 @@ class CreateOrderWebhook {
 				$order->set_customer_id( $customer->ID );
 			}
 			foreach ( $order_data['line_items'] as $order_data_item ) {
-				$order->add_product( wc_get_product( $line_items[ $order_data_item['sku'] ] ), $order_data_item['quantity'] );
+				$product_id = wc_get_product_id_by_sku( $order_data_item['sku'] );
+				if ( empty( $product_id ) ) {
+					continue;
+				}
+				$product = wc_get_product( $product_id );
+				if ( empty( $product_id ) ) {
+					continue;
+				}
+				$order->add_product( $product, $order_data_item['quantity'] );
 			}
 			$order->set_address( $billing_address, 'billing' );
 			$order->set_address( $shipping_address, 'shipping' );
@@ -204,7 +203,22 @@ class CreateOrderWebhook {
 			$order->save();
 			$order->update_meta_data( 'zi_salesorder_id', $order_data['salesorder_id'] );
 			$order->save();
-			$response->set_data( $order->get_data() );
+			$response->set_data(
+				array(
+					'id'    => $order->get_id(),
+					'items' => array_map(
+						function ( $item ) {
+							return array(
+								'product_id' => $item->get_product_id(),
+								'quantity'   => $item->get_quantity(),
+								'price'      => $item->get_total(),
+							);
+						},
+						$order->get_items()
+					),
+					'total' => $order->get_total(),
+				)
+			);
 		}
 
 		return $response;
