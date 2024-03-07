@@ -795,7 +795,7 @@ class ProductClass {
 	 */
 	public function update_product_name( $product_id, $product_name ) {
 		$zi_disable_itemname_sync = get_option( 'zoho_disable_itemname_sync_status' );
-		if ( $zi_disable_itemname_sync != 'true' ) {
+		if ( ! $zi_disable_itemname_sync ) {
 			$name_update = array(
 				'ID'         => $product_id,
 				'post_title' => $product_name,
@@ -851,7 +851,7 @@ class ProductClass {
 			$product->set_sku( $item['sku'] );
 
 			// Set the stock management properties
-			if ( ! empty( $item_stock ) && $zi_stock_sync != 'true' ) {
+			if ( ! empty( $item_stock ) && ! $zi_stock_sync ) {
 				$product->set_manage_stock( true );
 				$product->set_stock_quantity( $item_stock );
 

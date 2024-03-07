@@ -67,7 +67,7 @@ class ImportProductClass {
 						$product = wc_get_product( $pdt_id );
 
 						$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
-						if ( ! empty( $arr->description ) && $zi_disable_itemdescription_sync != 'true' ) {
+						if ( ! empty( $arr->description ) && ! $zi_disable_itemdescription_sync ) {
 							$product->set_short_description( $arr->description );
 						}
 
@@ -77,7 +77,7 @@ class ImportProductClass {
 						}
 
 						$zi_disable_itemname_sync = get_option( 'zoho_disable_itemname_sync_status' );
-						if ( ( $zi_disable_itemname_sync !== 'true' ) && ! empty( $arr->name ) ) {
+						if ( ( ! $zi_disable_itemname_sync ) && ! empty( $arr->name ) ) {
 							$product->set_name( stripslashes( $arr->name ) );
 						}
 
@@ -86,7 +86,7 @@ class ImportProductClass {
 						}
 
 						$zi_disable_itemprice_sync = get_option( 'zoho_disable_itemprice_sync_status' );
-						if ( ! empty( $arr->rate ) && $zi_disable_itemprice_sync !== 'true' ) {
+						if ( ! empty( $arr->rate ) && ! $zi_disable_itemprice_sync ) {
 							$product->set_regular_price( $arr->rate );
 							$sale_price = $product->get_sale_price();
 							if ( empty( $sale_price ) ) {
@@ -112,7 +112,7 @@ class ImportProductClass {
 
 						// To check status of stock sync option.
 						$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
-						if ( $zi_stock_sync != 'true' ) {
+						if ( ! $zi_stock_sync ) {
 							// Update stock
 							$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 							// Sync from specific warehouse check
@@ -420,7 +420,7 @@ class ImportProductClass {
 						$existing_parent_product = wc_get_product( $group_id );
 						// fwrite($fd, PHP_EOL . 'Existing group Id');
 						$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
-						if ( ! empty( $gp_arr->description ) && $zi_disable_itemdescription_sync != 'true' ) {
+						if ( ! empty( $gp_arr->description ) && ! $zi_disable_itemdescription_sync ) {
 							$existing_parent_product->set_short_description( $gp_arr->description );
 						}
 
@@ -626,7 +626,7 @@ class ImportProductClass {
 					$variation->set_parent_id( $group_id );
 					$variation->set_status( 'publish' );
 					$variation->set_props( $variation_data );
-					if ( $zi_stock_sync !== 'true' ) {
+					if ( ! $zi_stock_sync ) {
 						$variation->set_stock_quantity( $stock );
 						$variation->set_manage_stock( true );
 						$variation->set_stock_status( '' );
@@ -964,7 +964,7 @@ class ImportProductClass {
 				// Price - Imported
 				$zi_disable_itemprice_sync = get_option( 'zoho_disable_itemprice_sync_status' );
 				$variation_sale_price      = $variation->get_sale_price();
-				if ( empty( $variation_sale_price ) && $zi_disable_itemprice_sync != 'true' ) {
+				if ( empty( $variation_sale_price ) && ! $zi_disable_itemprice_sync ) {
 					$variation->set_sale_price( $item->rate );
 				}
 				$variation->set_regular_price( $item->rate );
@@ -1433,7 +1433,7 @@ class ImportProductClass {
 					// Check if stock sync allowed by plugin.
 					if ( $key === 'available_stock' || $key === 'actual_available_stock' ) {
 						$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
-						if ( $zi_stock_sync != 'true' ) {
+						if ( ! $zi_stock_sync ) {
 							if ( $stock ) {
 								if ( ! empty( $com_prod_id ) ) {
 									// If value is less than 0 default 1.
