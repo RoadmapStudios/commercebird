@@ -1,3 +1,7 @@
+Version 2.1.6
+* New: connect Zoho Inventory to Exact Online
+* Fix: toggle save options
+
 Version 2.1.5 - Februari 29 2024
 * New: Zoho CRM tab to bulk export orders to Zoho CRM
 * Improvement: bulk sync orders to Exact Online in background automatically once a day
