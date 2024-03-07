@@ -155,7 +155,7 @@ class CreateOrderWebhook {
 			}
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
-			$existing_order->set_status( $this->map_status( $order_data['paid_status'] ) );
+			$existing_order->update_status( $this->map_status( $order_data['paid_status'] ) );
 			$existing_order->calculate_totals();
 			$existing_order->save();
 			wc_delete_shop_order_transients( $existing_order );
@@ -236,8 +236,6 @@ class CreateOrderWebhook {
 
 
 	private function get_items( $line_items ): array {
-		$fd = fopen( __DIR__ . '/get_items.txt', 'w+' );
-
 		$meta_ids    = array_column( $line_items, 'sku' );
 		$product_ids = array();
 		foreach ( $line_items as $item ) {
@@ -246,9 +244,6 @@ class CreateOrderWebhook {
 				$product_ids[] = $product_id;
 			}
 		}
-		fwrite( $fd, PHP_EOL . print_r( $product_ids, true ) );
-
-		fclose( $fd );
 		if ( count( $product_ids ) !== count( $meta_ids ) ) {
 			return array( 'not_found' => array_diff( $meta_ids, array_keys( $product_ids ) ) );
 		}
