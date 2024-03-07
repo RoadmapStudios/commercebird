@@ -12,7 +12,7 @@ class CreateOrderWebhook {
 	use Api;
 	use LogWriter;
 
-	private static string $endpoint = 'create-woo-order';
+	private static string $endpoint = 'create-sf-order';
 
 
 	public function __construct() {
