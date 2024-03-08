@@ -27,84 +27,19 @@ class CreateOrderWebhook {
 		);
 	}
 
-	/**
-	 * @param $address
-	 *
-	 * @return array
-	 */
-	public function format_address( $address ): array {
-		if ( array_key_exists( 'attention', $address ) ) {
-			$names      = explode( ' ', $address['attention'] );
-			$first_name = $names[0] ?? '';
-			$last_name  = $names[1] ?? '';
-		}
-		return array(
-			'first_name' => $first_name ?? '',
-			'last_name'  => $last_name ?? '',
-			'address_1'  => $address['address'] ?? '',
-			'address_2'  => $address['street2'] ?? '',
-			'city'       => $address['city'] ?? '',
-			'state'      => $address['state_code'] ?? '',
-			'postcode'   => $address['zip'] ?? '',
-			'country'    => $address['country_code'] ?? '',
-			'phone'      => $address['phone'] ?? '',
-		);
-	}
-
-	private function get_product_from_order_items_by_id( $product_id ) {
-		global $wpdb;
-
-		// Table name for order items
-		$order_items_table = $wpdb->prefix . 'woocommerce_order_items';
-
-		// Query to retrieve product from order items by product ID
-		$query = $wpdb->prepare(
-			"SELECT order_item_id, order_id, order_item_name, order_item_type
-        FROM $order_items_table
-        WHERE order_item_type = 'line_item'
-        AND order_item_name LIKE %s",
-			'%' . $wpdb->esc_like( $product_id ) . '%'
-		);
-
-		// Execute the query
-		$results = $wpdb->get_results( $query );
-
-		// Return the product details
-		return $results;
-	}
-
 	private function process( array $order_data ): WP_REST_Response {
 		$response = new WP_REST_Response();
 
-		if ( empty( $order_data ) || empty( $order_data['salesorder'] ) ) {
+		if ( empty( $order_data ) ) {
 			$response->set_data( $this->empty_response );
 			$response->set_status( 404 );
 			return $response;
 		}
 
-		$allowed_keys = array(
-			'salesorder_id',
-			'salesorder_number',
-			'customer_id',
-			'billing_address',
-			'shipping_address',
-			'delivery_method',
-			'currency_code',
-			'line_items',
-			'contact_person_details',
-			'shipping_charges',
-			'order_status',
-			'paid_status',
-			'discount',
-			'discount_total',
-			'notes',
-		);
-
-		$order_data       = array_intersect_key( $order_data['salesorder'], array_flip( $allowed_keys ) );
-		$billing_address  = $this->format_address( $order_data['billing_address'] );
-		$shipping_address = $this->format_address( $order_data['shipping_address'] );
-		if ( isset( $order_data['contact_person_details'][0]['email'] ) ) {
-			$customer_data = $order_data['contact_person_details'][0];
+		$billing_address  = $order_data['billing'];
+		$shipping_address = $order_data['shipping'];
+		if ( isset( $order_data['billing']['email'] ) ) {
+			$customer_data = $order_data['billing'];
 			$customer_mail = $customer_data['email'];
 			$customer      = get_user_by( 'email', $customer_mail );
 			if ( empty( $customer ) ) {
@@ -114,8 +49,8 @@ class CreateOrderWebhook {
 		}
 
 		if ( empty( $order_data['line_items'] ) ) {
-			$message = sprintf( __( 'Zoho order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['salesorder_number'], get_bloginfo( 'name' ) );
-			error_log_api_email( __( 'Zoho Order Sync', 'commercebird' ), $message );
+			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['salesorder_number'], get_bloginfo( 'name' ) );
+			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
 			$response->set_status( 500 );
 			$response->set_data( $message );
 			return $response;
@@ -124,18 +59,14 @@ class CreateOrderWebhook {
 		$line_items = $this->get_items( $order_data['line_items'] );
 
 		if ( ! empty( $line_items['not_found'] ) ) {
-			$message = sprintf( __( 'Zoho order #%1$s could not be created in your store %2$s because of missing items: %3$s', 'commercebird' ), $order_data['salesorder_number'], get_bloginfo( 'name' ), implode( ', ', $line_items['not_found'] ) );
-			error_log_api_email( __( 'Zoho Order Sync', 'commercebird' ), $message );
+			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing items: %3$s', 'commercebird' ), $order_data['salesorder_number'], get_bloginfo( 'name' ), implode( ', ', $line_items['not_found'] ) );
+			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
 			$response->set_status( 500 );
 			$response->set_data( $message );
 			return $response;
 		}
-		// create shipping object
-		$shipping = new \WC_Order_Item_Shipping();
-		$shipping->set_method_title( $order_data['delivery_method'] );
-		$shipping->set_total( $order_data['shipping_charges']['item_total'] );
-		$id             = $this->get_order_id( $order_data['salesorder_id'] );
-		$existing_order = wc_get_order( $id );
+        // Update existing order if it exists
+		$existing_order = wc_get_order( $order_data['order_id'] );
 		if ( ! empty( $existing_order ) ) {
 			$existing_order->set_address( $shipping_address, 'shipping' );
 
@@ -155,7 +86,7 @@ class CreateOrderWebhook {
 			}
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
-			$existing_order->update_status( $this->map_status( $order_data['paid_status'] ) );
+			$existing_order->update_status( 'wc-completed' );
 			$existing_order->calculate_totals();
 			$existing_order->save();
 			wc_delete_shop_order_transients( $existing_order );
@@ -193,15 +124,13 @@ class CreateOrderWebhook {
 			}
 			$order->set_address( $billing_address, 'billing' );
 			$order->set_address( $shipping_address, 'shipping' );
-			$order->set_currency( $order_data['currency_code'] );
-			$order->set_status( $this->map_status( $order_data['paid_status'] ) );
+			$order->set_status( 'wc-completed' );
 			$order->set_discount_total( $order_data['discount'] );
-			$order->add_item( $shipping );
 			$order->calculate_totals();
-			$order->set_shipping_tax( $order_data['shipping_charges']['tax_total_fcy'] ?? 0 );
 			$order->set_customer_note( $order_data['notes'] );
 			$order->save();
-			$order->update_meta_data( 'zi_salesorder_id', $order_data['salesorder_id'] );
+            // add order note to order
+            $order->add_order_note( 'Synced with Salesforce' );
 			$order->save();
 			$response->set_data(
 				array(
@@ -224,22 +153,19 @@ class CreateOrderWebhook {
 		return $response;
 	}
 
-
-	private function map_status( $status ): string {
-		switch ( $status ) {
-			case 'paid':
-				return 'wc-completed';
-			default:
-				return 'wc-pending';
-		}
-	}
-
-
+    /**
+     * Find the product ids from the line items from salesforce.
+     * @param mixed $line_items
+     * @return array
+     */
 	private function get_items( $line_items ): array {
-		$meta_ids    = array_column( $line_items, 'sku' );
-		$product_ids = array();
+        $meta_ids    = array_column( $line_items, 'sku' );
+        $meta_ids    = array_merge($meta_ids, array_column($line_items, 'variation_SKU'));
+        $product_ids = array();
+
 		foreach ( $line_items as $item ) {
-			$product_id = wc_get_product_id_by_sku( $item['sku'] );
+            $sku = isset( $item['sku'] ) ? $item['sku'] : $item['variation_SKU'];
+			$product_id = wc_get_product_id_by_sku( $sku );
 			if ( $product_id ) {
 				$product_ids[] = $product_id;
 			}
@@ -249,25 +175,5 @@ class CreateOrderWebhook {
 		}
 
 		return $product_ids;
-	}
-
-	private function get_order_id( $zi_id ): int {
-		// Define your meta query arguments
-		$args = array(
-			'meta_query' => array(
-				array(
-					'key'     => 'zi_salesorder_id',
-					'value'   => $zi_id,
-					'compare' => '=',
-				),
-			),
-		);
-
-		// Get orders based on meta query
-		$orders = wc_get_orders( $args );
-		if ( count( $orders ) > 0 ) {
-			return $orders[0]->get_id();
-		}
-		return 0;
 	}
 }
