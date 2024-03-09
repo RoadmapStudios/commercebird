@@ -121,8 +121,12 @@ register_activation_hook( __FILE__, 'zi_custom_zoho_cron_activate' );
 
 function zi_custom_zoho_cron_activate() {
 	$interval = get_option( 'zi_cron_interval', 'daily' );
-	if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
-		wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
+	if ( 'none' !== $interval ) {
+		if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
+			wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
+		}
+	} else {
+		wp_clear_scheduled_hook( 'zi_execute_import_sync' );
 	}
 }
 
