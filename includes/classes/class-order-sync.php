@@ -79,7 +79,7 @@ class Sync_Order_Class {
 	 *
 	 */
 	public function zi_sync_customer_checkout( $order_id ) {
-		// $fd = fopen(__DIR__ . '/zi_sync_customer_checkout.txt', 'w+');
+		// $fd = fopen( __DIR__ . '/zi_sync_customer_checkout.txt', 'w+' );
 
 		$order          = wc_get_order( $order_id );
 		$userid         = $order->get_user_id();
@@ -106,7 +106,7 @@ class Sync_Order_Class {
 			// fwrite($fd,PHP_EOL.'customer_json: '.print_r($json, true));
 
 			$code = $json->code;
-			if ( $code != 0 || $code != '0' ) {
+			if ( $code !== 0 || $code !== '0' ) {
 				delete_user_meta( $userid, 'zi_contact_id' );
 				delete_user_meta( $userid, 'zi_billing_address_id' );
 				delete_user_meta( $userid, 'zi_primary_contact_id' );
@@ -133,7 +133,7 @@ class Sync_Order_Class {
 
 			$code    = $json->code;
 			$message = $json->message;
-			if ( $code == 0 || $code == '0' ) {
+			if ( $code === 0 || $code === '0' ) {
 				// fwrite($fd, PHP_EOL . 'customer_json: ' . print_r($json, true));
 				if ( empty( $json->contacts ) ) {
 					// Second check based on Company Name
@@ -148,7 +148,7 @@ class Sync_Order_Class {
 						if ( $code == 0 || $code == '0' ) {
 							if ( empty( $json->contacts ) ) {
 								$contact_class_handle = new ContactClass();
-								$zi_customer_id       = $contact_class_handle->ContactCreateFunction( $userid );
+								$zi_customer_id       = $contact_class_handle->contact_create_function( $userid );
 							} else {
 								foreach ( $json->contacts[0] as $key => $value ) {
 									if ( $key == 'contact_id' ) {
@@ -157,12 +157,12 @@ class Sync_Order_Class {
 									}
 								}
 								$contact_class_handle = new ContactClass();
-								$zi_customer_id       = $contact_class_handle->Create_contact_person( $userid );
+								$zi_customer_id       = $contact_class_handle->create_contact_person( $userid );
 							}
 						}
 					}
 					$contact_class_handle = new ContactClass();
-					$zi_customer_id       = $contact_class_handle->ContactCreateFunction( $userid );
+					$zi_customer_id       = $contact_class_handle->contact_create_function( $userid );
 				} else {
 					// fwrite($fd,PHP_EOL.'Contacts : '.print_r($json->contacts,true));
 					foreach ( $json->contacts[0] as $key => $value ) {
@@ -182,25 +182,25 @@ class Sync_Order_Class {
 			$get_url            = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$contactp_res             = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+			$contactpersons_response  = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
 
-			// fwrite($fd, PHP_EOL . 'Contact Response: ' . print_r($contactp_res->code, true));
+			// fwrite( $fd, PHP_EOL . 'Contactpersons: ' . print_r($contactpersons_response, true) );
 
 			// first check within contactpersons endpoint and then map it with that contactperson if email-id matches
-			if ( $contactp_res->code == 0 || $contactp_res->code == '0' ) {
-				if ( ! empty( $contactp_res->contact_persons ) ) {
-					foreach ( $contactp_res->contact_persons as $key => $contact_persons ) {
+			if ( $contactpersons_response->code === 0 || $contactpersons_response->code === '0' ) {
+				if ( ! empty( $contactpersons_response->contact_persons ) ) {
+					foreach ( $contactpersons_response->contact_persons as $key => $contact_persons ) {
 						$person_email = trim( $contact_persons->email );
-						if ( $person_email == trim( $user_email ) ) {
+						if ( $person_email === trim( $user_email ) ) {
 							/* Match Contact */
 							$contactid = $contact_persons->contact_person_id;
 							update_user_meta( $userid, 'zi_contactperson_id_' . $key, $contactid );
-							if ( $contact_persons->is_primary_contact == true || $contact_persons->is_primary_contact == 1 ) {
+							if ( $contact_persons->is_primary_contact === true || $contact_persons->is_primary_contact === 1 ) {
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->ContactUpdateFunction( $userid, $order_id );
+								$contact_class_handle->contact_update_function( $userid, $order_id );
 							} else {
 								$contact_class_handle = new ContactClass();
-								$res                  = $contact_class_handle->update_contact_person( $userid, $contactid );
+								$contact_class_handle->update_contact_person( $userid, $contactid );
 							}
 						}
 					}
@@ -210,18 +210,21 @@ class Sync_Order_Class {
 					if ( ( $contact_res->code == 0 || $contact_res->code == '0' ) && ! empty( $contact_res->contact ) ) {
 						foreach ( $contact_res as $contact_ ) {
 							if ( trim( $contact_->email ) == trim( $user_email ) ) {
+								// fwrite( $fd, PHP_EOL . 'Inside contact_update_function' );
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->ContactUpdateFunction( $userid, $order_id );
+								$contact_class_handle->contact_update_function( $userid, $order_id );
 							} else {
+								// fwrite( $fd, PHP_EOL . 'Inside create_contact_person' );
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->Create_contact_person( $userid );
+								$contact_class_handle->create_contact_person( $userid );
 							}
 						}
 					}
 				}
 			}
+			// fwrite( $fd, PHP_EOL . 'No contactpersons ' );
 		}
-		// fclose($fd);
+		// fclose( $fd );
 	}
 
 	/**

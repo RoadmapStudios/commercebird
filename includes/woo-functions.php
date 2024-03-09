@@ -62,9 +62,9 @@ function zi_product_sync_class( $product_id ) {
 	}
 	$zi_product_sync             = get_option( 'zoho_product_sync_status' );
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-	if ( $zi_product_sync != 'true' && $zoho_inventory_access_token ) {
-		$productHandler = new ProductClass();
-		$productHandler->zi_product_sync( $product_id );
+	if ( ! $zi_product_sync && $zoho_inventory_access_token ) {
+		$product_handler = new ProductClass();
+		$product_handler->zi_product_sync( $product_id );
 	}
 
 	// TODO: Trigger Webhook if product is updated and webhook is enabled

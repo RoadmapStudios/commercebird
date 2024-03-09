@@ -256,7 +256,7 @@ class ProductWebhook {
 
 				// featured image
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
-				if ( ! empty( $item_image ) && $zi_disable_itemimage_sync != 'true' ) {
+				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image, $admin_author_id );
 				}
@@ -356,7 +356,7 @@ class ProductWebhook {
 				}
 				// stock
 				$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
-				if ( $zi_stock_sync != 'true' ) {
+				if ( ! $zi_stock_sync ) {
 					// fwrite($fd, PHP_EOL . 'Inside1');
 					if ( 'NULL' !== gettype( $item_stock ) ) {
 						// fwrite($fd, PHP_EOL . 'Inside1.1');
@@ -387,7 +387,7 @@ class ProductWebhook {
 
 				// featured image
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
-				if ( ! empty( $item_image ) && $zi_disable_itemimage_sync != 'true' ) {
+				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $pdt_id, $item_image, $admin_author_id );
 				}
