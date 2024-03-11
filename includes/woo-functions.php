@@ -279,22 +279,6 @@ function exact_item_id_variation_field( $loop, $variation_data, $variation ) {
 	);
 }
 
-// Block wc fields in My-Account page to prevent broken sync
-add_filter( 'woocommerce_billing_fields', 'zoho_readonly_billing_account', 25, 1 );
-function zoho_readonly_billing_account( $billing_fields ) {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-	// Only my account billing address for logged in users
-	if ( is_user_logged_in() && ! empty( $zoho_inventory_access_token ) ) {
-
-		$readonly = array( 'readonly' => 'readonly' );
-
-		$billing_fields['billing_first_name']['custom_attributes'] = $readonly;
-		$billing_fields['billing_last_name']['custom_attributes']  = $readonly;
-		$billing_fields['billing_email']['custom_attributes']      = $readonly;
-	}
-	return $billing_fields;
-}
-
 // If Product Bundle in cart, do not allow other types of products to be added in cart
 /*
 add_filter('woocommerce_add_to_cart_validation', 'zoho_add_to_cart_validation_callback', 10, 3);
