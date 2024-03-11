@@ -52,13 +52,16 @@ function zoho_admin_metabox() {
 }
 function zoho_admin_metabox_callback( $post_or_order_object ) {
 	global $wcam_lib;
-	$order  = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : wc_get_order( $post_or_order_object->get_id() );
-	$userid = $order->get_user_id();
+	$order    = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : wc_get_order( $post_or_order_object->get_id() );
+	$userid   = $order->get_user_id();
+	$order_id = $order->get_id();
 	if ( $wcam_lib->get_api_key_status() ) {
-		echo '<a href="javascript:void(0)" style="width:100%; text-align: center;" class="button save_order button-primary" onclick="zoho_admin_order_ajax(' . $order->get_id() . ')">Sync Order</a>';
+		echo '<a href="javascript:void(0)" style="width:100%; text-align: center;"
+		class="button save_order button-primary" onclick="zoho_admin_order_ajax(' . esc_attr( $order_id ) . ')">Sync Order</a>';
 		if ( $userid ) {
 			echo '<br><p style="color:red;">Click on below button if you are seeing the error "Billing AddressID passed is invalid"</p>';
-			echo '<a href="javascript:void(0)" style="width:100%; text-align: center;" class="button customer_unmap" onclick="zoho_admin_customer_unmap(' . $order->get_id() . ')">Unmap Customer</a>';
+			echo '<a href="javascript:void(0)" style="width:100%; text-align: center;"
+			class="button customer_unmap" onclick="zoho_admin_customer_unmap(' . esc_attr( $order_id ) . ')">Unmap Customer</a>';
 		}
 	} else {
 		echo '<p style="color:red;">Please activate the license to sync this order</p>';

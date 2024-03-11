@@ -11,7 +11,7 @@
 
 class PackageClass {
 
-
+	private $config;
 	public function __construct() {
 		$config = array(
 
@@ -23,13 +23,13 @@ class PackageClass {
 
 		);
 
-		return $this->config = $config;
+		$this->config = $config;
 	}
 
-	function PackageCreateFunction( $order_id, $json ) {
-		// $fd = fopen(__DIR__.'/PackageCreateFunction.txt','w+');
+	function zi_package_create( $order_id, $json ) {
+		// $fd = fopen(__DIR__.'/zi_package_create.txt','w+');
 
-		$shipDate = '';
+		$ship_date = '';
 
 		foreach ( $json->salesorder as $key => $value ) {
 
@@ -41,7 +41,7 @@ class PackageClass {
 			if ( $key == 'line_items' ) {
 
 				if ( $key == 'date' ) {
-					$shipDate = $value;
+					$ship_date = $value;
 				}
 				if ( $key == 'salesorder_number' ) {
 					$package_number = $value;
@@ -54,7 +54,7 @@ class PackageClass {
 				}
 				$impot = implode( ',', $lineItems );
 
-				$json_package = '"date": "' . $shipDate . '","line_items": [' . $impot . ']';
+				$json_package = '"date": "' . $ship_date . '","line_items": [' . $impot . ']';
 
 				$zoho_inventory_oid = $this->config['PackageZI']['OID'];
 				$zoho_inventory_url = $this->config['PackageZI']['APIURL'];

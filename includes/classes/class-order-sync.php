@@ -660,10 +660,10 @@ class Sync_Order_Class {
 					// $order->add_meta_data('zi_salesorder_id', $value, true);
 				}
 				// saleorder package code
-				$zoho_package_status = get_option( 'zoho_package_zoho_sync_status' );
-				if ( $zoho_package_status === 'true' ) {
+				$zoho_package_status = get_option( 'zoho_package_sync_status' );
+				if ( $zoho_package_status ) {
 					$package_curl_call_handle = new PackageClass();
-					$json                     = $package_curl_call_handle->PackageCreateFunction( $order_id, $json );
+					$json                     = $package_curl_call_handle->zi_package_create( $order_id, $json );
 				}
 			}
 		}
@@ -683,7 +683,8 @@ class Sync_Order_Class {
 	 * @return string Error message
 	 */
 	public function single_saleorder_zoho_inventory_update( $order_id, $zi_sales_order_id, $pdt1 ) {
-		// $fd = fopen(__DIR__.'/single_saleorder_update.txt','w+');
+		// $fd = fopen( __DIR__. '/single_saleorder_update.txt', 'w+' );
+
 		$response           = array();
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
@@ -707,14 +708,17 @@ class Sync_Order_Class {
 		$response['zi_salesorder_id'] = $zi_sales_order_id;
 
 		// echo '<pre>'; print_r($errmsg);
-		$zoho_package_status = get_option( 'zoho_package_zoho_sync_status' );
-		$package_id          = $order->get_meta( 'zi_package_id', true );
+		$zoho_package_status = get_option( 'zoho_package_sync_status' );
 
-		if ( empty( $package_id ) && 'true' === $zoho_package_status ) {
+		// fwrite( $fd, PHP_EOL . 'zoho package status : ' . $zoho_package_status );
+
+		$package_id = $order->get_meta( 'zi_package_id', true );
+
+		if ( empty( $package_id ) && $zoho_package_status ) {
 			// fwrite($fd, PHP_EOL. 'inside new package create');
 			// create new package
 			$package_curl_call_handle = new PackageClass();
-			$resp_package             = $package_curl_call_handle->PackageCreateFunction( $order_id, $json );
+			$resp_package             = $package_curl_call_handle->zi_package_create( $order_id, $json );
 			// save response
 			$resp_msg = $resp_package->message;
 			$order->add_order_note( 'Zoho Package: ' . $resp_msg );
@@ -733,7 +737,7 @@ class Sync_Order_Class {
 				}
 
 				if ( $key == 'date' ) {
-					$shipDate = $value;
+					$ship_date = $value;
 				}
 
 				if ( $key == 'line_items' ) {
@@ -742,11 +746,11 @@ class Sync_Order_Class {
 
 					foreach ( $value as $kk => $vv ) {
 
-						$lineItems[] = '{"so_line_item_id": "' . $vv->line_item_id . '","quantity": "' . $vv->quantity . '"}';
+						$line_items[] = '{"so_line_item_id": "' . $vv->line_item_id . '","quantity": "' . $vv->quantity . '"}';
 					}
-					$impot = implode( ',', $lineItems );
+					$impot = implode( ',', $line_items );
 
-					$json_package = '"date": "' . $shipDate . '","line_items": [' . $impot . ']';
+					$json_package = '"date": "' . $ship_date . '","line_items": [' . $impot . ']';
 
 					$url_package = $zoho_inventory_url . 'api/v1/packages/' . $package_id;
 					$data3       = array(
@@ -759,7 +763,7 @@ class Sync_Order_Class {
 			}
 		}
 
-		// fclose($fd); //end of logging
+		// fclose( $fd ); //end of logging
 		return $response;
 	}
 
