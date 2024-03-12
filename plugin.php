@@ -64,6 +64,7 @@ use RMS\Admin\Cors;
 use RMS\Admin\Template;
 use RMS\API\ProductWebhook;
 use RMS\API\CreateOrderWebhook;
+use RMS\API\CreateSFOrderWebhook;
 use RMS\API\ShippingWebhook;
 use RMS\API\Zoho;
 
@@ -278,6 +279,7 @@ add_action(
 		new ProductWebhook();
 		new ShippingWebhook();
 		new CreateOrderWebhook();
+		new CreateSFOrderWebhook();
 	}
 );
 
