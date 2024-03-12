@@ -93,19 +93,10 @@ class CreateSFOrderWebhook {
 			$response->set_data(
 				array(
 					'id'    => $existing_order->get_id(),
-					'items' => array_map(
-						function ( $item ) {
-							return array(
-								'product_id' => $item->get_product_id(),
-								'quantity'   => $item->get_quantity(),
-								'price'      => $item->get_total(),
-							);
-						},
-						$existing_order->get_items()
-					),
 					'total' => $existing_order->get_total(),
 				)
 			);
+			$response->set_status( 200 );
 		} else {
 			$order = wc_create_order();
 			if ( $customer ) {
@@ -134,20 +125,10 @@ class CreateSFOrderWebhook {
 			$order->save();
 			$response->set_data(
 				array(
-					'id'    => $order->get_id(),
-					'items' => array_map(
-						function ( $item ) {
-							return array(
-								'product_id' => $item->get_product_id(),
-								'quantity'   => $item->get_quantity(),
-								'price'      => $item->get_total(),
-							);
-						},
-						$order->get_items()
-					),
-					'total' => $order->get_total(),
+					'order_id'    => $order->get_id(),
 				)
 			);
+			$response->set_status( 200 );
 		}
 
 		return $response;
