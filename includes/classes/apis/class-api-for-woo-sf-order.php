@@ -4,6 +4,7 @@ namespace RMS\API;
 
 use RMS\Admin\Traits\LogWriter;
 use WP_REST_Response;
+use WC_Coupon;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit();
 
@@ -49,23 +50,24 @@ class CreateSFOrderWebhook {
 		}
 
 		if ( empty( $order_data['line_items'] ) ) {
-			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['salesorder_number'], get_bloginfo( 'name' ) );
+			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ) );
 			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
 			$response->set_status( 500 );
 			$response->set_data( $message );
 			return $response;
 		}
 
-		$line_items = $this->get_items( $order_data['line_items'] );
+		$line_items  = $this->get_items( $order_data['line_items'] );
+		$coupon_code = $this->get_coupon_code( $order_data );
 
 		if ( ! empty( $line_items['not_found'] ) ) {
-			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing items: %3$s', 'commercebird' ), $order_data['salesorder_number'], get_bloginfo( 'name' ), implode( ', ', $line_items['not_found'] ) );
+			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing items: %3$s', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ), implode( ', ', $line_items['not_found'] ) );
 			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
 			$response->set_status( 500 );
 			$response->set_data( $message );
 			return $response;
 		}
-        // Update existing order if it exists
+		// Update existing order if it exists
 		$existing_order = wc_get_order( $order_data['order_id'] );
 		if ( ! empty( $existing_order ) ) {
 			$existing_order->set_address( $shipping_address, 'shipping' );
@@ -86,14 +88,19 @@ class CreateSFOrderWebhook {
 			}
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
-			$existing_order->update_status( 'wc-completed' );
+			$existing_order->update_status( 'wc-sf-order' );
+			$existing_order->apply_coupon( $coupon_code );
 			$existing_order->calculate_totals();
-			$existing_order->save();
+			$existing_order->set_payment_method( 'bacs' );
+			$order_id = $existing_order->save();
+			$existing_order->add_order_note( 'Updated by Salesforce' );
 			wc_delete_shop_order_transients( $existing_order );
 			$response->set_data(
 				array(
-					'id'    => $existing_order->get_id(),
-					'total' => $existing_order->get_total(),
+					'order_id'    => $order_id,
+					'payment_url' => $existing_order->get_checkout_payment_url(),
+					'total'       => $existing_order->get_total(),
+					'status'      => 'Success',
 				)
 			);
 			$response->set_status( 200 );
@@ -115,17 +122,20 @@ class CreateSFOrderWebhook {
 			}
 			$order->set_address( $billing_address, 'billing' );
 			$order->set_address( $shipping_address, 'shipping' );
-			$order->set_status( 'wc-completed' );
-			$order->set_discount_total( $order_data['discount'] );
+			$order->set_status( 'wc-sf-order' );
+			$order->apply_coupon( $coupon_code );
 			$order->calculate_totals();
 			$order->set_customer_note( $order_data['notes'] );
-			$order->save();
-            // add order note to order
-            $order->add_order_note( 'Synced with Salesforce' );
-			$order->save();
+			$order->set_payment_method( 'bacs' );
+			$order_id = $order->save();
+			// add order note to order
+			$order->add_order_note( 'Synced via Salesforce' );
 			$response->set_data(
 				array(
-					'order_id'    => $order->get_id(),
+					'order_id'    => $order_id,
+					'payment_url' => $order->get_checkout_payment_url(),
+					'total'       => $order->get_total(),
+					'status'      => 'Success',
 				)
 			);
 			$response->set_status( 200 );
@@ -134,18 +144,18 @@ class CreateSFOrderWebhook {
 		return $response;
 	}
 
-    /**
-     * Find the product ids from the line items from salesforce.
-     * @param mixed $line_items
-     * @return array
-     */
+	/**
+	 * Find the product ids from the line items from salesforce.
+	 * @param mixed $line_items
+	 * @return array
+	 */
 	private function get_items( $line_items ): array {
-        $meta_ids    = array_column( $line_items, 'sku' );
-        $meta_ids    = array_merge($meta_ids, array_column($line_items, 'variation_SKU'));
-        $product_ids = array();
+		$meta_ids    = array_column( $line_items, 'sku' );
+		$meta_ids    = array_merge( $meta_ids, array_column( $line_items, 'variation_SKU' ) );
+		$product_ids = array();
 
 		foreach ( $line_items as $item ) {
-            $sku = isset( $item['sku'] ) ? $item['sku'] : $item['variation_SKU'];
+			$sku        = isset( $item['sku'] ) ? $item['sku'] : $item['variation_SKU'];
 			$product_id = wc_get_product_id_by_sku( $sku );
 			if ( $product_id ) {
 				$product_ids[] = $product_id;
@@ -156,5 +166,43 @@ class CreateSFOrderWebhook {
 		}
 
 		return $product_ids;
+	}
+
+	/**
+	 * Find the coupon code based on Discount or create the coupon code and return it.
+	 * @param mixed $order_data The order data from salesforce.
+	 * @return string The coupon code.
+	 */
+	private function get_coupon_code( $order_data ): string {
+		if ( isset( $order_data['Discount'] ) && ! empty( $order_data['Discount'] ) ) {
+			$fixed_cart_amount = $order_data['Discount'];
+			// Search for an existing coupon by fixed cart amount
+			$existing_coupon = get_posts(
+				array(
+					'post_type'   => 'shop_coupon',
+					'post_status' => 'publish',
+					'meta_query'  => array(
+						array(
+							'key'   => 'coupon_amount',
+							'value' => $fixed_cart_amount,
+						),
+					),
+				)
+			);
+
+			if ( $existing_coupon ) {
+				$coupon_code = $existing_coupon[0]->post_title;
+				return $coupon_code;
+			} else {
+				// If not found, create a new coupon with a random code
+				$coupon_code = 'AUTO_' . wp_generate_password( 8, false );
+				$coupon      = new WC_Coupon();
+				$coupon->set_code( $coupon_code );
+				$coupon->set_description( 'Auto-generated coupon.' );
+				$coupon->set_amount( $fixed_cart_amount );
+				$coupon->save();
+				return $coupon_code;
+			}
+		}
 	}
 }
