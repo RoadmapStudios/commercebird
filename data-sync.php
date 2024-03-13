@@ -251,6 +251,7 @@ function zi_sync_composite_item_from_zoho() {
 	}
 	send_log_message_to_admin( $item_add_resp, 'Log Message for manual sync', 'Composite item sync from zoho' );
 	wp_send_json_success( $item_add_resp );
+	wp_die();
 }
 
 /**

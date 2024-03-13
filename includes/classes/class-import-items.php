@@ -216,7 +216,7 @@ class ImportProductClass {
 				$item_ids = array();
 				// fwrite($fd, PHP_EOL . 'Items : ' . print_r($json, true));
 				foreach ( $json->items as $arr ) {
-					$prod_id   = $this->get_product_by_sku( $arr->sku );
+					$prod_id   = wc_get_product_id_by_sku( $arr->sku );
 					$is_bundle = $arr->is_combo_product;
 					if ( isset( $arr->group_id ) ) {
 						$is_grouped = $arr->group_id;
@@ -560,7 +560,7 @@ class ImportProductClass {
 					}
 					// SKU check of the variation, if exits then remove it
 					if ( ! empty( $item->sku ) ) {
-						$sku_prod_id = $this->get_product_by_sku( $item->sku );
+						$sku_prod_id = wc_get_product_id_by_sku( $item->sku );
 						if ( ! empty( $sku_prod_id ) ) {
 							wp_delete_post( $sku_prod_id, true );
 						}
@@ -1022,7 +1022,7 @@ class ImportProductClass {
 				if ( ! empty( $variation_data['sku'] ) ) {
 					// here we do actual mapping based on same sku
 					// fwrite($fd, PHP_EOL . 'Before SKU :' . $variation_data['sku']);
-					$sku_prod_id = $this->get_product_by_sku( $variation_data['sku'] );
+					$sku_prod_id = wc_get_product_id_by_sku( $variation_data['sku'] );
 					// fwrite($fd, PHP_EOL . 'Before $sku_prod_id :' . $sku_prod_id);
 					if ( ! empty( $sku_prod_id ) ) {
 						// fwrite($fd, PHP_EOL . 'sku_prod_id :' . $sku_prod_id);
@@ -1083,17 +1083,6 @@ class ImportProductClass {
 		}
 		// fwrite($fd, PHP_EOL . 'After group item sync');
 		// fclose($fd);
-	}
-
-	/**
-	 * Function to get product_id from sku
-	 * @param [string] - sku of product
-	 * @return product_id
-	 */
-	public function get_product_by_sku( $sku ) {
-		global $wpdb;
-		$product_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value=%s LIMIT 1", $sku ) );
-		return $product_id;
 	}
 
 	// variable category check functionality
@@ -1341,7 +1330,7 @@ class ImportProductClass {
 
 				// ----------------- Create composite item in woocommerce--------------.
 				// Code to skip sync with item already exists with same sku.
-				$prod_id = $this->get_product_by_sku( $comp_item->sku );
+				$prod_id = wc_get_product_id_by_sku( $comp_item->sku );
 				// Flag to enable or disable sync.
 				$allow_to_import = false;
 				// Check if product exists with same sku.
