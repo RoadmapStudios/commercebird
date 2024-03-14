@@ -119,17 +119,17 @@ final class ExactOnlineAjax {
 
 	public function export_order( $start_date, $end_date ) {
 		// Define the order statuses to exclude
-		$exclude_statuses = array( 'failed', 'pending', 'on-hold', 'cancelled', 'refunded' );
+		$exclude_statuses = array( 'wc-failed', 'wc-pending', 'wc-on-hold', 'wc-cancelled', 'wc-refunded' );
 		$posts_per_page   = 50;
 
 		$paged = 1;
 		do {
 			// Query to get orders
 			$args   = array(
-				'date_created'   => $start_date . '...' . $end_date,
-				'status'         => array_diff( wc_get_order_statuses(), $exclude_statuses ),
-				'posts_per_page' => $posts_per_page,
-				'paged'          => $paged,
+				'date_created' => $start_date . '...' . $end_date,
+				'status'       => array_diff( wc_get_order_statuses(), $exclude_statuses ),
+				'limit'        => $posts_per_page,
+				'paged'        => $paged,
 			);
 			$orders = wc_get_orders( $args );
 
