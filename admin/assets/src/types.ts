@@ -82,6 +82,10 @@ export type OrderSettings = {
     warehouse_id: string;
 }
 
+export type ContactSettings = {
+    enable_cron : boolean
+}
+
 export type PriceSettings = {
     zoho_inventory_pricelist: string;
     wp_user_role: string;
@@ -110,6 +114,7 @@ export type StoreKey = {
         product: string;
         cron: string;
         order: string;
+        contact: string;
         price: string;
         fields: string;
         wc_tax: string;
@@ -140,6 +145,7 @@ export type BackendAction = {
         product: { get: string; save: string; reset: string; };
         cron: { get: string; save: string; reset: string; };
         order: { get: string; save: string; reset: string; };
+        contact: { get: string; save: string; reset: string; };
         price: { get: string; save: string; reset: string; };
         field: { get: string; save: string; reset: string; };
         custom_fields: string;

@@ -3,7 +3,7 @@
     :foot="true"
     :title="`${
       store.subscription.plan && store.subscription.plan.length > 0
-        ? store.subscription.plan
+        ? store.subscription.plan[0]
         : 'Your Plan'
     }`"
   >
@@ -12,8 +12,8 @@
     </template>
     <template #action>
       <LoaderIcon
-        v-if="loader.isLoading(backendAction.get_subscription)"
-        :loading="loader.isLoading(backendAction.get_subscription)"
+        v-if="loader.isLoading(backendAction.homepage.subscription)"
+        :loading="loader.isLoading(backendAction.homepage.subscription)"
       />
       <span v-else>
         <a
@@ -29,7 +29,7 @@
     <div v-if="store.subscription.fee_lines" class="px-4 py-2 space-y-4">
       <p class="text-sm font-medium text-gray-700">Activated Integrations</p>
       <ul class="flex flex-wrap items-center gap-2">
-        <li v-for="item in store.subscription.fee_lines" :key="item">
+        <li v-for="item in store.subscription.fee_lines" :key="item.id">
           <span
             class="inline-flex rounded-md shadow items-center border px-3 py-0.5 text-sm font-medium"
             >{{ item.name }}</span

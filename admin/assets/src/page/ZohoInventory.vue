@@ -7,6 +7,7 @@ import {
   SwatchIcon,
   TableCellsIcon,
   TruckIcon,
+  UserGroupIcon
 } from "@heroicons/vue/24/outline";
 import Tax from "@/components/forms/zoho/Tax.vue";
 import Product from "@/components/forms/zoho/Product.vue";
@@ -22,6 +23,7 @@ import { onBeforeMount, watchEffect, type Component } from "vue";
 import TabComponent from "@/components/ui/tabs/TabComponent.vue";
 import RequiredNotice from "@/components/ui/RequiredNotice.vue";
 import { ajaxUrl } from "@/composable/http";
+import Contact from "@/components/forms/zoho/Contact.vue";
 
 const store = useZohoInventoryStore();
 
@@ -41,6 +43,7 @@ const tabs: Record<string, Tab> = {
   product: { title: "Product", component: Product, icon: ArchiveBoxIcon },
   cron: { title: "Cron", component: Cron, icon: ClockIcon },
   order: { title: "Orders", component: Orders, icon: TruckIcon },
+  contact: { title: "Contacts", component: Contact, icon: UserGroupIcon },
   price: { title: "Price List", component: Price, icon: SwatchIcon },
   field: { title: "Custom Fields", component: Field, icon: TableCellsIcon },
   webhooks: { title: "Webhooks", component: Webhooks, icon: LinkIcon },

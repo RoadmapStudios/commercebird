@@ -54,6 +54,9 @@ final class ZohoInventoryAjax {
 			'warehouse_id',
 			'enable_warehousestock',
 		),
+		'contact'  => array(
+			'enable_cron',
+		),
 		'price'    => array(
 			'wp_user_role',
 			'zoho_inventory_pricelist',
@@ -81,6 +84,9 @@ final class ZohoInventoryAjax {
 		'get_zoho_order'        => 'order_get',
 		'save_zoho_order'       => 'order_set',
 		'reset_zoho_order'      => 'order_reset',
+		'get_zoho_contact'      => 'contact_get',
+		'save_zoho_contact'     => 'contact_set',
+		'reset_zoho_contact'    => 'contact_reset',
 		'get_zoho_price'        => 'price_get',
 		'save_zoho_price'       => 'price_set',
 		'reset_zoho_price'      => 'price_reset',
@@ -359,7 +365,7 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Sets the price and saves the pricelist.
-	 *
+*
 	 */
 	public function price_set(): void {
 		$this->verify( self::FORMS['price'] );
@@ -403,6 +409,43 @@ final class ZohoInventoryAjax {
 		$price_list_class = new ImportPricelistClass();
 		$prices           = $price_list_class->zi_get_all_pricelist();
 		$this->response   = wp_list_pluck( $prices, 'name', 'pricebook_id' );
+		$this->serve();
+	}
+
+	/**
+	 * Retrieves the contact details.
+	 * @return void
+	 */
+	public function contact_get() {
+		$this->verify();
+		$this->response = $this->option_status_get( self::FORMS['contact'] );
+		$this->serve();
+	}
+	/**
+	 * Sets the contact and updates the status.
+	 * @return void
+	 */
+	public function contact_set() {
+		$this->verify( self::FORMS['contact'] );
+		$this->option_status_update( $this->data );
+		if ( isset( $this->data['enable'] ) && ! empty( $this->data['enable'] ) ) {
+			if ( ! wp_next_scheduled( 'zoho_contact_sync' ) ) {
+				wp_schedule_event( time(), 'daily', 'zoho_contact_sync' );
+			}
+		} else {
+			wp_clear_scheduled_hook( 'zoho_contact_sync' );
+		}
+		$this->response = array( 'message' => 'Saved!' );
+		$this->serve();
+	}
+	/**
+	 * Resets the contact.
+	 * @return void
+	 */
+	public function contact_reset() {
+		$this->verify();
+		$this->option_status_remove( self::FORMS['contact'] );
+		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
@@ -539,7 +582,6 @@ final class ZohoInventoryAjax {
 	 * include only the 'name' and 'category_id' fields, and removes the
 	 * category with ID -1. Finally, it sets the response with the filtered
 	 * categories and serves the response.
-	 *
 	 */
 	public function zoho_categories_collect(): void {
 		$this->verify();
@@ -554,7 +596,6 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Executes the connection process and handles the response.
-	 *
 	 */
 	public function connection_done(): void {
 		$this->verify();
@@ -575,7 +616,6 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Executes the product_set function.
-	 *
 	 */
 	public function product_set(): void {
 		$this->verify( self::FORMS['product'] );
@@ -671,7 +711,6 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Saves tax rates and exempt status to the database.
-	 *
 	 */
 	public function tax_set(): void {
 		$this->verify( self::FORMS['tax'] );
@@ -695,7 +734,6 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Sets the connection for the Zoho Inventory API.
-	 *
 	 */
 	public function connection_set(): void {
 		$this->verify(
@@ -730,7 +768,6 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Resets the connection by deleting specific options from the database.
-	 *
 	 */
 	public function connection_reset(): void {
 		$this->verify();
@@ -763,7 +800,6 @@ final class ZohoInventoryAjax {
 	 * the cURL call to fetch the tax rates. If the response contains the
 	 * 'taxes' key, it sets the response to the tax rates. Otherwise, it sets
 	 * the errors to a default message.
-	 *
 	 */
 	public function zoho_tax_rates_collect(): void {
 		$this->verify();
@@ -790,7 +826,6 @@ final class ZohoInventoryAjax {
 	 *
 	 * This function verifies the current state, retrieves the taxes using the
 	 * wc_taxes method, and serves the response.
-	 *
 	 */
 	public function wc_tax_collect(): void {
 		$this->verify();
@@ -800,7 +835,6 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Handles the oAuth code.
-	 *
 	 */
 	public function handle_code(): void {
 		$this->verify();

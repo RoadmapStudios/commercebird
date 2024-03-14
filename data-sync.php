@@ -206,6 +206,7 @@ function zoho_ajax_call_item() {
  * Sync contacts from zoho to woocommerce.
  * @return void
  */
+add_action( 'zoho_contact_sync', 'zoho_contacts_import' );
 add_action( 'wp_ajax_import_zoho_contacts', 'zoho_contacts_import' );
 add_action( 'wp_ajax_nopriv_import_zoho_contacts', 'zoho_contacts_import' );
 function zoho_contacts_import( $page = '' ) {
@@ -223,8 +224,12 @@ function zoho_contacts_import( $page = '' ) {
 	}
 
 	// send success response to admin and terminate AJAX call.
-	wp_send_json_success();
-	wp_die();
+	wp_send_json(
+		array(
+			'success' => true,
+			'message' => 'Syncing in background. You can visit other tabs :).',
+		)
+	);
 }
 
 /**
@@ -306,7 +311,6 @@ function zi_sync_composite_item_to_zoho() {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -374,7 +378,7 @@ function ajax_subcategory_sync_call() {
 					} else {
 						$term_id = $child_term['term_id'];
 					}
-				} else if ($term instanceof WP_Term ) {
+				} elseif ( $term instanceof WP_Term ) {
 					$term_id = $term->term_id;
 				}
 

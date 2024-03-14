@@ -1,5 +1,6 @@
 import type {
     ConnectionSettings,
+    ContactSettings,
     CronSettings,
     Intervals,
     OrderSettings,
@@ -237,6 +238,14 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     };
     /*
     * -----------------------------------------------------------------------------------------------------------------
+    *  Contact Settings
+    * -----------------------------------------------------------------------------------------------------------------
+    */
+   const contact_settings= reactive(<ContactSettings>{
+       enable_cron: false
+   })
+    /*
+    * -----------------------------------------------------------------------------------------------------------------
     *  Price Settings
     * -----------------------------------------------------------------------------------------------------------------
     */
@@ -340,6 +349,10 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 data = order_settings
                 store = keys.order
                 break;
+            case actions.contact.save:
+                data = contact_settings
+                store = keys.contact
+                break;
             case actions.price.save:
                 if (wcb2b_enabled) {
                     data = { wcb2b: JSON.stringify(wcb2b_groups.value)}
@@ -412,6 +425,10 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 response = await resetData(action, keys.order);
                 storage.remove(keys.order);
                 break;
+            case actions.contact.reset:
+                response = await resetData(action, keys.contact);
+                storage.remove(keys.contact);
+                break;
             case actions.price.reset:
                 response = await resetData(action, keys.price);
                 storage.remove(keys.price);
@@ -463,6 +480,9 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     order_settings.enable_warehousestock = false
                     order_settings.order_prefix = ''
                     order_settings.warehouse_id = ''
+                    break;
+                case actions.contact.reset:
+                    contact_settings.enable_cron = false
                     break;
                 case actions.price.reset:
                     price_settings.zoho_inventory_pricelist = '';
@@ -560,6 +580,12 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 }
 
                 break;
+            case "contact":
+                response = await loader.loadData(keys.contact, actions.contact.get);
+                if (response) {
+                    contact_settings.enable_cron = response.enable_cron;
+                }
+                break;
             case "price":
                 get_zoho_prices();
                 response = await loader.loadData(keys.price, actions.price.get);
@@ -648,6 +674,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         order_settings,
         zoho_warehouses,
         zoho_prices,
+        contact_settings,
         price_settings,
         wcb2b,
         wcb2b_groups,

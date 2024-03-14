@@ -12,6 +12,7 @@ export const storeKey: StoreKey = {
         connect: 'zoho_connect',
         cron: 'zoho_cron',
         order: 'zoho_order',
+        contact: 'zoho_contact',
         price: 'zoho_price',
         product: 'zoho_product',
         tax: 'zoho_tax',
@@ -97,6 +98,11 @@ export const backendAction: BackendAction = {
             get: 'get_zoho_order',
             save: 'save_zoho_order',
             reset: 'reset_zoho_order'
+        },
+        contact: {
+            get: 'get_zoho_contact',
+            save: 'save_zoho_contact',
+            reset: 'reset_zoho_contact'
         },
         price: {
             get: 'get_zoho_price',
