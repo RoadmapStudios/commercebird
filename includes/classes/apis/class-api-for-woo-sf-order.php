@@ -158,6 +158,7 @@ class CreateSFOrderWebhook {
 	 */
 
 	private function get_items( $line_items ): array {
+		global $wpdb;
 		$product_ids = array();
 		$not_found   = array();
 
@@ -165,7 +166,13 @@ class CreateSFOrderWebhook {
 			// Check if the SKU key is present, if not, fallback to variation_SKU
 			$sku = isset( $item['SKU'] ) ? $item['SKU'] : ( isset( $item['variation_SKU'] ) ? $item['variation_SKU'] : null );
 			if ( $sku !== null ) {
-				$product_id = wc_get_product_id_by_sku( $sku );
+				$escaped_sku = $wpdb->esc_like( $sku );
+				$product_id  = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_sku' AND BINARY meta_value = %s LIMIT 1",
+						$escaped_sku
+					)
+				);
 				if ( $product_id ) {
 					$product_ids[] = $product_id;
 				} else {
