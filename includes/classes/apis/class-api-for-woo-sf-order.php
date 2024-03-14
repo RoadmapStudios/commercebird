@@ -69,7 +69,7 @@ class CreateSFOrderWebhook {
 		}
 		// Update existing order if it exists
 		$existing_order = wc_get_order( $order_data['order_id'] );
-		if ( ! empty( $existing_order ) ) {
+		if ( ! empty( $existing_order && $line_items ) ) {
 			$existing_order->set_address( $shipping_address, 'shipping' );
 
 			// Get existing order items
@@ -104,7 +104,7 @@ class CreateSFOrderWebhook {
 				)
 			);
 			$response->set_status( 200 );
-		} else {
+		} elseif ( ! empty( $line_items ) ) {
 			$order = wc_create_order();
 			if ( $customer ) {
 				$order->set_customer_id( $customer->ID );
@@ -139,6 +139,13 @@ class CreateSFOrderWebhook {
 				)
 			);
 			$response->set_status( 200 );
+		} else {
+			$response->set_data(
+				array(
+					'status' => 'Something went wrong. Please try again.',
+				)
+			);
+			$response->set_status( 500 );
 		}
 
 		return $response;
@@ -149,20 +156,26 @@ class CreateSFOrderWebhook {
 	 * @param mixed $line_items
 	 * @return array
 	 */
+
 	private function get_items( $line_items ): array {
-		$meta_ids    = array_column( $line_items, 'sku' );
-		$meta_ids    = array_merge( $meta_ids, array_column( $line_items, 'variation_SKU' ) );
 		$product_ids = array();
+		$not_found   = array();
 
 		foreach ( $line_items as $item ) {
-			$sku        = isset( $item['sku'] ) ? $item['sku'] : $item['variation_SKU'];
-			$product_id = wc_get_product_id_by_sku( $sku );
-			if ( $product_id ) {
-				$product_ids[] = $product_id;
+			// Check if the SKU key is present, if not, fallback to variation_SKU
+			$sku = isset( $item['SKU'] ) ? $item['SKU'] : ( isset( $item['variation_SKU'] ) ? $item['variation_SKU'] : null );
+			if ( $sku !== null ) {
+				$product_id = wc_get_product_id_by_sku( $sku );
+				if ( $product_id ) {
+					$product_ids[] = $product_id;
+				} else {
+					$not_found[] = $sku;
+				}
 			}
 		}
-		if ( count( $product_ids ) !== count( $meta_ids ) ) {
-			return array( 'not_found' => array_diff( $meta_ids, array_keys( $product_ids ) ) );
+
+		if ( ! empty( $not_found ) ) {
+			return array( 'not_found' => $not_found );
 		}
 
 		return $product_ids;
