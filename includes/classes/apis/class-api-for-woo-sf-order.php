@@ -228,14 +228,28 @@ class CreateSFOrderWebhook {
 		if ( isset( $order_data['Discount'] ) && ! empty( $order_data['Discount'] ) ) {
 			$fixed_cart_amount = $order_data['Discount'];
 			// Search for an existing coupon by fixed cart amount
-			$existing_coupon = get_posts(
+			$current_datetime = gmdate( 'Y-m-d H:i:s' );
+			$existing_coupon  = get_posts(
 				array(
 					'post_type'   => 'shop_coupon',
 					'post_status' => 'publish',
 					'meta_query'  => array(
+						'relation' => 'AND',
 						array(
-							'key'   => 'coupon_amount',
-							'value' => $fixed_cart_amount,
+							'key'   => 'discount_type',
+							'value' => 'percent',
+						),
+						array(
+							'key'     => 'coupon_amount',
+							'value'   => $fixed_cart_amount,
+							'compare' => '=',
+							'type'    => 'NUMERIC',
+						),
+						array(
+							'key'     => 'expiry_date',
+							'value'   => $current_datetime,
+							'compare' => '>=',
+							'type'    => 'DATETIME',
 						),
 					),
 				)
@@ -250,6 +264,7 @@ class CreateSFOrderWebhook {
 				$coupon      = new WC_Coupon();
 				$coupon->set_code( $coupon_code );
 				$coupon->set_description( 'Auto-generated coupon.' );
+				$coupon->set_discount_type( 'percent' );
 				$coupon->set_amount( $fixed_cart_amount );
 				$coupon->save();
 				return $coupon_code;
