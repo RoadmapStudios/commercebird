@@ -15,7 +15,6 @@ class CreateSFOrderWebhook {
 
 	private static string $endpoint = 'create-sf-order';
 
-
 	public function __construct() {
 		register_rest_route(
 			self::$namespace,
@@ -29,7 +28,6 @@ class CreateSFOrderWebhook {
 	}
 
 	private function process( array $order_data ): WP_REST_Response {
-		// $fd = fopen( __DIR__ . '/order_data_salesforce.txt', 'w+' );
 		$response = new WP_REST_Response();
 
 		if ( empty( $order_data ) ) {
@@ -49,13 +47,18 @@ class CreateSFOrderWebhook {
 				$customer    = get_user_by( 'id', $customer_id );
 			}
 		}
+		if ( 'joananwolf+test@cobracrm.nl' === $customer_mail ) {
+			$order_status = 'wc-pending';
+		} else {
+			$order_status = 'wc-sf-order';
+		}
 
 		if ( empty( $order_data['line_items'] ) ) {
-			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ) );
-			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
-			$response->set_status( 500 );
-			$response->set_data( $message );
-			return $response;
+				$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ) );
+				error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
+				$response->set_status( 500 );
+				$response->set_data( $message );
+				return $response;
 		}
 
 		$line_items  = $this->get_items( $order_data['line_items'] );
@@ -74,6 +77,11 @@ class CreateSFOrderWebhook {
 			$existing_order->set_address( $shipping_address, 'shipping' );
 			// Remove existing order items
 			$existing_order->remove_order_items( 'line_item' );
+			// Get all applied coupons and remove them
+			$applied_coupons = $existing_order->get_coupon_codes();
+			foreach ( $applied_coupons as $coupon_code_old ) {
+				$existing_order->remove_coupon( $coupon_code_old );
+			}
 			// Add products to the order// Add products to the order
 			foreach ( $order_data['line_items'] as $order_data_item ) {
 				$sku        = isset( $order_data_item['SKU'] ) ? $order_data_item['SKU'] : ( isset( $order_data_item['variation_SKU'] ) ? $order_data_item['variation_SKU'] : null );
@@ -101,7 +109,7 @@ class CreateSFOrderWebhook {
 			}
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
-			$existing_order->update_status( 'wc-sf-order' );
+			$existing_order->update_status( $order_status );
 			$existing_order->apply_coupon( $coupon_code );
 			$existing_order->calculate_totals();
 			$existing_order->set_payment_method( 'bacs' );
@@ -150,7 +158,7 @@ class CreateSFOrderWebhook {
 			}
 			$order->set_address( $billing_address, 'billing' );
 			$order->set_address( $shipping_address, 'shipping' );
-			$order->set_status( 'wc-sf-order' );
+			$order->set_status( $order_status );
 			$order->apply_coupon( $coupon_code );
 			$order->calculate_totals();
 			$order->set_customer_note( $order_data['notes'] );
