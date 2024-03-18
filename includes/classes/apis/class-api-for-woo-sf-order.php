@@ -164,6 +164,10 @@ class CreateSFOrderWebhook {
 			$order->set_customer_note( $order_data['notes'] );
 			$order->set_payment_method( 'bacs' );
 			$order_id = $order->save();
+			// Add metadata to the order
+			$order->update_meta_data( 'sf_order_id', $order_data['sf_order_id'] );
+			$order->update_meta_data( 'wk_sf_order_id', $order_data['sf_order_id'] );
+			$order->update_meta_data( 'wk_sf_opp_id', $order_data['sf_order_id'] );
 			// add order note to order
 			$order->add_order_note( 'Synced via Salesforce' );
 			$response->set_data(
