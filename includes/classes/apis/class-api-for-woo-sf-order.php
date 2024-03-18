@@ -29,6 +29,7 @@ class CreateSFOrderWebhook {
 	}
 
 	private function process( array $order_data ): WP_REST_Response {
+		// $fd = fopen( __DIR__ . '/order_data_salesforce.txt', 'w+' );
 		$response = new WP_REST_Response();
 
 		if ( empty( $order_data ) ) {
@@ -69,22 +70,34 @@ class CreateSFOrderWebhook {
 		}
 		// Update existing order if it exists
 		$existing_order = wc_get_order( $order_data['order_id'] );
-		if ( ! empty( $existing_order && $line_items ) ) {
+		if ( ! empty( $existing_order ) && empty( $line_items['not_found'] ) ) {
 			$existing_order->set_address( $shipping_address, 'shipping' );
-
-			// Get existing order items
-			$order_items = array_column( $order_data['line_items'], 'quantity', 'sku' );
+			// Remove existing order items
 			$existing_order->remove_order_items( 'line_item' );
-			foreach ( $order_items as $sku => $quantity ) {
+			// Add products to the order// Add products to the order
+			foreach ( $order_data['line_items'] as $order_data_item ) {
+				$sku        = isset( $order_data_item['SKU'] ) ? $order_data_item['SKU'] : ( isset( $order_data_item['variation_SKU'] ) ? $order_data_item['variation_SKU'] : null );
 				$product_id = wc_get_product_id_by_sku( $sku );
-				if ( empty( $product_id ) ) {
-					continue;
+				if ( ! empty( $product_id ) ) {
+					$product = wc_get_product( $product_id );
+					if ( $product && $product->is_type( 'variation' ) ) {
+						// Get variation object
+						$variation = wc_get_product_object( 'variation', $product_id );
+						if ( $variation ) {
+							$existing_order->add_product( $variation, $order_data_item['quantity'] );
+						}
+					} else {
+						$existing_order->add_product( $product, $order_data_item['quantity'] );
+					}
+				} else {
+					$response->set_status( 500 );
+					$response->set_data(
+						array(
+							'status' => 'Product SKU: ' . $sku . ' not found in store',
+						)
+					);
+					return $response;
 				}
-				$product = wc_get_product( $product_id );
-				if ( empty( $product_id ) ) {
-					continue;
-				}
-				$existing_order->add_product( $product, $quantity );
 			}
 			// Save the changes to the order
 			$existing_order->set_customer_note( isset( $order_data['notes'] ) ? $order_data['notes'] : '' );
@@ -104,21 +117,36 @@ class CreateSFOrderWebhook {
 				)
 			);
 			$response->set_status( 200 );
-		} elseif ( ! empty( $line_items ) ) {
+		} elseif ( empty( $line_items['not_found'] ) ) {
 			$order = wc_create_order();
 			if ( $customer ) {
 				$order->set_customer_id( $customer->ID );
 			}
+			// Add products to the order
 			foreach ( $order_data['line_items'] as $order_data_item ) {
-				$product_id = wc_get_product_id_by_sku( $order_data_item['sku'] );
-				if ( empty( $product_id ) ) {
-					continue;
+
+				$sku        = isset( $order_data_item['SKU'] ) ? $order_data_item['SKU'] : ( isset( $order_data_item['variation_SKU'] ) ? $order_data_item['variation_SKU'] : null );
+				$product_id = wc_get_product_id_by_sku( $sku );
+				if ( ! empty( $product_id ) ) {
+					$product = wc_get_product( $product_id );
+					if ( $product && $product->is_type( 'variation' ) ) {
+						// Get variation object
+						$variation = wc_get_product_object( 'variation', $product_id );
+						if ( $variation ) {
+							$order->add_product( $variation, $order_data_item['quantity'] );
+						}
+					} else {
+						$order->add_product( $product, $order_data_item['quantity'] );
+					}
+				} else {
+					$response->set_status( 500 );
+					$response->set_data(
+						array(
+							'status' => 'Product SKU: ' . $sku . ' not found in store',
+						)
+					);
+					return $response;
 				}
-				$product = wc_get_product( $product_id );
-				if ( empty( $product_id ) ) {
-					continue;
-				}
-				$order->add_product( $product, $order_data_item['quantity'] );
 			}
 			$order->set_address( $billing_address, 'billing' );
 			$order->set_address( $shipping_address, 'shipping' );
@@ -158,7 +186,6 @@ class CreateSFOrderWebhook {
 	 */
 
 	private function get_items( $line_items ): array {
-		global $wpdb;
 		$product_ids = array();
 		$not_found   = array();
 
@@ -166,13 +193,7 @@ class CreateSFOrderWebhook {
 			// Check if the SKU key is present, if not, fallback to variation_SKU
 			$sku = isset( $item['SKU'] ) ? $item['SKU'] : ( isset( $item['variation_SKU'] ) ? $item['variation_SKU'] : null );
 			if ( $sku !== null ) {
-				$escaped_sku = $wpdb->esc_like( $sku );
-				$product_id  = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_sku' AND BINARY meta_value = %s LIMIT 1",
-						$escaped_sku
-					)
-				);
+				$product_id = wc_get_product_id_by_sku( $sku );
 				if ( $product_id ) {
 					$product_ids[] = $product_id;
 				} else {
@@ -180,11 +201,9 @@ class CreateSFOrderWebhook {
 				}
 			}
 		}
-
 		if ( ! empty( $not_found ) ) {
 			return array( 'not_found' => $not_found );
 		}
-
 		return $product_ids;
 	}
 
@@ -224,5 +243,6 @@ class CreateSFOrderWebhook {
 				return $coupon_code;
 			}
 		}
+		return '';
 	}
 }
