@@ -86,14 +86,17 @@ class ProductWebhook {
 		$item_brand       = $item['brand'];
 		$custom_fields    = $item['custom_fields'];
 		$item_tags_hash   = $item['custom_field_hash'];
-		$item_tags        = $item_tags_hash['cf_tags'];
-
+		if ( isset( $item_tags_hash['cf_tags'] ) ) {
+			$item_tags = $item_tags_hash['cf_tags'];
+		} else {
+			$item_tags = '';
+		}
 		// Stock mode check
 		$warehouses = $item['warehouses'];
 		if ( true === $zi_enable_warehousestock ) {
 			foreach ( $warehouses as $warehouse ) {
 				if ( $warehouse['warehouse_id'] === $warehouse_id ) {
-					if ( 'true' === $accounting_stock ) {
+					if ( $accounting_stock ) {
 						$item_stock = $warehouse['warehouse_available_for_sale_stock'];
 					} else {
 						$item_stock = $warehouse['warehouse_actual_available_for_sale_stock'];
@@ -108,7 +111,11 @@ class ProductWebhook {
 		$item_image    = $item['image_name'];
 		$group_name    = $item['group_name'];
 		$item_category = $item['category_name'];
-		$groupid       = $item['group_id'];
+		if ( ! empty( $item['group_id'] ) ) {
+			$groupid = $item['group_id'];
+		} else {
+			$groupid = '';
+		}
 
 		// Item package details
 		$details = $item['package_details'];
@@ -135,14 +142,14 @@ class ProductWebhook {
 		if ( ! empty( $groupid ) ) {
 			// fwrite($fd, PHP_EOL . 'Inside grouped items');
 			// find parent variable product
-			$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $groupid ) );
+			$row      = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $groupid ) );
 			$group_id = $row->post_id;
 
 			if ( ! empty( $group_id ) ) {
 				$existing_parent_product = wc_get_product( $group_id );
 
 				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
-				if ( ! empty( $item_description ) && 'true' !== $zi_disable_itemdescription_sync ) {
+				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					// fwrite($fd, PHP_EOL . 'Item description update : ' . $item_description);
 					$existing_parent_product->set_short_description( $item_description );
 				}
@@ -171,7 +178,7 @@ class ProductWebhook {
 				$existing_parent_product->save();
 			}
 
-			$row_item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $item_id ) );
+			$row_item     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $item_id ) );
 			$variation_id = $row_item->post_id;
 			if ( $variation_id ) {
 				// updating existing variations
@@ -193,7 +200,7 @@ class ProductWebhook {
 				}
 				// featured image
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
-				if ( ! empty( $item_image ) && 'true' !== $zi_disable_itemimage_sync ) {
+				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image, $admin_author_id );
@@ -288,7 +295,7 @@ class ProductWebhook {
 		} else {
 			// fwrite($fd, PHP_EOL . 'Inside simple items');
 			// fwrite($fd, PHP_EOL . 'Item description Simple : ' . $item_description);
-			$row_item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s", $item_id ) );
+			$row_item          = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s", $item_id ) );
 			$mapped_product_id = $row_item->post_id;
 			// simple product
 			// fwrite($fd, PHP_EOL . 'Before Match check');
@@ -340,7 +347,7 @@ class ProductWebhook {
 				}
 				// description
 				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
-				if ( ! empty( $item_description ) && 'true' !== $zi_disable_itemdescription_sync ) {
+				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					$simple_product->set_short_description( $item_description );
 				}
 				// Tags
@@ -436,9 +443,10 @@ class ProductWebhook {
 				// Map taxes while syncing product from zoho.
 				if ( $item['tax_id'] ) {
 					$zi_common_class = new ZI_CommonClass();
-					$woo_tax_class   = $zi_common_class->get_woo_tax_class_from_zoho_tax_id( $item['tax_id'] );
+					$woo_tax_class   = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$simple_product->set_tax_status( 'taxable' );
 					$simple_product->set_tax_class( $woo_tax_class );
+					$simple_product->update_meta_data( 'zi_tax_id', $item['tax_id'] );
 				}
 				$simple_product->save();
 				wc_delete_product_transients( $pdt_id );
@@ -465,7 +473,7 @@ class ProductWebhook {
 		$item_id        = $line_items[0]['item_id'];
 		$adjusted_stock = $line_items[0]['quantity_adjusted'];
 
-		$row_item = $wpdb->get_row(
+		$row_item          = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s",
 				$item_id
@@ -478,7 +486,7 @@ class ProductWebhook {
 			$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
 			$product       = wc_get_product( $mapped_product_id );
 			// Check if the product is in stock
-			if ( 'true' !== $zi_stock_sync ) {
+			if ( ! $zi_stock_sync ) {
 				if ( $product->is_in_stock() ) {
 					// Get stock quantity
 					$stock_quantity = $product->get_stock_quantity();
