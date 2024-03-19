@@ -399,8 +399,7 @@ class Sync_Order_Class {
 					// if there is vat exempt tax
 					$order_id   = $val['post_order_id'];
 					$vat_exempt = $order->get_meta( 'is_vat_exempt' );
-					$taxid      = '"tax_id": "' . $zoho_tax_id . '",';
-					$tax_value  = $order->get_total_tax();
+					$tax_value = $order->get_total_tax();
 					// Apply tax rates zero only if order has no values
 					if ( $vat_exempt == 'yes' || empty( $tax_value ) ) {
 						$zoho_tax_id = get_option( 'zi_vat_exempt', true );
@@ -410,10 +409,13 @@ class Sync_Order_Class {
 							$tax_rate_id       = $item->get_rate_id(); // Tax rate ID
 							$tax_percent       = WC_Tax::get_rate_percent( $tax_rate_id );
 							$tax_total         = $item_price1 * ( $tax_percent / 100 );
-							$option_table      = $wpdb->prefix . 'options';
-							$tax_option_object = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM {$option_table} WHERE option_value LIKE %s LIMIT 1', "%##tax##{$tax_percent}" ) );
+							$sql               = $wpdb->prepare(
+								"SELECT * FROM {$wpdb->prefix}options WHERE option_value LIKE %s LIMIT 1",
+								"%##tax##{$tax_percent}"
+							);
+							$tax_option_object = $wpdb->get_row( $sql );
 							$tax_option        = $tax_option_object->option_value;
-							if ( $tax_option && empty( $zoho_tax_id ) ) {
+							if ( $tax_option ) {
 								// fwrite($fd, PHP_EOL.'Inside Tax Option: '. $tax_option);
 								$tax_id = explode( '##', $tax_option )[0];
 							}
