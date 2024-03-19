@@ -51,28 +51,6 @@ class CreateOrderWebhook {
 		);
 	}
 
-	private function get_product_from_order_items_by_id( $product_id ) {
-		global $wpdb;
-
-		// Table name for order items
-		$order_items_table = $wpdb->prefix . 'woocommerce_order_items';
-
-		// Query to retrieve product from order items by product ID
-		$query = $wpdb->prepare(
-			"SELECT order_item_id, order_id, order_item_name, order_item_type
-        FROM $order_items_table
-        WHERE order_item_type = 'line_item'
-        AND order_item_name LIKE %s",
-			'%' . $wpdb->esc_like( $product_id ) . '%'
-		);
-
-		// Execute the query
-		$results = $wpdb->get_results( $query );
-
-		// Return the product details
-		return $results;
-	}
-
 	private function process( array $order_data ): WP_REST_Response {
 		$response = new WP_REST_Response();
 

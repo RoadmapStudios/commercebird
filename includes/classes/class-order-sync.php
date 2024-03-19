@@ -160,13 +160,14 @@ class Sync_Order_Class {
 								$zi_customer_id       = $contact_class_handle->create_contact_person( $userid );
 							}
 						}
+					} else {
+						$contact_class_handle = new ContactClass();
+						$zi_customer_id       = $contact_class_handle->contact_create_function( $userid );
 					}
-					$contact_class_handle = new ContactClass();
-					$zi_customer_id       = $contact_class_handle->contact_create_function( $userid );
 				} else {
 					// fwrite($fd,PHP_EOL.'Contacts : '.print_r($json->contacts,true));
 					foreach ( $json->contacts[0] as $key => $value ) {
-						if ( $key == 'contact_id' ) {
+						if ( $key === 'contact_id' ) {
 							$zi_customer_id = $value;
 							update_user_meta( $userid, 'zi_contact_id', $zi_customer_id );
 						}
@@ -330,9 +331,11 @@ class Sync_Order_Class {
 					if ( $proidv > 0 ) {
 						$proid            = $proidv;
 						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
+						$zoho_tax_id      = get_post_meta( $proid, 'zi_tax_id', true );
 						$is_variable_item = true;
 					} else {
 						$is_variable_item = false;
+						$zoho_tax_id      = get_post_meta( $proid, 'zi_tax_id', true );
 						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
@@ -394,11 +397,10 @@ class Sync_Order_Class {
 					$item_price1 = round( $item_price, 2 );
 
 					// if there is vat exempt tax
-					$order_id    = $val['post_order_id'];
-					$vat_exempt  = $order->get_meta( 'is_vat_exempt' );
-					$zoho_tax_id = '';
-					$taxid       = '';
-					$tax_value   = $order->get_total_tax();
+					$order_id   = $val['post_order_id'];
+					$vat_exempt = $order->get_meta( 'is_vat_exempt' );
+					$taxid      = '"tax_id": "' . $zoho_tax_id . '",';
+					$tax_value  = $order->get_total_tax();
 					// Apply tax rates zero only if order has no values
 					if ( $vat_exempt == 'yes' || empty( $tax_value ) ) {
 						$zoho_tax_id = get_option( 'zi_vat_exempt', true );
@@ -411,7 +413,7 @@ class Sync_Order_Class {
 							$option_table      = $wpdb->prefix . 'options';
 							$tax_option_object = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM {$option_table} WHERE option_value LIKE %s LIMIT 1', "%##tax##{$tax_percent}" ) );
 							$tax_option        = $tax_option_object->option_value;
-							if ( $tax_option ) {
+							if ( $tax_option && empty( $zoho_tax_id ) ) {
 								// fwrite($fd, PHP_EOL.'Inside Tax Option: '. $tax_option);
 								$tax_id = explode( '##', $tax_option )[0];
 							}

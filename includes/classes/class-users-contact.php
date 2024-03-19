@@ -387,14 +387,14 @@ class ContactClass {
 		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
 		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
 
-		$jsonData = array(
+		$json_data = array(
 			'JSONString'      => '{' . $json_form . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
 		$execute_curl_call_handle = new ExecutecallClass();
 		$update_url               = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id;
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $update_url, $jsonData );
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $update_url, $json_data );
 		$res_msg                  = $json->message;
 		$code                     = $json->code;
 
@@ -481,11 +481,16 @@ class ContactClass {
 	}
 
 	public function get_zoho_contacts( $page ) {
+		// $fd = fopen( __DIR__ . '/get_zoho_contacts.txt', 'a+' );
+
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
-			$page = $args[0];
-		} else {
-			return;
+			$page_array = $args[0];
+			if ( isset( $page_array['page'] ) ) {
+				$page = $page_array['page'];
+			} else {
+				$page = 1;
+			}
 		}
 		/* Get Url and org id */
 		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
@@ -498,6 +503,7 @@ class ContactClass {
 
 		if ( isset( $json->contacts ) ) {
 			foreach ( $json->contacts as $contacts ) {
+				// fwrite( $fd, PHP_EOL . 'Contact : ' . print_r( $contacts, true ) );
 				$contact_type   = trim( $contacts->contact_type );
 				$zohocontact_id = $contacts->contact_id;
 				$phone          = $contacts->phone;
@@ -505,6 +511,7 @@ class ContactClass {
 				$first_name     = $contacts->first_name;
 				$last_name      = $contacts->last_name;
 				$email          = trim( $contacts->email );
+				$credit_limit   = $contacts->customer_credit_limit;
 				//check if user type is customer
 				if ( ! empty( $email ) && ! empty( $first_name ) && ! empty( $last_name ) ) {
 					if ( $contact_type == 'customer' && ! email_exists( $email ) ) {
@@ -522,6 +529,11 @@ class ContactClass {
 							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
+							update_user_meta(
+								$user_id,
+								'acfw_store_credit_balance',
+								preg_replace( '/[^0-9,]/', '', $credit_limit )
+							);
 						} else {
 							echo $user_id->get_error_message();
 						}
@@ -542,12 +554,18 @@ class ContactClass {
 							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
+							update_user_meta(
+								$user_id,
+								'acfw_store_credit_balance',
+								preg_replace( '/[^0-9,]/', '', $credit_limit )
+							);
 						} else {
 							echo $is_err->get_error_message();
 						}
 					}
 				}
 			}
+			// fclose( $fd ); // end logging
 			if ( $json->page_context['has_more_page'] === true ) {
 				++$page;
 				$data_arr          = (object) array();

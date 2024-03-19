@@ -7,7 +7,7 @@
 
 class ImportProductClass {
 
-
+	private $config;
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
@@ -24,7 +24,7 @@ class ImportProductClass {
 	 * @return mixed return true if data false if error.
 	 */
 	public function zi_item_bulk_sync( $url ) {
-		// $fd = fopen(__DIR__ . '/manual_item_updated.txt', 'w+');
+		// $fd = fopen(__DIR__ . '/zi_item_bulk_sync.txt', 'a+');
 
 		global $wpdb;
 		$execute_curl_call = new ExecutecallClass();
@@ -44,11 +44,19 @@ class ImportProductClass {
 		if ( 0 === $code || '0' === $code ) {
 
 			foreach ( $json->items as $arr ) {
+				// fwrite( $fd, PHP_EOL . '$arr : ' . print_r( $arr, true ) );
+
+				$item_tags = '';
 				if ( isset( $arr->custom_field_hash ) ) {
 					$item_tags_hash = $arr->custom_field_hash;
 					if ( isset( $item_tags_hash->cf_tags ) ) {
 						$item_tags = $item_tags_hash->cf_tags;
 					}
+				}
+
+				if ( ! empty( $arr->group_id ) ) {
+					$this->sync_variation_of_group( $arr );
+					continue;
 				}
 
 				// fwrite($fd, PHP_EOL . '$arr : ' . print_r($arr, true));
@@ -57,14 +65,14 @@ class ImportProductClass {
 
 					$tbl         = $wpdb->prefix;
 					$product_res = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $arr->item_id ) );
-					if ( ! empty( $product_res->post_id ) ) {
-						// fwrite($fd, PHP_EOL . 'Product Already there ');
-						$pdt_id = $product_res->post_id;
-					}
 
-					if ( ! empty( $pdt_id ) ) {
+					if ( $product_res && ! empty( $product_res->post_id ) ) {
+						$pdt_id = $product_res->post_id;
 						// Load the Product Object
 						$product = wc_get_product( $pdt_id );
+						if ( empty( $product ) || ! $product ) {
+							continue;
+						}
 
 						$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
 						if ( ! empty( $arr->description ) && ! $zi_disable_itemdescription_sync ) {
@@ -113,6 +121,7 @@ class ImportProductClass {
 						// To check status of stock sync option.
 						$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
 						if ( ! $zi_stock_sync ) {
+							$stock = '';
 							// Update stock
 							$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 							// Sync from specific warehouse check
@@ -122,41 +131,42 @@ class ImportProductClass {
 							if ( $zi_enable_warehousestock == true ) {
 								foreach ( $warehouses as $warehouse ) {
 									if ( $warehouse->warehouse_id === $warehouse_id ) {
-										if ( $accounting_stock == 'true' ) {
+										if ( $accounting_stock ) {
 											$stock = $warehouse->warehouse_available_for_sale_stock;
 										} else {
 											$stock = $warehouse->warehouse_actual_available_for_sale_stock;
 										}
 									}
 								}
-							} elseif ( $accounting_stock == 'true' ) {
+							} elseif ( $accounting_stock ) {
 									$stock = $arr->available_for_sale_stock;
 							} else {
 								$stock = $arr->actual_available_for_sale_stock;
 							}
 
-							$product->set_manage_stock( true );
-							$product->set_stock_quantity( number_format( $stock, 0, '.', '' ) );
-							if ( $stock > 0 ) {
-								$status = 'instock';
-								$product->set_stock_status( $status );
-							} else {
-								$backorder_status = $product->backorders_allowed();
-								$status           = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
-								$product->set_stock_status( $status );
+							if ( $stock ) {
+								$product->set_manage_stock( true );
+								$product->set_stock_quantity( number_format( $stock, 0, '.', '' ) );
+								if ( $stock > 0 ) {
+									$status = 'instock';
+									$product->set_stock_status( $status );
+								} else {
+									$backorder_status = $product->backorders_allowed();
+									$status           = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
+									$product->set_stock_status( $status );
+								}
 							}
 						}
 
 						if ( ! empty( $arr->tax_id ) ) {
 							$zi_common_class = new ZI_CommonClass();
-							$woo_tax_class   = $zi_common_class->get_woo_tax_class_from_zoho_tax_id( $arr->tax_id );
+							$woo_tax_class   = $zi_common_class->get_tax_class_by_percentage( $arr->tax_percentage );
 							$product->set_tax_status( 'taxable' );
 							$product->set_tax_class( $woo_tax_class );
-							$product->save();
-						} else {
-							// Save the changes
-							$product->save();
+							// update metadata
+							$product->update_meta_data( 'zi_tax_id', $arr->tax_id );
 						}
+						$product->save();
 						// Sync ACF Fields
 						$this->sync_item_custom_fields( $arr->custom_fields, $pdt_id );
 						// Clear/refresh cache
@@ -168,7 +178,7 @@ class ImportProductClass {
 		} else {
 			return false;
 		}
-		// fclose($fd);
+		// fclose( $fd );
 		// Return if synced.
 		return true;
 	}
@@ -182,7 +192,7 @@ class ImportProductClass {
 	 * @return mixed
 	 */
 	public function sync_item_recursively() {
-		// $fd = fopen(__DIR__ . '/simple-items-sync.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/simple-items-sync.txt', 'a+' );
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
@@ -237,8 +247,7 @@ class ImportProductClass {
 						$allow_to_import = true;
 					}
 					if ( ! empty( $is_grouped ) ) {
-						$allow_to_import = false;
-						$this->sync_variation_of_group( $arr );
+						$item_ids[] = $arr->item_id;
 						continue;
 					}
 
@@ -248,7 +257,8 @@ class ImportProductClass {
 					if ( empty( $pdt_id ) && $allow_to_import == true ) {
 						$product_class = new ProductClass();
 						$item_array    = json_decode( wp_json_encode( $arr ), true );
-						$pdt_id        = $product_class->zi_product_to_woocommerce( $item_array, '', '' );
+						// fwrite( $fd, PHP_EOL . 'Item array :' . print_r( $item_array, true ) );
+						$pdt_id = $product_class->zi_product_to_woocommerce( $item_array, '', '' );
 						if ( $pdt_id ) {
 							update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
 						}
@@ -318,7 +328,7 @@ class ImportProductClass {
 					array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 				}
 			}
-			// fclose($fd);
+			// fclose( $fd );
 			return $response_msg;
 		}
 	}
@@ -336,12 +346,13 @@ class ImportProductClass {
 		}
 
 		foreach ( $custom_fields as $custom_field ) {
-			$api_name = $custom_field->api_name;
-			$value    = $custom_field->value;
 			// $data_type = $customField->data_type;
 			if ( is_array( $custom_field ) ) {
 				$api_name = $custom_field['api_name'];
 				$value    = $custom_field['value'];
+			} else {
+				$api_name = $custom_field->api_name;
+				$value    = $custom_field->value;
 			}
 
 			// Check if the Zoho API is a multiline type
@@ -365,7 +376,7 @@ class ImportProductClass {
 	 * @return mixed
 	 */
 	public function sync_groupitem_recursively() {
-		// $fd = fopen(__DIR__ . '/sync_groupitem_recursively.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/sync_groupitem_recursively.txt', 'a+' );
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
@@ -399,7 +410,7 @@ class ImportProductClass {
 			$response_msg = array();
 
 			if ( $code === '0' || $code === 0 ) {
-				// fwrite($fd, PHP_EOL . '$json->itemgroups : ' . print_r($json->itemgroups, true));
+				// fwrite( $fd, PHP_EOL . '$json->itemgroups : ' . print_r( $json->itemgroups, true ) );
 				foreach ( $json->itemgroups as $gp_arr ) {
 					$zi_group_id   = $gp_arr->group_id;
 					$zi_group_name = $gp_arr->group_name;
@@ -422,6 +433,10 @@ class ImportProductClass {
 						$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
 						if ( ! empty( $gp_arr->description ) && ! $zi_disable_itemdescription_sync ) {
 							$existing_parent_product->set_short_description( $gp_arr->description );
+						}
+						// Set Tax id
+						if ( ! empty( $gp_arr->tax_id ) ) {
+							$existing_parent_product->update_meta_data( 'zi_tax_id', $gp_arr->tax_id );
 						}
 
 						$attributes = $existing_parent_product->get_attributes();
@@ -488,9 +503,9 @@ class ImportProductClass {
 				}
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
+			// fclose( $fd );
 			return $response_msg;
 		}
-		// fclose($fd);
 	}
 
 	/**
@@ -571,17 +586,17 @@ class ImportProductClass {
 					$warehouse_id             = get_option( 'zoho_warehouse_id' );
 					$warehouses               = $item->warehouses;
 
-					if ( $zi_enable_warehousestock === true ) {
+					if ( $zi_enable_warehousestock && $warehouse_id ) {
 						foreach ( $warehouses as $warehouse ) {
 							if ( $warehouse->warehouse_id === $warehouse_id ) {
-								if ( $accounting_stock === 'true' ) {
+								if ( $accounting_stock ) {
 									$stock = $warehouse->warehouse_available_for_sale_stock;
 								} else {
 									$stock = $warehouse->warehouse_actual_available_for_sale_stock;
 								}
 							}
 						}
-					} elseif ( $accounting_stock === 'true' ) {
+					} elseif ( $accounting_stock ) {
 							$stock = $item->available_stock;
 					} else {
 						$stock = $item->actual_available_stock;
@@ -634,6 +649,7 @@ class ImportProductClass {
 						$variation->set_manage_stock( false );
 					}
 					$variation->add_meta_data( 'zi_item_id', $item->item_id );
+					$variation->add_meta_data( 'zi_tax_id', $item->tax_id );
 					// $variation->set_attributes($variation_attributes);
 					$variation_id = $variation->save();
 
@@ -911,46 +927,41 @@ class ImportProductClass {
 	 * @return: void
 	 */
 	public function sync_variation_of_group( $item_arr ) {
+		global $wpdb;
 		// $fd = fopen(__DIR__ . '/sync_from_zoho.txt', 'a+');
 		$item = $item_arr;
 		// Stock mode check
 		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
-		if ( $accounting_stock === 'true' ) {
+		if ( $accounting_stock ) {
 			$stock = $item->available_stock;
 		} else {
 			$stock = $item->actual_available_stock;
 		}
 		$item_id = $item->item_id;
 		// $item_category = $item->category_name;
-		$groupid        = property_exists( $item, 'group_id' ) ? $item->group_id : 0;
+		$groupid = property_exists( $item, 'group_id' ) ? $item->group_id : 0;
+		// find parent variable product
+		$group_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $groupid ) );
+		// fwrite($fd, PHP_EOL . 'Row Data : ' . print_r($row, true));
+		// fwrite($fd, PHP_EOL . 'Row $group_id : ' . $group_id);
 		$stock_quantity = $stock < 0 ? 0 : $stock;
-		// fwrite($fd, PHP_EOL . 'Before group item sync : ' . $groupid);
-		if ( ! empty( $groupid ) ) {
+		// fwrite($fd, PHP_EOL . 'Before group item sync : ' . $group_id);
+		if ( ! empty( $group_id ) ) {
 			// fwrite($fd, PHP_EOL . 'Inside item sync : ' . $item_name);
-			// find parent variable product
-			global $wpdb;
-			$group_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $groupid ) );
-			// fwrite($fd, PHP_EOL . 'Row Data : ' . print_r($row, true));
-			// fwrite($fd, PHP_EOL . 'Row $group_id : ' . $group_id);
-
 			if ( isset( $item->custom_field_hash ) ) {
 				$item_tags_hash = $item->custom_field_hash;
 				if ( isset( $item_tags_hash->cf_tags ) ) {
 					$item_tags = $item_tags_hash->cf_tags;
 				}
 			}
-			if ( isset( $item->brand ) ) {
-				$item_brand = $item->brand;
-			}
-
 			// Tags
-			if ( ! empty( $item_tags ) ) {
+			if ( ! empty( $item_tags ) && ! empty( $group_id ) ) {
 				$final_tags = explode( ',', $item_tags );
 				wp_set_object_terms( $group_id, $final_tags, 'product_tag' );
 			}
 			// Brand
-			if ( $item_brand ) {
-				wp_set_object_terms( $group_id, $item_brand, 'product_brand' );
+			if ( isset( $item->brand ) && ! empty( $group_id ) ) {
+				wp_set_object_terms( $group_id, $item->brand, 'product_brand' );
 			}
 
 			$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $item_id ) );
@@ -968,6 +979,16 @@ class ImportProductClass {
 					$variation->set_sale_price( $item->rate );
 				}
 				$variation->set_regular_price( $item->rate );
+
+				// Set Tax Class
+				if ( $item->tax_id ) {
+					$zi_common_class = new ZI_CommonClass();
+					$woo_tax_class   = $zi_common_class->get_tax_class_by_percentage( $item->tax_percentage );
+					$variation->set_tax_status( 'taxable' );
+					$variation->set_tax_class( $woo_tax_class );
+					// update metadata
+					$variation->update_meta_data( 'zi_tax_id', $item->tax_id );
+				}
 
 				// Stock Imported code
 				if ( $stock_quantity > 0 ) {
@@ -1070,6 +1091,7 @@ class ImportProductClass {
 					}
 					update_post_meta( $variation_id, 'manage_stock', false );
 				}
+				update_post_meta( $variation_id, 'zi_tax_id', $item->tax_id );
 				update_post_meta( $variation_id, 'zi_item_id', $item_id );
 				WC_Product_Variable::sync( $group_id );
 
@@ -1315,14 +1337,14 @@ class ImportProductClass {
 				if ( $zi_enable_warehousestock === true ) {
 					foreach ( $warehouses as $warehouse ) {
 						if ( $warehouse->warehouse_id === $warehouse_id ) {
-							if ( $accounting_stock === 'true' ) {
+							if ( $accounting_stock ) {
 								$stock = $warehouse->warehouse_available_for_sale_stock;
 							} else {
 								$stock = $warehouse->warehouse_actual_available_for_sale_stock;
 							}
 						}
 					}
-				} elseif ( $accounting_stock == 'true' ) {
+				} elseif ( $accounting_stock ) {
 						$stock = $comp_item->available_for_sale_stock;
 				} else {
 					$stock = $comp_item->actual_available_for_sale_stock;
@@ -1367,6 +1389,7 @@ class ImportProductClass {
 						$item_array    = json_decode( wp_json_encode( $comp_item ), true );
 						$com_prod_id   = $product_class->zi_product_to_woocommerce( $item_array, $stock, 'composite' );
 						update_post_meta( $com_prod_id, 'zi_item_id', $zoho_comp_item_id );
+						update_post_meta( $com_prod_id, 'zi_tax_id', $comp_item->tax_id );
 					}
 				}
 				// Map composite items to database.
