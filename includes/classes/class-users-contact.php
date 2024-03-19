@@ -29,30 +29,60 @@ class ContactClass {
 		if ( empty( $userid ) ) {
 			return '';
 		}
-		$zi_customer_id      = 0;
-		$fname               = get_user_meta( $userid, 'billing_first_name', true );
-		$lname               = get_user_meta( $userid, 'billing_last_name', true );
-		$contact_name        = $fname . ' ' . $lname;
-		$company_name        = get_user_meta( $userid, 'billing_company', true );
-		$billing_address     = get_user_meta( $userid, 'billing_address_1', true );
-		$billing_address2    = get_user_meta( $userid, 'billing_address_2', true );
-		$billing_city        = get_user_meta( $userid, 'billing_city', true );
-		$billing_state       = get_user_meta( $userid, 'billing_state', true );
-		$billing_postcode    = get_user_meta( $userid, 'billing_postcode', true );
-		$billing_country     = get_user_meta( $userid, 'billing_country', true );
-		$shipping_first_name = get_user_meta( $userid, 'shipping_first_name', true );
-		$shipping_last_name  = get_user_meta( $userid, 'shipping_last_name', true );
-		$shipping_attention  = $shipping_first_name . ' ' . $shipping_last_name;
-		$shipping_address    = get_user_meta( $userid, 'shipping_address_1', true );
-		$shipping_address2   = get_user_meta( $userid, 'shipping_address_2', true );
-		$shipping_city       = get_user_meta( $userid, 'shipping_city', true );
-		$shipping_state      = get_user_meta( $userid, 'shipping_state', true );
-		$shipping_postcode   = get_user_meta( $userid, 'shipping_postcode', true );
-		$shipping_country    = get_user_meta( $userid, 'shipping_country', true );
-		$first_name          = get_user_meta( $userid, 'first_name', true );
-		$last_name           = get_user_meta( $userid, 'last_name', true );
-		$email               = get_user_meta( $userid, 'billing_email', true );
-		$mobile              = get_user_meta( $userid, 'billing_phone', true );
+		// $fd         = fopen( __DIR__ . '/contact_create_function.txt', 'w+' );
+		$user_order = wc_get_customer_last_order( $userid );
+
+		if ( $user_order ) {
+			// Billing Details
+			$contact_name     = $user_order->get_billing_first_name() . ' ' . $user_order->get_billing_last_name();
+			$company_name     = $user_order->get_billing_company();
+			$billing_address  = $user_order->get_billing_address_1();
+			$billing_address2 = $user_order->get_billing_address_2();
+			$billing_city     = $user_order->get_billing_city();
+			$billing_state    = $user_order->get_billing_state();
+			$billing_postcode = $user_order->get_billing_postcode();
+			$billing_country  = $user_order->get_billing_country();
+
+			// Shipping Details
+			$shipping_attention = $user_order->get_shipping_first_name() . ' ' . $user_order->get_shipping_last_name();
+			$shipping_address   = $user_order->get_shipping_address_1();
+			$shipping_address2  = $user_order->get_shipping_address_2();
+			$shipping_city      = $user_order->get_shipping_city();
+			$shipping_state     = $user_order->get_shipping_state();
+			$shipping_postcode  = $user_order->get_shipping_postcode();
+			$shipping_country   = $user_order->get_shipping_country();
+
+			// Customer Details
+			$first_name = $user_order->get_billing_first_name();
+			$last_name  = $user_order->get_billing_last_name();
+			$email      = $user_order->get_billing_email();
+			$mobile     = $user_order->get_billing_phone();
+		} else {
+			// If no order found, fallback to user meta
+			$contact_name     = get_user_meta( $userid, 'first_name', true ) . ' ' . get_user_meta( $userid, 'last_name', true );
+			$company_name     = get_user_meta( $userid, 'billing_company', true );
+			$billing_address  = get_user_meta( $userid, 'billing_address_1', true );
+			$billing_address2 = get_user_meta( $userid, 'billing_address_2', true );
+			$billing_city     = get_user_meta( $userid, 'billing_city', true );
+			$billing_state    = get_user_meta( $userid, 'billing_state', true );
+			$billing_postcode = get_user_meta( $userid, 'billing_postcode', true );
+			$billing_country  = get_user_meta( $userid, 'billing_country', true );
+
+			$shipping_attention = get_user_meta( $userid, 'shipping_first_name', true ) . ' ' . get_user_meta( $userid, 'shipping_last_name', true );
+			$shipping_address   = get_user_meta( $userid, 'shipping_address_1', true );
+			$shipping_address2  = get_user_meta( $userid, 'shipping_address_2', true );
+			$shipping_city      = get_user_meta( $userid, 'shipping_city', true );
+			$shipping_state     = get_user_meta( $userid, 'shipping_state', true );
+			$shipping_postcode  = get_user_meta( $userid, 'shipping_postcode', true );
+			$shipping_country   = get_user_meta( $userid, 'shipping_country', true );
+
+			$first_name = get_user_meta( $userid, 'first_name', true );
+			$last_name  = get_user_meta( $userid, 'last_name', true );
+			$email      = get_user_meta( $userid, 'billing_email', true );
+			$mobile     = get_user_meta( $userid, 'billing_phone', true );
+		}
+
+		$zi_customer_id = 0;
 
 		// get vat_number
 		$eu_vat = '';
@@ -95,7 +125,7 @@ class ContactClass {
 		}
 
 		// lets create the contact object
-		if ( $company_name && $company_name != '' ) {
+		if ( $company_name ) {
 			$pdt1 = '"contact_name": "' . $company_name . '","contact_type": "customer","company_name": "' . $company_name . '"';
 		} else {
 			$pdt1 = '"contact_name": "' . $contact_name . '","contact_type": "customer"';
@@ -119,7 +149,7 @@ class ContactClass {
 		);
 
 		//logging
-		//fwrite($fd, PHP_EOL.'Error log : '.print_r($data, true));
+		// fwrite( $fd, PHP_EOL . 'Data Body: ' . print_r( $data, true ) );
 		// end logging
 		//fclose($fd);
 
