@@ -1,3 +1,9 @@
+Version 2.1.8  - March 20 2024
+* New: customer import with cron option
+* New: support for Advanced Coupons plugin - customer credit
+* Fix: image import
+* Fix: order sync
+
 Version 2.1.7 - March 13 2024
 * Fix: checkout fields readonly conflict
 * Fix: cronjob adjustment not working
