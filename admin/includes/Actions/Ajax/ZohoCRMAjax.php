@@ -2,14 +2,10 @@
 
 namespace RMS\Admin\Actions\Ajax;
 
-use RMS\Admin\Template;
 use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
 use RMS\Admin\Traits\LogWriter;
-use Throwable;
-use WpOrg\Requests\Exception;
-use function gettype;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit;
 
@@ -65,6 +61,20 @@ final class ZohoCRMAjax {
 	public function get_token() {
 		return get_option( self::OPTIONS['connect']['token'], '' );
 	}
+
+	public function connect_save() {
+		$this->verify( self::FORMS['connect'] );
+		if ( isset( $this->data['token'] ) && ! empty( $this->data['token'] ) ) {
+			update_option( self::OPTIONS['connect']['token'], $this->data['token'] );
+			$this->response['message'] = __( 'Saved', 'commercebird' );
+			$this->response['data']    = $this->data;
+		} else {
+			$this->errors['message'] = __( 'Token is required', 'commercebird' );
+		}
+
+		$this->serve();
+	}
+
 	public function connect_load() {
 		$this->verify();
 		$this->response['token'] = get_option( self::OPTIONS['connect']['token'], '' );

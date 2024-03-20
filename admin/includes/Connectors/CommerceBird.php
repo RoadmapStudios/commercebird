@@ -18,8 +18,7 @@ final class CommerceBird {
 	const ORDER         = 'customs/exact/bulk-orders';
 	const API           = 'https://api.commercebird.com';
 	const WEBAPP_ORDERS = 'webapp/orders/synced-orders';
-
-	const ZCRMFIELDS = 'customs/zoho/fields';
+	const ZCRMFIELDS    = 'customs/zoho/fields';
 
 	public function cost_centers() {
 		return $this->request( self::COST_CENTERS );
