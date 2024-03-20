@@ -16,11 +16,28 @@ final class CommerceBird {
 	const ITEM          = 'customs/exact/bulk-items';
 	const CUSTOMER      = 'customs/exact/bulk-customers';
 	const ORDER         = 'customs/exact/bulk-orders';
-		const API       = 'https://api.commercebird.com';
+	const API           = 'https://api.commercebird.com';
 	const WEBAPP_ORDERS = 'webapp/orders/synced-orders';
+
+	const ZCRMFIELDS = 'customs/zoho/fields';
 
 	public function cost_centers() {
 		return $this->request( self::COST_CENTERS );
+	}
+
+	/**
+	 * Get all Zoho CRM Custom fields
+	 *
+	 * @param
+	 *
+	 * @return array|WP_Error array ( account_id, company_id )
+	 * @throws WP_Error Invalid customer if empty
+	 */
+	public function zcrm_fields() {
+
+		$response = $this->request( self::ZCRMFIELDS );
+
+		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
 	/**

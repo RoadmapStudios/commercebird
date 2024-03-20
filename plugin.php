@@ -60,6 +60,7 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
 use RMS\Admin\Actions\Sync\ExactOnlineSync;
 use RMS\Admin\Actions\Ajax\ZohoInventoryAjax;
+use RMS\Admin\Actions\Ajax\ZohoCRMAjax;
 use RMS\Admin\Cors;
 use RMS\Admin\Template;
 use RMS\API\ProductWebhook;
@@ -257,6 +258,7 @@ if ( is_admin() ) {
 	}
 	Template::instance();
 	ZohoInventoryAjax::instance();
+	ZohoCRMAjax::instance();
 	Cors::instance();
 }
 ExactOnlineAjax::instance();
