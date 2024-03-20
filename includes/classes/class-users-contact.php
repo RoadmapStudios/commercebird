@@ -529,11 +529,9 @@ class ContactClass {
 							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
-							update_user_meta(
-								$user_id,
-								'acfw_store_credit_balance',
-								preg_replace( '/[^0-9,]/', '', $credit_limit )
-							);
+							if ( class_exists( 'ACFWF' ) ) {
+								$this->update_customer_store_credit_balance( $user_id, preg_replace( '/[^0-9,]/', '', $credit_limit ) );
+							}
 						} else {
 							echo $user_id->get_error_message();
 						}
@@ -554,11 +552,9 @@ class ContactClass {
 							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
-							update_user_meta(
-								$user_id,
-								'acfw_store_credit_balance',
-								preg_replace( '/[^0-9,]/', '', $credit_limit )
-							);
+							if ( class_exists( 'ACFWF' ) ) {
+								$this->update_customer_store_credit_balance( $user_id, preg_replace( '/[^0-9,]/', '', $credit_limit ) );
+							}
 						} else {
 							echo $is_err->get_error_message();
 						}
@@ -574,6 +570,34 @@ class ContactClass {
 				if ( ! $existing_schedule ) {
 					as_schedule_single_action( time(), 'sync_zi_import_contacts', array( $data_arr ) );
 				}
+			}
+		}
+	}
+
+	/**
+	 * Update customer store credit balance. Requires Advanced Coupons Plugin.
+	 * @param $user_id int User ID of the customer.
+	 * @param $credit_limit int Credit limit of the customer.
+	 */
+	protected function update_customer_store_credit_balance( $user_id, $credit_limit ) {
+		if ( ! empty( $user_id ) ) {
+			$endpoint             = '/wc-store-credits/v1/entries‌';
+			$store_credit_balance = get_user_meta( $user_id, 'acfw_store_credit_balance', true );
+			if ( $store_credit_balance !== $credit_limit ) {
+				// first remove the user meta store credit
+				update_user_meta( $user_id, 'acfw_store_credit_balance', $credit_limit );
+				// create payload for store credit.
+				$payload = array(
+					'user_id'   => $user_id,
+					'amount'    => $credit_limit,
+					'type'      => 'increase',
+					'action'    => 'admin_increase',
+					'object_id' => 1,
+				);
+
+				$request = new \WP_REST_Request( 'POST', $endpoint );
+				$request->set_body_params( $payload );
+				rest_do_request( $request );
 			}
 		}
 	}
