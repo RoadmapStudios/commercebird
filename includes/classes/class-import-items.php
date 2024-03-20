@@ -928,7 +928,8 @@ class ImportProductClass {
 	 */
 	public function sync_variation_of_group( $item_arr ) {
 		global $wpdb;
-		// $fd = fopen(__DIR__ . '/sync_from_zoho.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/sync_from_zoho.txt', 'a+' );
+
 		$item = $item_arr;
 		// Stock mode check
 		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
@@ -1004,7 +1005,7 @@ class ImportProductClass {
 				$variation->save();
 			} else {
 				// create new variation
-				// fwrite($fd, PHP_EOL . 'Variations not');
+				// fwrite( $fd, PHP_EOL . 'New Variation: ' . $item->name );
 
 				$attribute_name11 = $item->attribute_option_name1;
 				$attribute_name12 = $item->attribute_option_name2;

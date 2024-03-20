@@ -27,75 +27,32 @@ if ( ! class_exists( 'ZI_CommonClass' ) ) {
 		}
 
 		/**
-		 * Function to get Tax Class from zoho tax id.
-		 */
-		public function get_woo_tax_class_from_zoho_tax_id( $zoho_tax_id ) {
-			// $fd = fopen( __DIR__ . '/get_woo_tax_class_from_zoho_tax_id.txt', 'w+' );
-			// fwrite( $fd, PHP_EOL . 'Zoho Tax ID : ' . $zoho_tax_id );
-
-			global $wpdb;
-			$option_table = $wpdb->prefix . 'options';
-
-			// Prepare and execute SQL query
-			$tax_option_obj = $wpdb->get_row(
-				$wpdb->prepare(
-					"SELECT * FROM $option_table WHERE option_value LIKE %s LIMIT 1",
-					array( "%$zoho_tax_id##%" )
-				)
-			);
-
-			// fwrite( $fd, PHP_EOL . 'tax_option_obj : ' . print_r( $tax_option_obj, true ) );
-
-			if ( $tax_option_obj ) {
-				// Extract tax rate ID from option_value
-				$option_value_parts = explode( '##', $tax_option_obj->option_value );
-
-				if ( $option_value_parts ) {
-					$rates_table = $wpdb->prefix . 'woocommerce_tax_rates';
-					// Get tax rate class from tax rate ID
-					$tax_rate_obj = $wpdb->get_row(
-						$wpdb->prepare(
-							'SELECT tax_rate_class FROM %s WHERE tax_rate_id = %d LIMIT 1',
-							$rates_table,
-							$zoho_tax_id
-						)
-					);
-
-					if ( $tax_rate_obj && isset( $tax_rate_obj->tax_rate_class ) ) {
-						// Return tax class if found
-						return $tax_rate_obj->tax_rate_class;
-					}
-				}
-			}
-			// fclose( $fd );
-			// Return default tax class if not found
-			return 'standard';
-		}
-
-		/**
 		 * Get the tax class based on the tax percentage.
 		 *
-		 * @param float $tax_percentage The tax percentage.
-		 * @return string|false The tax class if found, or false if not found.
+		 * @param float $percentage The tax percentage.
+		 * @return string|false The tax class if found, or standard if not found.
 		 */
-		public function get_tax_class_by_percentage( $tax_percentage ) {
+		public function get_tax_class_by_percentage( $percentage ) {
+			// $fd = fopen( __DIR__ . '/get_tax_class_by_percentage.txt', 'a+' );
+
 			global $wpdb;
+			// Determine the number of decimal places in the provided percentage
+			$decimal_places = strlen( substr( strrchr( $percentage, '.' ), 1 ) );
 
-			// Construct the SQL query to retrieve the tax rate class based on the tax percentage
-			$tax_rates_table = $wpdb->prefix . 'woocommerce_tax_rates';
-			$query           = $wpdb->prepare(
-				"SELECT tax_rate_class
-        		FROM $tax_rates_table
-        		WHERE tax_rate = %f
-        		LIMIT 1",
-				$tax_percentage
-			);
+			// Round the percentage to the determined number of decimal places
+			$rounded_percentage = round( $percentage, $decimal_places );
+			$sql_query          = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates WHERE ROUND(tax_rate, %d) = %f", $decimal_places, $rounded_percentage );
+			$tax_rates          = $wpdb->get_results( $sql_query );
 
-			// Execute the query
-			$tax_class = $wpdb->get_var( $query );
-
-			// Return the tax class if found, or false if not found
-			return $tax_class !== null ? $tax_class : false;
+			// If tax rates are found
+			if ( $tax_rates ) {
+				// Get the tax class from the first matching tax rate
+				$tax_class = $tax_rates[0]->tax_rate_class;
+				return $tax_class;
+			} else {
+				// Return null if no tax rates match the provided percentage
+				return 'standard';
+			}
 		}
 	}
 }
