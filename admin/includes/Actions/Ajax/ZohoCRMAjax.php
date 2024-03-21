@@ -53,6 +53,10 @@ final class ZohoCRMAjax {
 		'zcrmfields' => 'commercebird-zoho-crm-fields',
 	);
 
+	public function __construct() {
+		$this->load_actions();
+	}
+
 	/**
 	 * Get Zoho CRM token.
 	 * @since 1.0.0

@@ -1,12 +1,8 @@
-import type {
-    ConnectionSettings,
-    OrderSettings
-} from '@/types'
 import { acceptHMRUpdate, defineStore } from "pinia";
 import type { Ref, UnwrapRef } from "vue";
 import { reactive, ref, watch } from "vue";
 import { useLoadingStore } from "@/stores/loading";
-import { extractOptions, notify, redirect_uri, site_url } from "@/composable/helpers";
+import { extractOptions, notify, site_url } from "@/composable/helpers";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { useStorage } from "@/composable/storage";
@@ -114,7 +110,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             key
         );
         console.log("customFields.value",customFields.value);
-        
+
         loader.clearLoading(action);
     }
 
@@ -208,9 +204,6 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         }
         loader.clearLoading(action);
     };
-
-
-  
     return {
         selectTab,
         selectedTab,
