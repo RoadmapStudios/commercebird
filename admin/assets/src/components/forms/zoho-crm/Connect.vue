@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import TextInput from "@/components/ui/inputs/TextInput.vue";
 import InputGroup from "@/components/ui/inputs/InputGroup.vue";
-import { useExactOnlineStore } from "@/stores/exactOnline";
 import BaseLink from "@/components/ui/BaseLink.vue";
 import BaseForm from "@/components/ui/BaseForm.vue";
 import { backendAction } from "@/keys";
@@ -10,9 +9,10 @@ import { QuestionMarkCircleIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 import Swal from "sweetalert2";
 import { tokenImage } from "@/composable/helpers";
+import { useZohoCrmStore } from "@/stores/zohoCrm";
 
-const store = useExactOnlineStore();
-const action = backendAction.exactOnline.connect;
+const store = useZohoCrmStore();
+const action = backendAction.zohoCrm.connect;
 const showHint = ref(false);
 const handleClick = () => {
     Swal.fire({
