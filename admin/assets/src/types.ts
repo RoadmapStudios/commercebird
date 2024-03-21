@@ -122,6 +122,13 @@ export type StoreKey = {
         zoho_tax: string;
         zoho_warehouses: string;
     };
+
+    zohoCrm: {
+        connected: string;
+        connect: string;
+        order: string;
+        fields: string;
+    };
 }
 
 export type BackendAction = {
@@ -155,6 +162,15 @@ export type BackendAction = {
         zoho_taxes: string;
         zoho_warehouses: string;
         connection: string;
+    };
+
+    zohoCrm: {
+        connect: { get: string; save: string; reset: string; };
+        order: { export:string };
+        field: { get: string; save: string; reset: string; };
+        custom_fields: string;
+        connection: string;
+
     };
 }
 

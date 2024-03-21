@@ -30,6 +30,13 @@ export const storeKey: StoreKey = {
         cost_center: 'exactOnline_cost_center',
         cost_unit: 'exactOnline_cost_unit',
     },
+    zohoCrm:{
+        connected: 'zcrm_connected',
+        connect: 'zcrm_connect',
+        order: 'zcrm_order',
+        fields: 'zcrm_custom_fields',
+
+    }
 
 }
 
@@ -122,4 +129,22 @@ export const backendAction: BackendAction = {
         zoho_prices: 'get_zoho_prices',
         zoho_warehouses: 'get_zoho_warehouses'
     },
+    zohoCrm: {
+        connect: {
+            get: 'get_zcrm_connect',
+            save: 'save_zcrm_connect',
+            reset: 'reset_zcrm_connect'
+        },
+        order: {
+            export: 'export_zcrm_order',
+        },
+        field: {
+            get: 'get_zcrm_fields',
+            save: 'save_zcrm_fields',
+            reset: 'reset_zcrm_fields'
+        },
+        connection: 'is_connected',
+        custom_fields: 'get_all_custom_fields',
+
+    }
 }
