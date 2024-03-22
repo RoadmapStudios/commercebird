@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onUpdated } from 'vue'
+import { onUpdated, ref, watch } from 'vue'
 import { backendAction } from "@/keys";
 import { useLoadingStore } from "@/stores/loading";
 import { useZohoCrmStore } from '@/stores/zohoCrm';
@@ -44,15 +44,15 @@ const action = backendAction.zohoCrm.field;
 const store = useZohoCrmStore();
 const loader = useLoadingStore();
 const tabs = {
-  orders: { name: "Orders", title: "Orders Custom Fields" },
-  contacts: { name: "Contacts", title: "Contacts Custom Fields" },
-  products: { name: "Products", title: "Products Custom Fields" },
+  orders: { name: "Orders", title: "Orders Custom Fields",moduleName:"Sales_Orders" },
+  contacts: { name: "Contacts", title: "Contacts Custom Fields", moduleName: "Contacts"},
+  products: { name: "Products", title: "Products Custom Fields",moduleName:"Products" },
 
 };
 let selectedTab = ref(tabs.orders);
-onUpdated(() => {
-  console.log("selected tab", selectedTab.value);
 
+onUpdated(() => {
+  store.get_all_zcrm_fields(selectedTab.value.name);
 })
 
 </script>

@@ -40,28 +40,28 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                 break;
             case "field":
                 get_all_custom_fields();
-                // get_zcrm_fields();
-                response = await loader.loadData(keys.fields, actions.field.get);
-                if (response) {
-                    let parsed;
-                    if (typeof response.form === 'string') {
-                        parsed = JSON.parse(response.form);
-                    } else {
-                        parsed = response.form
-                    }
+                get_zcrm_fields('Sales_Orders');
+                // response = await loader.loadData(keys.fields, actions.field.get);
+                // if (response) {
+                //     let parsed;
+                //     if (typeof response.form === 'string') {
+                //         parsed = JSON.parse(response.form);
+                //     } else {
+                //         parsed = response.form
+                //     }
 
-                    Object.entries(parsed).forEach(([key, value]) => {
-                        const existingObject = fields.value.some(field => field.key === key && field.value === value);
-                        if (!existingObject) {
-                            fields.value.push({ key, value });
-                        }
+                //     Object.entries(parsed).forEach(([key, value]) => {
+                //         const existingObject = fields.value.some(field => field.key === key && field.value === value);
+                //         if (!existingObject) {
+                //             fields.value.push({ key, value });
+                //         }
 
-                    });
-                    if (fields.value.length === 0) {
-                        fields.value.push({ key: "", value: "" });
-                    }
+                //     });
+                //     if (fields.value.length === 0) {
+                //         fields.value.push({ key: "", value: "" });
+                //     }
 
-                }
+                // }
                 break;
             default:
                 break;
@@ -109,12 +109,13 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         loader.setLoading(action);
         customFields.value = await fetchData(
             action,
-            key
+            key,
+
         );
         loader.clearLoading(action);
     }
 
-    const get_zcrm_fields=async()=>{
+    const get_zcrm_fields=async(moduleName:string)=>{
         const key = keys.fields
         const instore = storage.get(key);
         if (instore) {
@@ -125,11 +126,15 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         loader.setLoading(action);
         zcrm_fields.value = await fetchData(
             action,
-            key
+            key,
+            {module:moduleName}
         );
         loader.clearLoading(action);
     }
 
+    function get_all_zcrm_fields(module:string){
+         get_all_zcrm_fields(module);
+    }
     /*
      * -----------------------------------------------------------------------------------------------------------------
      *  Form Submit
@@ -229,6 +234,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         customFields,
         fields,
         dateRange,
+        get_all_zcrm_fields,
         addField,
         removeField,
         handleSubmit,

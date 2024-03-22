@@ -14,33 +14,36 @@ export const ajaxUrl = (action: string): string => {
 }
 
 
-/**
- * Fetches data from the server based on the provided action and stores it in the specified location.
- *
- * @param {string} action - The action to be performed on the server.
- * @param {string} storeKey - The key to store the fetched data in.
- * @return {Promise<any>} The fetched data.
- */
-export const fetchData = async (action: string, storeKey: string): Promise<any> => {
+export const fetchData = async (action: string, storeKey: string, params: any|null=null): Promise<any> => {
     if (action === undefined) return;
-    return await fetch(ajaxUrl(action))
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                useStorage().save(storeKey, data.data);
-                return data.data;
-            } else {
-                if (data.message) {
-                    notify.error(data.message);
-                    return;
-                }
-            }
-        })
-        .catch(error => {
-            notify.error('Something went wrong. Please check your input and try again.');
+    let fullUrl;
+    if (params === null) {
+      fullUrl = ajaxUrl(action);
+    } else {
+      const queryString = Object.keys(params)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        .join('&');
+      fullUrl = `${ajaxUrl(action)}&${queryString}`;
+    }
+  
+    return await fetch(fullUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          useStorage().save(storeKey, data.data);
+          return data.data;
+        } else {
+          if (data.message) {
+            notify.error(data.message);
             return;
-        })
-};
+          }
+        }
+      })
+      .catch(error => {
+        notify.error('Something went wrong. Please check your input and try again.');
+        return;
+      });
+  };
 
 /**
  * Sends data to the server using AJAX.
