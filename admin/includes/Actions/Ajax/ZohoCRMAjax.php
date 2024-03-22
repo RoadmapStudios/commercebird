@@ -2,6 +2,7 @@
 
 namespace RMS\Admin\Actions\Ajax;
 
+use RMS\Admin\Connectors\CommerceBird;
 use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
@@ -90,7 +91,14 @@ final class ZohoCRMAjax {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function get_zcrm_fields() {
-		return get_option( self::OPTIONS['zcrmfields'], array() );
+	public function get_zcrm_fields( $module ) {
+		$fields = ( new CommerceBird() )->get_zcrm_fields( $module );
+		if ( is_wp_error( $fields ) ) {
+			$this->errors['message'] = $fields->get_error_message();
+		} else {
+			update_option( self::OPTIONS['zcrmfields'], $fields );
+			$this->response['message'] = __( 'Zoho CRM fields saved', 'commercebird' );
+		}
+		$this->serve();
 	}
 }

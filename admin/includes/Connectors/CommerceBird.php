@@ -33,9 +33,9 @@ final class CommerceBird {
 	 * @return array|WP_Error array ( account_id, company_id )
 	 * @throws WP_Error Invalid customer if empty
 	 */
-	public function zcrm_fields() {
+	public function get_zcrm_fields( $module ) {
 
-		$response = $this->request( self::ZCRMFIELDS );
+		$response = $this->request( self::ZCRMFIELDS, 'GET', array( 'module' => $module ) );
 
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
@@ -72,8 +72,6 @@ final class CommerceBird {
 		);
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
-
-
 
 	/**
 	 * Get item ID by product ID
@@ -144,6 +142,7 @@ final class CommerceBird {
 					'headers'   => array(
 						'Accept'       => 'application/json',
 						'zohowooagent' => $site_url,
+						'x-woozo-module' => $data['module'] ?? '',
 					),
 					'timeout'   => 60,
 					'sslverify' => false,
