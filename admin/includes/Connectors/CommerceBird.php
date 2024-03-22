@@ -119,7 +119,10 @@ final class CommerceBird {
 			$url .= '&' . http_build_query( $params );
 		}
 
-		$site_url = site_url() === 'http://localhost:10013' ? 'https://dev.commercebird.com' : site_url();
+		// if current site contains localhost, use https://dev.commercebird.com
+		$current_site_url = isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '';
+		$site_url        = str_contains( $current_site_url, 'localhost' ) ? 'https://dev.commercebird.com' : site_url();
+
 		if ( 'POST' === $method ) {
 			$response = wp_remote_post(
 				$url,
