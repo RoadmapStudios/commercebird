@@ -133,7 +133,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     }
 
     function get_all_zcrm_fields(module:string){
-         get_all_zcrm_fields(module);
+        get_zcrm_fields(module);
     }
     /*
      * -----------------------------------------------------------------------------------------------------------------

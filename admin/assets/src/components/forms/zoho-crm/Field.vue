@@ -50,9 +50,9 @@ const tabs = {
 
 };
 let selectedTab = ref(tabs.orders);
+watch(() => selectedTab, (value) => {
+  store.get_all_zcrm_fields(value.value.name);
+});
 
-onUpdated(() => {
-  store.get_all_zcrm_fields(selectedTab.value.name);
-})
 
 </script>
