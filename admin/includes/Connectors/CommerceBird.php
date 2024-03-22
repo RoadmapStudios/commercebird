@@ -3,6 +3,7 @@
 namespace RMS\Admin\Connectors;
 
 use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
+use RMS\Admin\Actions\Ajax\ZohoCRMAjax;
 use RMS\Admin\Traits\LogWriter;
 use WP_Error;
 
@@ -113,13 +114,15 @@ final class CommerceBird {
 	 */
 	private function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
 		$token = ExactOnlineAjax::instance()->get_token();
+		if(empty($token)){
+			$token = ZohoCRMAjax::instance()->get_token();
+		}
 		$url   = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
 		if ( ! empty( $params ) ) {
 			$url .= '&' . http_build_query( $params );
 		}
 
-		$site_url = site_url() === 'http://commercebird.test' ? 'https://dev.commercebird.com' : site_url();
-
+		$site_url = site_url() === 'http://localhost:10013' ? 'https://dev.commercebird.com' : site_url();
 		if ( 'POST' === $method ) {
 			$response = wp_remote_post(
 				$url,
