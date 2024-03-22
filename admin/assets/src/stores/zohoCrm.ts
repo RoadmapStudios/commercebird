@@ -40,6 +40,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                 break;
             case "field":
                 get_all_custom_fields();
+                // get_zcrm_fields();
                 response = await loader.loadData(keys.fields, actions.field.get);
                 if (response) {
                     let parsed;
@@ -86,6 +87,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     * -----------------------------------------------------------------------------------------------------------------
     */
     const customFields = ref({});
+    const zcrm_fields = ref({});
     const fields: Ref<UnwrapRef<{ key: string, value: string }[]>> = ref([])
 
     function addField() {
@@ -109,8 +111,22 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             action,
             key
         );
-        console.log("customFields.value",customFields.value);
+        loader.clearLoading(action);
+    }
 
+    const get_zcrm_fields=async()=>{
+        const key = keys.fields
+        const instore = storage.get(key);
+        if (instore) {
+            zcrm_fields.value = instore;
+        }
+        const action =actions.field.get;
+        if (loader.isLoading(action)) return;
+        loader.setLoading(action);
+        zcrm_fields.value = await fetchData(
+            action,
+            key
+        );
         loader.clearLoading(action);
     }
 
