@@ -113,11 +113,8 @@ final class CommerceBird {
 	 * Generate request URL
 	 */
 	private function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
-		$token = ExactOnlineAjax::instance()->get_token();
-		if(empty($token)){
-			$token = ZohoCRMAjax::instance()->get_token();
-		}
-		$url   = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
+		$token = ! empty( ExactOnlineAjax::instance()->get_token() ) ? ExactOnlineAjax::instance()->get_token() : ZohoCRMAjax::instance()->get_token();
+		$url = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
 		if ( ! empty( $params ) ) {
 			$url .= '&' . http_build_query( $params );
 		}
