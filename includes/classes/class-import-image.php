@@ -73,7 +73,7 @@ class ImageClass {
 		}
 
 		$attach_id               = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
-		$image_exists_in_library = $this->compareImageWithMediaLibrary( $temp_file );
+		$image_exists_in_library = $this->compare_image_with_media_library( $temp_file );
 
 		if ( $image_exists_in_library ) {
 			$attach_id = $image_exists_in_library;
@@ -86,7 +86,7 @@ class ImageClass {
 				)
 			);
 			$image_post_scaled_id = intval( $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' and meta_value LIKE %s", '%' . $image_name_scaled . '%' ) ) );
-			$image_post_id = ( 0 === $image_post_id ) ? $image_post_scaled_id : $image_post_id;
+			$image_post_id        = ( 0 === $image_post_id ) ? $image_post_scaled_id : $image_post_id;
 		}
 		// fwrite($fd,PHP_EOL.'$image_post_id : '.$image_post_id);
 		// fwrite($fd, PHP_EOL . '$image_post_id: ' . $image_post_id);
@@ -145,14 +145,14 @@ class ImageClass {
 						wp_update_image_subsizes( $attachment_id );
 
 						// Remove all files from zoho folder when done
-						$upload     = wp_upload_dir();
-						$folderPath = $upload['basedir'] . '/zoho_image/';
+						$upload      = wp_upload_dir();
+						$folder_path = $upload['basedir'] . '/zoho_image/';
 						// Get list of file paths in the folder
-						$filePaths = glob( $folderPath . '*' );
+						$file_paths = glob( $folder_path . '*' );
 						// Loop through each file and delete it
-						foreach ( $filePaths as $filePath ) {
-							if ( is_file( $filePath ) ) {
-								wp_delete_file( $filePath );
+						foreach ( $file_paths as $file_path ) {
+							if ( is_file( $file_path ) ) {
+								wp_delete_file( $file_path );
 							}
 						}
 						return;
@@ -172,30 +172,30 @@ class ImageClass {
 	/**
 	 * Compare the image with existing media library images based on titles.
 	 *
-	 * @param string $imagePath The path to the image to be checked.
+	 * @param string $image_path The path to the image to be checked.
 	 * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
 	 * @since 1.0.0
 	 */
-	protected function compareImageWithMediaLibrary( $imagePath ) {
+	protected function compare_image_with_media_library( $image_path ) {
 		// Get the title of the image you want to check
-		$compareImageTitle = sanitize_file_name( pathinfo( $imagePath, PATHINFO_FILENAME ) );
+		$compare_image_title = sanitize_file_name( pathinfo( $image_path, PATHINFO_FILENAME ) );
 
-		if ( ! empty( $compareImageTitle ) ) {
-			$args               = array(
+		if ( ! empty( $compare_image_title ) ) {
+			$args                 = array(
 				'post_type'      => 'attachment',
 				'post_mime_type' => 'image',
 				'posts_per_page' => -1,
 			);
-			$mediaLibraryImages = get_posts( $args );
+			$media_library_images = get_posts( $args );
 
-			foreach ( $mediaLibraryImages as $mediaImage ) {
+			foreach ( $media_library_images as $media_image ) {
 				// Get the title of the existing image
-				$existingImagePath  = get_attached_file( $mediaImage->ID );
-				$existingImageTitle = get_the_title( pathinfo( $existingImagePath )['filename'] );
+				$existing_image_path  = get_attached_file( $media_image->ID );
+				$existing_image_title = get_the_title( pathinfo( $existing_image_path )['filename'] );
 
 				// Compare the titles
-				if ( $compareImageTitle === $existingImageTitle ) {
-					return $mediaImage->ID; // Return the ID of the existing image
+				if ( $compare_image_title === $existing_image_title ) {
+					return $media_image->ID; // Return the ID of the existing image
 				}
 			}
 		}

@@ -494,6 +494,8 @@ class ProductWebhook {
 					$product->set_stock_quantity( $new_stock );
 				} else {
 					$product->set_stock_quantity( $adjusted_stock );
+					$product->set_stock_status( 'instock' );
+					$product->set_manage_stock( true );
 				}
 				$product->save();
 			}

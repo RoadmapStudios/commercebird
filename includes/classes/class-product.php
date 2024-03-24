@@ -832,6 +832,7 @@ class ProductClass {
 	 * @param string $type - product is composite item or not (composite)
 	 */
 	public function zi_product_to_woocommerce( $item, $item_stock = '', $type = '' ) {
+		// $fd = fopen( __DIR__ . '/zi_product_to_woocommerce.txt', 'a+' );
 		try {
 			if ( $item['status'] == 'active' ) {
 				$status = 'publish';
@@ -878,7 +879,7 @@ class ProductClass {
 		} catch ( Exception $e ) {
 			// Handle the exception, log it, or perform any necessary actions.
 			error_log( 'Error creating WooCommerce product: ' . $e->getMessage() );
-			return false; // Or you can rethrow the exception if needed.
+			return false;
 		}
 	}
 }

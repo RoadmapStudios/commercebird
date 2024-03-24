@@ -24,7 +24,7 @@ class ImportProductClass {
 	 * @return mixed return true if data false if error.
 	 */
 	public function zi_item_bulk_sync( $url ) {
-		// $fd = fopen(__DIR__ . '/zi_item_bulk_sync.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/zi_item_bulk_sync.txt', 'a+' );
 
 		global $wpdb;
 		$execute_curl_call = new ExecutecallClass();
@@ -45,21 +45,6 @@ class ImportProductClass {
 
 			foreach ( $json->items as $arr ) {
 				// fwrite( $fd, PHP_EOL . '$arr : ' . print_r( $arr, true ) );
-
-				$item_tags = '';
-				if ( isset( $arr->custom_field_hash ) ) {
-					$item_tags_hash = $arr->custom_field_hash;
-					if ( isset( $item_tags_hash->cf_tags ) ) {
-						$item_tags = $item_tags_hash->cf_tags;
-					}
-				}
-
-				if ( ! empty( $arr->group_id ) ) {
-					$this->sync_variation_of_group( $arr );
-					continue;
-				}
-
-				// fwrite($fd, PHP_EOL . '$arr : ' . print_r($arr, true));
 				if ( ( ! empty( $arr->item_id ) ) && ! ( $arr->is_combo_product ) ) {
 					// fwrite($fd, PHP_EOL . 'Item Id found : ' . $arr->item_id);
 
@@ -102,12 +87,8 @@ class ImportProductClass {
 							}
 						}
 
-						if ( ! empty( $item_tags ) ) {
-							$final_tags = explode( ',', $item_tags );
-							$product->set_category_ids( $final_tags );
-						}
-
-						if ( ! empty( $arr->image_document_id ) && property_exists( $arr, 'image_name' ) ) {
+						$zi_disable_image_sync = get_option( 'zoho_disable_image_sync_status' );
+						if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
 							$image_class = new ImageClass();
 							$image_class->args_attach_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name, $admin_author_id );
 						}
@@ -191,153 +172,151 @@ class ImportProductClass {
 	 * @param [string] $source - Source from where function is calling : 'cron'/'sync'.
 	 * @return mixed
 	 */
-	public function sync_item_recursively() {
+	public function sync_item_recursively( $data = '' ) {
 		// $fd = fopen( __DIR__ . '/simple-items-sync.txt', 'a+' );
 
 		$args = func_get_args();
-		if ( ! empty( $args ) ) {
-			// Unpack the arguments
-			foreach ( $args as $inner_array ) {
-				if ( isset( $inner_array['page'] ) ) {
-					$page = $inner_array['page'];
+		if ( ! empty( $args ) && empty( $data ) ) {
+			$page     = isset( $args[0]['page'] ) ? $args[0]['page'] : null;
+			$category = isset( $args[0]['category'] ) ? $args[0]['category'] : null;
+		} elseif ( isset( $data['page'] ) ) {
+			$page     = $data['page'];
+			$category = $data['category'];
+		} else {
+			return;
+		}
+
+		// Keep backup of current syncing page of particular category.
+		update_option( 'simple_item_sync_page_cat_id_' . $category, $page );
+
+		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
+		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
+		$urlitem            = $zoho_inventory_url . 'api/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
+		$execute_curl_call  = new ExecutecallClass();
+		$json               = $execute_curl_call->ExecuteCurlCallGet( $urlitem );
+		$code               = (int) property_exists( $json, 'code' ) ? $json->code : '0';
+
+		global $wpdb;
+
+		/* Response for item sync with sync button. For cron sync blank array will return. */
+		$response_msg = array();
+		if ( empty( $code ) && property_exists( $json, 'items' ) ) {
+			$item_ids = array();
+			// log items.
+			// fwrite( $fd, PHP_EOL . 'Items : ' . print_r( $json, true ) );
+
+			foreach ( $json->items as $arr ) {
+				$prod_id   = wc_get_product_id_by_sku( $arr->sku );
+				$is_bundle = $arr->is_combo_product;
+				if ( isset( $arr->group_id ) ) {
+					$is_grouped = $arr->group_id;
 				}
-				if ( isset( $inner_array['category'] ) ) {
-					$category = $inner_array['category'];
-				}
-			}
-
-			// fwrite($fd, PHP_EOL . 'category: '. $category);
-
-			// Keep backup of current syncing page of particular category.
-			update_option( 'simple_item_sync_page_cat_id_' . $category, $page );
-
-			$zoho_inventory_oid = $this->config['ProductZI']['OID'];
-			$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-			$urlitem            = $zoho_inventory_url . 'api/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
-			$execute_curl_call  = new ExecutecallClass();
-			$json               = $execute_curl_call->ExecuteCurlCallGet( $urlitem );
-			$code               = (int) property_exists( $json, 'code' ) ? $json->code : '0';
-
-			global $wpdb;
-
-			/* Response for item sync with sync button. For cron sync blank array will return. */
-			$response_msg = array();
-			if ( empty( $code ) && property_exists( $json, 'items' ) ) {
-				$item_ids = array();
-				// fwrite($fd, PHP_EOL . 'Items : ' . print_r($json, true));
-				foreach ( $json->items as $arr ) {
-					$prod_id   = wc_get_product_id_by_sku( $arr->sku );
-					$is_bundle = $arr->is_combo_product;
-					if ( isset( $arr->group_id ) ) {
-						$is_grouped = $arr->group_id;
-					}
-					// Flag to enable or disable sync.
-					$allow_to_import = false;
-					// Check if product exists with same sku.
-					if ( $prod_id ) {
-						$zi_item_id = get_post_meta( $prod_id, 'zi_item_id', true );
-						if ( empty( $zi_item_id ) ) {
-							// Map existing item with zoho id.
-							update_post_meta( $prod_id, 'zi_item_id', $arr->item_id );
-							$allow_to_import = true;
-						}
-					}
-					if ( '' == $is_bundle && empty( $is_grouped ) ) {
-						// If product not exists normal behavior of item sync.
+				// Flag to enable or disable sync.
+				$allow_to_import = false;
+				// Check if product exists with same sku.
+				if ( $prod_id ) {
+					$zi_item_id = get_post_meta( $prod_id, 'zi_item_id', true );
+					if ( empty( $zi_item_id ) ) {
+						// Map existing item with zoho id.
+						update_post_meta( $prod_id, 'zi_item_id', $arr->item_id );
 						$allow_to_import = true;
 					}
-					if ( ! empty( $is_grouped ) ) {
-						$item_ids[] = $arr->item_id;
-						continue;
-					}
+				}
+				if ( '' == $is_bundle && empty( $is_grouped ) ) {
+					// If product not exists normal behavior of item sync.
+					$allow_to_import = true;
+				}
+				if ( ! empty( $is_grouped ) ) {
+					$this->sync_variation_of_group( $arr );
+					continue;
+				}
 
-					// Get the post id
-					$pdt_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $arr->item_id ) );
+				// Get the post id
+				$pdt_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $arr->item_id ) );
 
-					if ( empty( $pdt_id ) && $allow_to_import == true ) {
-						$product_class = new ProductClass();
-						$item_array    = json_decode( wp_json_encode( $arr ), true );
-						// fwrite( $fd, PHP_EOL . 'Item array :' . print_r( $item_array, true ) );
-						$pdt_id = $product_class->zi_product_to_woocommerce( $item_array, '', '' );
-						if ( $pdt_id ) {
-							update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
-						}
-					}
-
+				if ( empty( $pdt_id ) && $allow_to_import == true ) {
+					$product_class = new ProductClass();
+					$item_array    = json_decode( wp_json_encode( $arr ), true );
+					$pdt_id        = $product_class->zi_product_to_woocommerce( $item_array, '', '' );
 					if ( $pdt_id ) {
-						if ( ! empty( $arr->category_name ) ) {
-							$term    = get_term_by( 'name', $arr->category_name, 'product_cat' );
-							$term_id = $term->term_id;
-							if ( empty( $term_id ) ) {
-								$term    = wp_insert_term(
-									$arr->category_name,
-									'product_cat',
-									array(
-										'parent' => 0,
-									)
-								);
-								$term_id = $term['term_id'];
-							}
-							if ( $term_id ) {
-								// update_post_meta($pdt_id, 'zi_category_id', $category);
-								// wp_set_object_terms($pdt_id, $term_id, 'product_cat');
-								$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
-								if ( $existing_terms && count( $existing_terms ) > 0 ) {
-									$is_terms_exist = $this->zi_check_terms_exists( $existing_terms, $term_id );
-									if ( ! $is_terms_exist ) {
-										update_post_meta( $pdt_id, 'zi_category_id', $category );
-										wp_add_object_terms( $pdt_id, $term_id, 'product_cat' );
-									}
-								} else {
-									update_post_meta( $pdt_id, 'zi_category_id', $category );
-									wp_set_object_terms( $pdt_id, $term_id, 'product_cat' );
-								}
-							}
-							// Remove "uncategorized" category if assigned
-							$uncategorized_term = get_term_by( 'slug', 'uncategorized', 'product_cat' );
-							if ( $uncategorized_term && has_term( $uncategorized_term->term_id, 'product_cat', $pdt_id ) ) {
-								wp_remove_object_terms( $pdt_id, $uncategorized_term->term_id, 'product_cat' );
-							}
-						}
-
-						if ( ! empty( $arr->brand ) ) {
-							// check if the Brand or Brands taxonomy exists and then update the term
-							if ( taxonomy_exists( 'product_brand' ) ) {
-								wp_set_object_terms( $pdt_id, $arr->brand, 'product_brand' );
-							} elseif ( taxonomy_exists( 'product_brands' ) ) {
-								wp_set_object_terms( $pdt_id, $arr->brand, 'product_brands' );
-							}
-						}
-						$item_ids[] = $arr->item_id;
-					} // end of wpdb post_id check
-				}
-				if ( ! empty( $item_ids ) ) {
-					$item_id_str = implode( ',', $item_ids );
-					// fwrite($fd, PHP_EOL . 'Before Bulk sync');
-					$item_details_url = "{$zoho_inventory_url}api/v1/itemdetails?item_ids={$item_id_str}&organization_id={$zoho_inventory_oid}";
-					$this->zi_item_bulk_sync( $item_details_url );
-
-					if ( $json->page_context['has_more_page'] ) {
-						$data['page'] = $page + 1;
-						$this->sync_item_recursively( $data );
-					} else {
-						// If there is no more page to sync last backup page will be starting from 1.
-						// This we have used because in shared hosting only 1000 records are syncing.
-						update_option( 'simple_item_sync_page_cat_id_' . $category, 1 );
+						update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
 					}
-					array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 				}
+
+				if ( $pdt_id ) {
+					if ( ! empty( $arr->category_name ) ) {
+						$term    = get_term_by( 'name', $arr->category_name, 'product_cat' );
+						$term_id = $term->term_id;
+						if ( empty( $term_id ) ) {
+							$term    = wp_insert_term(
+								$arr->category_name,
+								'product_cat',
+								array(
+									'parent' => 0,
+								)
+							);
+							$term_id = $term['term_id'];
+						}
+						if ( $term_id ) {
+							// update_post_meta($pdt_id, 'zi_category_id', $category);
+							// wp_set_object_terms($pdt_id, $term_id, 'product_cat');
+							$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
+							if ( $existing_terms && count( $existing_terms ) > 0 ) {
+								$is_terms_exist = $this->zi_check_terms_exists( $existing_terms, $term_id );
+								if ( ! $is_terms_exist ) {
+									update_post_meta( $pdt_id, 'zi_category_id', $category );
+									wp_add_object_terms( $pdt_id, $term_id, 'product_cat' );
+								}
+							} else {
+								update_post_meta( $pdt_id, 'zi_category_id', $category );
+								wp_set_object_terms( $pdt_id, $term_id, 'product_cat' );
+							}
+						}
+						// Remove "uncategorized" category if assigned
+						$uncategorized_term = get_term_by( 'slug', 'uncategorized', 'product_cat' );
+						if ( $uncategorized_term && has_term( $uncategorized_term->term_id, 'product_cat', $pdt_id ) ) {
+							wp_remove_object_terms( $pdt_id, $uncategorized_term->term_id, 'product_cat' );
+						}
+					}
+
+					if ( ! empty( $arr->brand ) ) {
+						// check if the Brand or Brands taxonomy exists and then update the term
+						if ( taxonomy_exists( 'product_brand' ) ) {
+							wp_set_object_terms( $pdt_id, $arr->brand, 'product_brand' );
+						} elseif ( taxonomy_exists( 'product_brands' ) ) {
+							wp_set_object_terms( $pdt_id, $arr->brand, 'product_brands' );
+						}
+					}
+					$item_ids[] = $arr->item_id;
+				} // end of wpdb post_id check
 			}
-			// fclose( $fd );
-			return $response_msg;
+			if ( ! empty( $item_ids ) ) {
+				$item_id_str = implode( ',', $item_ids );
+				// fwrite($fd, PHP_EOL . 'Before Bulk sync');
+				$item_details_url = "{$zoho_inventory_url}api/v1/itemdetails?item_ids={$item_id_str}&organization_id={$zoho_inventory_oid}";
+				$this->zi_item_bulk_sync( $item_details_url );
+
+				if ( $json->page_context['has_more_page'] ) {
+					$data['page']     = $page + 1;
+					$data['category'] = $category;
+					$this->sync_item_recursively( $data );
+				} else {
+					// If there is no more page to sync last backup page will be starting from 1.
+					// This we have used because in shared hosting only 1000 records are syncing.
+					update_option( 'simple_item_sync_page_cat_id_' . $category, 1 );
+				}
+				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
+			}
 		}
+		// fclose( $fd );
+		return $response_msg;
 	}
 
 	/**
 	 * Update or Create Custom Fields of Product
 	 *
-	 * @param $custom_fields - item object coming in from simple item recursive
-	 * @param $pdt_id - product id
+	 * @param array|object $custom_fields - item object coming in from simple item recursive
+	 * @param int $pdt_id - product id
 	 * @return void
 	 */
 	public function sync_item_custom_fields( $custom_fields, $pdt_id ) {
@@ -345,27 +324,30 @@ class ImportProductClass {
 			return;
 		}
 
-		foreach ( $custom_fields as $custom_field ) {
-			// $data_type = $customField->data_type;
-			if ( is_array( $custom_field ) ) {
-				$api_name = $custom_field['api_name'];
-				$value    = $custom_field['value'];
-			} else {
-				$api_name = $custom_field->api_name;
-				$value    = $custom_field->value;
-			}
+		// Ensure consistent input format (array of objects)
+		if ( is_object( $custom_fields ) ) {
+			$custom_fields = array( $custom_fields );
+		}
 
-			// Check if the Zoho API is a multiline type
-			if ( ! empty( $value ) ) {
+		foreach ( $custom_fields as $custom_field ) {
+			// Extract data from custom field
+			$api_name = isset( $custom_field->api_name ) ? $custom_field->api_name : null;
+			$value    = isset( $custom_field->value ) ? $custom_field->value : null;
+
+			// Check if both API name and value are present
+			if ( ! empty( $api_name ) && isset( $value ) ) {
 				// Check if ACF function exists
 				if ( function_exists( 'update_field' ) ) {
+					// Update ACF field
 					update_field( $api_name, $value, $pdt_id );
 				} else {
+					// Fall back to update post meta
 					update_post_meta( $pdt_id, $api_name, $value );
 				}
 			}
 		}
 	}
+
 
 	/**
 	 * Function to add group items recursively by manual sync
@@ -926,11 +908,9 @@ class ImportProductClass {
 	 * @param:  $arr - item object coming in from simple item recursive function
 	 * @return: void
 	 */
-	public function sync_variation_of_group( $item_arr ) {
+	public function sync_variation_of_group( $item ) {
+		// $fd = fopen( __DIR__ . '/sync_variation_of_group.txt', 'w+' );
 		global $wpdb;
-		// $fd = fopen( __DIR__ . '/sync_from_zoho.txt', 'a+' );
-
-		$item = $item_arr;
 		// Stock mode check
 		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 		if ( $accounting_stock ) {
@@ -949,20 +929,11 @@ class ImportProductClass {
 		// fwrite($fd, PHP_EOL . 'Before group item sync : ' . $group_id);
 		if ( ! empty( $group_id ) ) {
 			// fwrite($fd, PHP_EOL . 'Inside item sync : ' . $item_name);
-			if ( isset( $item->custom_field_hash ) ) {
-				$item_tags_hash = $item->custom_field_hash;
-				if ( isset( $item_tags_hash->cf_tags ) ) {
-					$item_tags = $item_tags_hash->cf_tags;
-				}
-			}
-			// Tags
-			if ( ! empty( $item_tags ) && ! empty( $group_id ) ) {
-				$final_tags = explode( ',', $item_tags );
-				wp_set_object_terms( $group_id, $final_tags, 'product_tag' );
-			}
 			// Brand
 			if ( isset( $item->brand ) && ! empty( $group_id ) ) {
-				wp_set_object_terms( $group_id, $item->brand, 'product_brand' );
+				if ( taxonomy_exists( 'product_brand' ) ) {
+					wp_set_object_terms( $group_id, $item->brand, 'product_brand' );
+				}
 			}
 
 			$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $item_id ) );
@@ -1103,6 +1074,7 @@ class ImportProductClass {
 			// end of grouped item updating
 		} else {
 			// fwrite($fd, PHP_EOL . 'Group item empty');
+			return;
 		}
 		// fwrite($fd, PHP_EOL . 'After group item sync');
 		// fclose($fd);
