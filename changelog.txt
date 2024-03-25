@@ -1,3 +1,9 @@
+Version 2.1.9 - March 25 2024
+* Fix: first time stock update via inventory adjustment
+* Fix: child items of bundles not added
+* Fix: cronjob not updating variations
+* Compatibility with WooCommerce 8.7 verified
+
 Version 2.1.8  - March 20 2024
 * New: customer import with cron option
 * New: support for Advanced Coupons plugin - customer credit
