@@ -59,7 +59,7 @@ class ImportProductClass {
 							continue;
 						}
 
-						$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
+						$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
 						if ( ! empty( $arr->description ) && ! $zi_disable_itemdescription_sync ) {
 							$product->set_short_description( $arr->description );
 						}
@@ -69,7 +69,7 @@ class ImportProductClass {
 							$product->set_status( $status );
 						}
 
-						$zi_disable_itemname_sync = get_option( 'zoho_disable_itemname_sync_status' );
+						$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
 						if ( ( ! $zi_disable_itemname_sync ) && ! empty( $arr->name ) ) {
 							$product->set_name( stripslashes( $arr->name ) );
 						}
@@ -78,7 +78,7 @@ class ImportProductClass {
 							$product->set_sku( $arr->sku );
 						}
 
-						$zi_disable_itemprice_sync = get_option( 'zoho_disable_itemprice_sync_status' );
+						$zi_disable_itemprice_sync = get_option( 'zoho_disable_price_sync_status' );
 						if ( ! empty( $arr->rate ) && ! $zi_disable_itemprice_sync ) {
 							$product->set_regular_price( $arr->rate );
 							$sale_price = $product->get_sale_price();
@@ -1430,7 +1430,7 @@ class ImportProductClass {
 										$status           = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
 									}
 									$product->set_stock_status( $status );
-									update_post_meta( $com_prod_id, '_wc_pb_bundled_items_stock_status', wc_clean( $status ) );
+									update_post_meta( $com_prod_id, '_wc_pb_bundled_items_stock_status',  $status );
 								}
 							}
 						}
