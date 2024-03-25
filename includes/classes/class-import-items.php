@@ -1196,8 +1196,7 @@ class ImportProductClass {
 					}
 					array_push( $product_array, $prod_obj );
 				} else {
-					// Stop execution
-					return false;
+					continue;
 				}
 			}
 		}
@@ -1215,27 +1214,34 @@ class ImportProductClass {
 	 * Mapping of bundled product
 	 *
 	 * @param number $product_id - Product id of child item of bundle product.
-	 * @param number $bundle_id  - BUndle id of product.
+	 * @param number $bundle_id  - Bundle id of product.
 	 * @param number $menu_order - Listing order of child product ($menu_order will useful at composite product details page).
 	 * @return void
 	 */
 	public function add_bundle_product( $product_id, $bundle_id, $menu_order = 0 ) {
-		global $wpdb;
-		$table        = $wpdb->prefix . 'woocommerce_bundled_items';
-		$bundle_items = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %s WHERE bundle_id = %d AND product_id = %d', $table, $bundle_id, $product_id ) );
+		$bundle_items = WC_PB_DB::query_bundled_items(
+			array(
+				'return'     => 'id=>product_id',
+				'bundle_id'  => array( $bundle_id ),
+				'product_id' => array( $product_id ),
+			)
+		);
+		$data         = array(
+			'menu_order' => $menu_order,
+		);
 
 		if ( count( $bundle_items ) > 0 ) {
-			$wpdb->get_results( $wpdb->prepare( 'UPDATE %s SET menu_order = %d WHERE product_id = %d AND bundle_id = %d', $table, $menu_order, $product_id, $bundle_id ) );
-			return $bundle_items[0]->bundled_item_id;
+			$result = WC_PB_DB::update_bundled_item( $bundle_id, $data );
+			return $result;
 		} else {
-			$wpdb->get_results( $wpdb->prepare( 'INSERT INTO $table (product_id, bundle_id, menu_order) VALUES ( %d, %d, %d)', $product_id, $bundle_id, $menu_order ) );
-
-			$bundle_items = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM $table WHERE bundle_id = %d AND product_id = %d', $bundle_id, $product_id ) );
-			if ( count( $bundle_items ) > 0 ) {
-				return $bundle_items[0]->bundled_item_id;
-			} else {
-				return null;
-			}
+			// create data array of bundle item.
+			$data      = array(
+				'product_id' => $product_id,
+				'bundle_id'  => $bundle_id,
+				'menu_order' => $menu_order,
+			);
+			$bundle_id = WC_PB_DB::add_bundled_item( $data );
+			return $bundle_id;
 		}
 	}
 
@@ -1243,19 +1249,19 @@ class ImportProductClass {
 	 * Create or update bundle item metadata
 	 *
 	 * @param number $bundle_item_id bundle item id.
-	 * @param string $key - metadata key.
-	 * @param string $value - metadata value.
+	 * @param string $meta_key - metadata key.
+	 * @param string $meta_value - metadata value.
 	 * @return void
 	 */
 
-	public function zi_update_bundle_meta( $bundle_item_id, $key, $value ) {
-		global $wpdb;
-		$table    = $wpdb->prefix . 'woocommerce_bundled_itemmeta';
-		$metadata = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM $table WHERE bundled_item_id = %d AND meta_key = %s', $bundle_item_id, $key ) );
-		if ( count( $metadata ) > 0 ) {
-			$wpdb->get_results( $wpdb->prepare( 'UPDATE $table SET meta_value = %s WHERE bundled_item_id = %d AND meta_key = %s', $value, $bundle_item_id, $key ) );
+	public function zi_update_bundle_meta( $bundle_item_id, $meta_key, $meta_value ) {
+		// first get metadata from db.
+		$metadata = WC_PB_DB::get_bundled_item_meta( $bundle_item_id, $meta_key );
+		if ( $metadata ) {
+			$result = WC_PB_DB::update_bundled_item_meta( $bundle_item_id, $meta_key, $meta_value );
 		} else {
-			$wpdb->get_results( $wpdb->prepare( 'INSERT INTO $table (bundled_item_id, meta_key, meta_value) VALUES ( %d, %s, %s)', $bundle_item_id, $key, $value ) );
+			$result = WC_PB_DB::add_bundled_item_meta( $bundle_item_id, $meta_key, $meta_value );
+			return $result;
 		}
 	}
 
@@ -1269,10 +1275,9 @@ class ImportProductClass {
 	 */
 	public function recursively_sync_composite_item_from_zoho( $page, $category, $source ) {
 		// Start logging
-		// $fd = fopen(__DIR__ . '/recursively_sync_composite_item_from_zoho.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/recursively_sync_composite_item_from_zoho.txt', 'a+' );
 
 		global $wpdb;
-		$tbl_prefix = $wpdb->prefix;
 		$zi_org_id  = $this->config['ProductZI']['OID'];
 		$zi_url     = $this->config['ProductZI']['APIURL'];
 		// Conditional code to load file only if source is cron.
@@ -1282,6 +1287,9 @@ class ImportProductClass {
 		} else {
 			$current_user    = wp_get_current_user();
 			$admin_author_id = $current_user->ID;
+			if ( ! $admin_author_id ) {
+				$admin_author_id = 1;
+			}
 		}
 
 		$url = $zi_url . 'api/v1/compositeitems/?organization_id=' . $zi_org_id . '&filter_by=Status.Active&category_id=' . $category . '&page=' . $page;
@@ -1301,7 +1309,7 @@ class ImportProductClass {
 			// Accounting stock mode check
 			$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 			foreach ( $json->composite_items as $comp_item ) {
-
+				// fwrite( $fd, PHP_EOL . 'Composite Item : ' . print_r( $comp_item, true ) );
 				// Sync stock from specific warehouse check
 				$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
 				$warehouse_id             = get_option( 'zoho_warehouse_id' );
@@ -1331,7 +1339,7 @@ class ImportProductClass {
 				// Check if product exists with same sku.
 				if ( $prod_id ) {
 					$zi_item_id = get_post_meta( $prod_id, 'zi_item_id', true );
-					if ( $zi_item_id ) {
+					if ( $zi_item_id === $comp_item->composite_item_id ) {
 						// If product is with same sku and zi_item_id mapped.
 						// Do not import ...
 						$allow_to_import = false;
@@ -1382,37 +1390,27 @@ class ImportProductClass {
 
 				$is_synced_flag = false; // loggin purpose only .
 
-				// Tags update.
-				if ( ! empty( $com_prod_id ) ) {
-					$item_tags_hash = $comp_item->custom_field_hash;
-					$item_tags      = $item_tags_hash->cf_tags;
-
-					if ( ! empty( $item_tags ) ) {
-						$final_tags = explode( ',', $item_tags );
-						wp_set_object_terms( $com_prod_id, $final_tags, 'product_tag' );
-					}
-				}
-
+				$product = wc_get_product( $com_prod_id );
 				foreach ( $comp_item as $key => $value ) {
 					if ( $key === 'status' ) {
 						if ( ! empty( $com_prod_id ) ) {
 							$status = $value === 'active' ? 'publish' : 'draft';
-							$wpdb->update( $tbl_prefix . 'posts', array( 'post_status' => $status ), array( 'ID' => $com_prod_id ), array( '%s' ), array( '%d' ) );
+							$product->set_status( $status );
 						}
 					}
 					if ( $key === 'description' ) {
 						if ( ! empty( $com_prod_id ) && ! empty( $value ) ) {
-							$wpdb->update( $tbl_prefix . 'posts', array( 'post_excerpt' => $value ), array( 'ID' => $com_prod_id ), array( '%s' ), array( '%d' ) );
+							$product->set_short_description( $value );
 						}
 					}
 					if ( $key === 'name' ) {
 						if ( ! empty( $com_prod_id ) ) {
-							$wpdb->update( $tbl_prefix . 'posts', array( 'post_title' => $value ), array( 'ID' => $com_prod_id ), array( '%s' ), array( '%d' ) );
+							$product->set_name( $value );
 						}
 					}
 					if ( $key === 'sku' ) {
 						if ( ! empty( $com_prod_id ) ) {
-							update_post_meta( $com_prod_id, '_sku', $value );
+							$product->set_sku( $value );
 						}
 					}
 					// Check if stock sync allowed by plugin.
@@ -1423,15 +1421,15 @@ class ImportProductClass {
 								if ( ! empty( $com_prod_id ) ) {
 									// If value is less than 0 default 1.
 									$stock_quantity = $stock < 0 ? 0 : $stock;
-									update_post_meta( $com_prod_id, '_stock', number_format( $stock_quantity, 0, '.', '' ) );
+									$product->set_manage_stock( true );
+									$product->set_stock_quantity( $stock_quantity );
 									if ( $stock_quantity > 0 ) {
 										$status = 'instock';
 									} else {
 										$backorder_status = get_post_meta( $com_prod_id, '_backorders', true );
 										$status           = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
 									}
-									update_post_meta( $com_prod_id, '_stock_status', wc_clean( $status ) );
-									wp_set_post_terms( $com_prod_id, $status, 'product_visibility', true );
+									$product->set_stock_status( $status );
 									update_post_meta( $com_prod_id, '_wc_pb_bundled_items_stock_status', wc_clean( $status ) );
 								}
 							}
@@ -1439,26 +1437,30 @@ class ImportProductClass {
 					}
 					if ( $key === 'rate' ) {
 						if ( ! empty( $com_prod_id ) ) {
-							$sale_price = get_post_meta( $com_prod_id, '_sale_price', true );
+							$sale_price = $product->get_sale_price();
 							if ( empty( $sale_price ) ) {
-								update_post_meta( $com_prod_id, '_price', $value );
-								update_post_meta( $com_prod_id, '_regular_price', $value );
+								$product->set_regular_price( $value );
+								$product->set_price( $value );
 								update_post_meta( $com_prod_id, '_wc_pb_base_price', $value );
 								update_post_meta( $com_prod_id, '_wc_pb_base_regular_price', $value );
 								update_post_meta( $com_prod_id, '_wc_sw_max_regular_price', $value );
 							} else {
-								update_post_meta( $com_prod_id, '_regular_price', $value );
+								$product->set_regular_price( $value );
 								update_post_meta( $com_prod_id, '_wc_pb_base_price', $value );
 								update_post_meta( $com_prod_id, '_wc_pb_base_regular_price', $value );
 								update_post_meta( $com_prod_id, '_wc_sw_max_regular_price', $value );
 							}
 						}
-					} elseif ( $key === 'image_document_id' ) {
+					}
+					$product->save();
+
+					if ( $key === 'image_document_id' ) {
 						if ( ! empty( $com_prod_id ) && ! empty( $value ) ) {
-							$imageClass = new ImageClass();
-							$imageClass->args_attach_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name, $admin_author_id );
+							$image_class = new ImageClass();
+							$image_class->args_attach_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name, $admin_author_id );
 						}
-					} elseif ( $key === 'category_name' ) {
+					}
+					if ( $key === 'category_name' ) {
 						if ( ! empty( $com_prod_id ) && $comp_item->category_name != '' ) {
 							$term    = get_term_by( 'name', $comp_item->category_name, 'product_cat' );
 							$term_id = $term->term_id;
@@ -1511,7 +1513,8 @@ class ImportProductClass {
 		} else {
 			array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 		}
-		// fclose($fd); // End of logging
+		// fclose( $fd ); // End of logging.
+
 		return $response_msg;
 	}
 
