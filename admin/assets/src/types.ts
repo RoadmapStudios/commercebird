@@ -168,6 +168,7 @@ export type BackendAction = {
         order: { export:string };
         field: { get: string; save: string; reset: string; };
         custom_fields: string;
+        zcrm_fields:string;
         connection: string;
 
     };

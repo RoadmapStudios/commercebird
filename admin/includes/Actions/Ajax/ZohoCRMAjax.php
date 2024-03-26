@@ -7,6 +7,8 @@ use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
 use RMS\Admin\Traits\LogWriter;
+use Throwable;
+
 
 defined('RMS_PLUGIN_NAME') || exit;
 
@@ -46,7 +48,10 @@ final class ZohoCRMAjax
 		'map_zcrm_customer' => 'customer_map',
 		'map_zcrm_order' => 'order_map',
 		'export_zcrm_order' => 'order_export',
-		'get_zcrm_fields' => 'get_zcrm_fields',
+		'get_all_zcrm_fields' => 'get_zcrm_fields',
+		'get_zcrm_fields' => 'fields_get',
+		'save_zcrm_fields' => 'fields_set',
+		'reset_zcrm_fields' => 'fields_reset',
 	);
 	private const OPTIONS = array(
 		'connect' => array(
@@ -108,4 +113,48 @@ final class ZohoCRMAjax
 		}
 		$this->serve();
 	}
+
+	/**
+	 * Retrieves the fields and serves the response.
+	 *
+	 * @return void
+	 */
+	public function fields_get(): void
+	{
+		$this->verify();
+		$this->response['form'] = get_option('wootozohocrm_custom_fields', array());
+		$this->serve();
+	}
+
+	/**
+	 * Sets the custom fields for the form.
+	 *
+	 * @return void
+	 */
+	public function fields_set(): void
+	{
+		$this->verify(array('form'));
+		try {
+			update_option('wootozohocrm_custom_fields', $this->data['form']);
+			error_log('' . $this->data['form']);
+			$this->response = array('message' => 'saved');
+		} catch (Throwable $throwable) {
+			$this->errors = array('message' => $throwable->getMessage());
+		}
+		$this->serve();
+	}
+
+	/**
+	 * Resets the fields.
+	 *
+	 * @return void
+	 */
+	public function fields_reset(): void
+	{
+		$this->verify();
+		delete_option('wootozohocrm_custom_fields');
+		$this->response = array('message' => 'Reset successfully!');
+		$this->serve();
+	}
 }
+

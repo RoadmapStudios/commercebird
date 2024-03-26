@@ -144,6 +144,7 @@ export const backendAction: BackendAction = {
         },
         connection: 'is_connected',
         custom_fields: 'get_all_custom_fields',
+        zcrm_fields:'get_all_zcrm_fields'
 
     }
 }

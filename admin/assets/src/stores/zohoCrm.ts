@@ -6,6 +6,7 @@ import { extractOptions, notify, site_url } from "@/composable/helpers";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { useStorage } from "@/composable/storage";
+import { isModuleName } from "typescript";
 
 const actions = backendAction.zohoCrm;
 const keys = storeKey.zohoCrm;
@@ -41,27 +42,29 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             case "field":
                 get_all_custom_fields();
                 get_zcrm_fields('Sales_Orders');
-                // response = await loader.loadData(keys.fields, actions.field.get);
-                // if (response) {
-                //     let parsed;
-                //     if (typeof response.form === 'string') {
-                //         parsed = JSON.parse(response.form);
-                //     } else {
-                //         parsed = response.form
-                //     }
+                response = await loader.loadData(keys.fields, actions.field.get);
+                
+                if (response) {
+                    let parsed;
+                    if (typeof response.form === 'string') {
+                        parsed = JSON.parse(response.form);
+                    } else {
+                        parsed = response.form
+                    }
 
-                //     Object.entries(parsed).forEach(([key, value]) => {
-                //         const existingObject = fields.value.some(field => field.key === key && field.value === value);
-                //         if (!existingObject) {
-                //             fields.value.push({ key, value });
-                //         }
+                    Object.entries(parsed).forEach(([key, value]) => {
+                        const existingObject = fields.value.some(field => field.key === key && field.value === value);
+                        
+                        if (!existingObject) {
+                            fields.value.push({ key, value });
+                        }
 
-                //     });
-                //     if (fields.value.length === 0) {
-                //         fields.value.push({ key: "", value: "" });
-                //     }
+                    });
+                    if (fields.value.length === 0) {
+                        fields.value.push({ key: "", value: "" });
+                    }
 
-                // }
+                }
                 break;
             default:
                 break;
@@ -121,7 +124,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         if (instore) {
             zcrm_fields.value = instore;
         }
-        const action =actions.field.get;
+        const action =actions.zcrm_fields;
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
         let response = await fetchData(
