@@ -31,7 +31,6 @@ export const storeKey: StoreKey = {
         cost_unit: 'exactOnline_cost_unit',
     },
     zohoCrm:{
-        connected: 'zcrm_connected',
         connect: 'zcrm_connect',
         order: 'zcrm_order',
         fields: 'zcrm_custom_fields',

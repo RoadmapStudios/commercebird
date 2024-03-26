@@ -124,7 +124,6 @@ export type StoreKey = {
     };
 
     zohoCrm: {
-        connected: string;
         connect: string;
         order: string;
         fields: string;
