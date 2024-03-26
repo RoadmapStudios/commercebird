@@ -13,7 +13,10 @@
     <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
         <div class="flex items-center justify-between pt-4 pb-2 tracking-tight">
           <h1 class="text-xl font-bold">{{ selectedTab.title }}</h1>
+          <div class="flex items-center gap-4 py-2">
+            <BaseButton type="lite">Refresh zoho</BaseButton>
           <BaseButton @click="store.addField()">Add Item</BaseButton>
+         </div>   
         </div>
         <div v-for="(field, index) in store.fields" :key="index" class="grid items-end gap-4 sm:grid-cols-5">
           <InputGroup label="WooCommerce Field" type="repeater">
