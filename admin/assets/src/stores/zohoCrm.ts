@@ -232,6 +232,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         isConnected,
         connection,
         customFields,
+        zcrm_fields,
         fields,
         dateRange,
         get_all_zcrm_fields,

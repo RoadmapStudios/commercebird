@@ -19,8 +19,8 @@
           <InputGroup label="WooCommerce Field" type="repeater">
             <SelectInput v-model="field.key" :options="store.customFields" />
           </InputGroup>
-          <InputGroup label="Zoho Field Label" type="repeater">
-            <TextInput v-model="field.value" />
+          <InputGroup label="Zoho CRM Field " type="repeater">
+            <SelectInput v-model="field.value" :options="store.zcrm_fields"/>
           </InputGroup>
           <div class="pb-[11px]">
             <BaseButton @click="store.removeField(index)">Remove</BaseButton>
