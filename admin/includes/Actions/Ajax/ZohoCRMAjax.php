@@ -104,7 +104,7 @@ final class ZohoCRMAjax
 			$this->errors['message'] = $fields->get_error_message();
 		} else {
 			update_option(self::OPTIONS['zcrmfields'], $fields);
-			$this->response['message'] = __('Zoho CRM fields saved', 'commercebird');
+			$this->response['fields'] = $fields;
 		}
 		$this->serve();
 	}

@@ -87,7 +87,6 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     * -----------------------------------------------------------------------------------------------------------------
     */
     const customFields = ref({});
-    const zcrm_fields = ref({});
     const fields: Ref<UnwrapRef<{ key: string, value: string }[]>> = ref([])
 
     function addField() {
@@ -114,7 +113,8 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         );
         loader.clearLoading(action);
     }
-
+    
+    const zcrm_fields = ref({});
     const get_zcrm_fields=async(moduleName:string)=>{
         const key = keys.fields
         const instore = storage.get(key);
@@ -124,11 +124,23 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         const action =actions.field.get;
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
-        zcrm_fields.value = await fetchData(
+        let response = await fetchData(
             action,
             key,
             {module:moduleName}
         );
+        if(Array.isArray(response.fields)&&response.fields.length>0){
+            let obj: { [key: string]: string } = {};
+            response.fields.forEach((field:any)=>{
+                obj[field.id]=field.displayLabel;
+            });
+            response.fields=obj;
+            zcrm_fields.value = response.fields;
+        }
+        else{
+            zcrm_fields.value = {};
+        }
+
         loader.clearLoading(action);
     }
 
