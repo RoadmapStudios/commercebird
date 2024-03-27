@@ -43,29 +43,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                 selectedFieldTab.value = "Sales_Orders";                
                 get_all_custom_fields();
                 get_zcrm_fields();
-                response = await loader.loadData(keys.fields, actions.field.get);
-                
-                if (response) {
-                    let parsed;
-                    if (typeof response.form === 'string') {
-                        parsed = JSON.parse(response.form);
-                    } else {
-                        parsed = response.form
-                    }
-
-                    Object.entries(parsed).forEach(([key, value]) => {
-                        const existingObject = fields.value.some(field => field.key === key && field.value === value);
-                        
-                        if (!existingObject) {
-                            fields.value.push({ key, value });
-                        }
-
-                    });
-                    if (fields.value.length === 0) {
-                        fields.value.push({ key: "", value: "" });
-                    }
-
-                }
+                get_zcrm_custom_fields();
                 break;
             default:
                 break;
@@ -119,6 +97,34 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
 
         );
         loader.clearLoading(action);
+    }
+
+     async function get_zcrm_custom_fields(){
+        let response;  
+        fields.value =[];
+        response = await loader.loadData(keys.fields, actions.field.get, {module:selectedFieldTab.value});
+                
+                if (response) {
+                    let parsed;
+                    if (typeof response.form === 'string') {
+                        parsed = JSON.parse(response.form);
+                    } else {
+                        parsed = response.form
+                    }
+
+                    Object.entries(parsed).forEach(([key, value]) => {
+                        const existingObject = fields.value.some(field => field.key === key && field.value === value);
+                        
+                        if (!existingObject) {
+                            fields.value.push({ key, value });
+                        }
+
+                    });
+                    if (fields.value.length === 0) {
+                        fields.value.push({ key: "", value: "" });
+                    }
+
+                }
     }
    
    /**
@@ -183,6 +189,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
        }
     }
 
+    
     /*
      * -----------------------------------------------------------------------------------------------------------------
      *  Form Submit
@@ -210,6 +217,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                 const fieldData = extractOptions(fields.value, 'key', 'value')
                 data = {
                     form: JSON.stringify(fieldData),
+                    module: selectedFieldTab.value
                 }
                 store = keys.fields
                 break;
@@ -285,6 +293,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         fields,
         dateRange,
         get_zcrm_fields,
+        get_zcrm_custom_fields,
         refresh_zoho,
         addField,
         removeField,

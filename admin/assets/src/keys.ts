@@ -138,9 +138,9 @@ export const backendAction: BackendAction = {
             export: 'export_zcrm_order',
         },
         field: {
-            get: 'get_zcrm_fields',
-            save: 'save_zcrm_fields',
-            reset: 'reset_zcrm_fields'
+            get: 'zcrm_get_custom_fields',
+            save: 'zcrm_save_custom_fields',
+            reset: 'zcrm_reset_custom_fields'
         },
         connection: 'is_connected',
         custom_fields: 'get_all_custom_fields',
