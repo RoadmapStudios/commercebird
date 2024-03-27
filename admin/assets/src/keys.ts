@@ -144,7 +144,9 @@ export const backendAction: BackendAction = {
         },
         connection: 'is_connected',
         custom_fields: 'get_all_custom_fields',
-        zcrm_fields:'get_all_zcrm_fields'
-
+        refresh_zcrm_fields: 'refresh_zcrm_fields',
+        zcrm_orders_fields:'zcrm_orders_fields',
+        zcrm_contacts_fields:'zcrm_contacts_fields',
+        zcrm_products_fields:'zcrm_products_fields'
     }
 }
