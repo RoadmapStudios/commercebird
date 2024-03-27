@@ -563,9 +563,8 @@ class ContactClass {
 			}
 			// fclose( $fd ); // end logging
 			if ( $json->page_context['has_more_page'] === true ) {
-				++$page;
 				$data_arr          = (object) array();
-				$data_arr->page    = $page;
+				$data_arr->page    = $page + 1;
 				$existing_schedule = as_has_scheduled_action( 'sync_zi_import_contacts', array( $data_arr ) );
 				if ( ! $existing_schedule ) {
 					as_schedule_single_action( time(), 'sync_zi_import_contacts', array( $data_arr ) );
