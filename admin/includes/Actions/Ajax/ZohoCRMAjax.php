@@ -48,16 +48,21 @@ final class ZohoCRMAjax
 		'map_zcrm_customer' => 'customer_map',
 		'map_zcrm_order' => 'order_map',
 		'export_zcrm_order' => 'order_export',
-		'get_all_zcrm_fields' => 'get_zcrm_fields',
+		'refresh_zcrm_fields' => 'refresh_zcrm_fields',
 		'get_zcrm_fields' => 'fields_get',
 		'save_zcrm_fields' => 'fields_set',
 		'reset_zcrm_fields' => 'fields_reset',
+		'zcrm_orders_fields' => 'zcrm_orders_fields',
+		'zcrm_contacts_fields' => 'zcrm_contacts_fields',
+		'zcrm_products_fields' => 'zcrm_products_fields'
 	);
 	private const OPTIONS = array(
 		'connect' => array(
 			'token' => 'commercebird-exact-online-token',
 		),
-		'zcrmfields' => 'commercebird-zoho-crm-fields',
+		'zcrm_Sales_Orders_fields' => 'zcrm_Sales_Orders_fields',
+		'zcrm_Contacts_fields' => 'zcrm_Contacts_fields',
+		'zcrm_Products_fields' => 'zcrm_Products_fields',
 	);
 
 	public function __construct()
@@ -101,16 +106,47 @@ final class ZohoCRMAjax
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function get_zcrm_fields()
+	public function refresh_zcrm_fields()
 	{
 		$module = $_GET['module'];
 		$fields = (new CommerceBird())->get_zcrm_fields($module);
 		if (is_wp_error($fields)) {
 			$this->errors['message'] = $fields->get_error_message();
 		} else {
-			update_option(self::OPTIONS['zcrmfields'], $fields);
-			$this->response['fields'] = $fields;
+			$option_name = 'zcrm_' . $module . '_fields';
+			update_option(self::OPTIONS[$option_name], $fields);
+			$this->response = array('message' => 'Refresh successfully!');
 		}
+		$this->serve();
+	}
+
+	/**
+	 * Get zoho crm order fields from database
+	 */
+	public function zcrm_orders_fields()
+	{
+		$this->verify();
+		$this->response['fields'] = get_option('zcrm_Sales_Orders_fields', array());
+		$this->serve();
+	}
+
+	/**
+	 * Get zoho crm contact fields from database
+	 */
+	public function zcrm_contacts_fields()
+	{
+		$this->verify();
+		$this->response['fields'] = get_option('zcrm_Contacts_fields', array());
+		$this->serve();
+	}
+
+	/**
+	 * Get zoho crm product fields from database
+	 */
+	public function zcrm_products_fields()
+	{
+		$this->verify();
+		$this->response['fields'] = get_option('zcrm_Products_fields', array());
 		$this->serve();
 	}
 
