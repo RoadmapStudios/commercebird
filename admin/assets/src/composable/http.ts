@@ -16,17 +16,17 @@ export const ajaxUrl = (action: string): string => {
 
 export const fetchData = async (action: string, storeKey: string, params: any|null=null): Promise<any> => {
     if (action === undefined) return;
-    let fullUrl;
+    let requestUrl;
     if (params === null) {
-      fullUrl = ajaxUrl(action);
+      requestUrl = ajaxUrl(action);
     } else {
       const queryString = Object.keys(params)
         .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
         .join('&');
-      fullUrl = `${ajaxUrl(action)}&${queryString}`;
+      requestUrl = `${ajaxUrl(action)}&${queryString}`;
     }
   
-    return await fetch(fullUrl)
+    return await fetch(requestUrl)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
@@ -78,9 +78,18 @@ export const sendData = async (action: string, request: Object, storageKey: stri
  * @param {string} storeKey - The key of the data to remove from storage.
  * @return {Promise<any>} The data returned from the action, if successful.
  */
-export const resetData = async (action: string, storeKey: string): Promise<any> => {
-    const response = await fetch(ajaxUrl(action));
-
+export const resetData = async (action: string, storeKey: string,params: any|null=null): Promise<any> => {
+  if (action === undefined) return;
+  let requestUrl;
+  if (params === null) {
+    requestUrl = ajaxUrl(action);
+  } else {
+    const queryString = Object.keys(params)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .join('&');
+    requestUrl = `${ajaxUrl(action)}&${queryString}`;
+  }
+    const response = await fetch(requestUrl);
     const data = await response.json()
     if (data.success) {
         useStorage().remove(storeKey)

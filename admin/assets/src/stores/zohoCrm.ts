@@ -256,7 +256,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                 storage.remove(keys.connect);
                 break;
             case actions.field.reset:
-                response = await resetData(action, keys.fields);
+                response = await resetData(action, keys.fields, {module:selectedFieldTab.value});
                 storage.remove(keys.fields);
                 break;
             default:
