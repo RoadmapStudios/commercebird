@@ -1,3 +1,8 @@
+Version 2.1.10 - March 27 2024
+* Fix: PHP 8 error
+* Fix: simple items import
+* Fix: only run cronjob if zoho is connected
+
 Version 2.1.9 - March 25 2024
 * Fix: first time stock update via inventory adjustment
 * Fix: child items of bundles not added
