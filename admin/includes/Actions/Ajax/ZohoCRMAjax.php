@@ -60,9 +60,9 @@ final class ZohoCRMAjax
 		'connect' => array(
 			'token' => 'commercebird-exact-online-token',
 		),
-		'zcrm_Sales_Orders_fields' => 'zcrm_Sales_Orders_fields',
-		'zcrm_Contacts_fields' => 'zcrm_Contacts_fields',
-		'zcrm_Products_fields' => 'zcrm_Products_fields',
+		'zcrm_sales_orders_fields' => 'zcrm_sales_orders_fields',
+		'zcrm_contacts_fields' => 'zcrm_contacts_fields',
+		'zcrm_products_fields' => 'zcrm_products_fields',
 	);
 
 	public function __construct()
@@ -113,7 +113,7 @@ final class ZohoCRMAjax
 		if (is_wp_error($fields)) {
 			$this->errors['message'] = $fields->get_error_message();
 		} else {
-			$option_name = 'zcrm_' . $module . '_fields';
+			$option_name = 'zcrm_' . strtolower($module) . '_fields';
 			update_option(self::OPTIONS[$option_name], $fields);
 			$this->response = array('message' => 'Refresh successfully!');
 		}
@@ -126,7 +126,7 @@ final class ZohoCRMAjax
 	public function zcrm_orders_fields()
 	{
 		$this->verify();
-		$this->response['fields'] = get_option('zcrm_Sales_Orders_fields', array());
+		$this->response['fields'] = get_option('zcrm_sales_orders_fields', array());
 		$this->serve();
 	}
 
@@ -136,7 +136,7 @@ final class ZohoCRMAjax
 	public function zcrm_contacts_fields()
 	{
 		$this->verify();
-		$this->response['fields'] = get_option('zcrm_Contacts_fields', array());
+		$this->response['fields'] = get_option('zcrm_contacts_fields', array());
 		$this->serve();
 	}
 
@@ -146,7 +146,7 @@ final class ZohoCRMAjax
 	public function zcrm_products_fields()
 	{
 		$this->verify();
-		$this->response['fields'] = get_option('zcrm_Products_fields', array());
+		$this->response['fields'] = get_option('zcrm_products_fields', array());
 		$this->serve();
 	}
 
