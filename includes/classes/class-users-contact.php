@@ -480,18 +480,16 @@ class ContactClass {
 		return $errmsg;
 	}
 
-	public function get_zoho_contacts( $page ) {
+	public function get_zoho_contacts() {
 		// $fd = fopen( __DIR__ . '/get_zoho_contacts.txt', 'a+' );
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
-			$page_array = $args[0];
-			if ( isset( $page_array['page'] ) ) {
-				$page = $page_array['page'];
-			} else {
-				$page = 1;
-			}
+				$page = isset( $args[0]['page'] ) ? $args[0]['page'] : null;
+		} else {
+			$page = 1;
 		}
+
 		/* Get Url and org id */
 		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
 		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
@@ -511,12 +509,13 @@ class ContactClass {
 				$first_name     = $contacts->first_name;
 				$last_name      = $contacts->last_name;
 				$email          = trim( $contacts->email );
-				$credit_limit   = $contacts->customer_credit_limit;
+				$credit_limit1  = $contacts->customer_credit_limit;
+				$credit_limit   = preg_replace( '/[^0-9,]/', '', $credit_limit1 );
 				//check if user type is customer
 				if ( ! empty( $email ) && ! empty( $first_name ) && ! empty( $last_name ) ) {
-					if ( $contact_type == 'customer' && ! email_exists( $email ) ) {
+					if ( $contact_type === 'customer' && ! email_exists( $email ) ) {
 						/* Create Wp User */
-						$userData = array(
+						$user_data = array(
 							'user_login'   => $first_name . '.' . $last_name,
 							'display_name' => $first_name . ' ' . $last_name,
 							'user_email'   => $email,
@@ -524,13 +523,13 @@ class ContactClass {
 							'last_name'    => $last_name,
 							'role'         => 'customer',
 						);
-						$user_id  = wp_insert_user( $userData );
+						$user_id   = wp_insert_user( $user_data );
 						if ( ! is_wp_error( $user_id ) ) {
 							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
-							if ( class_exists( 'ACFWF' ) ) {
-								$this->update_customer_store_credit_balance( $user_id, preg_replace( '/[^0-9,]/', '', $credit_limit ) );
+							if ( class_exists( 'WooCommerceB2B' ) ) {
+								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
 						} else {
 							echo $user_id->get_error_message();
@@ -552,8 +551,8 @@ class ContactClass {
 							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
-							if ( class_exists( 'ACFWF' ) ) {
-								$this->update_customer_store_credit_balance( $user_id, preg_replace( '/[^0-9,]/', '', $credit_limit ) );
+							if ( class_exists( 'WooCommerceB2B' ) ) {
+								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
 						} else {
 							echo $is_err->get_error_message();
