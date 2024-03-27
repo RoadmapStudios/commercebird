@@ -485,19 +485,20 @@ class ContactClass {
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
-				$page = isset( $args[0]['page'] ) ? $args[0]['page'] : null;
+			$data = $args[0];
+			$page = isset( $data->page ) ? $data->page : null;
 		} else {
 			$page = 1;
 		}
 
-		/* Get Url and org id */
-		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
-		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
+			/* Get Url and org id */
+			$zoho_inventory_oid = $this->config['ContactZI']['OID'];
+			$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
 
-		/* Get call url */
-		$url                      = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&per_page=100&page=' . $page;
-		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+			/* Get call url */
+			$url                      = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&per_page=100&page=' . $page;
+			$execute_curl_call_handle = new ExecutecallClass();
+			$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 		if ( isset( $json->contacts ) ) {
 			foreach ( $json->contacts as $contacts ) {

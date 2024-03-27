@@ -172,16 +172,14 @@ class ImportProductClass {
 	 * @param [string] $source - Source from where function is calling : 'cron'/'sync'.
 	 * @return mixed
 	 */
-	public function sync_item_recursively( $data = '' ) {
+	public function sync_item_recursively() {
 		// $fd = fopen( __DIR__ . '/simple-items-sync.txt', 'a+' );
 
 		$args = func_get_args();
-		if ( ! empty( $args ) && empty( $data ) ) {
-			$page     = isset( $args[0]['page'] ) ? $args[0]['page'] : null;
-			$category = isset( $args[0]['category'] ) ? $args[0]['category'] : null;
-		} elseif ( isset( $data['page'] ) ) {
-			$page     = $data['page'];
-			$category = $data['category'];
+		if ( ! empty( $args ) ) {
+			$data     = $args[0];
+			$page     = isset( $data->page ) ? $data->page : null;
+			$category = isset( $data->category ) ? $data->category : null;
 		} else {
 			return;
 		}
@@ -297,8 +295,9 @@ class ImportProductClass {
 				$this->zi_item_bulk_sync( $item_details_url );
 
 				if ( $json->page_context['has_more_page'] ) {
-					$data['page']     = $page + 1;
-					$data['category'] = $category;
+					$data           = (object) array();
+					$data->page     = $page + 1;
+					$data->category = $category;
 					$this->sync_item_recursively( $data );
 				} else {
 					// If there is no more page to sync last backup page will be starting from 1.
@@ -362,15 +361,9 @@ class ImportProductClass {
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
-			// Unpack the arguments
-			foreach ( $args as $inner_array ) {
-				if ( isset( $inner_array['page'] ) ) {
-					$page = $inner_array['page'];
-				}
-				if ( isset( $inner_array['category'] ) ) {
-					$category = $inner_array['category'];
-				}
-			}
+			$data     = $args[0];
+			$page     = isset( $data->page ) ? $data->page : null;
+			$category = isset( $data->category ) ? $data->category : null;
 
 			// Keep backup of current syncing page of particular category.
 			update_option( 'group_item_sync_page_cat_id_' . $category, $page );
@@ -1278,8 +1271,8 @@ class ImportProductClass {
 		// $fd = fopen( __DIR__ . '/recursively_sync_composite_item_from_zoho.txt', 'a+' );
 
 		global $wpdb;
-		$zi_org_id  = $this->config['ProductZI']['OID'];
-		$zi_url     = $this->config['ProductZI']['APIURL'];
+		$zi_org_id = $this->config['ProductZI']['OID'];
+		$zi_url    = $this->config['ProductZI']['APIURL'];
 		// Conditional code to load file only if source is cron.
 		if ( 'cron' === $source ) {
 			// get admin user id who started the cron job.
@@ -1430,7 +1423,7 @@ class ImportProductClass {
 										$status           = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
 									}
 									$product->set_stock_status( $status );
-									update_post_meta( $com_prod_id, '_wc_pb_bundled_items_stock_status',  $status );
+									update_post_meta( $com_prod_id, '_wc_pb_bundled_items_stock_status', $status );
 								}
 							}
 						}

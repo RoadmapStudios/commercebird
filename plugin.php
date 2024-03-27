@@ -80,7 +80,7 @@ function woozo_check_plugin_requirements() {
 		$error_message = sprintf( 'Your server is running PHP version %s but the commercebird plugin requires at least PHP %s. Please update your PHP version.', $php_current_version, $php_min_version, );
 
 		wp_die(
-			$error_message,
+			esc_html( $error_message ),
 			'Plugin Activation Error',
 			array(
 				'response'  => 200,
@@ -123,7 +123,8 @@ register_activation_hook( __FILE__, 'zi_custom_zoho_cron_activate' );
 
 function zi_custom_zoho_cron_activate() {
 	$interval = get_option( 'zi_cron_interval', 'daily' );
-	if ( 'none' !== $interval ) {
+	$access_token = get_option( 'zoho_inventory_access_token' );
+	if ( 'none' !== $interval && ! empty( $access_token ) ) {
 		if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
 			wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
 		}
