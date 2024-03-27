@@ -6,7 +6,6 @@ import { extractOptions, notify, site_url } from "@/composable/helpers";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { useStorage } from "@/composable/storage";
-import { isModuleName } from "typescript";
 
 const actions = backendAction.zohoCrm;
 const keys = storeKey.zohoCrm;
@@ -21,6 +20,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
      * -----------------------------------------------------------------------------------------------------------------
      */
     const selectedTab = ref("");
+    const selectedFieldTab = ref("");
     const selectTab = (tab: string) => (selectedTab.value = tab);
     const tabWatcher = async (tab: string) => {
         let response;
@@ -40,8 +40,9 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                   connection.token = response?.token;
                 break;
             case "field":
+                selectedFieldTab.value = "Sales_Orders";                
                 get_all_custom_fields();
-                get_zcrm_fields('Sales_Orders');
+                get_zcrm_fields();
                 response = await loader.loadData(keys.fields, actions.field.get);
                 
                 if (response) {
@@ -100,6 +101,9 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         fields.value.splice(index, 1);
     }
 
+   /**
+    * @description Function to get woocommerce fields
+   */
     const get_all_custom_fields = async () => {
         const key = keys.fields
         const instore = storage.get(key);
@@ -116,23 +120,55 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         );
         loader.clearLoading(action);
     }
-    
-    const zcrm_fields = ref({});
-    const get_zcrm_fields=async(moduleName:string)=>{
+   
+   /**
+    * @param moduleName Module for refreshing fields
+    * @description Function to refresh zoho fields
+    */ 
+    async function refresh_zoho(moduleName:string){
         const key = keys.fields
-        const instore = storage.get(key);
-        if (instore) {
-            zcrm_fields.value = instore;
-        }
-        const action =actions.zcrm_fields;
+        const action =actions.refresh_zcrm_fields;
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
-        let response = await fetchData(
+        const response = await fetchData(
             action,
             key,
             {module:moduleName}
         );
-        if(Array.isArray(response.fields)&&response.fields.length>0){
+        if(response){
+            notify.success(response.message);
+        }
+        loader.clearLoading(action);
+    }
+ 
+    /**
+     * @description Function to get zoho fields from wordpress database
+     */
+    const zcrm_fields = ref({});
+    async function get_zcrm_fields(){
+        let action:string='';
+       switch(selectedFieldTab.value){
+        case "Sales_Orders":
+            action = actions.zcrm_orders_fields;
+            break;
+        case "Products":
+             action = actions.zcrm_products_fields;
+             break;
+        case "Contacts":
+            action = actions.zcrm_contacts_fields;
+            break;
+        default:
+            break;
+       }       
+       if(action!==''){
+        const key = keys.fields
+        if (loader.isLoading(action)) return;
+        loader.setLoading(action);
+        const response = await fetchData(
+            action,
+            key    
+        );
+           if(Array.isArray(response.fields)&&response.fields.length>0){
             let obj: { [key: string]: string } = {};
             response.fields.forEach((field:any)=>{
                 obj[field.id]=field.displayLabel;
@@ -143,13 +179,10 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         else{
             zcrm_fields.value = {};
         }
-
         loader.clearLoading(action);
+       }
     }
 
-    function get_all_zcrm_fields(module:string){
-        get_zcrm_fields(module);
-    }
     /*
      * -----------------------------------------------------------------------------------------------------------------
      *  Form Submit
@@ -243,6 +276,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     return {
         selectTab,
         selectedTab,
+        selectedFieldTab,
         notSubscribed,
         isConnected,
         connection,
@@ -250,7 +284,8 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         zcrm_fields,
         fields,
         dateRange,
-        get_all_zcrm_fields,
+        get_zcrm_fields,
+        refresh_zoho,
         addField,
         removeField,
         handleSubmit,

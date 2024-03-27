@@ -14,7 +14,7 @@
         <div class="flex items-center justify-between pt-4 pb-2 tracking-tight">
           <h1 class="text-xl font-bold">{{ selectedTab.title }}</h1>
           <div class="flex items-center gap-4 py-2">
-            <BaseButton type="lite">Refresh zoho</BaseButton>
+            <BaseButton type="lite" @click="store.refresh_zoho(selectedTab.moduleName)" >Refresh zoho</BaseButton>
           <BaseButton @click="store.addField()">Add Item</BaseButton>
          </div>   
         </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onUpdated, ref, watch } from 'vue'
+import { onUpdated, ref } from 'vue'
 import { backendAction } from "@/keys";
 import { useLoadingStore } from "@/stores/loading";
 import { useZohoCrmStore } from '@/stores/zohoCrm';
@@ -49,11 +49,11 @@ const tabs = {
   orders: { name: "Orders", title: "Orders Custom Fields",moduleName:"Sales_Orders" },
   contacts: { name: "Contacts", title: "Contacts Custom Fields", moduleName: "Contacts"},
   products: { name: "Products", title: "Products Custom Fields",moduleName:"Products" },
-
 };
 let selectedTab = ref(tabs.orders);
 onUpdated(()=>{
-  store.get_all_zcrm_fields(selectedTab.value.moduleName);
-})
+  store.selectedFieldTab = selectedTab.value.moduleName;
+  store.get_zcrm_fields();
+});
 
 </script>
