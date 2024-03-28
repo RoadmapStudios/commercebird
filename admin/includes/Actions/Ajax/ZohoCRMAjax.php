@@ -149,7 +149,7 @@ final class ZohoCRMAjax
 			$this->errors['message'] = 'Module name is required.';
 		} else {
 			$this->verify();
-			$option_name = strtolower($module) . 'custom_fields';
+			$option_name = strtolower($module) . '_custom_fields';
 			$this->response['form'] = get_option($option_name, array());
 			$this->serve();
 		}
@@ -169,7 +169,7 @@ final class ZohoCRMAjax
 			$this->errors['message'] = 'Module name is required.';
 		} else {
 			try {
-				$option_name = strtolower($module) . 'custom_fields';
+				$option_name = strtolower($module) . '_custom_fields';
 				update_option($option_name, $this->data['form']);
 				$this->response = array('message' => 'saved');
 			} catch (Throwable $throwable) {
@@ -192,7 +192,7 @@ final class ZohoCRMAjax
 			$this->errors['message'] = 'Module name is required.';
 		} else {
 			$this->verify();
-			$option_name = strtolower($module) . 'custom_fields';
+			$option_name = strtolower($module) . '_custom_fields';
 			delete_option($option_name);
 			$this->response = array('message' => 'Reset successfully!');
 			$this->serve();
