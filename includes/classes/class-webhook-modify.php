@@ -23,6 +23,13 @@ class CM_Webhook_Modify {
 	 * Webhook_Modify constructor.
 	 */
 	public function __construct() {
+		$this->init_hooks();
+	}
+
+	/**
+	 * Initialize all hooks.
+	 */
+	public function init_hooks() {
 		add_filter( 'woocommerce_webhook_payload', array( $this, 'cm_modify_webhook_payload' ) );
 	}
 
@@ -122,3 +129,5 @@ class CM_Webhook_Modify {
 		return $payload;
 	}
 }
+
+return new CM_Webhook_Modify();

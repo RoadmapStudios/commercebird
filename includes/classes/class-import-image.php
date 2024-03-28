@@ -21,7 +21,7 @@ if ( ! function_exists( 'download_url' ) ) {
 
 class ImageClass {
 
-
+	private $config;
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(

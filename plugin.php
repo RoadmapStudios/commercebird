@@ -122,7 +122,7 @@ register_activation_hook(__FILE__, 'zi_create_order_log_table');
 register_activation_hook( __FILE__, 'zi_custom_zoho_cron_activate' );
 
 function zi_custom_zoho_cron_activate() {
-	$interval = get_option( 'zi_cron_interval', 'daily' );
+	$interval     = get_option( 'zi_cron_interval', 'daily' );
 	$access_token = get_option( 'zoho_inventory_access_token' );
 	if ( 'none' !== $interval && ! empty( $access_token ) ) {
 		if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
@@ -235,7 +235,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 /**
  * Hooks for WC Action Scheduler to import or export products
  */
-$import_products  = new ImportProductClass();
+$import_products  = new import_product_class();
 $import_pricelist = new ImportPricelistClass();
 $product_class    = new ProductClass();
 $order_class      = new Sync_Order_Class();

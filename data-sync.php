@@ -250,7 +250,7 @@ function zi_sync_composite_item_from_zoho() {
 
 	$item_add_resp = array();
 	foreach ( $opt_category as $category_id ) {
-		$product_class = new ImportProductClass();
+		$product_class = new import_product_class();
 		$response      = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id, 'sync' );
 		$item_add_resp = array_merge( $item_add_resp, $response );
 	}

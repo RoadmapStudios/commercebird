@@ -5,7 +5,7 @@
  * @package  zoho_inventory_api
  */
 
-class ImportProductClass {
+class import_product_class {
 
 	private $config;
 	public function __construct() {
@@ -1571,4 +1571,4 @@ class ImportProductClass {
 		}
 	}
 }
-$importProductClass = new ImportProductClass();
+$import_product_class = new import_product_class();

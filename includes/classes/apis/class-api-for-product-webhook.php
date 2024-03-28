@@ -3,7 +3,7 @@
 namespace RMS\API;
 
 use ImageClass;
-use ImportProductClass;
+use import_product_class;
 use ProductClass;
 use WC_Data_Exception;
 use WC_Product_Variation;
@@ -169,7 +169,7 @@ class ProductWebhook {
 
 				// Update the custom fields if the custom fields are not empty
 				if ( ! empty( $custom_fields ) ) {
-					$import_class = new ImportProductClass();
+					$import_class = new import_product_class();
 					$import_class->sync_item_custom_fields( $custom_fields, $groupid );
 				}
 
@@ -421,7 +421,7 @@ class ProductWebhook {
 					if ( ! is_wp_error( $term_id ) && isset( $term->term_id ) ) {
 						$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
 						if ( $existing_terms && count( $existing_terms ) > 0 ) {
-							$import_class  = new ImportProductClass();
+							$import_class  = new import_product_class();
 							$is_term_exist = $import_class->zi_check_terms_exists( $existing_terms, $term_id );
 							if ( ! $is_term_exist ) {
 								$simple_product->update_meta_data( 'zi_category_id', $item['category_id'] );
@@ -436,7 +436,7 @@ class ProductWebhook {
 
 				// Update the custom fields if the custom fields are not empty
 				if ( ! empty( $custom_fields ) ) {
-					$import_class = new ImportProductClass();
+					$import_class = new import_product_class();
 					$import_class->sync_item_custom_fields( $custom_fields, $pdt_id );
 				}
 
