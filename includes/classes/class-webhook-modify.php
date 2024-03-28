@@ -79,6 +79,13 @@ class CM_Webhook_Modify {
 		if ( ! $customer_id ) {
 			return $payload;
 		}
+		// get last order of customer
+		$order    = wc_get_customer_last_order( $customer_id );
+		$order_id = $order->get_id();
+		if ( get_transient( 'your_thankyou_callback_executed_' . $order_id ) ) {
+			return;
+		}
+
 		$endpoint = '/wc/v3/customers/' . $customer_id;
 		$request  = new \WP_REST_Request( 'GET', $endpoint );
 		$response = rest_do_request( $request );
@@ -137,6 +144,12 @@ class CM_Webhook_Modify {
 					'value' => $eo_item_id,
 				);
 			}
+		}
+
+		// Add mapped Zoho CRM custom fields to the payload.
+		$custom_fields = get_option( 'sales_orderscustom_fields' );
+		if ( ! empty( $custom_fields ) ) {
+			$payload['custom_fields'] = $custom_fields;
 		}
 
 		return $payload;
