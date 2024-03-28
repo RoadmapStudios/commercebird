@@ -33,7 +33,14 @@ export const storeKey: StoreKey = {
     zohoCrm:{
         connect: 'zcrm_connect',
         order: 'zcrm_order',
-        fields: 'zcrm_custom_fields',
+        fields:'zoho_custom_fields',
+        refresh_zoho_fields:'refresh_zoho_fields',
+        sales_orders_fields:'zcrm_sales_orders_fields',
+        contacts_fields:'zcrm_contacts_fields',
+        products_fields:'zcrm_products_fields',
+        sales_orders_custom_fields:'sales_orders_custom_fields',
+        contacts_custom_fields:'contacts_custom_fields',
+        products_custom_fields:'products_custom_fields',
 
     }
 
@@ -145,8 +152,6 @@ export const backendAction: BackendAction = {
         connection: 'is_connected',
         custom_fields: 'get_all_custom_fields',
         refresh_zcrm_fields: 'refresh_zcrm_fields',
-        zcrm_orders_fields:'zcrm_orders_fields',
-        zcrm_contacts_fields:'zcrm_contacts_fields',
-        zcrm_products_fields:'zcrm_products_fields'
+        zcrm_fields:'zcrm_fields',
     }
 }

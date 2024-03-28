@@ -56,9 +56,7 @@ final class ZohoCRMAjax
 		'zcrm_get_custom_fields' => 'zcrm_get_custom_fields',
 		'zcrm_save_custom_fields' => 'zcrm_save_custom_fields',
 		'zcrm_reset_custom_fields' => 'zcrm_reset_custom_fields',
-		'zcrm_orders_fields' => 'zcrm_orders_fields',
-		'zcrm_contacts_fields' => 'zcrm_contacts_fields',
-		'zcrm_products_fields' => 'zcrm_products_fields'
+		'zcrm_fields' => 'get_zcrm_fields'
 	);
 	private const OPTIONS = array(
 		'connect' => array(
@@ -125,33 +123,18 @@ final class ZohoCRMAjax
 	}
 
 	/**
-	 * Get zoho crm order fields from database
+	 * Get Zoho CRM fields from wordpress database.
 	 */
-	public function zcrm_orders_fields()
+	public function get_zcrm_fields()
 	{
-		$this->verify();
-		$this->response['fields'] = get_option('zcrm_sales_orders_fields', array());
-		$this->serve();
-	}
-
-	/**
-	 * Get zoho crm contact fields from database
-	 */
-	public function zcrm_contacts_fields()
-	{
-		$this->verify();
-		$this->response['fields'] = get_option('zcrm_contacts_fields', array());
-		$this->serve();
-	}
-
-	/**
-	 * Get zoho crm product fields from database
-	 */
-	public function zcrm_products_fields()
-	{
-		$this->verify();
-		$this->response['fields'] = get_option('zcrm_products_fields', array());
-		$this->serve();
+		$module = isset($_GET['module']) ? $_GET['module'] : '';
+		if (empty($module)) {
+			$this->errors['message'] = 'Module name is required.';
+		} else {
+			$fields = get_option('zcrm_' . strtolower($module) . '_fields', array());
+			$this->response['fields'] = $fields;
+			$this->serve();
+		}
 	}
 
 	/**

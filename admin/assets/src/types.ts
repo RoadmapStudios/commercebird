@@ -127,6 +127,13 @@ export type StoreKey = {
         connect: string;
         order: string;
         fields: string;
+        refresh_zoho_fields: string;
+        sales_orders_fields: string;
+        contacts_fields: string;
+        products_fields: string;
+        sales_orders_custom_fields: string;
+        contacts_custom_fields: string;
+        products_custom_fields: string;
     };
 }
 
@@ -169,9 +176,7 @@ export type BackendAction = {
         field: { get: string; save: string; reset: string; };
         custom_fields: string;
         refresh_zcrm_fields: string;
-        zcrm_orders_fields:string;
-        zcrm_products_fields:string;
-        zcrm_contacts_fields:string;
+        zcrm_fields: string;
         connection: string;
     };
 }
