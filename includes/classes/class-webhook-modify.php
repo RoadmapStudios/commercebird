@@ -1,4 +1,5 @@
 <?php
+
 /**
  * All code related to modifying the Webhook Payloads for CommerceBird API.
  *
@@ -11,13 +12,27 @@
  * @package  CommerceBird
  */
 
-namespace CommerceBird;
+// namespace CommerceBird;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 class CM_Webhook_Modify {
+
+	protected static ?self $instance = null;
+	/**
+	 * Get class instance.
+	 *
+	 * @return object Instance.
+	 */
+	final public static function instance(): self {
+		if ( null === static::$instance ) {
+			static::$instance = new static();
+		}
+
+		return static::$instance;
+	}
 
 	/**
 	 * Webhook_Modify constructor.
@@ -30,7 +45,7 @@ class CM_Webhook_Modify {
 	 * Initialize all hooks.
 	 */
 	public function init_hooks() {
-		add_filter( 'woocommerce_webhook_payload', array( $this, 'cm_modify_webhook_payload' ) );
+		add_filter( 'woocommerce_webhook_payload', array( $this, 'cm_modify_webhook_payload' ), 10, 4 );
 	}
 
 	/**
@@ -40,7 +55,7 @@ class CM_Webhook_Modify {
 	 * @since 2.0.0
 	 */
 	public function cm_modify_webhook_payload( $payload, $resource, $resource_id, $id ) {
-			$webhook = wc_get_webhook( $id );
+		$webhook = wc_get_webhook( $id );
 		if ( $webhook && $webhook->get_name() === 'CommerceBird Customers Update' ) {
 			$new_payload = $this->cm_modify_customer_webhook_payload( $payload );
 			return $new_payload;
@@ -69,6 +84,15 @@ class CM_Webhook_Modify {
 		$request  = new \WP_REST_Request( 'GET', $endpoint );
 		$response = rest_do_request( $request );
 
+		// Check if the request was successful
+		if ( is_wp_error( $response ) ) {
+			// Handle error
+			$error_message = $response->get_error_message();
+			throw new \Exception( esc_html( $error_message ) );
+		} else {
+			// attach all customer details to the payload
+			$payload[''] = $response->get_data();
+		}
 		fwrite( $fd, PHP_EOL . 'response: ' . print_r( $response, true ) );
 		fclose( $fd );
 
@@ -79,8 +103,6 @@ class CM_Webhook_Modify {
 				'value' => $eo_account_id,
 			);
 		}
-		// attach all customer details to the payload
-		$payload[''] = $response->get_data();
 
 		return $payload;
 	}

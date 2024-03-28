@@ -261,6 +261,7 @@ if ( is_admin() ) {
 	Cors::instance();
 }
 ExactOnlineAjax::instance();
+CM_Webhook_Modify::instance();
 // Load Media Library Endpoints
 new WooCommerce_Media_API_By_commercebird();
 // Load License Key library
