@@ -37,16 +37,16 @@ add_action( 'woocommerce_rest_insert_product_object', 'commercebird_clear_produc
  * Function to update the Contact in Zoho when customer updates address on frontend
  * @param $user_id
  */
-function zi_update_contact_via_accountpage( $user_id ) {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-	if ( ! empty( $zoho_inventory_access_token ) ) {
-		$contact_class_handle = new ContactClass();
-		$contact_class_handle->contact_update_function( $user_id );
-	} else {
-		return;
-	}
-}
-add_action( 'profile_update', 'zi_update_contact_via_accountpage' );
+// function zi_update_contact_via_accountpage( $user_id ) {
+// 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+// 	if ( ! empty( $zoho_inventory_access_token ) ) {
+// 		$contact_class_handle = new ContactClass();
+// 		$contact_class_handle->contact_update_function( $user_id );
+// 	} else {
+// 		return;
+// 	}
+// }
+// add_action( 'profile_update', 'zi_update_contact_via_accountpage' );
 
 /**
  * Function to be called by hook when new product is added in woocommerce.

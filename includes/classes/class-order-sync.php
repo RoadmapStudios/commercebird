@@ -10,10 +10,13 @@ class Sync_Order_Class {
 	 * Initialize the class.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_rest_insert_shop_order_object', array( $this, 'on_insert_rest_api' ), 20, 3 );
-		add_filter( 'wcs_renewal_order_created', array( $this, 'sync_renewal_order' ), 10, 2 );
-		add_action( 'wp_ajax_zoho_admin_order_sync', array( $this, 'zi_order_sync' ) );
-		add_action( 'woocommerce_update_order', array( $this, 'salesorder_void' ) );
+		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+		if ( ! empty( $zoho_inventory_access_token ) ) {
+			add_action( 'woocommerce_rest_insert_shop_order_object', array( $this, 'on_insert_rest_api' ), 20, 3 );
+			add_filter( 'wcs_renewal_order_created', array( $this, 'sync_renewal_order' ), 10, 2 );
+			add_action( 'wp_ajax_zoho_admin_order_sync', array( $this, 'zi_order_sync' ) );
+			add_action( 'woocommerce_update_order', array( $this, 'salesorder_void' ) );
+		}
 	}
 
 	/**
@@ -39,7 +42,7 @@ class Sync_Order_Class {
 	 * @param boolean $creating True when creating object, false when updating.
 	 */
 	public function on_insert_rest_api( $object, $request, $is_creating ) {
-		if ( ! get_option( 'zoho_inventory_access_token' ) ) {
+		if ( empty( get_option( 'zoho_inventory_access_token' ) ) ) {
 			return;
 		}
 		// $fd = fopen(__DIR__ . '/on_insert_rest_api.txt', 'w+');
@@ -63,7 +66,7 @@ class Sync_Order_Class {
 	 * Sync Renewal Order to Zoho once it's created.
 	 */
 	public function sync_renewal_order( $renewal_order, $subscription ) {
-		if ( ! get_option( 'zoho_inventory_access_token' ) ) {
+		if ( empty( get_option( 'zoho_inventory_access_token' ) ) ) {
 			return $renewal_order;
 		}
 
@@ -399,7 +402,7 @@ class Sync_Order_Class {
 					// if there is vat exempt tax
 					$order_id   = $val['post_order_id'];
 					$vat_exempt = $order->get_meta( 'is_vat_exempt' );
-					$tax_value = $order->get_total_tax();
+					$tax_value  = $order->get_total_tax();
 					// Apply tax rates zero only if order has no values
 					if ( $vat_exempt == 'yes' || empty( $tax_value ) ) {
 						$zoho_tax_id = get_option( 'zi_vat_exempt', true );
@@ -587,6 +590,10 @@ class Sync_Order_Class {
 	 */
 	public function salesorder_void( $order_id ) {
 		if ( ! $order_id ) {
+			return;
+		}
+		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+		if ( empty( $zoho_inventory_access_token ) ) {
 			return;
 		}
 
