@@ -58,32 +58,16 @@ function zi_product_sync_class( $product_id ) {
 		return;
 	}
 	if ( ! $product_id ) {
-		$product_id = $_POST['arg_product_data'];
+		if ( isset( $_POST['arg_product_data'] ) && wp_verify_nonce( $_POST['nonce'], 'zi_product_sync_class' ) ) {
+			$product_id = $_POST['arg_product_data'];
+		}
 	}
 	$zi_product_sync             = get_option( 'zoho_product_sync_status' );
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-	if ( ! $zi_product_sync && $zoho_inventory_access_token ) {
+	if ( ! $zi_product_sync && ! empty( $zoho_inventory_access_token ) ) {
 		$product_handler = new ProductClass();
 		$product_handler->zi_product_sync( $product_id );
 	}
-
-	// TODO: Trigger Webhook if product is updated and webhook is enabled
-	/*
-	$webhookHandler = new WebhookClass();
-	// Check if Webhook "CommerceBird Product" is enabled
-	$webhook_status = $webhookHandler->get_status('CommerceBird Product');
-	if (!$webhook_status) {
-		// Log or handle the case where the webhook is not enabled
-		return;
-	}
-	try {
-		// Assuming trigger_webhook method might throw exceptions on failure
-		$webhookHandler->trigger_webhook('CommerceBird Product', $product_id);
-	} catch (Exception $e) {
-		// Log or handle the exception
-		echo 'Webhook trigger failed: ' . $e->getMessage();
-	}
-	*/
 }
 
 /**
