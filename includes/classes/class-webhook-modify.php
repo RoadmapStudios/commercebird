@@ -74,7 +74,6 @@ class CM_Webhook_Modify {
 	 * @throws \Exception
 	 */
 	public function cm_modify_customer_webhook_payload( $payload ) {
-		$fd = fopen( __DIR__ . '/cm_modify_customer_webhook_payload.txt', 'w+' );
 
 		$customer_id = $payload['arg'];
 		if ( ! $customer_id ) {
@@ -83,6 +82,7 @@ class CM_Webhook_Modify {
 		$endpoint = '/wc/v3/customers/' . $customer_id;
 		$request  = new \WP_REST_Request( 'GET', $endpoint );
 		$response = rest_do_request( $request );
+		$data     = $response->get_data();
 
 		// Check if the request was successful
 		if ( is_wp_error( $response ) ) {
@@ -90,18 +90,9 @@ class CM_Webhook_Modify {
 			$error_message = $response->get_error_message();
 			throw new \Exception( esc_html( $error_message ) );
 		} else {
+			unset( $payload['action'], $payload['arg'] );
 			// attach all customer details to the payload
-			$payload[''] = $response->get_data();
-		}
-		fwrite( $fd, PHP_EOL . 'response: ' . print_r( $response, true ) );
-		fclose( $fd );
-
-		$eo_account_id = (string) get_user_meta( $customer_id, 'eo_account_id', true );
-		if ( ! empty( $eo_account_id ) ) {
-			$payload['meta_data'][] = array(
-				'key'   => 'eo_account_id',
-				'value' => $eo_account_id,
-			);
+			$payload = $data;
 		}
 
 		return $payload;
