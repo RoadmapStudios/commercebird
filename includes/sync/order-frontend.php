@@ -28,7 +28,7 @@ function zi_sync_frontend_order( $order_id ) {
 	}
 	// First sync the customer to Zoho Inventory
 	if ( ! empty( $zoho_inventory_access_token ) ) {
-		$zi_customer_class = new Sync_Customer_Class();
+		$zi_customer_class = new Sync_Order_Class();
 		$zi_customer_class->zi_sync_customer( $order_id );
 	}
 
