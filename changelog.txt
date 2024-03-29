@@ -1,3 +1,9 @@
+Version 2.1.11 - March 29 2024
+* Fix: PHP 8.x improved compatibility
+
+Version 2.1.10 - March 27 2024
+* Fix: contacts import
+
 Version 2.1.9 - March 25 2024
 * Fix: first time stock update via inventory adjustment
 * Fix: child items of bundles not added

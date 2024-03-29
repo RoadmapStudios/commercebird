@@ -202,7 +202,6 @@ final class ZohoCRMAjax
 	public function get_acf_fields(): void
 	{
 		// Get all field groups associated with WooCommerce products
-		require_once ('/path/to/acf/plugin/files'); // Replace '/path/to/acf/plugin/files' with the actual path to the ACF plugin files
 		$groups = acf_get_field_groups(array('post_type' => 'product'));
 		error_log('groups' . $groups);
 		// Check if there are any field groups
