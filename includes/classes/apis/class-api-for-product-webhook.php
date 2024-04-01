@@ -74,7 +74,7 @@ class ProductWebhook {
 	 * @throws WC_Data_Exception
 	 */
 	public function process_product_data( $item, $zi_enable_warehousestock, $warehouse_id, $accounting_stock ): WP_REST_Response {
-		// $fd = fopen(__DIR__ . '/process_product_data.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/process_product_data.txt', 'a+' );
 
 		global $wpdb;
 		$item_id          = $item['item_id'];
@@ -108,10 +108,14 @@ class ProductWebhook {
 		} else {
 			$item_stock = $item['actual_available_for_sale_stock'];
 		}
-		$item_image    = $item['image_name'];
-		$group_name    = $item['group_name'];
+		$item_image = $item['image_name'];
+		if ( isset( $item['group_name'] ) ) {
+			$group_name = $item['group_name'];
+		} else {
+			$group_name = '';
+		}
 		$item_category = $item['category_name'];
-		if ( ! empty( $item['group_id'] ) ) {
+		if ( isset( $item['group_id'] ) ) {
 			$groupid = $item['group_id'];
 		} else {
 			$groupid = '';
@@ -301,10 +305,16 @@ class ProductWebhook {
 			// fwrite($fd, PHP_EOL . 'Before Match check');
 			$pdt_id = '';
 			if ( ! empty( $mapped_product_id ) ) {
-				$pdt_id = $mapped_product_id;
-				// Sync product name if that is allowed.
-				$product_class = new ProductClass();
-				$product_class->update_product_name( $pdt_id, $item_name );
+				$product_found = wc_get_product( $mapped_product_id );
+				if ( $product_found ) {
+					$pdt_id = $mapped_product_id;
+					// Sync product name if that is allowed.
+					$product_class = new ProductClass();
+					$product_class->update_product_name( $pdt_id, $item_name );
+				} else {
+					// remove all postmeta of that product id.
+					$wpdb->delete( $wpdb->postmeta, array( 'post_id' => $mapped_product_id ) );
+				}
 			} elseif ( empty( $item['is_combo_product'] ) ) {
 				// fwrite($fd, PHP_EOL . 'Inside create product');
 				$current_user = wp_get_current_user();
@@ -349,11 +359,6 @@ class ProductWebhook {
 				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					$simple_product->set_short_description( $item_description );
-				}
-				// Tags
-				if ( ! empty( $item_tags ) ) {
-					$final_tags = explode( ',', $item_tags );
-					wp_set_object_terms( $pdt_id, $final_tags, 'product_tag' );
 				}
 				// Brand update if taxonomy product_brand(s) exists
 				if ( ! empty( $item_brand ) && taxonomy_exists( 'product_brand' ) ) {
