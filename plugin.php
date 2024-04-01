@@ -49,7 +49,6 @@ if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
 
 require_once RMS_DIR_PATH . 'includes/woo-functions.php';
 require_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
-require_once RMS_DIR_PATH . 'includes/sync/order-frontend.php';
 require_once RMS_DIR_PATH . 'data-sync.php';
 require_once RMS_DIR_PATH . 'includes/wc-am-client.php';
 require_once RMS_DIR_PATH . 'includes/tgm-plugin-activation.php';
