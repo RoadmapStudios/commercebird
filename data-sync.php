@@ -464,7 +464,7 @@ function ajax_category_sync_call() {
 
 		if ( $category['parent_category_id'] == '-1' ) {
 
-			if ( $category['category_id'] != '-1' && $category['category_id'] > 0 ) {
+			if ( $category['category_id'] !== '-1' && $category['category_id'] > 0 ) {
 				$term = get_term_by( 'name', $category['name'], 'product_cat' );
 				if ( ! empty( $term ) ) {
 					$term_id = $term->term_id;
