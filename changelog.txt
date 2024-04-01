@@ -1,8 +1,15 @@
+Version 2.1.12 - April 1 2024
+* Removed: package sync - as its now part of Sales Order Cycle in Zoho
+* Fix: remove 'deleted product' from dB cache in order to resync
+* Fix: webhook changes reverted
+
 Version 2.1.11 - March 29 2024
 * Fix: PHP 8.x improved compatibility
 
 Version 2.1.10 - March 27 2024
-* Fix: contacts import
+* Fix: PHP 8 error
+* Fix: simple items import
+* Fix: only run cronjob if zoho is connected
 
 Version 2.1.9 - March 25 2024
 * Fix: first time stock update via inventory adjustment
