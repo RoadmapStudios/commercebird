@@ -18,7 +18,7 @@ class Sync_Order_Class {
 			add_action( 'woocommerce_update_order', array( $this, 'salesorder_void' ) );
 			add_action( 'woocommerce_thankyou', array( $this, 'zi_sync_frontend_order' ) );
 		} else {
-			exit;
+			return;
 		}
 	}
 
