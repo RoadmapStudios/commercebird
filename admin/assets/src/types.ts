@@ -72,7 +72,6 @@ export type Intervals = {
 }
 
 export type OrderSettings = {
-    package_sync: boolean;
     disable_sync: boolean;
     enable_auto_number: boolean;
     enable_order_status: boolean;

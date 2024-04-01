@@ -214,7 +214,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     */
     const zoho_warehouses = ref({});
     const order_settings = reactive(<OrderSettings>{
-        package_sync: false,
         disable_sync: false,
         enable_auto_number: false,
         enable_order_status: false,
@@ -472,7 +471,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     selected_categories.value = [];
                     break;
                 case actions.order.reset:
-                    order_settings.package_sync = false
                     order_settings.disable_sync = false
                     order_settings.enable_auto_number = false
                     order_settings.enable_order_status = false
@@ -569,7 +567,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 get_zoho_warehouses();
                 response = await loader.loadData(keys.order, actions.order.get);
                 if (response) {
-                    order_settings.package_sync = response.package_sync;
                     order_settings.disable_sync = response.disable_sync;
                     order_settings.enable_auto_number = response.enable_auto_number;
                     order_settings.enable_order_status = response.enable_order_status;
@@ -604,7 +601,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                             parsed = response.wcb2b
                         }
                         console.log(parsed, response.wcb2b);
-                        
+
                         Object.entries(parsed).forEach(([key, value]) => {
                             const existingObject = wcb2b_groups.value.some(field => field.key === value.key && field.value === value.value);
                             if (!existingObject) {
@@ -613,7 +610,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
                         });
                         console.log(wcb2b_groups.value);
-                        
+
                     }
                 }
                 if (wcb2b_groups.value.length === 0) {

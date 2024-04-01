@@ -45,7 +45,6 @@ final class ZohoInventoryAjax {
 			'categories',
 		),
 		'order'    => array(
-			'package_sync',
 			'disable_sync',
 			'enable_auto_number',
 			'enable_order_status',

@@ -694,12 +694,6 @@ class Sync_Order_Class {
 					$response['zi_salesorder_id'] = $value;
 					// $order->add_meta_data('zi_salesorder_id', $value, true);
 				}
-				// saleorder package code
-				$zoho_package_status = get_option( 'zoho_package_sync_status' );
-				if ( $zoho_package_status ) {
-					$package_curl_call_handle = new PackageClass();
-					$json                     = $package_curl_call_handle->zi_package_create( $order_id, $json );
-				}
 			}
 		}
 		$errmsg              = $json->message;
@@ -743,22 +737,10 @@ class Sync_Order_Class {
 		$response['zi_salesorder_id'] = $zi_sales_order_id;
 
 		// echo '<pre>'; print_r($errmsg);
-		$zoho_package_status = get_option( 'zoho_package_sync_status' );
-
-		// fwrite( $fd, PHP_EOL . 'zoho package status : ' . $zoho_package_status );
 
 		$package_id = $order->get_meta( 'zi_package_id', true );
 
-		if ( empty( $package_id ) && $zoho_package_status ) {
-			// fwrite($fd, PHP_EOL. 'inside new package create');
-			// create new package
-			$package_curl_call_handle = new PackageClass();
-			$resp_package             = $package_curl_call_handle->zi_package_create( $order_id, $json );
-			// save response
-			$resp_msg = $resp_package->message;
-			$order->add_order_note( 'Zoho Package: ' . $resp_msg );
-			$order->save();
-		} elseif ( ! empty( $package_id ) ) {
+		if ( ! empty( $package_id ) ) {
 			// fwrite($fd, PHP_EOL. 'inside package exists'); //logging response
 
 			foreach ( $json->salesorder as $key => $value ) {
