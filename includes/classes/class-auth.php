@@ -25,10 +25,10 @@ class Classfunctions {
 
 		);
 
-		return $this->config = $config;
+		$this->config = $config;
 	}
 
-	function GetServiceZIAccessToken( $code ) {
+	public function GetServiceZIAccessToken( $code ) {
 
 		$headers = array( 'Content-Type: application/x-www-form-urlencoded' );
 		$params  = array(
@@ -65,7 +65,7 @@ class Classfunctions {
 
 
 	//get refresh token in ServiceZI
-	function GetServiceZIRefreshToken( $refresh_token ) {
+	public function GetServiceZIRefreshToken( $refresh_token ) {
 		$headers = array( 'Content-Type: application/x-www-form-urlencoded' );
 		$params  = array(
 			'refresh_token' => $refresh_token,

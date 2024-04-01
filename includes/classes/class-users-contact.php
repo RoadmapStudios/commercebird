@@ -120,7 +120,7 @@ class ContactClass {
 			if ( ! empty( $user_order ) ) {
 				$user_currency         = $user_order->get_currency();
 				$multi_currency_handle = new MulticurrencyClass();
-				$multi_currency_handle->ZohoCurrencyData( $user_currency, $userid );
+				$multi_currency_handle->zoho_currency_data( $user_currency, $userid );
 			}
 		}
 

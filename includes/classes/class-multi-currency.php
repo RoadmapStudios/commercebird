@@ -10,8 +10,9 @@
  */
 class MulticurrencyClass {
 
-
+	private $config;
 	public function __construct() {
+
 		$config = array(
 
 			'MulticurrencyZI' => array(
@@ -22,10 +23,10 @@ class MulticurrencyClass {
 
 		);
 
-		return $this->config = $config;
+		$this->config = $config;
 	}
 
-	function ZohoCurrencyData( $user_currency, $userid ) {
+	public function zoho_currency_data( $user_currency, $userid ) {
 
 		$zoho_inventory_oid = $this->config['MulticurrencyZI']['OID'];
 		$zoho_inventory_url = $this->config['MulticurrencyZI']['APIURL'];

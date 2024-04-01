@@ -16,9 +16,33 @@ class Sync_Order_Class {
 			add_filter( 'wcs_renewal_order_created', array( $this, 'sync_renewal_order' ), 10, 2 );
 			add_action( 'wp_ajax_zoho_admin_order_sync', array( $this, 'zi_order_sync' ) );
 			add_action( 'woocommerce_update_order', array( $this, 'salesorder_void' ) );
+			add_action( 'woocommerce_thankyou', array( $this, 'zi_sync_frontend_order' ) );
+		} else {
+			exit;
 		}
 	}
 
+	/**
+	 * Sync order when it's created via the checkout.
+	 */
+	public function zi_sync_frontend_order( $order_id ) {
+		// Check if the transient flag is set
+		if ( get_transient( 'your_thankyou_callback_executed_' . $order_id ) ) {
+			return;
+		}
+		// First sync the customer to Zoho Inventory
+		if ( ! empty( $zoho_inventory_access_token ) ) {
+			$this->zi_sync_customer_checkout( $order_id );
+		}
+
+		// Use WC Action Scheduler to sync the order to Zoho Inventory
+		$existing_schedule = as_has_scheduled_action( 'sync_zi_order', array( $order_id ) );
+		if ( ! $existing_schedule && ! empty( $zoho_inventory_access_token ) ) {
+			as_schedule_single_action( time(), 'sync_zi_order', array( $order_id ) );
+			// Set the transient flag to prevent multiple executions
+			set_transient( 'your_thankyou_callback_executed_' . $order_id, true, 60 );
+		}
+	}
 	/**
 	 * Sync order when its scheduled via the Action Scheduler.
 	 *
@@ -95,7 +119,7 @@ class Sync_Order_Class {
 		if ( empty( $currency_id ) ) {
 			$currency_code         = $order->get_currency();
 			$multi_currency_handle = new MulticurrencyClass();
-			$currency_id           = $multi_currency_handle->ZohoCurrencyData( $currency_code, $userid );
+			$currency_id           = $multi_currency_handle->zoho_currency_data( $currency_code, $userid );
 		}
 
 		if ( $zi_customer_id ) {
