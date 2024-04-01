@@ -87,6 +87,11 @@ function woozo_check_plugin_requirements() {
 			)
 		);
 	}
+	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	// remove option zoho_inventory_access_token if it contains only one character
+	if ( $zoho_inventory_access_token && strlen( $zoho_inventory_access_token ) === 1 ) {
+		delete_option( 'zoho_inventory_access_token' );
+	}
 }
 
 add_action( 'admin_init', 'woozo_check_plugin_requirements' );
