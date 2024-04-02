@@ -26,6 +26,8 @@ class Sync_Order_Class {
 	 * Sync order when it's created via the checkout.
 	 */
 	public function zi_sync_frontend_order( $order_id ) {
+		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+
 		// Check if the transient flag is set
 		if ( get_transient( 'your_thankyou_callback_executed_' . $order_id ) ) {
 			return;
