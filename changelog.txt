@@ -1,3 +1,8 @@
+Version 2.1.13 - April 3 2024
+* Fix: order sync
+* Fix: orders with coupon sync
+* Removed: tax mapping - no longer required by zoho api
+
 Version 2.1.12 - April 1 2024
 * Removed: package sync - as its now part of Sales Order Cycle in Zoho
 * Fix: remove 'deleted product' from dB cache in order to resync
