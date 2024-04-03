@@ -144,8 +144,6 @@ class import_product_class {
 							$woo_tax_class   = $zi_common_class->get_tax_class_by_percentage( $arr->tax_percentage );
 							$product->set_tax_status( 'taxable' );
 							$product->set_tax_class( $woo_tax_class );
-							// update metadata
-							$product->update_meta_data( 'zi_tax_id', $arr->tax_id );
 						}
 						$product->save();
 						// Sync ACF Fields
@@ -409,11 +407,6 @@ class import_product_class {
 						if ( ! empty( $gp_arr->description ) && ! $zi_disable_itemdescription_sync ) {
 							$existing_parent_product->set_short_description( $gp_arr->description );
 						}
-						// Set Tax id
-						if ( ! empty( $gp_arr->tax_id ) ) {
-							$existing_parent_product->update_meta_data( 'zi_tax_id', $gp_arr->tax_id );
-						}
-
 						$attributes = $existing_parent_product->get_attributes();
 						if ( empty( $attributes ) ) {
 							// Create or Update the Attributes
@@ -624,7 +617,6 @@ class import_product_class {
 						$variation->set_manage_stock( false );
 					}
 					$variation->add_meta_data( 'zi_item_id', $item->item_id );
-					$variation->add_meta_data( 'zi_tax_id', $item->tax_id );
 					// $variation->set_attributes($variation_attributes);
 					$variation_id = $variation->save();
 
@@ -951,8 +943,6 @@ class import_product_class {
 					$woo_tax_class   = $zi_common_class->get_tax_class_by_percentage( $item->tax_percentage );
 					$variation->set_tax_status( 'taxable' );
 					$variation->set_tax_class( $woo_tax_class );
-					// update metadata
-					$variation->update_meta_data( 'zi_tax_id', $item->tax_id );
 				}
 
 				// Stock Imported code
@@ -1056,7 +1046,6 @@ class import_product_class {
 					}
 					update_post_meta( $variation_id, 'manage_stock', false );
 				}
-				update_post_meta( $variation_id, 'zi_tax_id', $item->tax_id );
 				update_post_meta( $variation_id, 'zi_item_id', $item_id );
 				WC_Product_Variable::sync( $group_id );
 
@@ -1363,7 +1352,6 @@ class import_product_class {
 						$item_array    = json_decode( wp_json_encode( $comp_item ), true );
 						$com_prod_id   = $product_class->zi_product_to_woocommerce( $item_array, $stock, 'composite' );
 						update_post_meta( $com_prod_id, 'zi_item_id', $zoho_comp_item_id );
-						update_post_meta( $com_prod_id, 'zi_tax_id', $comp_item->tax_id );
 					}
 				}
 				// Map composite items to database.

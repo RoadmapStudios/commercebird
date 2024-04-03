@@ -451,7 +451,6 @@ class ProductWebhook {
 					$woo_tax_class   = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$simple_product->set_tax_status( 'taxable' );
 					$simple_product->set_tax_class( $woo_tax_class );
-					$simple_product->update_meta_data( 'zi_tax_id', $item['tax_id'] );
 				}
 				$simple_product->save();
 				wc_delete_product_transients( $pdt_id );

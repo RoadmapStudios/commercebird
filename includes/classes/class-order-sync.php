@@ -343,16 +343,9 @@ class Sync_Order_Class {
 					$zi_customer_id = $this->zi_sync_customer_checkout( $order_id );
 				}
 				// fwrite($fd,PHP_EOL.'$zi_customer_id : '.$zi_customer_id);
-				$order_items   = $order->get_items( 'coupon' );
-				$discount_type = '';
-				foreach ( $order->get_coupon_codes() as $coupon_code ) {
-					// Get the WC_Coupon object
-					$coupon        = new WC_Coupon( $coupon_code );
-					$discount_type = $coupon->get_discount_type(); // Get coupon discount type
-				}
-				// fwrite($fd,PHP_EOL.'Discount coupon type: '.$discount_type);
 				$index = 0;
 				foreach ( $val_order['suborder'] as $key => $val ) {
+					// fwrite( $fd, PHP_EOL . 'Val: ' . print_r( $val, true ) );
 
 					$proid            = $val['product_id'];
 					$proidv           = $val['variation_id'];
@@ -360,11 +353,9 @@ class Sync_Order_Class {
 					if ( $proidv > 0 ) {
 						$proid            = $proidv;
 						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
-						$zoho_tax_id      = get_post_meta( $proid, 'zi_tax_id', true );
 						$is_variable_item = true;
 					} else {
 						$is_variable_item = false;
-						$zoho_tax_id      = get_post_meta( $proid, 'zi_tax_id', true );
 						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
@@ -394,34 +385,13 @@ class Sync_Order_Class {
 					} else {
 						$warehouse_id = '';
 					}
-					/* Coupons used in the order*/
-					// Check if coupon applied on order.
-					if ( ! empty( $order_items ) && 'percent' === $discount_type ) {
-						global $wpdb;
-						$discount_per_item = 0;
-						$table             = $wpdb->prefix . 'wc_order_product_lookup';
-						// fwrite($fd, PHP_EOL.'$tb : '.$tb.' | $order_id : '.$order_id.'| $proid : '.$proid);
-						do {
-							if ( $is_variable_item ) {
-								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from %s where order_id = %d and variation_id = %d', $table, $order_id, $proid ), ARRAY_A );
-							} else {
-								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from %s where order_id = %d and product_id = %d', $table, $order_id, $proid ), ARRAY_A );
-							}
-						} while ( empty( $res_coupon ) );
-						// fwrite($fd, PHP_EOL.'$res_coupon : '. print_r($res_coupon, true));
-						if ( $res_coupon['product_net_revenue'] || $discount_amount ) {
-							// Get net revenue per item.
-							$g_price           = $res_coupon['product_net_revenue'] / $res_coupon['product_qty'];
-							$d_price           = ( $item_price - $g_price );
-							$d_price           = ( ( $d_price / $item_price ) * 100 );
-							$discount_per_item = round( $d_price, 2 ) . '%';
-						}
-
-						$discount_per_item = '"discount": "' . $discount_per_item . '",';
-					} elseif ( ! empty( $order_items ) ) { // fixed_product ===$discount_type
-						// fwrite($fd,PHP_EOL.'Going inside else');
-						$item_price = $val['total'] / $qty;
+					// if $val['total] is lower than $val['subtotal'] then discount is applied
+					if ( $val['total'] < $val['subtotal'] ) {
+						$discount          = $val['subtotal'] - $val['total'];
+						$discount_per_item = '"discount": "' . $discount . '",';
 					}
+
+					$item_price = $val['subtotal'] / $qty;
 					// Format item price upto two decimal places.
 					$item_price1 = round( $item_price, 2 );
 
@@ -429,30 +399,24 @@ class Sync_Order_Class {
 					$order_id   = $val['post_order_id'];
 					$vat_exempt = $order->get_meta( 'is_vat_exempt' );
 					$tax_value  = $order->get_total_tax();
+					$tax_rates  = array();
 					// Apply tax rates zero only if order has no values
-					if ( $vat_exempt == 'yes' || empty( $tax_value ) ) {
+					if ( $vat_exempt === 'yes' || empty( $tax_value ) ) {
 						$zoho_tax_id = get_option( 'zi_vat_exempt', true );
 						$taxid       = '"tax_id": "' . $zoho_tax_id . '",';
 					} else {
-						foreach ( $order->get_items( 'tax' ) as $item_key => $item ) {
-							$tax_rate_id       = $item->get_rate_id(); // Tax rate ID
-							$tax_percent       = WC_Tax::get_rate_percent( $tax_rate_id );
-							$tax_total         = $item_price1 * ( $tax_percent / 100 );
-							$sql               = $wpdb->prepare(
-								"SELECT * FROM {$wpdb->prefix}options WHERE option_value LIKE %s LIMIT 1",
-								"%##tax##{$tax_percent}"
-							);
-							$tax_option_object = $wpdb->get_row( $sql );
-							$tax_option        = $tax_option_object->option_value;
-							if ( $tax_option ) {
-								// fwrite($fd, PHP_EOL.'Inside Tax Option: '. $tax_option);
-								$tax_id = explode( '##', $tax_option )[0];
-							}
-							$taxid = '"tax_id": "' . $tax_id . '",';
+						foreach ( $order->get_items( 'tax' ) as $item ) {
+							$tax_rates[ $item->get_rate_id() ] = $item->get_rate_percent();
 						}
-						$item_price = $tax_total + $item_price1;
+						$order_item  = $order->get_item( $val['order_id'] );
+						$item_taxes  = $order_item->get_taxes();
+						$tax_rate_id = current( array_keys( $item_taxes['subtotal'] ) );
+						$tax_percent = $tax_rates[ $tax_rate_id ];
+						$taxid       = '"tax_percentage": "' . $tax_percent . '",';
+
+						$item_price = $item_price1;
 					}
-					if ( $enable_incl_tax == 'yes' ) {
+					if ( $enable_incl_tax === 'yes' ) {
 						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price . '",' . $warehouse_id . '}';
 					} else {
 						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price1 . '",' . $warehouse_id . '}';
@@ -600,7 +564,9 @@ class Sync_Order_Class {
 
 				$notes = 'Zoho Order Sync: ' . $response_msg['message'];
 
-				// fclose($fd); // end logging
+				// end logging.
+				// fclose( $fd );
+
 				$order->add_order_note( $notes );
 				$order->update_meta_data( 'zi_salesorder_id', $response_msg['zi_salesorder_id'] );
 				$order->save();
