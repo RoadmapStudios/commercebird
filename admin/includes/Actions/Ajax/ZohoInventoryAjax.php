@@ -11,7 +11,6 @@ use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
 use RMS\Admin\Traits\LogWriter;
 use Throwable;
-use WC_Tax;
 use WpOrg\Requests\Exception;
 use function gettype;
 
@@ -28,11 +27,6 @@ final class ZohoInventoryAjax {
 		'settings' => array(
 			'cors',
 			'id',
-		),
-		'tax'      => array(
-			'decimalTax',
-			'selectedTaxRates',
-			'selectedVatExempt',
 		),
 		'product'  => array(
 			'item_from_zoho',
@@ -71,9 +65,6 @@ final class ZohoInventoryAjax {
 		'get_zoho_connect'      => 'connection_get',
 		'save_zoho_connect'     => 'connection_set',
 		'reset_zoho_connect'    => 'connection_reset',
-		'get_zoho_tax'          => 'tax_get',
-		'save_zoho_tax'         => 'tax_set',
-		'reset_zoho_tax'        => 'tax_reset',
 		'get_zoho_product'      => 'product_get',
 		'save_zoho_product'     => 'product_set',
 		'reset_zoho_product'    => 'product_reset',
@@ -93,8 +84,6 @@ final class ZohoInventoryAjax {
 		'save_zoho_fields'      => 'fields_set',
 		'reset_zoho_fields'     => 'fields_reset',
 		'is_connected'          => 'connection_done',
-		'get_wc_taxes'          => 'wc_tax_collect',
-		'get_zoho_taxes'        => 'zoho_tax_rates_collect',
 		'get_zoho_categories'   => 'zoho_categories_collect',
 		'get_zoho_warehouses'   => 'zoho_warehouses_collect',
 		'get_zoho_prices'       => 'zoho_prices_collect',
@@ -649,89 +638,6 @@ final class ZohoInventoryAjax {
 	}
 
 	/**
-	 * Retrieves the tax information.
-	 *
-	 * @return void
-	 */
-	public function tax_get(): void {
-		$this->verify();
-		$this->response = array();
-		foreach ( $this->wc_taxes() as $tax ) {
-			$this->response['selectedTaxRates'][] = $tax['id'] . '^^' . get_option( 'zoho_inventory_tax_rate_' . $tax['id'] );
-		}
-		$this->response['selectedVatExempt'] = get_option( 'zi_vat_exempt' );
-		$this->response['decimalTax']        = get_option( 'zoho_enable_decimal_tax_status' );
-		$this->serve();
-	}
-
-	/**
-	 * Retrieves an array of all tax rates from WooCommerce.
-	 *
-	 * @return array An array of all tax rates.
-	 */
-	public function wc_taxes(): array {
-		$wc_tax_array = array();
-		$tax_classes  = WC_Tax::get_tax_classes(); // Retrieve all tax classes.
-		if ( ! in_array( '', $tax_classes ) ) { // Make sure "Standard rate" (empty class name) is present.
-			array_unshift( $tax_classes, '' );
-		}
-
-		foreach ( $tax_classes as $tax_class ) { // For each tax class, get all rates.
-			$taxes = WC_Tax::get_rates_for_tax_class( $tax_class );
-
-			foreach ( $taxes as $key => $tax ) {
-				$taxarray       = (array) $tax;
-				$taxarray['id'] = $key;
-				$wc_tax_array[] = $taxarray;
-			}
-		}
-
-		return $wc_tax_array;
-	}
-
-	/**
-	 * Resets the tax settings.
-	 *
-	 * This function verifies the tax settings and then deletes the options
-	 * related to the tax rates, VAT exemption, and decimal tax status.
-	 *
-	 * @return void
-	 */
-	public function tax_reset(): void {
-		$this->verify();
-		foreach ( $this->wc_taxes() as $tax ) {
-			delete_option( 'zoho_inventory_tax_rate_' . $tax['id'] );
-		}
-		delete_option( 'zi_vat_exempt' );
-		delete_option( 'zoho_enable_decimal_tax_status' );
-		$this->response = array( 'message' => 'Reset successfully!' );
-		$this->serve();
-	}
-
-	/**
-	 * Saves tax rates and exempt status to the database.
-	 */
-	public function tax_set(): void {
-		$this->verify( self::FORMS['tax'] );
-		$rates = array_filter( $this->data['selectedTaxRates'] );
-		try {
-			foreach ( $rates as $value ) {
-				$valarray = explode( '^^', $value );
-				update_option( 'zoho_inventory_tax_rate_' . $valarray[0], $valarray[1] );
-			}
-			if ( ! empty( $this->data['selectedVatExempt'] ) ) {
-				update_option( 'zi_vat_exempt', $this->data['selectedVatExempt'] );
-			}
-			update_option( 'zoho_enable_decimal_tax_status', $this->data['decimalTax'] );
-			$this->response = array( 'message' => 'Saved' );
-		} catch ( Throwable $throwable ) {
-			$this->errors = array( 'message' => $throwable->getMessage() );
-		}
-
-		$this->serve();
-	}
-
-	/**
 	 * Sets the connection for the Zoho Inventory API.
 	 */
 	public function connection_set(): void {
@@ -788,47 +694,6 @@ final class ZohoInventoryAjax {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
-		$this->serve();
-	}
-
-	/**
-	 * Retrieves the Zoho tax rates for the organization.
-	 *
-	 * This function verifies the request, retrieves the organization ID and URL
-	 * from the options, constructs the URL for the API request, and executes
-	 * the cURL call to fetch the tax rates. If the response contains the
-	 * 'taxes' key, it sets the response to the tax rates. Otherwise, it sets
-	 * the errors to a default message.
-	 */
-	public function zoho_tax_rates_collect(): void {
-		$this->verify();
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$url                = $zoho_inventory_url . 'api/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
-		try {
-			$execute_curl_call_handle = new ExecutecallClass();
-			$json                     = (array) $execute_curl_call_handle->ExecuteCurlCallGet( $url );
-			if ( array_key_exists( 'taxes', $json ) ) {
-				$this->response = $json['taxes'];
-			} else {
-				$this->errors = array( 'message' => 'Something went wrong!' );
-			}
-		} catch ( Throwable $throwable ) {
-			$this->errors = array( 'message' => $throwable->getMessage() );
-		}
-
-		$this->serve();
-	}
-
-	/**
-	 * Executes the wc_tax_collect function.
-	 *
-	 * This function verifies the current state, retrieves the taxes using the
-	 * wc_taxes method, and serves the response.
-	 */
-	public function wc_tax_collect(): void {
-		$this->verify();
-		$this->response = $this->wc_taxes();
 		$this->serve();
 	}
 

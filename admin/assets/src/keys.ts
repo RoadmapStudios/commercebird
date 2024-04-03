@@ -15,11 +15,8 @@ export const storeKey: StoreKey = {
         contact: 'zoho_contact',
         price: 'zoho_price',
         product: 'zoho_product',
-        tax: 'zoho_tax',
         fields: 'zoho_custom_fields',
-        wc_tax: 'wc_taxes',
         zoho_categories: 'zoho_categories',
-        zoho_tax: 'zoho_taxes',
         zoho_warehouses: 'zoho_warehouses',
     },
     exactOnline: {
@@ -92,11 +89,6 @@ export const backendAction: BackendAction = {
             save: 'save_zoho_connect',
             reset: 'reset_zoho_connect'
         },
-        tax: {
-            get: 'get_zoho_tax',
-            save: 'save_zoho_tax',
-            reset: 'reset_zoho_tax'
-        },
         product: {
             get: 'get_zoho_product',
             save: 'save_zoho_product',
@@ -128,8 +120,6 @@ export const backendAction: BackendAction = {
             reset: 'reset_zoho_fields'
         },
         connection: 'is_connected',
-        wc_taxes: 'get_wc_taxes',
-        zoho_taxes: 'get_zoho_taxes',
         zoho_categories: 'get_zoho_categories',
         custom_fields: 'get_all_custom_fields',
         zoho_prices: 'get_zoho_prices',
