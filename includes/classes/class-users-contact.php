@@ -315,108 +315,38 @@ class ContactClass {
 		// end logging
 		// fclose($fd);
 
-		if ( $code == '0' || $code == 0 ) {
-			/* Update Create a contactperson within that contact if email_id do not match */
-			$res_msg = $this->update_contact_email_address( $userid );
-		}
-
-		return $res_msg;
-	}
-
-	public function update_contact_email_address( $userid ) {
-		// Re-add contact email address after updating contact
-		$zi_customer_id      = get_user_meta( $userid, 'zi_contact_id', true );
-		$fname               = get_user_meta( $userid, 'billing_first_name', true );
-		$lname               = get_user_meta( $userid, 'billing_last_name', true );
-		$contact_name        = $fname . ' ' . $lname;
-		$email               = get_user_meta( $userid, 'billing_email', true );
-		$mobile              = get_user_meta( $userid, 'billing_phone', true );
-		$company_name        = get_user_meta( $userid, 'billing_company', true );
-		$billing_address     = get_user_meta( $userid, 'billing_address_1', true );
-		$billing_address2    = get_user_meta( $userid, 'billing_address_2', true );
-		$billing_city        = get_user_meta( $userid, 'billing_city', true );
-		$billing_state       = get_user_meta( $userid, 'billing_state', true );
-		$billing_postcode    = get_user_meta( $userid, 'billing_postcode', true );
-		$billing_country     = get_user_meta( $userid, 'billing_country', true );
-		$shipping_first_name = get_user_meta( $userid, 'shipping_first_name', true );
-		$shipping_last_name  = get_user_meta( $userid, 'shipping_last_name', true );
-		$shipping_attention  = $shipping_first_name . ' ' . $shipping_last_name;
-		$shipping_address    = get_user_meta( $userid, 'shipping_address_1', true );
-		$shipping_address2   = get_user_meta( $userid, 'shipping_address_2', true );
-		$shipping_city       = get_user_meta( $userid, 'shipping_city', true );
-		$shipping_state      = get_user_meta( $userid, 'shipping_state', true );
-		$shipping_postcode   = get_user_meta( $userid, 'shipping_postcode', true );
-		$shipping_country    = get_user_meta( $userid, 'shipping_country', true );
-
-		// If shipping not available asign billing as shipping.
-		if ( empty( $shipping_address ) ) {
-			$shipping_address = $billing_address;
-		}
-		if ( empty( $shipping_address2 ) ) {
-			$shipping_address_2 = $billing_address2;
-		}
-		if ( empty( $shipping_postcode ) ) {
-			$shipping_postcode = $billing_postcode;
-		}
-		if ( empty( $shipping_city ) ) {
-			$shipping_city = $billing_city;
-		}
-		if ( empty( $shipping_country ) ) {
-			$shipping_country = $billing_country;
-		}
-		if ( empty( $shipping_state ) ) {
-			$shipping_state = $billing_state;
-		}
-		if ( empty( $shipping_attention ) ) {
-			$shipping_attention = $contact_name;
-		}
-
-		/* Create json form again to update whole data */
-		if ( ! empty( $company_name ) ) {
-			$json_form = '"contact_name": "' . $company_name . '","contact_type": "customer","company_name": "' . $company_name . '"';
-		} else {
-			$json_form = '"contact_name": "' . $contact_name . '","contact_type": "customer"';
-		}
-		$json_form .= ',"email": "' . $email . '","mobile": "' . $mobile . '"';
-		$json_form .= ',"billing_address": { "attention": "' . $contact_name . '","address": "' . $billing_address . '","street2": "' . $billing_address2 . '","city": "' . $billing_city . '","state": "' . $billing_state . '","zip": "' . $billing_postcode . '","country": "' . $billing_country . '"},"shipping_address": { "attention": "' . $shipping_attention . '","address": "' . $shipping_address . '","street2": "' . $shipping_address2 . '","city": "' . $shipping_city . '","state": "' . $shipping_state . '","zip": "' . $shipping_postcode . '","country": "' . $shipping_country . '"}';
-
-		if ( get_user_meta( $userid, 'vat_number', true ) > 0 ) {
-			$json_form .= ',"vat_reg_no": "' . get_user_meta( $userid, 'vat_number', true ) . '","country_code": "' . $billing_country . '"';
-		}
-
-		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
-		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
-
-		$json_data = array(
-			'JSONString'      => '{' . $json_form . '}',
-			'organization_id' => $zoho_inventory_oid,
-		);
-
-		$execute_curl_call_handle = new ExecutecallClass();
-		$update_url               = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id;
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $update_url, $json_data );
-		$res_msg                  = $json->message;
-		$code                     = $json->code;
-
-		if ( $code == '0' || $code == 0 ) {
+		if ( $code === '0' || $code === 0 ) {
 			foreach ( $json->contact as $key => $value ) {
-				if ( 'last_modified_time' == trim( $key ) ) {
-					update_user_meta( $userid, 'zi_last_modified_time', trim( $value ) );
+
+				if ( 'contact_id' === trim( $key ) ) {
+					$res['zi_contact_id'] = $value;
 				}
-				if ( 'billing_address' == trim( $key ) ) {
-					update_user_meta( $userid, 'zi_billing_address_id', trim( $value->address_id ) );
+				if ( 'primary_contact_id' === trim( $key ) ) {
+					$res['zi_primary_contact_id'] = $value;
 				}
-				if ( 'shipping_address' == trim( $key ) ) {
-					update_user_meta( $userid, 'zi_shipping_address_id', trim( $value->address_id ) );
+				if ( 'created_time' === trim( $key ) ) {
+					$res['zi_created_time'] = $value;
 				}
-				if ( 'contact_persons' == trim( $key ) ) {
-					if ( is_object( $value ) ) {
-						update_user_meta( $userid, 'zi_contact_persons_id', trim( $value->contact_person_id ) );
-					}
+				if ( 'last_modified_time' === trim( $key ) ) {
+					$res['zi_last_modified_time'] = $value;
+				}
+				if ( 'billing_address' === trim( $key ) ) {
+					$res['zi_billing_address_id'] = $value->address_id;
+				}
+				if ( 'shipping_address' === trim( $key ) ) {
+					$res['zi_shipping_address_id'] = $value->address_id;
+				}
+				if ( 'contact_persons' === trim( $key ) ) {
+					$res['zi_contact_persons_id'] = $value;
 				}
 			}
+
+			foreach ( $res as $key => $val ) {
+				update_user_meta( $userid, $key, $val );
+			}
 		}
-		return $res_msg;
+
+		return $errmsg;
 	}
 
 	public function create_contact_person( $userid ) {

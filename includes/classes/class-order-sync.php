@@ -230,7 +230,7 @@ class Sync_Order_Class {
 								$contact_class_handle->contact_update_function( $userid, $order_id );
 							} else {
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->update_contact_person( $userid, $contactid );
+								$contact_class_handle->update_contact_person( $userid, $order_id );
 							}
 						}
 					}
@@ -341,6 +341,9 @@ class Sync_Order_Class {
 
 				if ( empty( $zi_customer_id ) ) {
 					$zi_customer_id = $this->zi_sync_customer_checkout( $order_id );
+				} else {
+					$contact_class_handle = new ContactClass();
+					$contact_class_handle->contact_update_function( $userid, $order_id );
 				}
 				// fwrite($fd,PHP_EOL.'$zi_customer_id : '.$zi_customer_id);
 				$index = 0;

@@ -541,21 +541,21 @@ function cm_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
  * @param array $query_vars - Query vars from WC_Order_Query.
  * @return array modified $query
  */
-function cm_custom_filter_wc_get_orders( $query, $query_vars ) {
-	// Adjust the meta_key value to match the meta key you want to exclude
-	$meta_key_to_exclude = 'eo_order_id';
+// function cm_custom_filter_wc_get_orders( $query, $query_vars ) {
+// 	// Adjust the meta_key value to match the meta key you want to exclude
+// 	$meta_key_to_exclude = 'eo_order_id';
 
-	// Check if the meta key to exclude is set and exclude orders with that meta key
-	if ( ! empty( $meta_key_to_exclude ) ) {
-		$query['meta_query'][] = array(
-			'key'     => $meta_key_to_exclude,
-			'compare' => 'NOT EXISTS',
-		);
-	}
+// 	// Check if the meta key to exclude is set and exclude orders with that meta key
+// 	if ( ! empty( $meta_key_to_exclude ) ) {
+// 		$query['meta_query'][] = array(
+// 			'key'     => $meta_key_to_exclude,
+// 			'compare' => 'NOT EXISTS',
+// 		);
+// 	}
 
-	return $query;
-}
-add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'cm_custom_filter_wc_get_orders', 10, 2 );
+// 	return $query;
+// }
+// add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'cm_custom_filter_wc_get_orders', 10, 2 );
 
 /**
  * Change Action Scheduler default purge to 1 week
