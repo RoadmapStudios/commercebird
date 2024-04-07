@@ -336,9 +336,6 @@ class ContactClass {
 				if ( 'shipping_address' === trim( $key ) ) {
 					$res['zi_shipping_address_id'] = $value->address_id;
 				}
-				if ( 'contact_persons' === trim( $key ) ) {
-					$res['zi_contact_persons_id'] = $value;
-				}
 			}
 
 			foreach ( $res as $key => $val ) {
