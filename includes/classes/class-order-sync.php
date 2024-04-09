@@ -280,7 +280,6 @@ class Sync_Order_Class {
 		$notes             = preg_replace( '/[^A-Za-z0-9\-]/', ' ', $note );
 		$total_shipping    = $order->get_shipping_total();
 		$shipping_method   = $order->get_shipping_method();
-		$discount_amt      = $order->get_total_discount();
 
 		// // Get WC Subscription Signup fee
 		// $adjustment = '';
@@ -333,7 +332,6 @@ class Sync_Order_Class {
 			$zi_customer_id  = get_user_meta( $userid, 'zi_contact_id', true );
 			$billing_id      = get_user_meta( $userid, 'zi_billing_address_id', true );
 			$shipping_id     = get_user_meta( $userid, 'zi_shipping_address_id', true );
-			$discount_amount = ( $discount_amt ) ? $discount_amt : 0;
 			$user_email      = get_user_meta( $userid, 'billing_email', true );
 			$enable_incl_tax = get_option( 'woocommerce_prices_include_tax' );
 
@@ -350,16 +348,13 @@ class Sync_Order_Class {
 				foreach ( $val_order['suborder'] as $key => $val ) {
 					// fwrite( $fd, PHP_EOL . 'Val: ' . print_r( $val, true ) );
 
-					$proid            = $val['product_id'];
-					$proidv           = $val['variation_id'];
-					$is_variable_item = false;
+					$proid  = $val['product_id'];
+					$proidv = $val['variation_id'];
 					if ( $proidv > 0 ) {
-						$proid            = $proidv;
-						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
-						$is_variable_item = true;
+						$proid   = $proidv;
+						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					} else {
-						$is_variable_item = false;
-						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
+						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
 						$product_handler  = new ProductClass();
@@ -399,15 +394,11 @@ class Sync_Order_Class {
 					$item_price1 = round( $item_price, 2 );
 
 					// if there is vat exempt tax
-					$order_id   = $val['post_order_id'];
-					$vat_exempt = $order->get_meta( 'is_vat_exempt' );
-					$tax_value  = $order->get_total_tax();
-					$tax_rates  = array();
+					$order_id  = $val['post_order_id'];
+					$tax_value = $order->get_total_tax();
+					$tax_rates = array();
 					// Apply tax rates zero only if order has no values
-					if ( $vat_exempt === 'yes' || empty( $tax_value ) ) {
-						$zoho_tax_id = get_option( 'zi_vat_exempt', true );
-						$taxid       = '"tax_id": "' . $zoho_tax_id . '",';
-					} else {
+					if ( ! empty( $tax_value ) ) {
 						foreach ( $order->get_items( 'tax' ) as $item ) {
 							$tax_rates[ $item->get_rate_id() ] = $item->get_rate_percent();
 						}
@@ -428,40 +419,25 @@ class Sync_Order_Class {
 				}
 
 				// Shipping Tax
-				$shipping_tax_id    = '';
+				// $shipping_tax_id    = '';
 				$shipping_tax       = $order->get_shipping_tax();
-				$shipping_tax_total = $order->get_shipping_total();
+				// $shipping_tax_total = $order->get_shipping_total();
 
-				if ( ! empty( $shipping_tax ) && ! empty( $shipping_tax_total ) ) {
+				// if ( ! empty( $shipping_tax ) && ! empty( $shipping_tax_total ) ) {
 
-					$zoho_enable_decimal_tax = get_option( 'zoho_enable_decimal_tax_status' );
-					$tax_percentage          = ( ( $shipping_tax / $shipping_tax_total ) * 100 );
+				// 	$tax_percentage = ( ( $shipping_tax / $shipping_tax_total ) * 100 );
+				// 	if ( fmod( $tax_percentage, 1 ) !== 0 ) {
+				// 		$percentage      = number_format( $tax_percentage, 2 );
+				// 		$percent_decimal = $percentage * 100;
+				// 		$decimal_place   = $percent_decimal % 10;
+				// 		if ( $decimal_place === 0 ) {
+				// 			$percentage = number_format( $percentage, 1 );
+				// 		}
+				// 	} else {
+				// 		$percentage = round( $tax_percentage );
+				// 	}
+				// }
 
-					if ( 'true' == $zoho_enable_decimal_tax ) {
-						$percentage      = number_format( $tax_percentage, 2 );
-						$percent_decimal = $percentage * 100;
-						$decimal_place   = $percent_decimal % 10;
-						if ( $decimal_place === 0 ) {
-							$percentage = number_format( $percentage, 1 );
-						}
-					} else {
-						$percentage = round( $tax_percentage );
-					}
-
-					$table_prefix = $wpdb->prefix;
-
-					$row_match = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s AND option_value LIKE %s', $table_prefix . 'options', '%zoho_inventory_tax_rate_%', '%##' . $percentage . '%' ), ARRAY_A );
-
-					//  fwrite($fd,PHP_EOL.'$row_match : '.print_r($row_match,true));
-					if ( $row_match['option_value'] ) {
-
-						$shipping_tax_total_ex = explode( '##', $row_match['option_value'] );
-						//  fwrite($fd,PHP_EOL.'Option value : '.$row_match['option_value']);
-						//  fwrite($fd,PHP_EOL.'Option value : '.print_r($shipping_tax_total_ex,true));
-						$shipping_tax_id  = $shipping_tax_total_ex[0];
-						$shipping_tax_per = end( $shipping_tax_total_ex );
-					}
-				}
 				if ( is_array( $pdt_items ) ) {
 					$impot = implode( ',', $pdt_items );
 				}
@@ -469,9 +445,10 @@ class Sync_Order_Class {
 				$pdt1 = '"customer_id": "' . $zi_customer_id . '","date": "' . $orders_date . '","line_items": [' . $impot . '],"is_discount_before_tax": "true","discount_type": "item_level","price_precision":"2","notes": "' . $notes . '","billing_address_id": "' . $billing_id . '","shipping_address_id": "' . $shipping_id . '","delivery_method": "' . $shipping_method . '"';
 
 				// if there is shipping tax
-				if ( ! empty( $shipping_tax ) ) {
-					$pdt1 .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
-				}
+				// if ( ! empty( $shipping_tax ) ) {
+				// 	$shipping_tax_id = $this->zi_get_tax_id( $percentage );
+				// 	$pdt1           .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
+				// }
 
 				// Check if there are order fees total is more than 0
 				$order_fees = $order->get_fees();
@@ -753,6 +730,37 @@ class Sync_Order_Class {
 
 		// fclose( $fd ); //end of logging
 		return $response;
+	}
+
+	/**
+	 * Function to get all Zoho Taxes.
+	 *
+	 * @param int $percentage Tax percentage.
+	 * @return string Tax ID.
+	 */
+	protected function zi_get_tax_id( $percentage ) {
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+
+		$url                      = $zoho_inventory_url . 'api/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$code                     = $json->code;
+		$tax_id                   = '';
+		if ( 0 === $code || '0' === $code ) {
+			foreach ( $json->taxes as $key => $value ) {
+				// Truncate the tax percentage to one digit after decimal point
+				$api_tax_percentage   = floor( $value->tax_percentage * 10 ) / 10;
+				$input_tax_percentage = floor( $percentage * 10 ) / 10;
+
+				// Compare the truncated tax percentages
+				if ( $api_tax_percentage === $input_tax_percentage ) {
+					$tax_id = $value->tax_id;
+					break;
+				}
+			}
+		}
+		return $tax_id;
 	}
 
 	/**
