@@ -41,7 +41,7 @@ if ( ! defined( 'RMS_MENU_SLUG' ) ) {
 	define( 'RMS_MENU_SLUG', 'commercebird-app' );
 }
 if ( ! defined( 'RMS_DOCUMENTATION_URL' ) ) {
-	define( 'RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb/' );
+	define( 'RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb' );
 }
 if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
 	define( 'RMS_PLUGIN_URL', 'https://commercebird.com/product/commercebird/' );
