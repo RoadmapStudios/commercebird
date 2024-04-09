@@ -1,6 +1,12 @@
 <?php
 
-class WooCommerce_Media_API_By_commercebird {
+/**
+ * Extending the WC API with our custom endpoints.
+ *
+ * @author Fawad Tiemoerie <info@roadmapstudios.com>
+ * @since 2.0.0
+ */
+class CommerceBird_WC_API {
 
 
 	public function __construct() {
@@ -13,9 +19,10 @@ class WooCommerce_Media_API_By_commercebird {
 			return;
 		}
 		$api_classes = array(
-			'WC_REST_WooCommerce_Media_API_By_commercebird_Controller',
-			'WC_REST_WooCommerce_Metadata_API_By_commercebird_Controller',
-			'WC_REST_List_Items_API_By_commercebird_Controller',
+			'WC_REST_CommerceBird_Media_API_Controller',
+			'WC_REST_CommerceBird_Metadata_API_Controller',
+			'WC_REST_List_Items_API_CommerceBird_Controller',
+			'WC_REST_CommerceBird_Product_Brands_API_Controller',
 		);
 		foreach ( $api_classes as $api_class ) {
 			$controller = new $api_class();

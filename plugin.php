@@ -267,7 +267,7 @@ if ( is_admin() ) {
 ExactOnlineAjax::instance();
 // CM_Webhook_Modify::instance();
 // Load Media Library Endpoints
-new WooCommerce_Media_API_By_commercebird();
+new CommerceBird_WC_API();
 // Load License Key library
 if ( class_exists( 'commercebird_AM_Client' ) ) {
 	$wcam_lib_custom_menu = array(

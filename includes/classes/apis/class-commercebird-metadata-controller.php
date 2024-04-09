@@ -1,5 +1,5 @@
 <?php
-class WC_REST_WooCommerce_Metadata_API_By_commercebird_Controller extends WC_REST_CRUD_Controller {
+class WC_REST_CommerceBird_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 
 	protected $namespace  = 'wc/v2';
 	protected $namespace2 = 'wc/v3';
