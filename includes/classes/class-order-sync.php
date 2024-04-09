@@ -375,7 +375,6 @@ class Sync_Order_Class {
 					$discount_per_item   = '';
 
 					$qty        = ( $val['quantity'] ) ? $val['quantity'] : 1;
-					$item_price = $val['item_price'];
 					// adding warehouse_id in line items array
 					$warehouse_id = get_option( 'zoho_warehouse_id' );
 					if ( $warehouse_id > 0 ) {
@@ -408,7 +407,8 @@ class Sync_Order_Class {
 						$tax_percent = $tax_rates[ $tax_rate_id ];
 						$taxid       = '"tax_percentage": "' . $tax_percent . '",';
 
-						$item_price = $item_price1;
+						$item_price = $item_price1 * ( $tax_percent / 100 + 1 );
+						$item_price = round( $item_price, 2 );
 					}
 					if ( $enable_incl_tax === 'yes' ) {
 						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price . '",' . $warehouse_id . '}';
