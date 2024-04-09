@@ -1,3 +1,7 @@
+Version 2.1.14 - April 9 2024
+* Fix: address update for existing customers of Zoho Inventory
+* Removed: shipping charge tax 
+
 Version 2.1.13 - April 3 2024
 * Fix: order sync
 * Fix: orders with coupon sync
