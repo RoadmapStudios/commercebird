@@ -54,6 +54,11 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 	 */
 	public function get_params() {
 		$params = array(
+			'id'          => array(
+				'type'              => 'integer',
+				'sanitize_callback' => 'absint',
+				'validate_callback' => 'rest_validate_request_arg',
+			),
 			'name'        => array(
 				'type'              => 'string',
 				'required'          => true,
@@ -61,11 +66,6 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 				'validate_callback' => 'rest_validate_request_arg',
 			),
 			'description' => array(
-				'type'              => 'string',
-				'sanitize_callback' => 'sanitize_text_field',
-				'validate_callback' => 'rest_validate_request_arg',
-			),
-			'image'       => array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
@@ -78,6 +78,12 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			'parent'      => array(
 				'type'              => 'integer',
 				'sanitize_callback' => 'absint',
+				'validate_callback' => 'rest_validate_request_arg',
+			),
+			'logo'        => array(
+				'url'               => 'string',
+				'id'                => 'integer',
+				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
 		);
