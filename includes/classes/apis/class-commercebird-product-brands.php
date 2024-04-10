@@ -81,10 +81,16 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 				'validate_callback' => 'rest_validate_request_arg',
 			),
 			'logo'        => array(
-				'url'               => 'string',
-				'attachment_id'     => 'integer',
-				'sanitize_callback' => 'sanitize_text_field',
-				'validate_callback' => 'rest_validate_request_arg',
+				'url'           => array(
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'validate_callback' => 'rest_validate_request_arg',
+				),
+				'attachment_id' => array(
+					'type'              => 'integer',
+					'sanitize_callback' => 'absint',
+					'validate_callback' => 'rest_validate_request_arg',
+				),
 			),
 		);
 		return $params;
