@@ -82,7 +82,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			),
 			'logo'        => array(
 				'url'               => 'string',
-				'id'                => 'integer',
+				'attachment_id'     => 'integer',
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
