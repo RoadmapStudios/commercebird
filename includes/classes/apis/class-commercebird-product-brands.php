@@ -17,7 +17,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_brand' ),
-					'permission_callback' => array( $this, 'check_permission_to_edit_posts' ),
+					'permission_callback' => '__return_true',
 					'args'                => $this->get_params(),
 				),
 			)
@@ -29,7 +29,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'update_brand' ),
-					'permission_callback' => array( $this, 'check_permission_to_edit_posts' ),
+					'permission_callback' => '__return_true',
 					'args'                => $this->get_params(),
 				),
 			)
@@ -41,7 +41,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_brand' ),
-					'permission_callback' => array( $this, 'check_permission_to_edit_posts' ),
+					'permission_callback' => '__return_true',
 					'args'                => $this->get_params(),
 				),
 			)
@@ -94,16 +94,6 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			),
 		);
 		return $params;
-	}
-
-	/**
-	 * Check permission to edit posts
-	 *
-	 * @return bool
-	 * @throws Exception
-	 */
-	protected function check_permission_to_edit_posts() {
-		return current_user_can( 'edit_posts' );
 	}
 
 	/**
