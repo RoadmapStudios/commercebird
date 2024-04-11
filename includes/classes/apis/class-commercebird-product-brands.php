@@ -179,6 +179,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 	public function delete_brand( WP_REST_Request $request ) {
 		$response = new WP_REST_Response();
 		$data     = $request->get_params();
+		$term_id  = $data['id'];
 		if ( empty( $data['id'] ) ) {
 			$response->set_data( $this->empty_response );
 			$response->set_status( 400 );
@@ -190,8 +191,10 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			$response->set_status( 400 );
 			return $response;
 		}
-
-		$response->set_data( 'deleted successfully' );
+		$delete_response = array(
+			'id' => $term_id,
+		);
+		$response->set_data( $delete_response );
 		$response->set_status( 200 );
 		return $response;
 	}

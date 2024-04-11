@@ -53,7 +53,7 @@ function cmbird_register_custom_product_taxonomies() {
 		'show_tagcloud'         => false,
 		'rest_controller_class' => 'WP_REST_Terms_Controller',
 		'rest_namespace'        => 'wp/v2',
-		'show_in_quick_edit'    => T_TRUE,
+		'show_in_quick_edit'    => true,
 		'sort'                  => true,
 		'show_in_graphql'       => true,
 	);
