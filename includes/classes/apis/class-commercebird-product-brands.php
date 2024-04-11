@@ -42,7 +42,6 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_brand' ),
 					'permission_callback' => '__return_true',
-					'args'                => $this->get_params(),
 				),
 			)
 		);
@@ -111,13 +110,25 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			return $response;
 		}
 		$brand = wp_insert_term( $data['name'], 'product_brands', $data );
+		// update the logo inside $data as term meta.
+		if ( ! empty( $data['logo'] ) ) {
+			update_term_meta( $brand['term_id'], 'logo', $data['logo'] );
+		}
 		if ( is_wp_error( $brand ) ) {
 			$response->set_data( $brand->get_error_message() );
-			$response->set_status( 400 );
+			$response->set_status( 500 );
 			return $response;
 		}
-
-		$response->set_data( 'created' );
+		// return the entire term object.
+		$brand_object          = get_term_by( 'id', $brand['term_id'], 'product_brands' );
+		$adjusted_brand_object = array(
+			'id'          => $brand_object->term_id,
+			'name'        => $brand_object->name,
+			'slug'        => $brand_object->slug,
+			'description' => $brand_object->description,
+			'parent'      => $brand_object->parent,
+		);
+		$response->set_data( $adjusted_brand_object );
 		$response->set_status( 200 );
 		return $response;
 	}
@@ -137,13 +148,24 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			return $response;
 		}
 		$brand = wp_update_term( $data['id'], 'product_brands', $data );
+		// update the logo inside $data as term meta.
+		if ( ! empty( $data['logo'] ) ) {
+			update_term_meta( $brand['term_id'], 'logo', $data['logo'] );
+		}
 		if ( is_wp_error( $brand ) ) {
 			$response->set_data( $brand->get_error_message() );
-			$response->set_status( 400 );
+			$response->set_status( 500 );
 			return $response;
 		}
-
-		$response->set_data( 'updated' );
+		$brand_object          = get_term_by( 'id', $brand['term_id'], 'product_brands' );
+		$adjusted_brand_object = array(
+			'id'          => $brand_object->term_id,
+			'name'        => $brand_object->name,
+			'slug'        => $brand_object->slug,
+			'description' => $brand_object->description,
+			'parent'      => $brand_object->parent,
+		);
+		$response->set_data( $adjusted_brand_object );
 		$response->set_status( 200 );
 		return $response;
 	}
@@ -169,7 +191,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			return $response;
 		}
 
-		$response->set_data( 'deleted' );
+		$response->set_data( 'deleted successfully' );
 		$response->set_status( 200 );
 		return $response;
 	}
