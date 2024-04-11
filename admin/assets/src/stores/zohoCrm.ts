@@ -143,6 +143,8 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     * @description Function to refresh zoho fields
     */ 
     async function refresh_zoho(moduleName:string){
+        const storeKey =`${moduleName.toLowerCase()}_fields`;
+        storage.remove(storeKey);
         const key = keys.refresh_zoho_fields;
         const action =actions.refresh_zcrm_fields;
         if (loader.isLoading(action)) return;
@@ -154,6 +156,17 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         );
         if(response){
             notify.success(response.message);
+            if(Array.isArray(response.fields)&&response.fields.length>0){
+                let obj: { [key: string]: string } = {};
+                response.fields.forEach((field:any)=>{
+                    obj[field.id]=field.displayLabel;
+                });
+                response.fields=obj;
+                zcrm_fields.value = response.fields;
+            }
+            else{
+                zcrm_fields.value = {};
+            }
         }
         loader.clearLoading(action);
     }
@@ -268,7 +281,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                 const moduleName=selectedFieldTab.value;
                 const key =`${moduleName.toLowerCase()}_custom_fields`; 
                 response = await resetData(action, key, {module:moduleName});
-                storage.remove(keys.fields);
+                storage.remove(key);
                 break;
             default:
                 break;
