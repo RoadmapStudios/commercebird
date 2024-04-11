@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Helper functions to ensure correct handling of Data being transferred via rest api
  */
 
-function commercebird_clear_product_cache( $object, $request, $is_creating ) {
+function cmbird_clear_product_cache( $object, $request, $is_creating ) {
 	if ( ! $is_creating ) {
 		$product_id                  = $object->get_id();
 		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
@@ -29,7 +29,7 @@ function commercebird_clear_product_cache( $object, $request, $is_creating ) {
 		wc_delete_product_transients( $product_id );
 	}
 }
-add_action( 'woocommerce_rest_insert_product_object', 'commercebird_clear_product_cache', 10, 3 );
+add_action( 'woocommerce_rest_insert_product_object', 'cmbird_clear_product_cache', 10, 3 );
 
 
 
@@ -37,7 +37,7 @@ add_action( 'woocommerce_rest_insert_product_object', 'commercebird_clear_produc
  * Function to update the Contact in Zoho when customer updates address on frontend
  * @param $user_id
  */
-function zi_update_contact_via_accountpage( $user_id ) {
+function cmbird_update_contact_via_accountpage( $user_id ) {
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( ! empty( $zoho_inventory_access_token ) ) {
 		$contact_class_handle = new ContactClass();
@@ -46,11 +46,13 @@ function zi_update_contact_via_accountpage( $user_id ) {
 		return;
 	}
 }
-add_action( 'profile_update', 'zi_update_contact_via_accountpage' );
+add_action( 'profile_update', 'cmbird_update_contact_via_accountpage' );
 
 /**
- * Function to be called by hook when new product is added in woocommerce.
- * This function sync item to zoho when admin adds / update any item in woocommerce.
+ * Function to be called by hook when new product is added in WooCommerce.
+ *
+ * @param $product_id
+ * @return void
  */
 add_action( 'woocommerce_update_product', 'zi_product_sync_class', 10, 1 );
 add_action( 'wp_ajax_zi_product_sync_class', 'zi_product_sync_class' );
@@ -73,7 +75,9 @@ function zi_product_sync_class( $product_id ) {
 
 /**
  * Bulk-action to sync products from WooCommerce to Zoho
+ *
  * @param: $bulk_array
+ * @return: $bulk_array
  */
 add_filter( 'bulk_actions-edit-product', 'zi_sync_all_items_to_zoho' );
 function zi_sync_all_items_to_zoho( $bulk_array ) {
@@ -87,11 +91,11 @@ function zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_ids ) {
 	$redirect = remove_query_arg( 'sync_item_to_zoho_done', $redirect );
 
 	// do something for "Make Draft" bulk action
-	if ( $action == 'sync_item_to_zoho' ) {
+	if ( 'sync_item_to_zoho' === $action ) {
 
 		foreach ( $object_ids as $post_id ) {
-			$productHandler = new ProductClass();
-			$productHandler->zi_product_sync( $post_id );
+			$product_handler = new ProductClass();
+			$product_handler->zi_product_sync( $post_id );
 		}
 
 		// do not forget to add query args to URL because we will show notices later
@@ -263,51 +267,6 @@ function exact_item_id_variation_field( $loop, $variation_data, $variation ) {
 		)
 	);
 }
-
-// If Product Bundle in cart, do not allow other types of products to be added in cart
-/*
-add_filter('woocommerce_add_to_cart_validation', 'zoho_add_to_cart_validation_callback', 10, 3);
-function zoho_add_to_cart_validation_callback($passed, $product_id, $quantity)
-{
-	// HERE set your alert text message
-	$message = __('Bundles should be purchased separately.', 'woocommerce');
-	$product_ = wc_get_product($product_id);
-	$product_type = $product_->get_type();
-	if ($product_type == 'bundle') {
-		if (!WC()->cart->is_empty()) {
-			// Checking cart items if its not bundle
-			foreach (WC()->cart->get_cart() as $cart_item) {
-				$products_ = wc_get_product($cart_item['product_id']);
-				$products_type = $products_->get_type();
-				if ($products_type != 'bundle') {
-					$passed = false;
-					wc_add_notice($message, 'error');
-					break;
-				} else {
-					break;
-				}
-			}
-		}
-	} else {
-		if (!WC()->cart->is_empty()) {
-			// Checking cart items if its not bundle
-			foreach (WC()->cart->get_cart() as $cart_item) {
-				$products_ = wc_get_product($cart_item['product_id']);
-				$products_type = $products_->get_type();
-				if ($products_type == 'bundle') {
-					$passed = false;
-					wc_add_notice($message, 'error');
-					break;
-				} else {
-					break;
-				}
-			}
-		}
-	}
-
-	return $passed;
-}
-*/
 
 /**
  * Adds 'Zoho Sync' column header to 'Orders' page immediately after 'Total' column.
@@ -497,65 +456,6 @@ function zi_sync_column_filter_query( $query ) {
 	}
 }
 add_action( 'pre_get_posts', 'zi_sync_column_filter_query' );
-
-/**
- * Prevent Webhook delivery execution when order gets updated too often per minute
- * @param bool $should_deliver
- * @param WC_Webhook $webhook
- * @param array $arg
- * @return bool
- */
-add_filter( 'woocommerce_webhook_should_deliver', 'cm_skip_webhook_delivery', 10, 3 );
-function cm_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
-	// $fd = fopen( __DIR__ . '/should_skip_webhook.txt', 'a+' );
-	// fwrite( $fd, PHP_EOL . 'Order-id : ' . $arg );
-
-	$webhook_name_to_exclude = 'CommerceBird Orders';
-	if ( $webhook->get_name() === $webhook_name_to_exclude ) {
-		$order = wc_get_order( $arg );
-		// check if order contains meta eo_order_id
-		if ( $order->get_meta( 'eo_order_id' ) ) {
-			$should_deliver = false;
-		}
-		// check if order status is failed, pending, on-hold or cancelled
-		$order_status = $order->get_status();
-		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
-			// fwrite($fd, PHP_EOL . 'Skipping webhook delivery for order ' . $arg);
-			$should_deliver = false;
-		}
-		$webhook_status = $webhook->get_status();
-		// also return false if webhoook status is disabled or paused
-		if ( $webhook_status === 'disabled' || $webhook_status === 'paused' ) {
-			$should_deliver = false;
-		}
-	}
-	// fwrite( $fd, PHP_EOL . 'should deliver: ' . $should_deliver );
-	// fclose( $fd );
-
-	return $should_deliver; // Continue with normal webhook delivery
-}
-
-/**
- * Handle to ensure orders with meta 'eo_order_id' are not queried by wc_get_orders().
- * @param array $query - Args for WP_Query.
- * @param array $query_vars - Query vars from WC_Order_Query.
- * @return array modified $query
- */
-// function cm_custom_filter_wc_get_orders( $query, $query_vars ) {
-// 	// Adjust the meta_key value to match the meta key you want to exclude
-// 	$meta_key_to_exclude = 'eo_order_id';
-
-// 	// Check if the meta key to exclude is set and exclude orders with that meta key
-// 	if ( ! empty( $meta_key_to_exclude ) ) {
-// 		$query['meta_query'][] = array(
-// 			'key'     => $meta_key_to_exclude,
-// 			'compare' => 'NOT EXISTS',
-// 		);
-// 	}
-
-// 	return $query;
-// }
-// add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'cm_custom_filter_wc_get_orders', 10, 2 );
 
 /**
  * Change Action Scheduler default purge to 1 week

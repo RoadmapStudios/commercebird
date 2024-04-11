@@ -1,14 +1,10 @@
 <?php
 
 /**
- * Taxonomy: Brands.
+ * Taxonomy: Brands for Products.
  */
 
 function cmbird_register_custom_product_taxonomies() {
-
-	/**
-	 * Taxonomy: Brands.
-	 */
 
 	$labels = array(
 		'name'                       => esc_html__( 'Brands', 'commercebird' ),
@@ -55,12 +51,11 @@ function cmbird_register_custom_product_taxonomies() {
 		'show_admin_column'     => true,
 		'show_in_rest'          => true,
 		'show_tagcloud'         => false,
-		'rest_base'             => 'brands',
 		'rest_controller_class' => 'WP_REST_Terms_Controller',
 		'rest_namespace'        => 'wp/v2',
-		'show_in_quick_edit'    => false,
+		'show_in_quick_edit'    => T_TRUE,
 		'sort'                  => true,
-		'show_in_graphql'       => false,
+		'show_in_graphql'       => true,
 	);
 	if ( ! taxonomy_exists( 'product_brands' ) ) {
 		register_taxonomy( 'product_brands', array( 'product' ), $args );
