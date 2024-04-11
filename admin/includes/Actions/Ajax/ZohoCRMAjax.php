@@ -122,6 +122,7 @@ final class ZohoCRMAjax
 				$option_name = 'zcrm_' . strtolower($module) . '_fields';
 				update_option(self::OPTIONS[$option_name], $fields);
 				$this->response = array('message' => 'Refresh successfully!');
+				$this->response['fields'] = $fields;
 			}
 			$this->serve();
 		}
