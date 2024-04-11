@@ -110,16 +110,22 @@ final class ZohoCRMAjax
 	 */
 	public function refresh_zcrm_fields()
 	{
-		$module = $_GET['module'];
-		$fields = (new CommerceBird())->get_zcrm_fields($module);
-		if (is_wp_error($fields)) {
-			$this->errors['message'] = $fields->get_error_message();
-		} else {
-			$option_name = 'zcrm_' . strtolower($module) . '_fields';
-			update_option(self::OPTIONS[$option_name], $fields);
-			$this->response = array('message' => 'Refresh successfully!');
+		$module = isset($_GET['module']) ? $_GET['module'] : '';
+		if (empty($module)) {
+			$this->errors['message'] = 'Module name is required.';
 		}
-		$this->serve();
+		else{
+			$fields = (new CommerceBird())->get_zcrm_fields($module);
+			if (is_wp_error($fields)) {
+				$this->errors['message'] = $fields->get_error_message();
+			} else {
+				$option_name = 'zcrm_' . strtolower($module) . '_fields';
+				update_option(self::OPTIONS[$option_name], $fields);
+				$this->response = array('message' => 'Refresh successfully!');
+			}
+			$this->serve();
+		}
+		
 	}
 
 	/**
