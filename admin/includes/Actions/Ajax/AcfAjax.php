@@ -37,16 +37,19 @@ final class AcfAjax {
 
 	public function __construct() {
 		$this->load_actions();
-		add_filter( 'acf/load_key', array( $this->get_acf_fields() ), 10, 3 );
 	}
 
 
 	public function get_acf_fields(): void {
-		$post_type = isset( $_GET['module'] ) ? $_GET['module'] : '';
-		error_log( ( 'post_type' . $post_type ) );
+		$post_type_value = isset( $_GET['module'] ) ? $_GET['module'] : '';
+		if ( 'users' === $post_type_value ) {
+			$post_type_value = 'all';
+			$group_type = 'users';
+		} else {
+			$group_type = 'post_type';
+		}
 		// Get all field groups associated with WooCommerce products
-		$groups = acf_get_field_groups( array( 'post_type' => $post_type ) );
-		error_log( 'Groups: ' . print_r( $groups, true ) );
+		$groups = acf_get_field_groups( array( $group_type => $post_type_value ) );
 
 		// Check if there are any field groups
 		if ( $groups ) {
