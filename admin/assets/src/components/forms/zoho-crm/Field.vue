@@ -46,15 +46,17 @@ const action = backendAction.zohoCrm.field;
 const store = useZohoCrmStore();
 const loader = useLoadingStore();
 const tabs = {
-  orders: { name: "Orders", title: "Orders Custom Fields",moduleName:"Sales_Orders" },
-  contacts: { name: "Contacts", title: "Contacts Custom Fields", moduleName: "Contacts"},
-  products: { name: "Products", title: "Products Custom Fields",moduleName:"Products" },
+  orders: { name: "Orders", title: "Orders Custom Fields",moduleName:"Sales_Orders",postType:"shop_order" },
+  contacts: { name: "Contacts", title: "Contacts Custom Fields", moduleName: "Contacts",postType:"users"},
+  products: { name: "Products", title: "Products Custom Fields",moduleName:"Products",postType:"product" },
 };
 let selectedTab = ref(tabs.orders);
 onUpdated(()=>{
   store.selectedFieldTab = selectedTab.value.moduleName;
+  store.fetch_acf_fields(selectedTab.value.postType);
   store.get_zcrm_fields();
   store.get_zcrm_custom_fields();
+  
 });
 
 </script>

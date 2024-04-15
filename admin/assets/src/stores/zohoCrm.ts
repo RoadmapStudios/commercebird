@@ -40,7 +40,8 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                   connection.token = response?.token;
                 break;
             case "field":
-                selectedFieldTab.value = "Sales_Orders";                
+                selectedFieldTab.value = "Sales_Orders";  
+                fetch_acf_fields('shop_order');              
                 get_all_custom_fields();
                 get_zcrm_fields();
                 get_zcrm_custom_fields();
@@ -83,10 +84,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     * @description Function to get woocommerce fields
    */
     const get_all_custom_fields = async () => {
-        const key = keys.fields;  
-        const acf_fields=await get_acf_fields('product');
-        console.log("acf fields",acf_fields);
-        
+        const key = keys.fields;          
         const instore = storage.get(key);        
         if (instore) {
             customFields.value = instore;
@@ -102,6 +100,15 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             );
             loader.clearLoading(action);
         }          
+    }
+
+     /**
+    * @description Function to get ACF fields.
+   */
+    async function fetch_acf_fields(postType:string){
+       console.log("postType",postType);
+        
+       const acfFields=await get_acf_fields(postType);
     }
 
      async function get_zcrm_custom_fields(){
@@ -324,6 +331,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         get_zcrm_fields,
         get_zcrm_custom_fields,
         refresh_zoho,
+        fetch_acf_fields,
         addField,
         removeField,
         handleSubmit,

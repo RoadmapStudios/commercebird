@@ -24,27 +24,21 @@ final class AcfAjax {
 
 
 
-	private const FORMS = array(
-
-	);
 	private const ACTIONS = array(
 
 		'get_acf_fields' => 'get_acf_fields',
 	);
-	private const OPTIONS = array(
-
-	);
-
+	
 	public function __construct() {
 		$this->load_actions();
 	}
 
 
 	public function get_acf_fields(): void {
-		$post_type_value = isset( $_GET['module'] ) ? $_GET['module'] : '';
+		$post_type_value = isset( $_GET['post_type'] ) ? $_GET['post_type'] : '';
 		if ( 'users' === $post_type_value ) {
 			$post_type_value = 'all';
-			$group_type = 'users';
+			$group_type = 'user_role';
 		} else {
 			$group_type = 'post_type';
 		}
@@ -58,7 +52,7 @@ final class AcfAjax {
 				// Get the fields for the current group
 				$fields = acf_get_fields( $group['key'] );
 			}
-			$this->response = array( 'fields' => $fields );
+			$this->response['fields'] = $fields;
 			$this->serve();
 		}
 	}
