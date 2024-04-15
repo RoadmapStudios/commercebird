@@ -37,7 +37,7 @@ final class AcfAjax {
 
 	public function __construct() {
 		$this->load_actions();
-		add_filter( 'acf/load_name', array( $this->get_acf_fields() ), 10, 3 );
+		add_filter( 'acf/load_key', array( $this->get_acf_fields() ), 10, 3 );
 	}
 
 
@@ -53,7 +53,7 @@ final class AcfAjax {
 			// Loop through each group
 			foreach ( $groups as $group ) {
 				// Get the fields for the current group
-				$fields = acf_get_fields( $group['name'] );
+				$fields = acf_get_fields( $group['key'] );
 			}
 			$this->response = array( 'fields' => $fields );
 			$this->serve();
