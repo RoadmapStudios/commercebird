@@ -38,7 +38,11 @@ export const storeKey: StoreKey = {
         sales_orders_custom_fields:'sales_orders_custom_fields',
         contacts_custom_fields:'contacts_custom_fields',
         products_custom_fields:'products_custom_fields',
-
+    },
+    acf_fields:{
+        sales_orders_acf_fields:'sales_orders_acf_fields',
+        contacts_acf_fields:'contacts_acf_fields',
+        products_acf_fields:'products_acf_fields',
     }
 
 }
@@ -143,5 +147,8 @@ export const backendAction: BackendAction = {
         custom_fields: 'get_all_custom_fields',
         refresh_zcrm_fields: 'refresh_zcrm_fields',
         zcrm_fields:'zcrm_fields',
+    },
+    acf_fields: {
+        get_acf_fields: 'get_acf_fields',
     }
 }

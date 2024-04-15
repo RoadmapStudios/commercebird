@@ -6,7 +6,7 @@ import { extractOptions, notify, site_url } from "@/composable/helpers";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { useStorage } from "@/composable/storage";
-
+import { get_acf_fields } from "@/composable/common";
 const actions = backendAction.zohoCrm;
 const keys = storeKey.zohoCrm;
 
@@ -83,7 +83,10 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     * @description Function to get woocommerce fields
    */
     const get_all_custom_fields = async () => {
-        const key = keys.fields;        
+        const key = keys.fields;  
+        const acf_fields=await get_acf_fields('product');
+        console.log("acf fields",acf_fields);
+        
         const instore = storage.get(key);        
         if (instore) {
             customFields.value = instore;
@@ -170,6 +173,8 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         }
         loader.clearLoading(action);
     }
+
+
  
     /**
      * @description Function to get zoho fields from wordpress database

@@ -206,18 +206,4 @@ final class ZohoCRMAjax
 		}
 	}
 
-	public function get_acf_fields(): void
-	{
-		// Get all field groups associated with WooCommerce products
-		$groups = acf_get_field_groups(array('post_type' => 'product'));
-		error_log('groups' . $groups);
-		// Check if there are any field groups
-		if ($groups) {
-			// Loop through each group
-			foreach ($groups as $group) {
-				// Get the fields for the current group
-				$fields = acf_get_fields($group['key']);
-			}
-		}
-	}
 }
