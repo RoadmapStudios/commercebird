@@ -677,6 +677,7 @@ class ProductClass {
 		$rate = $rateR;
 		} */
 
+		// TODO: get tax rates from Zoho API.
 		$tax_rates  = WC_Tax::get_base_tax_rates( $product_variable->get_tax_class() );
 		$tax_id_key = '';
 		foreach ( $tax_rates as $tax_key => $tax_value ) {
