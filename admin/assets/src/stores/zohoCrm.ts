@@ -106,7 +106,9 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
    */
     async function get_fields(postType:string){
        customFields.value={};
-       get_woo_fields();
+       if(postType==='shop_order'){
+        get_woo_fields();
+       }
        const acfFields=await get_acf_fields(postType);
        customFields.value={...customFields.value,...acfFields};              
     }
