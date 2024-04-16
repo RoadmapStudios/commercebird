@@ -321,18 +321,13 @@ class import_product_class {
 			return;
 		}
 
-		// Ensure consistent input format (array of objects)
-		if ( is_object( $custom_fields ) ) {
-			$custom_fields = array( $custom_fields );
-		}
-
 		foreach ( $custom_fields as $custom_field ) {
 			// Extract data from custom field
-			$api_name = isset( $custom_field->api_name ) ? $custom_field->api_name : null;
-			$value    = isset( $custom_field->value ) ? $custom_field->value : null;
+			$api_name = isset( $custom_field->api_name ) ? $custom_field->api_name : $custom_field['api_name'];
+			$value    = isset( $custom_field->value ) ? $custom_field->value : $custom_field['value'];
 
 			// Check if both API name and value are present
-			if ( ! empty( $api_name ) && isset( $value ) ) {
+			if ( ! empty( $api_name ) && ! empty( $value ) ) {
 				// Check if ACF function exists
 				if ( function_exists( 'update_field' ) ) {
 					// Update ACF field
