@@ -53,7 +53,7 @@ const tabs = {
 let selectedTab = ref(tabs.orders);
 onUpdated(()=>{
   store.selectedFieldTab = selectedTab.value.moduleName;
-  store.fetch_acf_fields(selectedTab.value.postType);
+  store.get_fields(selectedTab.value.postType);
   store.get_zcrm_fields();
   store.get_zcrm_custom_fields();
   

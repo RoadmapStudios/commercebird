@@ -39,12 +39,7 @@ export const storeKey: StoreKey = {
         contacts_custom_fields:'contacts_custom_fields',
         products_custom_fields:'products_custom_fields',
     },
-    acf_fields:{
-        sales_orders_acf_fields:'sales_orders_acf_fields',
-        contacts_acf_fields:'contacts_acf_fields',
-        products_acf_fields:'products_acf_fields',
-    }
-
+   
 }
 
 

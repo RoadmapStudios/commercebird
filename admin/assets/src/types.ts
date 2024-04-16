@@ -126,12 +126,6 @@ export type StoreKey = {
         contacts_custom_fields: string;
         products_custom_fields: string;
     };
-
-    acf_fields: {
-        sales_orders_acf_fields:string;
-        contacts_acf_fields:string;
-        products_acf_fields:string;
-    }
 }
 
 export type BackendAction = {

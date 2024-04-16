@@ -9,13 +9,11 @@ import { fetchData } from "./http";
     * @description Function to get acf fields
     */ 
   export async function get_acf_fields(postType:string){
+    let fields;
     const key =`${postType}_acf_fields`;
-    const instore = storage.get(key);    
-    console.log("instore",instore);
-        
+    const instore = storage.get(key);            
     if(instore){
-        return instore.fields;
-        
+        fields= instore.fields;
     }else{
         const actions = backendAction.acf_fields;
         const action =actions.get_acf_fields;
@@ -24,21 +22,21 @@ import { fetchData } from "./http";
             key,
             {post_type:postType}
         ); 
-        console.log(" acf response",response);
-               
-        if(response){
-            if(Array.isArray(response.fields)&&response.fields.length>0){
+         fields=response.fields;               
+       
+        }
+        if(fields){
+            if(Array.isArray(fields)&&fields.length>0){
                 let obj: { [key: string]: string } = {};
-                response.fields.forEach((field:any)=>{
-                    obj[field.id]=field.displayLabel;
+                fields.forEach((field:any)=>{
+                    obj[field.name]=field.label;
                 });
-                response.fields=obj;
-                return response.fields;
+                fields=obj;
+                return fields;
             }
             else{
                 return {};
             }
-        }
     }
     
 }
