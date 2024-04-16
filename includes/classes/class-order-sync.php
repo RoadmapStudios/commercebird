@@ -419,24 +419,24 @@ class Sync_Order_Class {
 				}
 
 				// Shipping Tax
-				// $shipping_tax_id    = '';
+				$shipping_tax_id    = '';
 				$shipping_tax       = $order->get_shipping_tax();
-				// $shipping_tax_total = $order->get_shipping_total();
+				$shipping_tax_total = $order->get_shipping_total();
 
-				// if ( ! empty( $shipping_tax ) && ! empty( $shipping_tax_total ) ) {
+				if ( ! empty( $shipping_tax ) && ! empty( $shipping_tax_total ) ) {
 
-				// 	$tax_percentage = ( ( $shipping_tax / $shipping_tax_total ) * 100 );
-				// 	if ( fmod( $tax_percentage, 1 ) !== 0 ) {
-				// 		$percentage      = number_format( $tax_percentage, 2 );
-				// 		$percent_decimal = $percentage * 100;
-				// 		$decimal_place   = $percent_decimal % 10;
-				// 		if ( $decimal_place === 0 ) {
-				// 			$percentage = number_format( $percentage, 1 );
-				// 		}
-				// 	} else {
-				// 		$percentage = round( $tax_percentage );
-				// 	}
-				// }
+					$tax_percentage = ( ( $shipping_tax / $shipping_tax_total ) * 100 );
+					if ( fmod( $tax_percentage, 1 ) !== 0 ) {
+						$percentage      = number_format( $tax_percentage, 2 );
+						$percent_decimal = $percentage * 100;
+						$decimal_place   = $percent_decimal % 10;
+						if ( $decimal_place === 0 ) {
+							$percentage = number_format( $percentage, 1 );
+						}
+					} else {
+						$percentage = round( $tax_percentage );
+					}
+				}
 
 				if ( is_array( $pdt_items ) ) {
 					$impot = implode( ',', $pdt_items );
@@ -445,10 +445,10 @@ class Sync_Order_Class {
 				$pdt1 = '"customer_id": "' . $zi_customer_id . '","date": "' . $orders_date . '","line_items": [' . $impot . '],"is_discount_before_tax": "true","discount_type": "item_level","price_precision":"2","notes": "' . $notes . '","billing_address_id": "' . $billing_id . '","shipping_address_id": "' . $shipping_id . '","delivery_method": "' . $shipping_method . '"';
 
 				// if there is shipping tax
-				// if ( ! empty( $shipping_tax ) ) {
-				// 	$shipping_tax_id = $this->zi_get_tax_id( $percentage );
-				// 	$pdt1           .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
-				// }
+				if ( ! empty( $shipping_tax ) ) {
+					$shipping_tax_id = $this->zi_get_tax_id( $percentage );
+					$pdt1           .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
+				}
 
 				// Check if there are order fees total is more than 0
 				$order_fees = $order->get_fees();
