@@ -1,6 +1,11 @@
+Version 2.1.15 - April 18 2024
+* New: product brands taxonomy
+* Fix: custom fields of products
+* Reverted: shipping charge tax
+
 Version 2.1.14 - April 9 2024
 * Fix: address update for existing customers of Zoho Inventory
-* Removed: shipping charge tax 
+* Removed: shipping charge tax
 
 Version 2.1.13 - April 3 2024
 * Fix: order sync
