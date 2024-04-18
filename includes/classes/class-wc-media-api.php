@@ -28,5 +28,37 @@ class CommerceBird_WC_API {
 			$controller = new $api_class();
 			$controller->register_routes();
 		}
+		// register cost_price as meta field for products.
+		register_rest_field( 'product',
+			'cost_price',
+			array(
+				'get_callback' => array( $this, 'cmbird_get_product_field' ),
+				'update_callback' => array( $this, 'cmbird_update_product_field' ),
+				'schema' => null,
+			)
+		);
+	}
+
+	/**
+	 * Get meta field value.
+	 *
+	 * @param mixed $object
+	 * @param mixed $object
+	 * @param mixed $field_name
+	 * @param mixed $request
+	 * @return mixed
+	 */
+	public function cmbird_get_product_field( $object, $field_name, $request ) {
+		return get_post_meta( $object['id'], $field_name, true );
+	}
+	/**
+	 * Update meta field value.
+	 * @param mixed $value
+	 * @param mixed $object
+	 * @param mixed $field_name
+	 * @return bool|int
+	 */
+	public function cmbird_update_product_field( $value, $object, $field_name ) {
+		return update_post_meta( $object->id, $field_name, $value );
 	}
 }
