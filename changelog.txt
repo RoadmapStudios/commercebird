@@ -2,6 +2,7 @@ Version 2.1.15 - April 18 2024
 * New: product brands taxonomy
 * Fix: custom fields of products
 * Reverted: shipping charge tax
+* Compatible with WooCommerce 8.8
 
 Version 2.1.14 - April 9 2024
 * Fix: address update for existing customers of Zoho Inventory

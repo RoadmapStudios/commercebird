@@ -16,7 +16,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.html GPL-3.0-or-later
  *
  * WC requires at least: 8.0.0
- * WC tested up to: 8.7.0
+ * WC tested up to: 8.8.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
