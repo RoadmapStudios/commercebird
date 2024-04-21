@@ -207,7 +207,7 @@ class ProductWebhook {
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image, $admin_author_id );
+					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $admin_author_id );
 				}
 
 				$variation->save(); // Save the data
@@ -269,7 +269,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image, $admin_author_id );
+					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $admin_author_id );
 				}
 
 				// Stock
@@ -401,7 +401,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $pdt_id, $item_image, $admin_author_id );
+					$image_class->args_attach_image( $item_id, $item_name, $pdt_id, $admin_author_id );
 				}
 
 				// category

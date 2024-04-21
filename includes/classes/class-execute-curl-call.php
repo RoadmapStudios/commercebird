@@ -154,13 +154,14 @@ class ExecutecallClass {
 	 *
 	 * Get Call Zoho Image
 	 * @param mixed $url
-	 * @param mixed $image_name
 	 * @return string
 	 */
-	public function ExecuteCurlCallImageGet( $url, $image_name ) {
+	public function ExecuteCurlCallImageGet( $url, $item_id ) {
+		// $fd = fopen( __DIR__ . '/ExecuteCurlCallImageGet.txt', 'w' );
+
+		global $wp_filesystem;
 
 		$handlefunction = new Classfunctions();
-
 		$zoho_inventory_access_token  = $this->config['ExecutecallZI']['ATOKEN'];
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
 		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
@@ -182,6 +183,8 @@ class ExecutecallClass {
 			),
 		);
 		$response = wp_remote_get( $url, $args );
+		// fwrite( $fd, PHP_EOL . 'Response : ' . print_r( $response, true ) );
+		// fclose( $fd );
 
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) ) {
@@ -194,15 +197,15 @@ class ExecutecallClass {
 			$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
 
 			// Generate a unique image name
-			$img        = 'image_' . wp_rand() . '_' . $image_name;
+			$img        = 'image_' . wp_rand();
 			$upload_dir = $absolute_upload_path . '/' . $img;
 
 			// Create the directory if it doesn't exist
 			if ( ! is_dir( $absolute_upload_path ) ) {
-				mkdir( $absolute_upload_path );
+				$wp_filesystem->wp_mkdir_p( $absolute_upload_path );
 			}
 			// Save the image file
-			file_put_contents( $upload_dir, $body );
+			$wp_filesystem->put_contents( $upload_dir, $body );
 
 			// Use trailingslashit to make sure the URL ends with a single slash
 			return trailingslashit( $url_upload_path ) . $img;

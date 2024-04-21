@@ -90,7 +90,7 @@ class import_product_class {
 						$zi_disable_image_sync = get_option( 'zoho_disable_image_sync_status' );
 						if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
 							$image_class = new ImageClass();
-							$image_class->args_attach_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name, $admin_author_id );
+							$image_class->args_attach_image( $arr->item_id, $arr->name, $pdt_id, $admin_author_id );
 						}
 
 						$details = $arr->package_details;
@@ -624,7 +624,7 @@ class import_product_class {
 					// Featured Image of variation
 					if ( ! empty( $variation_data['featured_image'] ) ) {
 						$image_class = new ImageClass();
-						$image_class->args_attach_image( $item->item_id, $item->name, $variation_id, $item->image_name, $admin_author_id );
+						$image_class->args_attach_image( $item->item_id, $item->name, $variation_id, $admin_author_id );
 					}
 
 					// Sync the data of the variation in the parent variable product (TODO: this is causing errors in the logs)
@@ -1433,7 +1433,7 @@ class import_product_class {
 					if ( $key === 'image_document_id' ) {
 						if ( ! empty( $com_prod_id ) && ! empty( $value ) ) {
 							$image_class = new ImageClass();
-							$image_class->args_attach_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name, $admin_author_id );
+							$image_class->args_attach_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $admin_author_id );
 						}
 					}
 					if ( $key === 'category_name' ) {

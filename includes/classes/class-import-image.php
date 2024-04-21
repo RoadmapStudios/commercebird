@@ -41,7 +41,7 @@ class ImageClass {
 	 * @param [string] $author_id - Author id
 	 * @return void
 	 */
-	public function args_attach_image( $item_id, $item_name, $post_id, $image_name, $author_id ) {
+	public function args_attach_image( $item_id, $item_name, $post_id, $author_id ) {
 		// $fd = fopen(__DIR__ . '/image_sync.txt', 'a+');
 		global $wpdb;
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
@@ -51,7 +51,7 @@ class ImageClass {
 
 		// fwrite($fd, PHP_EOL . '$url : ' . $url);
 		$execute_curl_call_handle = new ExecutecallClass();
-		$image_url                = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url, $image_name );
+		$image_url                = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url, $item_id );
 		// fwrite($fd, PHP_EOL . 'Sync init');
 		$temp_file = download_url( $image_url );
 		// Get the MIME type of the downloaded image
@@ -91,7 +91,7 @@ class ImageClass {
 		// fwrite($fd,PHP_EOL.'$image_post_id : '.$image_post_id);
 		// fwrite($fd, PHP_EOL . '$image_post_id: ' . $image_post_id);
 
-		if ( $image_post_id == 0 ) {
+		if ( 0 === $image_post_id ) {
 			if ( ! is_wp_error( $temp_file ) ) {
 				// fwrite($fd, PHP_EOL . 'Inside If: ');
 				// Set variables for storage, fix file filename for query strings.
