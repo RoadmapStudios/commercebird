@@ -269,7 +269,6 @@ class Sync_Order_Class {
 			$order_id = $_POST['arg_order_data'];
 		}
 
-		global $wpdb;
 		$order             = wc_get_order( $order_id );
 		$orders_date       = $order->get_date_created()->format( 'Y-m-d' );
 		$i                 = 1;
@@ -471,7 +470,8 @@ class Sync_Order_Class {
 				$response_msg = '';
 
 				// Send orders as confirmed
-				if ( 'true' == get_option( 'zoho_enable_order_status' ) ) {
+				$order_status = get_option( 'zoho_enable_order_status_status' );
+				if ( $order_status ) {
 					$pdt1 .= ',"order_status": "draft"';
 				} else {
 					$pdt1 .= ',"order_status": "confirmed"';
@@ -536,7 +536,7 @@ class Sync_Order_Class {
 					$response_msg = $this->single_saleorder_zoho_inventory_update( $order_id, $zi_sales_order_id, $pdt1 );
 					// fwrite($fd,PHP_EOL.'Update response : '.$response_msg);
 				} else {
-					$response_msg = $this->single_saleorder_zoho_inventory( $order_id, $pdt1 );
+					$response_msg = $this->single_saleorder_zoho_inventory( $pdt1 );
 				}
 				// fwrite($fd,PHP_EOL.'Update response : '. print_r($response_msg, true));
 
@@ -608,7 +608,7 @@ class Sync_Order_Class {
 	 * @param string $pdt1 JSON string
 	 * @return string Error message
 	 */
-	public function single_saleorder_zoho_inventory( $order_id, $pdt1 ) {
+	public function single_saleorder_zoho_inventory( $pdt1 ) {
 		//start logging
 		// $fd = fopen( __DIR__ . '/order-sync-backend.txt', 'w+' );
 
