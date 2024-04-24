@@ -197,8 +197,13 @@ class ExecutecallClass {
 			$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
 
 			// Generate a unique image name
-			$img        = 'image_' . wp_rand();
-			$upload_dir = $absolute_upload_path . '/' . $img;
+			// $img        = 'image_' . wp_rand();
+			$upload_dir = $absolute_upload_path . '/' . $item_id;
+
+			// remove the file if it exists
+			if ( file_exists( $upload_dir ) ) {
+				wp_delete_file( $upload_dir );
+			}
 
 			// Create the directory if it doesn't exist
 			if ( ! is_dir( $absolute_upload_path ) ) {
@@ -208,7 +213,7 @@ class ExecutecallClass {
 			$wp_filesystem->put_contents( $upload_dir, $body );
 
 			// Use trailingslashit to make sure the URL ends with a single slash
-			return trailingslashit( $url_upload_path ) . $img;
+			return trailingslashit( $url_upload_path ) . $item_id;
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';

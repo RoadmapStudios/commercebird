@@ -42,20 +42,24 @@ class ImageClass {
 	 * @return void
 	 */
 	public function args_attach_image( $item_id, $item_name, $post_id, $author_id ) {
-		// $fd = fopen(__DIR__ . '/image_sync.txt', 'a+');
+		$fd = fopen( __DIR__ . '/image_sync.txt', 'a+');
+
 		global $wpdb;
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 		$url                = $zoho_inventory_url . 'api/v1/items/' . $item_id . '/image';
 		$url               .= '?organization_id=' . $zoho_inventory_oid;
 
-		// fwrite($fd, PHP_EOL . '$url : ' . $url);
 		$execute_curl_call_handle = new ExecutecallClass();
 		$image_url                = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url, $item_id );
 		// fwrite($fd, PHP_EOL . 'Sync init');
-		$temp_file = download_url( $image_url );
+		// $temp_file = download_url( $image_url );
+		$temp_file = $image_url;
+
 		// Get the MIME type of the downloaded image
 		$file_info = getimagesize( $temp_file );
+		fwrite( $fd, PHP_EOL . 'File Info: ' . print_r( $file_info, true ) );
+
 		if ( $file_info && isset( $file_info['mime'] ) ) {
 			$file_type = $file_info['mime'];
 		} else {
@@ -90,6 +94,7 @@ class ImageClass {
 		}
 		// fwrite($fd,PHP_EOL.'$image_post_id : '.$image_post_id);
 		// fwrite($fd, PHP_EOL . '$image_post_id: ' . $image_post_id);
+		fclose( $fd );
 
 		if ( 0 === $image_post_id ) {
 			if ( ! is_wp_error( $temp_file ) ) {
@@ -146,15 +151,19 @@ class ImageClass {
 
 						// Remove all files from zoho folder when done
 						$upload      = wp_upload_dir();
-						$folder_path = $upload['basedir'] . '/zoho_image/';
+						$folder_path = $upload['basedir'];
 						// Get list of file paths in the folder
 						$file_paths = glob( $folder_path . '*' );
 						// Loop through each file and delete it
 						foreach ( $file_paths as $file_path ) {
 							if ( is_file( $file_path ) ) {
-								wp_delete_file( $file_path );
+								// remove each file that has .tmp extension
+								if ( strpos( $file_path, '.tmp' ) ) {
+									wp_delete_file( $file_path );
+								}
 							}
 						}
+						wp_delete_file( $temp_file );
 						return;
 					}
 				}
@@ -165,8 +174,6 @@ class ImageClass {
 			set_post_thumbnail( $post_id, $image_post_id );
 			return;
 		}
-		// fclose($fd);
-		return;
 	}
 
 	/**
