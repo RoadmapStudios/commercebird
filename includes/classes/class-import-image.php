@@ -42,7 +42,7 @@ class ImageClass {
 	 * @return void
 	 */
 	public function args_attach_image( $item_id, $item_name, $post_id, $author_id ) {
-		$fd = fopen( __DIR__ . '/image_sync.txt', 'a+');
+		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+');
 
 		global $wpdb;
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
@@ -58,7 +58,7 @@ class ImageClass {
 
 		// Get the MIME type of the downloaded image
 		$file_info = getimagesize( $temp_file );
-		fwrite( $fd, PHP_EOL . 'File Info: ' . print_r( $file_info, true ) );
+		// fwrite( $fd, PHP_EOL . 'File Info: ' . print_r( $file_info, true ) );
 
 		if ( $file_info && isset( $file_info['mime'] ) ) {
 			$file_type = $file_info['mime'];
@@ -94,7 +94,7 @@ class ImageClass {
 		}
 		// fwrite($fd,PHP_EOL.'$image_post_id : '.$image_post_id);
 		// fwrite($fd, PHP_EOL . '$image_post_id: ' . $image_post_id);
-		fclose( $fd );
+		// fclose( $fd );
 
 		if ( 0 === $image_post_id ) {
 			if ( ! is_wp_error( $temp_file ) ) {

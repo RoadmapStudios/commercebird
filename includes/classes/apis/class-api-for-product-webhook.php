@@ -152,7 +152,7 @@ class ProductWebhook {
 			if ( ! empty( $group_id ) ) {
 				$existing_parent_product = wc_get_product( $group_id );
 
-				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
+				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					// fwrite($fd, PHP_EOL . 'Item description update : ' . $item_description);
 					$existing_parent_product->set_short_description( $item_description );
@@ -356,7 +356,7 @@ class ProductWebhook {
 					$simple_product->set_price( $item_price );
 				}
 				// description
-				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_itemdescription_sync_status' );
+				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					$simple_product->set_short_description( $item_description );
 				}
