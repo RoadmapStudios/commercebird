@@ -27,8 +27,8 @@ class ProductWebhook {
 			self::$namespace,
 			self::$endpoint,
 			array(
-				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'handle' ),
+				'methods' => WP_REST_Server::EDITABLE,
+				'callback' => array( $this, 'handle' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -47,9 +47,9 @@ class ProductWebhook {
 		}
 
 		// Accounting stock mode check
-		$accounting_stock         = get_option( 'zoho_enable_accounting_stock_status' );
+		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 		$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-		$warehouse_id             = get_option( 'zoho_warehouse_id' );
+		$warehouse_id = get_option( 'zoho_warehouse_id' );
 
 		// variable item sync
 		if ( array_key_exists( 'item', $data ) ) {
@@ -77,15 +77,15 @@ class ProductWebhook {
 		// $fd = fopen( __DIR__ . '/process_product_data.txt', 'a+' );
 
 		global $wpdb;
-		$item_id          = $item['item_id'];
-		$item_name        = $item['name'];
-		$item_price       = $item['rate'];
-		$item_sku         = $item['sku'];
+		$item_id = $item['item_id'];
+		$item_name = $item['name'];
+		$item_price = $item['rate'];
+		$item_sku = $item['sku'];
 		$item_description = $item['description'];
-		$item_status      = $item['status'] === 'active' ? 'publish' : 'draft';
-		$item_brand       = $item['brand'];
-		$custom_fields    = $item['custom_fields'];
-		$item_tags_hash   = $item['custom_field_hash'];
+		$item_status = $item['status'] === 'active' ? 'publish' : 'draft';
+		$item_brand = $item['brand'];
+		$custom_fields = $item['custom_fields'];
+		$item_tags_hash = $item['custom_field_hash'];
 		if ( isset( $item_tags_hash['cf_tags'] ) ) {
 			$item_tags = $item_tags_hash['cf_tags'];
 		} else {
@@ -123,15 +123,15 @@ class ProductWebhook {
 
 		// Item package details
 		$details = $item['package_details'];
-		$weight  = floatval( $details['weight'] );
-		$length  = floatval( $details['length'] );
-		$width   = floatval( $details['width'] );
-		$height  = floatval( $details['height'] );
+		$weight = floatval( $details['weight'] );
+		$length = floatval( $details['length'] );
+		$width = floatval( $details['width'] );
+		$height = floatval( $details['height'] );
 
 		// getting the admin user ID
 		$query = new WP_User_Query(
 			array(
-				'role'        => 'Administrator',
+				'role' => 'Administrator',
 				'count_total' => false,
 			)
 		);
@@ -146,7 +146,7 @@ class ProductWebhook {
 		if ( ! empty( $groupid ) ) {
 			// fwrite($fd, PHP_EOL . 'Inside grouped items');
 			// find parent variable product
-			$row      = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $groupid ) );
+			$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $groupid ) );
 			$group_id = $row->post_id;
 
 			if ( ! empty( $group_id ) ) {
@@ -182,7 +182,7 @@ class ProductWebhook {
 				$existing_parent_product->save();
 			}
 
-			$row_item     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $item_id ) );
+			$row_item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $item_id ) );
 			$variation_id = $row_item->post_id;
 			if ( $variation_id ) {
 				// updating existing variations
@@ -203,7 +203,7 @@ class ProductWebhook {
 					$variation->set_manage_stock( false );
 				}
 				// featured image
-				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
+				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new ImageClass();
@@ -229,19 +229,19 @@ class ProductWebhook {
 					$attribute_arr[ $item['attribute_name3'] ] = $attribute_name13;
 				}
 				$variation_data = array(
-					'attributes'    => $attribute_arr,
-					'sku'           => $item['sku'],
+					'attributes' => $attribute_arr,
+					'sku' => $item['sku'],
 					'regular_price' => $item['rate'],
-					'stock_qty'     => $item_stock,
+					'stock_qty' => $item_stock,
 				);
 
 				$variation_post = array(
-					'post_title'  => $item['name'],
-					'post_name'   => $item['name'],
+					'post_title' => $item['name'],
+					'post_name' => $item['name'],
 					'post_status' => 'publish',
 					'post_parent' => $group_id,
-					'post_type'   => 'product_variation',
-					'guid'        => get_the_permalink( $group_id ),
+					'post_type' => 'product_variation',
+					'guid' => get_the_permalink( $group_id ),
 				);
 				// Creating the product variation
 				$variation_id = wp_insert_post( $variation_post );
@@ -266,7 +266,7 @@ class ProductWebhook {
 				}
 
 				// featured image
-				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
+				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $admin_author_id );
@@ -299,7 +299,7 @@ class ProductWebhook {
 		} else {
 			// fwrite($fd, PHP_EOL . 'Inside simple items');
 			// fwrite($fd, PHP_EOL . 'Item description Simple : ' . $item_description);
-			$row_item          = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s", $item_id ) );
+			$row_item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s", $item_id ) );
 			$mapped_product_id = $row_item->post_id;
 			// simple product
 			// fwrite($fd, PHP_EOL . 'Before Match check');
@@ -328,12 +328,12 @@ class ProductWebhook {
 				// Check if Category is selected before creating simple item
 				if ( 'publish' === $item_status ) {
 					$opt_category = get_option( 'zoho_item_category' );
-					$category_id  = $item['category_id'];
+					$category_id = $item['category_id'];
 					if ( $opt_category ) {
 						$opt_category = unserialize( $opt_category );
 						if ( in_array( $category_id, $opt_category, true ) ) {
 							$product_class = new ProductClass();
-							$pdt_id        = $product_class->zi_product_to_woocommerce( $item, $item_stock );
+							$pdt_id = $product_class->zi_product_to_woocommerce( $item, $item_stock );
 						}
 					}
 				}
@@ -398,7 +398,7 @@ class ProductWebhook {
 				$simple_product->set_height( $height );
 
 				// featured image
-				$zi_disable_itemimage_sync = get_option( 'zoho_disable_itemimage_sync_status' );
+				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $pdt_id, $admin_author_id );
@@ -406,10 +406,10 @@ class ProductWebhook {
 
 				// category
 				if ( ! empty( $item_category ) && empty( $group_name ) ) {
-					$term    = get_term_by( 'name', $item_category, 'product_cat' );
+					$term = get_term_by( 'name', $item_category, 'product_cat' );
 					$term_id = $term->term_id;
 					if ( empty( $term_id ) ) {
-						$term    = wp_insert_term(
+						$term = wp_insert_term(
 							$item_category,
 							'product_cat',
 							array(
@@ -426,7 +426,7 @@ class ProductWebhook {
 					if ( ! is_wp_error( $term_id ) && isset( $term->term_id ) ) {
 						$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
 						if ( $existing_terms && count( $existing_terms ) > 0 ) {
-							$import_class  = new import_product_class();
+							$import_class = new import_product_class();
 							$is_term_exist = $import_class->zi_check_terms_exists( $existing_terms, $term_id );
 							if ( ! $is_term_exist ) {
 								$simple_product->update_meta_data( 'zi_category_id', $item['category_id'] );
@@ -448,7 +448,7 @@ class ProductWebhook {
 				// Map taxes while syncing product from zoho.
 				if ( $item['tax_id'] ) {
 					$zi_common_class = new ZI_CommonClass();
-					$woo_tax_class   = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
+					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$simple_product->set_tax_status( 'taxable' );
 					$simple_product->set_tax_class( $woo_tax_class );
 				}
@@ -471,13 +471,13 @@ class ProductWebhook {
 	 */
 	public function inventory_adjustment( $inventory_adjustment ): WP_REST_Response {
 		global $wpdb;
-		$item       = $inventory_adjustment;
+		$item = $inventory_adjustment;
 		$line_items = $item['line_items'];
 		// get first item from line items array
-		$item_id        = $line_items[0]['item_id'];
+		$item_id = $line_items[0]['item_id'];
 		$adjusted_stock = $line_items[0]['quantity_adjusted'];
 
-		$row_item          = $wpdb->get_row(
+		$row_item = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s",
 				$item_id
@@ -488,13 +488,13 @@ class ProductWebhook {
 		if ( ! empty( $mapped_product_id ) ) {
 			// stock
 			$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
-			$product       = wc_get_product( $mapped_product_id );
+			$product = wc_get_product( $mapped_product_id );
 			// Check if the product is in stock
 			if ( ! $zi_stock_sync ) {
 				if ( $product->is_in_stock() ) {
 					// Get stock quantity
 					$stock_quantity = $product->get_stock_quantity();
-					$new_stock      = $stock_quantity + $adjusted_stock;
+					$new_stock = $stock_quantity + $adjusted_stock;
 					$product->set_stock_quantity( $new_stock );
 				} else {
 					$product->set_stock_quantity( $adjusted_stock );
