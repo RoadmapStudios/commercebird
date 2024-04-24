@@ -416,6 +416,15 @@ class import_product_class {
 								// $this->import_variable_product_variations($gp_arr, $group_id);
 							}
 						}
+						$variations_check = $existing_parent_product->get_children();
+						if ( empty( $variations_check ) ) {
+							// fwrite( $fd, PHP_EOL . 'No Variations found' );
+							// Enqueue and schedule the action using WC Action Scheduler
+							$existing_schedule = as_has_scheduled_action( 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
+							if ( ! $existing_schedule ) {
+								as_schedule_single_action( time(), 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
+							}
+						}
 
 						$existing_parent_product->save();
 						// Tags update.
@@ -429,7 +438,10 @@ class import_product_class {
 							wp_set_object_terms( $group_id, $final_tags, 'product_tag' );
 						}
 						// ACF Fields
-						$this->sync_item_custom_fields( $gp_arr->custom_fields, $group_id );
+						if ( ! empty( $gp_arr->custom_fields ) ) {
+							// fwrite($fd, PHP_EOL . 'Custom Fields : ' . print_r($gp_arr->custom_fields, true));
+							$this->sync_item_custom_fields( $gp_arr->custom_fields, $group_id );
+						}
 					} else {
 						// Create the parent variable product
 						$parent_product = new WC_Product_Variable();
@@ -441,8 +453,10 @@ class import_product_class {
 
 						// fwrite($fd, PHP_EOL . 'New $group_id ' . $group_id);
 						// ACF Fields
-						$this->sync_item_custom_fields( $gp_arr->custom_fields, $group_id );
-
+						if ( ! empty( $gp_arr->custom_fields ) ) {
+							// fwrite($fd, PHP_EOL . 'Custom Fields : ' . print_r($gp_arr->custom_fields, true));
+							$this->sync_item_custom_fields( $gp_arr->custom_fields, $group_id );
+						}
 						// Create or Update the Attributes
 						$attr_created = $this->sync_attributes_of_group( $gp_arr, $group_id );
 
@@ -466,6 +480,7 @@ class import_product_class {
 				}
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
+			// End of logging.
 			// fclose( $fd );
 			return $response_msg;
 		}
@@ -478,7 +493,7 @@ class import_product_class {
 	 * @param int $group_id Parent variable Product ID.
 	 */
 	public function import_variable_product_variations() {
-		// $fd = fopen(__DIR__ . '/import_variable_product_variations.txt', 'w');
+		// $fd = fopen(__DIR__ . '/import_variable_product_variations.txt', 'a+');
 		$args        = func_get_args();
 		$zi_group_id = $args[0];
 		$group_id    = $args[1];
