@@ -358,8 +358,8 @@ class import_product_class {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
-			$page = isset( $data->page ) ? $data->page : null;
-			$category = isset( $data->category ) ? $data->category : null;
+			$page = $data['page'];
+			$category = $data['category'];
 
 			// Keep backup of current syncing page of particular category.
 			update_option( 'group_item_sync_page_cat_id_' . $category, $page );
@@ -410,14 +410,6 @@ class import_product_class {
 							// Create or Update the Attributes
 							$attr_created = $this->sync_attributes_of_group( $gp_arr, $group_id );
 							// fwrite($fd, PHP_EOL . '$attr_created ' . $attr_created);
-							if ( $attr_created ) {
-								// Enqueue and schedule the action using WC Action Scheduler
-								$existing_schedule = as_has_scheduled_action( 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
-								if ( ! $existing_schedule ) {
-									as_schedule_single_action( time(), 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
-								}
-								// $this->import_variable_product_variations($gp_arr, $group_id);
-							}
 						}
 						$variations_check = $existing_parent_product->get_children();
 						if ( empty( $variations_check ) ) {
@@ -430,16 +422,6 @@ class import_product_class {
 						}
 
 						$existing_parent_product->save();
-						// Tags update.
-						if ( isset( $gp_arr->custom_field_hash ) ) {
-							$item_tags_hash = $gp_arr->custom_field_hash;
-							$item_tags = $item_tags_hash->cf_tags;
-						}
-						// Tags
-						if ( ! empty( $item_tags ) ) {
-							$final_tags = explode( ',', $item_tags );
-							wp_set_object_terms( $group_id, $final_tags, 'product_tag' );
-						}
 						// ACF Fields
 						if ( ! empty( $gp_arr->custom_fields ) ) {
 							// fwrite($fd, PHP_EOL . 'Custom Fields : ' . print_r($gp_arr->custom_fields, true));

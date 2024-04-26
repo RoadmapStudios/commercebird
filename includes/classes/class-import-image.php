@@ -74,7 +74,7 @@ class ImageClass {
 		$attach_id = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
 		$image_exists_in_library = $this->compare_image_with_media_library( $item_image );
 		// fwrite( $fd, PHP_EOL . 'Image Exists in Library: ' . $image_exists_in_library );
-
+		$image_post_id = 0;
 		if ( $image_exists_in_library ) {
 			$attach_id = $image_exists_in_library;
 			wp_delete_file( $temp_file );

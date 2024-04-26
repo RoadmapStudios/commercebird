@@ -93,6 +93,7 @@ function zoho_ajax_call_variable_item_from_zoho() {
 	}
 
 	wp_send_json_success( array( 'message' => 'Items are being imported in background. You can visit other tabs :).' ) );
+	wp_die();
 }
 
 
@@ -142,6 +143,7 @@ function zoho_ajax_call_item_from_zoho_func() {
 		}
 	}
 	wp_send_json_success( array( 'message' => __( 'Items are being imported in background. You can visit other tabs :).', 'commercebird' ) ) );
+	wp_die();
 }
 
 /**
@@ -230,6 +232,7 @@ function zoho_contacts_import( $page = '' ) {
 			'message' => 'Syncing in background. You can visit other tabs :).',
 		)
 	);
+	wp_die();
 }
 
 /**
