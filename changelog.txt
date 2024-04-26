@@ -1,3 +1,9 @@
+Version 2.1.16 - April 26 2024
+* Fix: featured image import of Zoho Inventory product
+* Fix: group items import of Zoho Inventory
+* Fix: order status draft for Zoho Inventory
+* Fix: product description import of Zoho Inventory
+
 Version 2.1.15 - April 18 2024
 * New: product brands taxonomy
 * Fix: custom fields of products
