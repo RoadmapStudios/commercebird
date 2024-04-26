@@ -194,6 +194,15 @@ class ImageClass {
 			}
 		} else {
 			set_post_thumbnail( $post_id, $image_post_id );
+			// also delete the zoho_image folder files.
+			$upload = wp_upload_dir();
+			$folder_path = $upload['basedir'] . '/zoho_image/';
+			$file_paths = glob( $folder_path . '/*' );
+			foreach ( $file_paths as $file_path ) {
+				if ( is_file( $file_path ) ) {
+					wp_delete_file( $file_path );
+				}
+			}
 			return;
 		}
 	}
