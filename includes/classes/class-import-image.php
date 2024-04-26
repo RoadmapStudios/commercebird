@@ -25,7 +25,7 @@ class ImageClass {
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
-				'OID'    => get_option( 'zoho_inventory_oid' ),
+				'OID' => get_option( 'zoho_inventory_oid' ),
 				'APIURL' => get_option( 'zoho_inventory_url' ),
 			),
 		);
@@ -37,25 +37,22 @@ class ImageClass {
 	 * @param [string] $item_id - Item id for image details.
 	 * @param [string] $item_name - Item name.
 	 * @param [string] $post_id - Post id of image.
-	 * @param [string] $image_name - Image name.
-	 * @param [string] $author_id - Author id
+	 * @param [string] $item_image - Image name.
 	 * @return void
 	 */
-	public function args_attach_image( $item_id, $item_name, $post_id, $author_id ) {
-		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+');
+	public function args_attach_image( $item_id, $item_name, $post_id, $item_image ) {
+		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+' );
 
 		global $wpdb;
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$url                = $zoho_inventory_url . 'api/v1/items/' . $item_id . '/image';
-		$url               .= '?organization_id=' . $zoho_inventory_oid;
+		$url = $zoho_inventory_url . 'api/v1/items/' . $item_id . '/image';
+		$url .= '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$image_url                = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url, $item_id );
+		$image_url = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url );
 		// fwrite($fd, PHP_EOL . 'Sync init');
-		// $temp_file = download_url( $image_url );
-		$temp_file = $image_url;
-
+		$temp_file = download_url( $image_url );
 		// Get the MIME type of the downloaded image
 		$file_info = getimagesize( $temp_file );
 		// fwrite( $fd, PHP_EOL . 'File Info: ' . print_r( $file_info, true ) );
@@ -63,49 +60,53 @@ class ImageClass {
 		if ( $file_info && isset( $file_info['mime'] ) ) {
 			$file_type = $file_info['mime'];
 		} else {
-			// If the MIME type cannot be determined, handle the error accordingly
-			// For example, you can log an error message and return from the function
 			return;
 		}
 		// fwrite($fd, PHP_EOL . 'File Type: ' . $file_type);
 		$img_extension = $this->get_extension( $file_type );
 		if ( $img_extension ) {
-			$image_name        = '' . $item_id . '' . $img_extension;
+			$image_name = '' . $item_id . '' . $img_extension;
 			$image_name_scaled = '' . $item_id . '-scaled' . $img_extension;
 		} else {
 			return;
 		}
 
-		$attach_id               = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
-		$image_exists_in_library = $this->compare_image_with_media_library( $temp_file );
+		$attach_id = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
+		$image_exists_in_library = $this->compare_image_with_media_library( $item_image );
+		// fwrite( $fd, PHP_EOL . 'Image Exists in Library: ' . $image_exists_in_library );
 
 		if ( $image_exists_in_library ) {
 			$attach_id = $image_exists_in_library;
 			wp_delete_file( $temp_file );
+			wp_delete_file( $image_url );
 		} else {
-			$image_post_id        = $wpdb->get_var(
+			$image_post_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' and meta_value LIKE %s",
 					'%' . $wpdb->esc_like( $image_name ) . '%'
 				)
 			);
 			$image_post_scaled_id = intval( $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' and meta_value LIKE %s", '%' . $image_name_scaled . '%' ) ) );
-			$image_post_id        = ( 0 === $image_post_id ) ? $image_post_scaled_id : $image_post_id;
+			// make $image_post_id = 0 if it is not found in the media library via image_post_id or image_post_scaled_id
+			if ( ! $image_post_id && ! $image_post_scaled_id ) {
+				$image_post_id = 0;
+			} else {
+				$image_post_id = $image_post_id ? $image_post_id : $image_post_scaled_id;
+			}
 		}
-		// fwrite($fd,PHP_EOL.'$image_post_id : '.$image_post_id);
+		// fwrite( $fd, PHP_EOL . '$image_post_id : ' . $image_post_id );
 		// fwrite($fd, PHP_EOL . '$image_post_id: ' . $image_post_id);
-		// fclose( $fd );
 
 		if ( 0 === $image_post_id ) {
 			if ( ! is_wp_error( $temp_file ) ) {
-				// fwrite($fd, PHP_EOL . 'Inside If: ');
+				// fwrite( $fd, PHP_EOL . 'Inside new image: ' . $image_post_id );
 				// Set variables for storage, fix file filename for query strings.
 				$file = array(
-					'name'     => $image_name,
-					'type'     => $file_type,
+					'name' => $image_name,
+					'type' => $file_type,
 					'tmp_name' => $temp_file,
-					'error'    => 0,
-					'size'     => filesize( $temp_file ),
+					'error' => 0,
+					'size' => filesize( $temp_file ),
 				);
 
 				$overrides = array(
@@ -124,16 +125,30 @@ class ImageClass {
 					return;
 				} else {
 					// fwrite($fd, PHP_EOL . 'Inside If: ');
-					$file_dir  = $results['file']; // Full path to the file.
-					$file_url  = $results['url']; // URL to the file in the uploads dir.
+					$file_dir = $results['file']; // Full path to the file.
+					$file_url = $results['url']; // URL to the file in the uploads dir.
 					$file_type = $results['type']; // MIME type of the file.
 
-					$attachment    = array( // Set up images post data.
-						'guid'           => $file_url,
+					// getting the admin user ID
+					$query = new WP_User_Query(
+						array(
+							'role' => 'Administrator',
+							'count_total' => false,
+						)
+					);
+					$users = $query->get_results();
+					if ( $users ) {
+						$admin_author_id = $users[0]->ID;
+					} else {
+						$admin_author_id = '1';
+					}
+
+					$attachment = array( // Set up images post data.
+						'guid' => $file_url,
 						'post_mime_type' => $file_type,
-						'post_title'     => $item_name,
-						'post_author'    => $author_id,
-						'post_content'   => '',
+						'post_title' => $item_image,
+						'post_author' => $admin_author_id,
+						'post_content' => '',
 					);
 					$attachment_id = wp_insert_attachment( $attachment, $file_dir, $post_id );
 					// fwrite($fd, PHP_EOL . 'Insert Attachment: ' . $attachment_id);
@@ -150,7 +165,7 @@ class ImageClass {
 						wp_update_image_subsizes( $attachment_id );
 
 						// Remove all files from zoho folder when done
-						$upload      = wp_upload_dir();
+						$upload = wp_upload_dir();
 						$folder_path = $upload['basedir'];
 						// Get list of file paths in the folder
 						$file_paths = glob( $folder_path . '*' );
@@ -163,7 +178,14 @@ class ImageClass {
 								}
 							}
 						}
-						wp_delete_file( $temp_file );
+						// also delete the zoho_image folder files.
+						$folder_path = $folder_path . '/zoho_image/';
+						$file_paths  = glob( $folder_path . '/*' );
+						foreach ( $file_paths as $file_path ) {
+							if ( is_file( $file_path ) ) {
+								wp_delete_file( $file_path );
+							}
+						}
 						return;
 					}
 				}
@@ -179,34 +201,28 @@ class ImageClass {
 	/**
 	 * Compare the image with existing media library images based on titles.
 	 *
-	 * @param string $image_path The path to the image to be checked.
+	 * @param string $item_image The name of the image.
 	 * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
 	 * @since 1.0.0
 	 */
-	protected function compare_image_with_media_library( $image_path ) {
-		// Get the title of the image you want to check
-		$compare_image_title = sanitize_file_name( pathinfo( $image_path, PATHINFO_FILENAME ) );
+	protected function compare_image_with_media_library( $item_image ) {
 
-		if ( ! empty( $compare_image_title ) ) {
-			$args                 = array(
-				'post_type'      => 'attachment',
+		if ( ! empty( $item_image ) ) {
+			$args = array(
+				'post_type' => 'attachment',
 				'post_mime_type' => 'image',
 				'posts_per_page' => -1,
 			);
 			$media_library_images = get_posts( $args );
-
 			foreach ( $media_library_images as $media_image ) {
 				// Get the title of the existing image
-				$existing_image_path  = get_attached_file( $media_image->ID );
-				$existing_image_title = get_the_title( pathinfo( $existing_image_path )['filename'] );
-
-				// Compare the titles
-				if ( $compare_image_title === $existing_image_title ) {
+				$existing_image_title = get_the_title( $media_image->ID );
+				// check if the existing image title contains the item image name
+				if ( strpos( $existing_image_title, $item_image ) !== false ) {
 					return $media_image->ID; // Return the ID of the existing image
 				}
 			}
 		}
-
 		// If no match is found in the loop, return false
 		return false;
 	}
@@ -214,8 +230,8 @@ class ImageClass {
 	/**
 	 * Get image file extension from mimetype
 	 *
-	 * @param String $imagetype - Image mime type.
-	 * @return extension or false
+	 * @param string $imagetype - Image mime type.
+	 * @return filetype or false
 	 */
 	public function get_extension( $imagetype ) {
 		if ( empty( $imagetype ) ) {

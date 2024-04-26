@@ -128,20 +128,6 @@ class ProductWebhook {
 		$width = floatval( $details['width'] );
 		$height = floatval( $details['height'] );
 
-		// getting the admin user ID
-		$query = new WP_User_Query(
-			array(
-				'role' => 'Administrator',
-				'count_total' => false,
-			)
-		);
-		$users = $query->get_results();
-		if ( $users ) {
-			$admin_author_id = $users[0]->ID;
-		} else {
-			$admin_author_id = '1';
-		}
-
 		// fwrite($fd, PHP_EOL . '$groupid : ' . $groupid);
 		if ( ! empty( $groupid ) ) {
 			// fwrite($fd, PHP_EOL . 'Inside grouped items');
@@ -207,7 +193,7 @@ class ProductWebhook {
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $admin_author_id );
+					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
 				}
 
 				$variation->save(); // Save the data
@@ -269,7 +255,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $admin_author_id );
+					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
 				}
 
 				// Stock
@@ -401,7 +387,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $pdt_id, $admin_author_id );
+					$image_class->args_attach_image( $item_id, $item_name, $pdt_id, $item_image );
 				}
 
 				// category

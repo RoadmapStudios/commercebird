@@ -87,12 +87,6 @@ class import_product_class {
 							}
 						}
 
-						$zi_disable_image_sync = get_option( 'zoho_disable_image_sync_status' );
-						if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
-							$image_class = new ImageClass();
-							$image_class->args_attach_image( $arr->item_id, $arr->name, $pdt_id, $admin_author_id );
-						}
-
 						$details = $arr->package_details;
 						$product->set_weight( floatval( $details->weight ) );
 						$product->set_length( floatval( $details->length ) );
@@ -176,8 +170,8 @@ class import_product_class {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
-			$page = isset( $data->page ) ? $data->page : null;
-			$category = isset( $data->category ) ? $data->category : null;
+			$page = $data['page'];
+			$category = $data['category'];
 		} else {
 			return;
 		}
@@ -227,10 +221,11 @@ class import_product_class {
 					continue;
 				}
 
-				// Get the post id
-				$pdt_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $arr->item_id ) );
+				// Get the post id by doing a meta query on the postmeta table.
+				$pdt = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $arr->item_id ) );
+				$pdt_id = $pdt ? $pdt->post_id : '';
 
-				if ( empty( $pdt_id ) && $allow_to_import == true ) {
+				if ( empty( $pdt_id ) && $allow_to_import === true ) {
 					$product_class = new ProductClass();
 					$item_array = json_decode( wp_json_encode( $arr ), true );
 					$pdt_id = $product_class->zi_product_to_woocommerce( $item_array, '', '' );
@@ -254,8 +249,6 @@ class import_product_class {
 							$term_id = $term['term_id'];
 						}
 						if ( $term_id ) {
-							// update_post_meta($pdt_id, 'zi_category_id', $category);
-							// wp_set_object_terms($pdt_id, $term_id, 'product_cat');
 							$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
 							if ( $existing_terms && count( $existing_terms ) > 0 ) {
 								$is_terms_exist = $this->zi_check_terms_exists( $existing_terms, $term_id );
@@ -283,6 +276,13 @@ class import_product_class {
 							wp_set_object_terms( $pdt_id, $arr->brand, 'product_brands' );
 						}
 					}
+					// Sync Featured Image if not disabled.
+					$zi_disable_image_sync = get_option( 'zoho_disable_image_sync_status' );
+					if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
+						$image_class = new ImageClass();
+						$image_class->args_attach_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name );
+					}
+
 					$item_ids[] = $arr->item_id;
 				} // end of wpdb post_id check
 			}
@@ -294,9 +294,12 @@ class import_product_class {
 
 				if ( $json->page_context['has_more_page'] ) {
 					$data = (object) array();
-					$data->page = $page++;
+					$data->page = ++$page;
 					$data->category = $category;
-					$this->sync_item_recursively( $data );
+					$existing_schedule = as_has_scheduled_action( 'import_simple_items_cron', array( $data ) );
+					if ( ! $existing_schedule ) {
+						as_schedule_single_action( time(), 'import_simple_items_cron', array( $data ) );
+					}
 				} else {
 					// If there is no more page to sync last backup page will be starting from 1.
 					// This we have used because in shared hosting only 1000 records are syncing.
@@ -639,7 +642,7 @@ class import_product_class {
 					// Featured Image of variation
 					if ( ! empty( $variation_data['featured_image'] ) ) {
 						$image_class = new ImageClass();
-						$image_class->args_attach_image( $item->item_id, $item->name, $variation_id, $admin_author_id );
+						$image_class->args_attach_image( $item->item_id, $item->name, $variation_id, $item->image_name );
 					}
 
 					// Sync the data of the variation in the parent variable product (TODO: this is causing errors in the logs)
@@ -1443,7 +1446,7 @@ class import_product_class {
 					if ( $key === 'image_document_id' ) {
 						if ( ! empty( $com_prod_id ) && ! empty( $value ) ) {
 							$image_class = new ImageClass();
-							$image_class->args_attach_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $admin_author_id );
+							$image_class->args_attach_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name );
 						}
 					}
 					if ( $key === 'category_name' ) {

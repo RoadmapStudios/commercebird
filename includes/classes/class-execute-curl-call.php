@@ -153,10 +153,10 @@ class ExecutecallClass {
 	/**
 	 *
 	 * Get Call Zoho Image
-	 * @param mixed $url
+	 * @param mixed $url - URL of the image.
 	 * @return string
 	 */
-	public function ExecuteCurlCallImageGet( $url, $item_id ) {
+	public function ExecuteCurlCallImageGet( $url ) {
 		// $fd = fopen( __DIR__ . '/ExecuteCurlCallImageGet.txt', 'w' );
 
 		global $wp_filesystem;
@@ -197,8 +197,8 @@ class ExecutecallClass {
 			$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
 
 			// Generate a unique image name
-			// $img        = 'image_' . wp_rand();
-			$upload_dir = $absolute_upload_path . '/' . $item_id;
+			$img        = 'image_' . wp_rand();
+			$upload_dir = $absolute_upload_path . '/' . $img;
 
 			// remove the file if it exists
 			if ( file_exists( $upload_dir ) ) {
@@ -207,13 +207,13 @@ class ExecutecallClass {
 
 			// Create the directory if it doesn't exist
 			if ( ! is_dir( $absolute_upload_path ) ) {
-				$wp_filesystem->wp_mkdir_p( $absolute_upload_path );
+				wp_mkdir_p( $absolute_upload_path );
 			}
 			// Save the image file
 			$wp_filesystem->put_contents( $upload_dir, $body );
 
 			// Use trailingslashit to make sure the URL ends with a single slash
-			return trailingslashit( $url_upload_path ) . $item_id;
+			return trailingslashit( $url_upload_path ) . $img;
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
