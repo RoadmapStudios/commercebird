@@ -13,6 +13,7 @@ import Logo from "@/components/logo.vue";
 import { useExactOnlineStore } from "@/stores/exactOnline";
 import { backendAction } from "@/keys";
 import { useStorage } from "@/composable/storage";
+import Swal from "sweetalert2";
 
 const showMobileMenu = ref(false);
 const loader = useLoadingStore();
@@ -26,6 +27,18 @@ const clearCache = () => {
   useStorage().removeAll();
   loader.clearLoading("clear_cache");
 };
+
+const checkSubscription = () => {
+  console.log("Cliecked");
+  
+  Swal.fire({
+            title: 'Error!',
+            text: 'Integration not connected',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+          })
+};
+
 </script>
 <template>
   <nav class="bg-white shadow">
@@ -58,7 +71,7 @@ const clearCache = () => {
               'border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700':
                 router.currentRoute.value.path !== '/zoho-inventory',
             }" class="inline-flex items-center gap-2 px-1 pt-1 text-sm font-medium border-b-2 focus:ring-0"
-              to="/zoho-inventory">
+              to="/zoho-inventory" @click="checkSubscription">
               Zoho Inventory
               <span v-if="zoho.isConnected" class="relative flex w-3 h-3">
                 <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-lime-400 animate-ping"></span>
@@ -75,7 +88,7 @@ const clearCache = () => {
               'border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700':
                 router.currentRoute.value.path !== '/zoho-crm',
             }" class="inline-flex items-center gap-2 px-1 pt-1 text-sm font-medium border-b-2 focus:ring-0"
-              to="/zoho-crm">
+              to="/zoho-crm" @click.prevent="checkSubscription">
               Zoho CRM
 
             </router-link>
@@ -85,7 +98,7 @@ const clearCache = () => {
               'border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700':
                 router.currentRoute.value.path !== '/exact-online',
             }" class="inline-flex items-center gap-2 px-1 pt-1 text-sm font-medium border-b-2 focus:ring-0"
-              to="/exact-online">
+              to="/exact-online" @click="checkSubscription">
               Exact Online
             </router-link>
           </div>
@@ -156,7 +169,7 @@ const clearCache = () => {
           'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700':
             router.currentRoute.value.path !== '/zoho-inventory',
         }" class="block p-2 text-base font-medium border-l-4" to="/zoho-inventory">
-          <span class="flex items-baseline justify-between gap-2">
+          <span class="flex items-baseline justify-between gap-2" @click="checkSubscription">
             Zoho Inventory
             <span v-if="zoho.isConnected" class="relative flex w-3 h-3">
               <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-lime-400 animate-ping"></span>
@@ -174,7 +187,7 @@ const clearCache = () => {
           'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700':
             router.currentRoute.value.path !== '/exact-online',
         }" class="block p-2 text-base font-medium border-l-4" to="/exact-online">
-          <span class="flex items-baseline justify-between gap-2">
+          <span class="flex items-baseline justify-between gap-2" @click="checkSubscription">
             Exact Online
           </span>
         </router-link>

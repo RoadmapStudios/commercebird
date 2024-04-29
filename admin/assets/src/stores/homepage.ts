@@ -1,12 +1,13 @@
-import {acceptHMRUpdate, defineStore} from 'pinia'
-import type {Ref} from 'vue'
-import {reactive, ref, watch} from 'vue'
-import {useLoadingStore} from './loading'
-import type {Changelog, Subscription} from '@/types'
-import {useStorage} from "@/composable/storage";
-import {backendAction, storeKey} from "@/keys";
-import {fetchData, resetData, sendData} from "@/composable/http";
-import {notify} from "@/composable/helpers";
+import { acceptHMRUpdate, defineStore } from 'pinia'
+import type { Ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
+import { useLoadingStore } from './loading'
+import type { Changelog, Subscription } from '@/types'
+import { useStorage } from "@/composable/storage";
+import { backendAction, storeKey } from "@/keys";
+import { fetchData, resetData, sendData } from "@/composable/http";
+import { notify } from "@/composable/helpers";
+import Swal from 'sweetalert2';
 
 export const useHomepageStore = defineStore('homepage', () => {
     const storage = useStorage()
