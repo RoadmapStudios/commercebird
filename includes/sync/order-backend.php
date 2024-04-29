@@ -20,37 +20,39 @@ use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableControlle
 /**
  * Loading admin order sync script.
  */
-function load_script() {
+function cmbird_load_script() {
 	if ( is_admin() ) {
 		$screen = get_current_screen();
 		if ( $screen->id === 'product' || $screen->id === 'shop_order' || $screen->id === 'woocommerce_page_wc-orders' ) {
 			wp_enqueue_script( 'zoho-admin-order-ajax-script', RMS_DIR_URL . 'admin/js/zoho_admin_order_ajax.js', array( 'jquery' ), RMS_VERSION, true );
-			wp_register_script( 'sweatAlert', 'https://unpkg.com/sweetalert/dist/sweetalert.min.js', array( 'jquery' ), RMS_VERSION, true );
+			wp_register_script( 'sweatAlert', RMS_DIR_URL . 'admin/js/sweetalert.min.js', array( 'jquery' ), RMS_VERSION, true );
 			wp_enqueue_script( 'sweatAlert' );
 		}
 	}
 }
-add_action( 'admin_enqueue_scripts', 'load_script' );
+add_action( 'admin_enqueue_scripts', 'cmbird_load_script' );
 
-function zoho_admin_metabox() {
+function cmbird_zoho_admin_metabox() {
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return;
 	}
 	$screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
-		? wc_get_page_screen_id( 'shop-order' )
+		? 'woocommerce_page_wc-orders'
 		: 'shop_order';
 
 	add_meta_box(
 		'zoho-admin-sync',
 		'Sync Order to Zoho',
-		'zoho_admin_metabox_callback',
+		'cmbird_admin_metabox_callback',
 		$screen,
 		'side',
 		'high'
 	);
 }
-function zoho_admin_metabox_callback( $post_or_order_object ) {
+add_action( 'add_meta_boxes', 'cmbird_zoho_admin_metabox' );
+
+function cmbird_admin_metabox_callback( $post_or_order_object ) {
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return;
@@ -72,20 +74,19 @@ function zoho_admin_metabox_callback( $post_or_order_object ) {
 		echo '<p style="color:red;">Please activate the license to sync this order</p>';
 	}
 }
-add_action( 'add_meta_boxes', 'zoho_admin_metabox' );
 
 /**
  * Bulk-action to sync orders from WooCommerce to Zoho
  * @param: $bulk_array
  */
-add_filter( 'bulk_actions-woocommerce_page_wc-orders', 'zi_sync_all_orders_to_zoho', 10, 1 );
-function zi_sync_all_orders_to_zoho( $actions ) {
+add_filter( 'bulk_actions-woocommerce_page_wc-orders', 'cmbird_zi_sync_all_orders_to_zoho', 10, 1 );
+function cmbird_zi_sync_all_orders_to_zoho( $actions ) {
 	$actions['sync_order_to_zoho'] = __( 'Sync to Zoho', 'woocommerce' );
 	return $actions;
 }
 
-add_filter( 'handle_bulk_actions-woocommerce_page_wc-orders', 'zi_sync_all_orders_to_zoho_handler', 10, 3 );
-function zi_sync_all_orders_to_zoho_handler( $redirect, $action, $object_ids ) {
+add_filter( 'handle_bulk_actions-woocommerce_page_wc-orders', 'cmbird_zi_sync_all_orders_to_zoho_handler', 10, 3 );
+function cmbird_zi_sync_all_orders_to_zoho_handler( $redirect, $action, $object_ids ) {
 	if ( 'sync_order_to_zoho' !== $action ) {
 		return $redirect; // Exit
 	}
@@ -108,8 +109,8 @@ function zi_sync_all_orders_to_zoho_handler( $redirect, $action, $object_ids ) {
 }
 
 // output the message of bulk action
-add_action( 'admin_notices', 'sync_order_to_zoho_notices' );
-function sync_order_to_zoho_notices() {
+add_action( 'admin_notices', 'cmbird_sync_order_to_zoho_notices' );
+function cmbird_sync_order_to_zoho_notices() {
 	if ( ! empty( $_REQUEST['sync_order_to_zoho_done'] ) ) {
 		echo '<div id="message" class="updated notice is-dismissible">
 			<p>Orders Synced. If order is not synced, please click on Edit Order to see the API response.</p>
@@ -125,8 +126,8 @@ function sync_order_to_zoho_notices() {
  * @param: $id
  * @return: $payload
  */
-add_filter( 'woocommerce_webhook_payload', 'cm_modify_order_webhook_payload', 10, 4 );
-function cm_modify_order_webhook_payload( $payload, $resource, $resource_id, $id ) {
+add_filter( 'woocommerce_webhook_payload', 'cmbird_modify_order_webhook_payload', 10, 4 );
+function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id, $id ) {
 	$webhook = wc_get_webhook( $id );
 	if ( $webhook && $webhook->get_name() !== 'CommerceBird Orders' ) {
 		return $payload;
@@ -166,4 +167,36 @@ function cm_modify_order_webhook_payload( $payload, $resource, $resource_id, $id
 	}
 
 	return $payload;
+}
+
+/**
+ * Prevent Webhook delivery execution when order gets updated too often per minute
+ * @param bool $should_deliver
+ * @param WC_Webhook $webhook
+ * @param array $arg
+ * @return bool
+ */
+add_filter( 'woocommerce_webhook_should_deliver', 'cmbird_skip_webhook_delivery', 10, 3 );
+function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
+
+	$webhook_name_to_exclude = 'CommerceBird Orders';
+	if ( $webhook->get_name() === $webhook_name_to_exclude ) {
+		$order = wc_get_order( $arg );
+		// check if order contains meta eo_order_id
+		if ( $order->get_meta( 'eo_order_id' ) ) {
+			$should_deliver = false;
+		}
+		// check if order status is failed, pending, on-hold or cancelled
+		$order_status = $order->get_status();
+		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
+			$should_deliver = false;
+		}
+		$webhook_status = $webhook->get_status();
+		// also return false if webhoook status is disabled or paused
+		if ( $webhook_status === 'disabled' || $webhook_status === 'paused' ) {
+			$should_deliver = false;
+		}
+	}
+
+	return $should_deliver; // Continue with normal webhook delivery
 }

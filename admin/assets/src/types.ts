@@ -1,6 +1,9 @@
 import type {FunctionalComponent} from "vue";
 
 export type PluginObject = {
+    wcb2b_groups: any;
+    cosw_enabled: string;
+    api_token: any;
     security_token: string;
     redirect_uri: string;
     url: string;
@@ -9,7 +12,6 @@ export type PluginObject = {
         'Order Create': string,
         'Shipping Status': string
     }
-    wc_tax_enabled: string;
     roles: {
         editor: string;
         administrator: string;
@@ -43,13 +45,6 @@ export type ConnectionSettings = {
     account_domain: string;
 }
 
-
-export type TaxSettings = {
-    decimalTax: boolean;
-    selectedTaxRates: any[];
-    selectedVatExempt: string;
-}
-
 export type ProductSettings = {
     item_from_zoho: boolean;
     disable_stock_sync: boolean;
@@ -72,7 +67,6 @@ export type Intervals = {
 }
 
 export type OrderSettings = {
-    package_sync: boolean;
     disable_sync: boolean;
     enable_auto_number: boolean;
     enable_order_status: boolean;
@@ -110,16 +104,13 @@ export type StoreKey = {
     zohoInventory: {
         connected: string;
         connect: string;
-        tax: string;
         product: string;
         cron: string;
         order: string;
         contact: string;
         price: string;
         fields: string;
-        wc_tax: string;
         zoho_categories: string;
-        zoho_tax: string;
         zoho_warehouses: string;
     };
 
@@ -127,6 +118,13 @@ export type StoreKey = {
         connect: string;
         order: string;
         fields: string;
+        refresh_zoho_fields: string;
+        sales_orders_fields: string;
+        contacts_fields: string;
+        products_fields: string;
+        sales_orders_custom_fields: string;
+        contacts_custom_fields: string;
+        products_custom_fields: string;
     };
 }
 
@@ -147,7 +145,6 @@ export type BackendAction = {
 
     zohoInventory: {
         connect: { get: string; save: string; reset: string; };
-        tax: { get: string; save: string; reset: string; };
         product: { get: string; save: string; reset: string; };
         cron: { get: string; save: string; reset: string; };
         order: { get: string; save: string; reset: string; };
@@ -155,10 +152,8 @@ export type BackendAction = {
         price: { get: string; save: string; reset: string; };
         field: { get: string; save: string; reset: string; };
         custom_fields: string;
-        wc_taxes: string;
         zoho_categories: string;
         zoho_prices: string;
-        zoho_taxes: string;
         zoho_warehouses: string;
         connection: string;
     };
@@ -169,11 +164,13 @@ export type BackendAction = {
         field: { get: string; save: string; reset: string; };
         custom_fields: string;
         refresh_zcrm_fields: string;
-        zcrm_orders_fields:string;
-        zcrm_products_fields:string;
-        zcrm_contacts_fields:string;
+        zcrm_fields: string;
         connection: string;
     };
+
+    acf_fields:{
+        get_acf_fields: string;
+    }
 }
 
 
@@ -183,40 +180,6 @@ export type UseStorage = {
     remove: (key: string) => void;
     removeAll: () => void;
     hasNew: (key: string, data: Object) => boolean;
-}
-
-export type WcTax = {
-    tax_rate_id: string;
-    tax_rate_country: string;
-    tax_rate_state: string;
-    tax_rate: string;
-    tax_rate_name: string;
-    tax_rate_priority: string;
-    tax_rate_compound: string;
-    tax_rate_shipping: string;
-    tax_rate_order: number;
-    tax_rate_class: string;
-    postcode_count: number;
-    city_count: number;
-    id: number;
-}
-
-export type ZohoTax = {
-    tax_id: string;
-    tax_name: string;
-    tax_percentage: number;
-    tax_type: string;
-    tax_specific_type: string;
-    output_tax_account_name: string;
-    purchase_tax_account_name: string;
-    tax_account_id: string;
-    purchase_tax_account_id: string;
-    is_inactive: boolean;
-    is_value_added: boolean;
-    is_default_tax: boolean;
-    is_editable: boolean;
-    last_modified_time: string;
-    status: string;
 }
 
 

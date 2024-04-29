@@ -44,7 +44,7 @@ const links = {
   knowledge: {
     title: "Knowledge Base",
     subtitle: "Find answers to your questions",
-    link: "https://support.commercebird.com/portal/en/kb/setup",
+    link: "https://support.commercebird.com/portal/en/kb",
     icon: BookOpenIcon,
     button: "Open Knowledge Base",
   },

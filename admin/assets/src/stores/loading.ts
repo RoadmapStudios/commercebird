@@ -41,12 +41,12 @@ export const useLoadingStore = defineStore('loading', () => {
      * @param {string} action - The action associated with the data loading.
      * @return {Promise<any>} The loaded data from storage.
      */
-    const loadData = async (storeKey: string, action: string) => {
+    const loadData = async (storeKey: string, action: string,params:any|null=null) => {
         let instore = useStorage().get(storeKey);
         if (!instore || !instore.organization_id) {
             if (isLoading(action)) return;
             setLoading(action);
-            instore = await fetchData(action, storeKey);
+            instore = await fetchData(action, storeKey,params);
             clearLoading(action);
         }
 

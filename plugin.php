@@ -3,7 +3,7 @@
  * Plugin Name: CommerceBird
  * Plugin URI:  https://commercebird.com
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
- * Version: 2.1.10
+ * Version: 2.1.16
  * Requires PHP: 7.4
  *
  * License: GNU General Public License v3.0
@@ -16,7 +16,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.html GPL-3.0-or-later
  *
  * WC requires at least: 8.0.0
- * WC tested up to: 8.7.0
+ * WC tested up to: 8.8.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +26,7 @@ if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
 	define( 'RMS_PLUGIN_NAME', 'CommerceBird' );
 }
 if ( ! defined( 'RMS_VERSION' ) ) {
-	define( 'RMS_VERSION', '2.1.10' );
+	define( 'RMS_VERSION', '2.1.16' );
 }
 if ( ! defined( 'RMS_DIR_PATH' ) ) {
 	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
@@ -41,7 +41,7 @@ if ( ! defined( 'RMS_MENU_SLUG' ) ) {
 	define( 'RMS_MENU_SLUG', 'commercebird-app' );
 }
 if ( ! defined( 'RMS_DOCUMENTATION_URL' ) ) {
-	define( 'RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb/' );
+	define( 'RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb' );
 }
 if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
 	define( 'RMS_PLUGIN_URL', 'https://commercebird.com/product/commercebird/' );
@@ -49,7 +49,7 @@ if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
 
 require_once RMS_DIR_PATH . 'includes/woo-functions.php';
 require_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
-require_once RMS_DIR_PATH . 'includes/sync/order-frontend.php';
+require_once RMS_DIR_PATH . 'includes/taxonomies/taxonomy-product_brands.php';
 require_once RMS_DIR_PATH . 'data-sync.php';
 require_once RMS_DIR_PATH . 'includes/wc-am-client.php';
 require_once RMS_DIR_PATH . 'includes/tgm-plugin-activation.php';
@@ -61,6 +61,7 @@ use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
 use RMS\Admin\Actions\Sync\ExactOnlineSync;
 use RMS\Admin\Actions\Ajax\ZohoInventoryAjax;
 use RMS\Admin\Actions\Ajax\ZohoCRMAjax;
+use RMS\Admin\Actions\Ajax\AcfAjax;
 use RMS\Admin\Cors;
 use RMS\Admin\Template;
 use RMS\API\ProductWebhook;
@@ -87,6 +88,11 @@ function woozo_check_plugin_requirements() {
 				'back_link' => true,
 			)
 		);
+	}
+	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	// remove option zoho_inventory_access_token if it contains only one character
+	if ( $zoho_inventory_access_token && strlen( $zoho_inventory_access_token ) === 1 ) {
+		delete_option( 'zoho_inventory_access_token' );
 	}
 }
 
@@ -122,7 +128,7 @@ register_activation_hook(__FILE__, 'zi_create_order_log_table');
 register_activation_hook( __FILE__, 'zi_custom_zoho_cron_activate' );
 
 function zi_custom_zoho_cron_activate() {
-	$interval = get_option( 'zi_cron_interval', 'daily' );
+	$interval     = get_option( 'zi_cron_interval', 'daily' );
 	$access_token = get_option( 'zoho_inventory_access_token' );
 	if ( 'none' !== $interval && ! empty( $access_token ) ) {
 		if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
@@ -235,7 +241,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 /**
  * Hooks for WC Action Scheduler to import or export products
  */
-$import_products  = new ImportProductClass();
+$import_products  = new import_product_class();
 $import_pricelist = new ImportPricelistClass();
 $product_class    = new ProductClass();
 $order_class      = new Sync_Order_Class();
@@ -258,11 +264,13 @@ if ( is_admin() ) {
 	Template::instance();
 	ZohoInventoryAjax::instance();
 	ZohoCRMAjax::instance();
+	AcfAjax::instance();
 	Cors::instance();
 }
 ExactOnlineAjax::instance();
+// CM_Webhook_Modify::instance();
 // Load Media Library Endpoints
-new WooCommerce_Media_API_By_commercebird();
+new CommerceBird_WC_API();
 // Load License Key library
 if ( class_exists( 'commercebird_AM_Client' ) ) {
 	$wcam_lib_custom_menu = array(

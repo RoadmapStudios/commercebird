@@ -93,6 +93,7 @@ function zoho_ajax_call_variable_item_from_zoho() {
 	}
 
 	wp_send_json_success( array( 'message' => 'Items are being imported in background. You can visit other tabs :).' ) );
+	wp_die();
 }
 
 
@@ -142,6 +143,7 @@ function zoho_ajax_call_item_from_zoho_func() {
 		}
 	}
 	wp_send_json_success( array( 'message' => __( 'Items are being imported in background. You can visit other tabs :).', 'commercebird' ) ) );
+	wp_die();
 }
 
 /**
@@ -230,6 +232,7 @@ function zoho_contacts_import( $page = '' ) {
 			'message' => 'Syncing in background. You can visit other tabs :).',
 		)
 	);
+	wp_die();
 }
 
 /**
@@ -250,7 +253,7 @@ function zi_sync_composite_item_from_zoho() {
 
 	$item_add_resp = array();
 	foreach ( $opt_category as $category_id ) {
-		$product_class = new ImportProductClass();
+		$product_class = new import_product_class();
 		$response      = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id, 'sync' );
 		$item_add_resp = array_merge( $item_add_resp, $response );
 	}
@@ -464,7 +467,7 @@ function ajax_category_sync_call() {
 
 		if ( $category['parent_category_id'] == '-1' ) {
 
-			if ( $category['category_id'] != '-1' && $category['category_id'] > 0 ) {
+			if ( $category['category_id'] !== '-1' && $category['category_id'] > 0 ) {
 				$term = get_term_by( 'name', $category['name'], 'product_cat' );
 				if ( ! empty( $term ) ) {
 					$term_id = $term->term_id;

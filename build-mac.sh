@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
+PLUGIN_SLUG="$(basename $PWD)"
+PROJECT_PATH=$(pwd)
+BUILD_PATH="${PROJECT_PATH}/build"
+DEST_PATH="$BUILD_PATH/$PLUGIN_SLUG"
 
 # Function to display progress messages
 progress_message() {
@@ -16,10 +20,10 @@ progress_message() {
 set -e
 
 # prepare place for build.
-plugin_name="$(basename $PWD)"
 progress_message "Preparing build directory..."
-rm -rf ./"$plugin_name" ./"$plugin_name".zip
-mkdir ./"$plugin_name"
+rm -rf "$BUILD_PATH"
+rm -rf "$PLUGIN_SLUG".zip
+mkdir -p "$DEST_PATH"
 
 # build assets
 progress_message "Building admin template..."
@@ -27,31 +31,27 @@ npm --prefix ./admin/assets/ run build-only
 
 # copy all files for production
 progress_message "Copying files for production..."
-rsync -a --exclude "$plugin_name" --exclude "$plugin_name".zip --exclude node_modules --exclude vendor --exclude src --exclude .git --exclude .gitignore --exclude .DS_Store --exclude build.sh . ./"$plugin_name"/
+rsync -rc --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
+rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
 
-# cp -R  ./includes ./lib ./libraries ./admin/assets/dist ./admin/includes ./vendor ./*.php composer.json changelog.txt  LICENSE README.md  ./"$plugin_name"/ --parents
-
-#
 ## Install PHP dependencies
 progress_message "Installing PHP dependencies..."
-composer install --working-dir=./"$plugin_name" --no-dev
-rm ./"$plugin_name"/composer.json
-rm ./"$plugin_name"/composer.lock
+composer install --working-dir="$DEST_PATH" --no-dev
+rm "$DEST_PATH"/composer.lock
 
 progress_message "Removing dev data..."
-sed -i '71,78d' ./"$plugin_name"/plugin.php
-sed -i '67,70d' ./"$plugin_name"/admin/includes/Template.php
+sed -i '' '66,69d' "$DEST_PATH"/admin/includes/Template.php
 ## Add index.php to every directory
 progress_message "Adding index.php to every directory..."
-find ./"$plugin_name" -type d -exec sh -c "echo '<?php // silence' > {}/index.php" \;
+find "$DEST_PATH" -type d -exec sh -c "echo '<?php // silence' > {}/index.php" \;
 
 ## Create zip archive
 progress_message "Creating zip archive..."
-zip -r ./"$plugin_name".zip ./"$plugin_name"/*
+cd "$BUILD_PATH" || exit
+zip -q -r "${PLUGIN_SLUG}.zip" "$PLUGIN_SLUG/"
 
-## Revert changes for production
-#progress_message "Reverting changes..."
-# rm -rf ./"$plugin_name"
+cd "$PROJECT_PATH" || exit
+mv "$BUILD_PATH/${PLUGIN_SLUG}.zip" "$PROJECT_PATH"
 
 # Completion message
 progress_message "Build process completed successfully."

@@ -1,9 +1,6 @@
 <template>
   <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
     <div class="grid grid-cols-2 gap-4 my-4">
-      <InputGroup label="Create Package" type="toggle">
-        <Toggle v-model="store.order_settings.package_sync" />
-      </InputGroup>
       <InputGroup label="Disable order sync" type="toggle">
         <Toggle v-model="store.order_settings.disable_sync" />
       </InputGroup>
@@ -41,4 +38,3 @@ const action = backendAction.zohoInventory.order;
 const store = useZohoInventoryStore();
 const loader = useLoadingStore();
 </script>
-  
