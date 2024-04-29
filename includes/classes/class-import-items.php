@@ -170,6 +170,9 @@ class import_product_class {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
+			if ( is_object( $data ) ) {
+				$data = (array) $data;
+			}
 			$page = $data['page'];
 			$category = $data['category'];
 		} else {
@@ -358,6 +361,9 @@ class import_product_class {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
+			if ( is_object( $data ) ) {
+				$data = (array) $data;
+			}
 			$page = $data['page'];
 			$category = $data['category'];
 
