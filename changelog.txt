@@ -1,4 +1,4 @@
-Version 2.1.16 - April 26 2024
+Version 2.1.16 - April 27 2024
 * Fix: featured image import of Zoho Inventory product
 * Fix: group items import of Zoho Inventory
 * Fix: order status draft for Zoho Inventory
