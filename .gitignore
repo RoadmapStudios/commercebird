@@ -7,3 +7,4 @@ admin/*.txt
 /**/*.log
 composer.lock
 .vscode
+*.lock

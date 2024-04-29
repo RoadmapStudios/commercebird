@@ -33,7 +33,6 @@ cp -R  ./includes ./admin/js ./admin/assets/dist ./admin/includes ./admin/commer
 ## Install PHP dependencies
 progress_message "Installing PHP dependencies..."
 composer install --working-dir=./"$plugin_name" --no-dev
-rm ./"$plugin_name"/composer.json
 rm ./"$plugin_name"/composer.lock
 
 progress_message "Removing dev data..."

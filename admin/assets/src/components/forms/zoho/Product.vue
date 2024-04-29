@@ -39,7 +39,7 @@
                   @click.prevent="store.sync('item')">Items Sync
       </BaseButton>
       <BaseButton :disabled="loader.isLoading('variable_item')" :loading="loader.isLoading('variable_item')"
-                  @click.prevent="store.sync('variable_item')">Variable Items Sync
+                  @click.prevent="store.sync('variable_item')">Item Groups Sync
       </BaseButton>
       <BaseButton :disabled="loader.isLoading('composite_item')" :loading="loader.isLoading('composite_item')"
                   @click.prevent="store.sync('composite_item')">Composite Items Sync

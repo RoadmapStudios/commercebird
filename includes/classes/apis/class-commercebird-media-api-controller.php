@@ -1,9 +1,10 @@
 <?php
-class WC_REST_WooCommerce_Media_API_By_commercebird_Controller extends WC_REST_CRUD_Controller {
+class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller {
 
 	protected $namespace  = 'wc/v2';
 	protected $namespace2 = 'wc/v3';
 	protected $rest_base  = 'media';
+	protected $upload_dir;
 	protected $media_controller;
 
 	public function register_routes() {
@@ -13,7 +14,7 @@ class WC_REST_WooCommerce_Media_API_By_commercebird_Controller extends WC_REST_C
 			}
 			$this->media_controller = new WP_REST_Attachments_Controller( 'attachment' );
 		} catch ( Exception $e ) {
-			wp_die( $e->getMessage() );
+			wp_die( esc_html( $e->getMessage() ) );
 		}
 
 		register_rest_route(

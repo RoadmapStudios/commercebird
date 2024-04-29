@@ -10,12 +10,41 @@ class Sync_Order_Class {
 	 * Initialize the class.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_rest_insert_shop_order_object', array( $this, 'on_insert_rest_api' ), 20, 3 );
-		add_filter( 'wcs_renewal_order_created', array( $this, 'sync_renewal_order' ), 10, 2 );
-		add_action( 'wp_ajax_zoho_admin_order_sync', array( $this, 'zi_order_sync' ) );
-		add_action( 'woocommerce_update_order', array( $this, 'salesorder_void' ) );
+		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+		if ( ! empty( $zoho_inventory_access_token ) ) {
+			add_action( 'woocommerce_rest_insert_shop_order_object', array( $this, 'on_insert_rest_api' ), 20, 3 );
+			add_filter( 'wcs_renewal_order_created', array( $this, 'sync_renewal_order' ), 10, 2 );
+			add_action( 'wp_ajax_zoho_admin_order_sync', array( $this, 'zi_order_sync' ) );
+			add_action( 'woocommerce_update_order', array( $this, 'salesorder_void' ) );
+			add_action( 'woocommerce_thankyou', array( $this, 'zi_sync_frontend_order' ) );
+		} else {
+			return;
+		}
 	}
 
+	/**
+	 * Sync order when it's created via the checkout.
+	 */
+	public function zi_sync_frontend_order( $order_id ) {
+		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+
+		// Check if the transient flag is set
+		if ( get_transient( 'your_thankyou_callback_executed_' . $order_id ) ) {
+			return;
+		}
+		// First sync the customer to Zoho Inventory
+		if ( ! empty( $zoho_inventory_access_token ) ) {
+			$this->zi_sync_customer_checkout( $order_id );
+		}
+
+		// Use WC Action Scheduler to sync the order to Zoho Inventory
+		$existing_schedule = as_has_scheduled_action( 'sync_zi_order', array( $order_id ) );
+		if ( ! $existing_schedule && ! empty( $zoho_inventory_access_token ) ) {
+			as_schedule_single_action( time(), 'sync_zi_order', array( $order_id ) );
+			// Set the transient flag to prevent multiple executions
+			set_transient( 'your_thankyou_callback_executed_' . $order_id, true, 60 );
+		}
+	}
 	/**
 	 * Sync order when its scheduled via the Action Scheduler.
 	 *
@@ -39,7 +68,7 @@ class Sync_Order_Class {
 	 * @param boolean $creating True when creating object, false when updating.
 	 */
 	public function on_insert_rest_api( $object, $request, $is_creating ) {
-		if ( ! get_option( 'zoho_inventory_access_token' ) ) {
+		if ( empty( get_option( 'zoho_inventory_access_token' ) ) ) {
 			return;
 		}
 		// $fd = fopen(__DIR__ . '/on_insert_rest_api.txt', 'w+');
@@ -63,7 +92,7 @@ class Sync_Order_Class {
 	 * Sync Renewal Order to Zoho once it's created.
 	 */
 	public function sync_renewal_order( $renewal_order, $subscription ) {
-		if ( ! get_option( 'zoho_inventory_access_token' ) ) {
+		if ( empty( get_option( 'zoho_inventory_access_token' ) ) ) {
 			return $renewal_order;
 		}
 
@@ -92,7 +121,7 @@ class Sync_Order_Class {
 		if ( empty( $currency_id ) ) {
 			$currency_code         = $order->get_currency();
 			$multi_currency_handle = new MulticurrencyClass();
-			$currency_id           = $multi_currency_handle->ZohoCurrencyData( $currency_code, $userid );
+			$currency_id           = $multi_currency_handle->zoho_currency_data( $currency_code, $userid );
 		}
 
 		if ( $zi_customer_id ) {
@@ -201,7 +230,7 @@ class Sync_Order_Class {
 								$contact_class_handle->contact_update_function( $userid, $order_id );
 							} else {
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->update_contact_person( $userid, $contactid );
+								$contact_class_handle->update_contact_person( $userid, $order_id );
 							}
 						}
 					}
@@ -240,7 +269,6 @@ class Sync_Order_Class {
 			$order_id = $_POST['arg_order_data'];
 		}
 
-		global $wpdb;
 		$order             = wc_get_order( $order_id );
 		$orders_date       = $order->get_date_created()->format( 'Y-m-d' );
 		$i                 = 1;
@@ -251,7 +279,6 @@ class Sync_Order_Class {
 		$notes             = preg_replace( '/[^A-Za-z0-9\-]/', ' ', $note );
 		$total_shipping    = $order->get_shipping_total();
 		$shipping_method   = $order->get_shipping_method();
-		$discount_amt      = $order->get_total_discount();
 
 		// // Get WC Subscription Signup fee
 		// $adjustment = '';
@@ -304,7 +331,6 @@ class Sync_Order_Class {
 			$zi_customer_id  = get_user_meta( $userid, 'zi_contact_id', true );
 			$billing_id      = get_user_meta( $userid, 'zi_billing_address_id', true );
 			$shipping_id     = get_user_meta( $userid, 'zi_shipping_address_id', true );
-			$discount_amount = ( $discount_amt ) ? $discount_amt : 0;
 			$user_email      = get_user_meta( $userid, 'billing_email', true );
 			$enable_incl_tax = get_option( 'woocommerce_prices_include_tax' );
 
@@ -312,31 +338,22 @@ class Sync_Order_Class {
 
 				if ( empty( $zi_customer_id ) ) {
 					$zi_customer_id = $this->zi_sync_customer_checkout( $order_id );
+				} else {
+					$contact_class_handle = new ContactClass();
+					$contact_class_handle->contact_update_function( $userid, $order_id );
 				}
 				// fwrite($fd,PHP_EOL.'$zi_customer_id : '.$zi_customer_id);
-				$order_items   = $order->get_items( 'coupon' );
-				$discount_type = '';
-				foreach ( $order->get_coupon_codes() as $coupon_code ) {
-					// Get the WC_Coupon object
-					$coupon        = new WC_Coupon( $coupon_code );
-					$discount_type = $coupon->get_discount_type(); // Get coupon discount type
-				}
-				// fwrite($fd,PHP_EOL.'Discount coupon type: '.$discount_type);
 				$index = 0;
 				foreach ( $val_order['suborder'] as $key => $val ) {
+					// fwrite( $fd, PHP_EOL . 'Val: ' . print_r( $val, true ) );
 
-					$proid            = $val['product_id'];
-					$proidv           = $val['variation_id'];
-					$is_variable_item = false;
+					$proid  = $val['product_id'];
+					$proidv = $val['variation_id'];
 					if ( $proidv > 0 ) {
-						$proid            = $proidv;
-						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
-						$zoho_tax_id      = get_post_meta( $proid, 'zi_tax_id', true );
-						$is_variable_item = true;
+						$proid   = $proidv;
+						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					} else {
-						$is_variable_item = false;
-						$zoho_tax_id      = get_post_meta( $proid, 'zi_tax_id', true );
-						$item_id          = get_post_meta( $proid, 'zi_item_id', true );
+						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
 						$product_handler  = new ProductClass();
@@ -357,7 +374,6 @@ class Sync_Order_Class {
 					$discount_per_item   = '';
 
 					$qty        = ( $val['quantity'] ) ? $val['quantity'] : 1;
-					$item_price = $val['item_price'];
 					// adding warehouse_id in line items array
 					$warehouse_id = get_option( 'zoho_warehouse_id' );
 					if ( $warehouse_id > 0 ) {
@@ -365,65 +381,35 @@ class Sync_Order_Class {
 					} else {
 						$warehouse_id = '';
 					}
-					/* Coupons used in the order*/
-					// Check if coupon applied on order.
-					if ( ! empty( $order_items ) && 'percent' === $discount_type ) {
-						global $wpdb;
-						$discount_per_item = 0;
-						$table             = $wpdb->prefix . 'wc_order_product_lookup';
-						// fwrite($fd, PHP_EOL.'$tb : '.$tb.' | $order_id : '.$order_id.'| $proid : '.$proid);
-						do {
-							if ( $is_variable_item ) {
-								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from %s where order_id = %d and variation_id = %d', $table, $order_id, $proid ), ARRAY_A );
-							} else {
-								$res_coupon = $wpdb->get_row( $wpdb->prepare( 'select * from %s where order_id = %d and product_id = %d', $table, $order_id, $proid ), ARRAY_A );
-							}
-						} while ( empty( $res_coupon ) );
-						// fwrite($fd, PHP_EOL.'$res_coupon : '. print_r($res_coupon, true));
-						if ( $res_coupon['product_net_revenue'] || $discount_amount ) {
-							// Get net revenue per item.
-							$g_price           = $res_coupon['product_net_revenue'] / $res_coupon['product_qty'];
-							$d_price           = ( $item_price - $g_price );
-							$d_price           = ( ( $d_price / $item_price ) * 100 );
-							$discount_per_item = round( $d_price, 2 ) . '%';
-						}
-
-						$discount_per_item = '"discount": "' . $discount_per_item . '",';
-					} elseif ( ! empty( $order_items ) ) { // fixed_product ===$discount_type
-						// fwrite($fd,PHP_EOL.'Going inside else');
-						$item_price = $val['total'] / $qty;
+					// if $val['total] is lower than $val['subtotal'] then discount is applied
+					if ( $val['total'] < $val['subtotal'] ) {
+						$discount          = $val['subtotal'] - $val['total'];
+						$discount_per_item = '"discount": "' . $discount . '",';
 					}
+
+					$item_price = $val['subtotal'] / $qty;
 					// Format item price upto two decimal places.
 					$item_price1 = round( $item_price, 2 );
 
 					// if there is vat exempt tax
-					$order_id   = $val['post_order_id'];
-					$vat_exempt = $order->get_meta( 'is_vat_exempt' );
+					$order_id  = $val['post_order_id'];
 					$tax_value = $order->get_total_tax();
+					$tax_rates = array();
 					// Apply tax rates zero only if order has no values
-					if ( $vat_exempt == 'yes' || empty( $tax_value ) ) {
-						$zoho_tax_id = get_option( 'zi_vat_exempt', true );
-						$taxid       = '"tax_id": "' . $zoho_tax_id . '",';
-					} else {
-						foreach ( $order->get_items( 'tax' ) as $item_key => $item ) {
-							$tax_rate_id       = $item->get_rate_id(); // Tax rate ID
-							$tax_percent       = WC_Tax::get_rate_percent( $tax_rate_id );
-							$tax_total         = $item_price1 * ( $tax_percent / 100 );
-							$sql               = $wpdb->prepare(
-								"SELECT * FROM {$wpdb->prefix}options WHERE option_value LIKE %s LIMIT 1",
-								"%##tax##{$tax_percent}"
-							);
-							$tax_option_object = $wpdb->get_row( $sql );
-							$tax_option        = $tax_option_object->option_value;
-							if ( $tax_option ) {
-								// fwrite($fd, PHP_EOL.'Inside Tax Option: '. $tax_option);
-								$tax_id = explode( '##', $tax_option )[0];
-							}
-							$taxid = '"tax_id": "' . $tax_id . '",';
+					if ( ! empty( $tax_value ) ) {
+						foreach ( $order->get_items( 'tax' ) as $item ) {
+							$tax_rates[ $item->get_rate_id() ] = $item->get_rate_percent();
 						}
-						$item_price = $tax_total + $item_price1;
+						$order_item  = $order->get_item( $val['order_id'] );
+						$item_taxes  = $order_item->get_taxes();
+						$tax_rate_id = current( array_keys( $item_taxes['subtotal'] ) );
+						$tax_percent = $tax_rates[ $tax_rate_id ];
+						$taxid       = '"tax_percentage": "' . $tax_percent . '",';
+
+						$item_price = $item_price1 * ( $tax_percent / 100 + 1 );
+						$item_price = round( $item_price, 2 );
 					}
-					if ( $enable_incl_tax == 'yes' ) {
+					if ( $enable_incl_tax === 'yes' ) {
 						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price . '",' . $warehouse_id . '}';
 					} else {
 						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price1 . '",' . $warehouse_id . '}';
@@ -438,10 +424,8 @@ class Sync_Order_Class {
 
 				if ( ! empty( $shipping_tax ) && ! empty( $shipping_tax_total ) ) {
 
-					$zoho_enable_decimal_tax = get_option( 'zoho_enable_decimal_tax_status' );
-					$tax_percentage          = ( ( $shipping_tax / $shipping_tax_total ) * 100 );
-
-					if ( 'true' == $zoho_enable_decimal_tax ) {
+					$tax_percentage = ( ( $shipping_tax / $shipping_tax_total ) * 100 );
+					if ( fmod( $tax_percentage, 1 ) !== 0 ) {
 						$percentage      = number_format( $tax_percentage, 2 );
 						$percent_decimal = $percentage * 100;
 						$decimal_place   = $percent_decimal % 10;
@@ -451,21 +435,8 @@ class Sync_Order_Class {
 					} else {
 						$percentage = round( $tax_percentage );
 					}
-
-					$table_prefix = $wpdb->prefix;
-
-					$row_match = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s AND option_value LIKE %s', $table_prefix . 'options', '%zoho_inventory_tax_rate_%', '%##' . $percentage . '%' ), ARRAY_A );
-
-					//  fwrite($fd,PHP_EOL.'$row_match : '.print_r($row_match,true));
-					if ( $row_match['option_value'] ) {
-
-						$shipping_tax_total_ex = explode( '##', $row_match['option_value'] );
-						//  fwrite($fd,PHP_EOL.'Option value : '.$row_match['option_value']);
-						//  fwrite($fd,PHP_EOL.'Option value : '.print_r($shipping_tax_total_ex,true));
-						$shipping_tax_id  = $shipping_tax_total_ex[0];
-						$shipping_tax_per = end( $shipping_tax_total_ex );
-					}
 				}
+
 				if ( is_array( $pdt_items ) ) {
 					$impot = implode( ',', $pdt_items );
 				}
@@ -474,7 +445,8 @@ class Sync_Order_Class {
 
 				// if there is shipping tax
 				if ( ! empty( $shipping_tax ) ) {
-					$pdt1 .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
+					$shipping_tax_id = $this->zi_get_tax_id( $percentage );
+					$pdt1           .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
 				}
 
 				// Check if there are order fees total is more than 0
@@ -498,7 +470,8 @@ class Sync_Order_Class {
 				$response_msg = '';
 
 				// Send orders as confirmed
-				if ( 'true' == get_option( 'zoho_enable_order_status' ) ) {
+				$order_status = get_option( 'zoho_enable_order_status_status' );
+				if ( $order_status ) {
 					$pdt1 .= ',"order_status": "draft"';
 				} else {
 					$pdt1 .= ',"order_status": "confirmed"';
@@ -563,7 +536,7 @@ class Sync_Order_Class {
 					$response_msg = $this->single_saleorder_zoho_inventory_update( $order_id, $zi_sales_order_id, $pdt1 );
 					// fwrite($fd,PHP_EOL.'Update response : '.$response_msg);
 				} else {
-					$response_msg = $this->single_saleorder_zoho_inventory( $order_id, $pdt1 );
+					$response_msg = $this->single_saleorder_zoho_inventory( $pdt1 );
 				}
 				// fwrite($fd,PHP_EOL.'Update response : '. print_r($response_msg, true));
 
@@ -571,7 +544,9 @@ class Sync_Order_Class {
 
 				$notes = 'Zoho Order Sync: ' . $response_msg['message'];
 
-				// fclose($fd); // end logging
+				// end logging.
+				// fclose( $fd );
+
 				$order->add_order_note( $notes );
 				$order->update_meta_data( 'zi_salesorder_id', $response_msg['zi_salesorder_id'] );
 				$order->save();
@@ -587,6 +562,10 @@ class Sync_Order_Class {
 	 */
 	public function salesorder_void( $order_id ) {
 		if ( ! $order_id ) {
+			return;
+		}
+		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+		if ( empty( $zoho_inventory_access_token ) ) {
 			return;
 		}
 
@@ -629,7 +608,7 @@ class Sync_Order_Class {
 	 * @param string $pdt1 JSON string
 	 * @return string Error message
 	 */
-	public function single_saleorder_zoho_inventory( $order_id, $pdt1 ) {
+	public function single_saleorder_zoho_inventory( $pdt1 ) {
 		//start logging
 		// $fd = fopen( __DIR__ . '/order-sync-backend.txt', 'w+' );
 
@@ -662,12 +641,6 @@ class Sync_Order_Class {
 				if ( $key == 'salesorder_id' ) {
 					$response['zi_salesorder_id'] = $value;
 					// $order->add_meta_data('zi_salesorder_id', $value, true);
-				}
-				// saleorder package code
-				$zoho_package_status = get_option( 'zoho_package_sync_status' );
-				if ( $zoho_package_status ) {
-					$package_curl_call_handle = new PackageClass();
-					$json                     = $package_curl_call_handle->zi_package_create( $order_id, $json );
 				}
 			}
 		}
@@ -712,22 +685,10 @@ class Sync_Order_Class {
 		$response['zi_salesorder_id'] = $zi_sales_order_id;
 
 		// echo '<pre>'; print_r($errmsg);
-		$zoho_package_status = get_option( 'zoho_package_sync_status' );
-
-		// fwrite( $fd, PHP_EOL . 'zoho package status : ' . $zoho_package_status );
 
 		$package_id = $order->get_meta( 'zi_package_id', true );
 
-		if ( empty( $package_id ) && $zoho_package_status ) {
-			// fwrite($fd, PHP_EOL. 'inside new package create');
-			// create new package
-			$package_curl_call_handle = new PackageClass();
-			$resp_package             = $package_curl_call_handle->zi_package_create( $order_id, $json );
-			// save response
-			$resp_msg = $resp_package->message;
-			$order->add_order_note( 'Zoho Package: ' . $resp_msg );
-			$order->save();
-		} elseif ( ! empty( $package_id ) ) {
+		if ( ! empty( $package_id ) ) {
 			// fwrite($fd, PHP_EOL. 'inside package exists'); //logging response
 
 			foreach ( $json->salesorder as $key => $value ) {
@@ -769,6 +730,37 @@ class Sync_Order_Class {
 
 		// fclose( $fd ); //end of logging
 		return $response;
+	}
+
+	/**
+	 * Function to get all Zoho Taxes.
+	 *
+	 * @param int $percentage Tax percentage.
+	 * @return string Tax ID.
+	 */
+	protected function zi_get_tax_id( $percentage ) {
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+
+		$url                      = $zoho_inventory_url . 'api/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$code                     = $json->code;
+		$tax_id                   = '';
+		if ( 0 === $code || '0' === $code ) {
+			foreach ( $json->taxes as $key => $value ) {
+				// Truncate the tax percentage to one digit after decimal point
+				$api_tax_percentage   = floor( $value->tax_percentage * 10 ) / 10;
+				$input_tax_percentage = floor( $percentage * 10 ) / 10;
+
+				// Compare the truncated tax percentages
+				if ( $api_tax_percentage === $input_tax_percentage ) {
+					$tax_id = $value->tax_id;
+					break;
+				}
+			}
+		}
+		return $tax_id;
 	}
 
 	/**

@@ -1,217 +1,207 @@
 <?php
 
-class CMreviewReminder
-{
+class CMreviewReminder {
 
-    /**
-     * Plugin activation
-     * @return void
-     */
-    public static function activate()
-    {
-        self::checkRequirements();
-    }
 
-    /**
-     * Check plugin requirements
-     * @return void
-     */
-    private static function checkRequirements()
-    {
-        delete_option('rms-zi-admin-error');
+	/**
+	 * Plugin activation
+	 * @return void
+	 */
+	public static function activate() {
+		self::checkRequirements();
+	}
 
-        //Detect WooCommerce plugin
-        if (!is_plugin_active('woocommerce/woocommerce.php')) {
-            //Load the plugin's translated strings
-            // load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
+	/**
+	 * Check plugin requirements
+	 * @return void
+	 */
+	private static function checkRequirements() {
+		delete_option( 'rms-zi-admin-error' );
 
-            $error = '<strong>' . sprintf(__('%1$s %2$s requires WooCommerce Plugin to be installed and activated.', 'rmsZI'), RMS_PLUGIN_NAME, RMS_VERSION) . '</strong> ' . sprintf(__('Please <a href="%1$s" target="_blank">install WooCommerce Plugin</a>.', 'rmsZI'), 'https://wordpress.org/plugins/woocommerce/');
+		//Detect WooCommerce plugin
+		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+			//Load the plugin's translated strings
+			// load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
 
-            update_option('rms-zi-admin-error', $error);
-        }
-    }
+			$error = '<strong>' . sprintf( __( '%1$s %2$s requires WooCommerce Plugin to be installed and activated.', 'rmsZI' ), RMS_PLUGIN_NAME, RMS_VERSION ) . '</strong> ' . sprintf( __( 'Please <a href="%1$s" target="_blank">install WooCommerce Plugin</a>.', 'rmsZI' ), 'https://wordpress.org/plugins/woocommerce/' );
 
-    /**
-     * Initialize WordPress hooks
-     * @return void
-     */
-    public static function initHooks()
-    {
-        //Init
-        add_action('init', array(CMReviewReminder::class, 'init'));
+			update_option( 'rms-zi-admin-error', $error );
+		}
+	}
 
-        //Admin init
-        add_action('admin_init', array(CMReviewReminder::class, 'adminInit'));
+	/**
+	 * Initialize WordPress hooks
+	 * @return void
+	 */
+	public static function initHooks() {
+		//Init
+		add_action( 'init', array( CMReviewReminder::class, 'init' ) );
 
-        //Admin notices
-        add_action('admin_notices', array(CMReviewReminder::class, 'adminNotices'));
-        add_action('wp_ajax_dismiss_rmszi_review_request_notice', array(CMReviewReminder::class, 'dismiss_rmszi_review_request_notice'));
-        add_action('wp_ajax_skip_rmszi_review_request_notice', array(CMReviewReminder::class, 'skip_rmszi_review_request_notice'));
+		//Admin init
+		add_action( 'admin_init', array( CMReviewReminder::class, 'adminInit' ) );
 
-        //Plugins page
-        add_filter('plugin_row_meta', array(CMReviewReminder::class, 'pluginRowMeta'), 10, 2);
-        add_filter('plugin_action_links_' . RMS_BASENAME, array(CMReviewReminder::class, 'actionLinks'));
+		//Admin notices
+		add_action( 'admin_notices', array( CMReviewReminder::class, 'adminNotices' ) );
+		add_action( 'wp_ajax_dismiss_rmszi_review_request_notice', array( CMReviewReminder::class, 'dismiss_rmszi_review_request_notice' ) );
+		add_action( 'wp_ajax_skip_rmszi_review_request_notice', array( CMReviewReminder::class, 'skip_rmszi_review_request_notice' ) );
 
-        //Admin page
-        $page = filter_input(INPUT_GET, 'page');
-        if (!empty($page) && $page == RMS_MENU_SLUG) {
-            add_filter('admin_footer_text', array(CMReviewReminder::class, 'adminFooter'));
-        }
-    }
+		//Plugins page
+		add_filter( 'plugin_row_meta', array( CMReviewReminder::class, 'pluginRowMeta' ), 10, 2 );
+		add_filter( 'plugin_action_links_' . RMS_BASENAME, array( CMReviewReminder::class, 'actionLinks' ) );
 
-    /**
-     * Init
-     * @return void
-     */
-    public static function init()
-    {
-        //Load the plugin's translated strings
-        // load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
-    }
+		//Admin page
+		$page = filter_input( INPUT_GET, 'page' );
+		if ( ! empty( $page ) && $page == RMS_MENU_SLUG ) {
+			add_filter( 'admin_footer_text', array( CMReviewReminder::class, 'adminFooter' ) );
+		}
+	}
 
-    /**
-     * Admin init
-     * @return void
-     */
-    public static function adminInit()
-    {
-        // Check plugin requirements
-        self::checkRequirements();
-    }
+	/**
+	 * Init
+	 * @return void
+	 */
+	public static function init() {
+		//Load the plugin's translated strings
+		// load_plugin_textdomain('rmsZI', false, dirname(RMS_BASENAME) . '/languages');
+	}
 
-    /**
-     * Admin notices
-     * @return void
-     */
-    public static function adminNotices()
-    {
-        if (get_option('rms-zi-admin-error')) {
-            $class = 'notice notice-error';
-            $message = get_option('rms-zi-admin-error');
+	/**
+	 * Admin init
+	 * @return void
+	 */
+	public static function adminInit() {
+		// Check plugin requirements
+		self::checkRequirements();
+	}
 
-            printf('<div class="%1$s"><p>%2$s</p></div>', $class, $message);
-        }
-        self::output_review_request_link();
-    }
+	/**
+	 * Admin notices
+	 * @return void
+	 */
+	public static function adminNotices() {
+		if ( get_option( 'rms-zi-admin-error' ) ) {
+			$class   = 'notice notice-error';
+			$message = get_option( 'rms-zi-admin-error' );
 
-    /**
-     * Place review output
-     * @return void
-     */
-    public static function output_review_request_link()
-    {
+			printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
+		}
+		self::output_review_request_link();
+	}
 
-        $is_dismissed = get_transient('rmszi_review_request_notice_dismissed');
-        if ($is_dismissed) {
-            return;
-        }
+	/**
+	 * Place review output
+	 * @return void
+	 */
+	public static function output_review_request_link() {
 
-        $is_skipped = get_transient('rmszi_skip_review_request_notice');
-        if ($is_skipped) {
-            return;
-        }
+		$is_dismissed = get_transient( 'rmszi_review_request_notice_dismissed' );
+		if ( $is_dismissed ) {
+			return;
+		}
 
-        $rmszi_since = get_option('rmszi_since');
-        $now = time();
-        if (!$rmszi_since) {
-            update_option('rmszi_since', $now, 'no');
-        } else {
-            $diff_seconds = $now - $rmszi_since;
+		$is_skipped = get_transient( 'rmszi_skip_review_request_notice' );
+		if ( $is_skipped ) {
+			return;
+		}
 
-            if ($diff_seconds > apply_filters('rmszi_show_review_request_notice_after', 10 * DAY_IN_SECONDS)) {
-                self::render_review_request_notice();
-            }
-        }
-        //If you find this plugin useful please show your support and rate it ★★★★★ on WordPress.org - much appreciated! :)
-    }
+		$rmszi_since = get_option( 'rmszi_since' );
+		$now         = time();
+		if ( ! $rmszi_since ) {
+			update_option( 'rmszi_since', $now, 'no' );
+		} else {
+			$diff_seconds = $now - $rmszi_since;
 
-    public static function render_review_request_notice()
-    {
-        $review_url = "https://commercebird.com/product/commercebird";
-        ?>
-        <div id="rmszi_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice"
-            data-nonce="<?php echo wp_create_nonce('rmszi_review_request_notice'); ?>"
-            data-action="dismiss_rmszi_review_request_notice" style="display:none">
-            <h3>
-                Just wanted to say thank you for using commercebird in your store.
-            </h3>
-            <p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers!
-            </p>
-            <p class="action-row">
-                <button type="button" class="button button-primary"
-                    onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
-                <button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
-                <span class="logo"><a target="_blank" href="https://commercebird.com">
-                        <img src="<?php // echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg');
-                                ?>" />
-                    </a></span>
+			if ( $diff_seconds > apply_filters( 'rmszi_show_review_request_notice_after', 10 * DAY_IN_SECONDS ) ) {
+				self::render_review_request_notice();
+			}
+		}
+		//If you find this plugin useful please show your support and rate it ★★★★★ on WordPress.org - much appreciated! :)
+	}
 
-            </p>
-        </div>
-        <?php
-    }
+	public static function render_review_request_notice() {
+		$review_url = 'https://commercebird.com/product/commercebird';
+		?>
+		<div id="rmszi_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice"
+			data-nonce="<?php echo wp_create_nonce( 'rmszi_review_request_notice' ); ?>"
+			data-action="dismiss_rmszi_review_request_notice" style="display:none">
+			<h3>
+				Just wanted to say thank you for using commercebird in your store.
+			</h3>
+			<p>We hope you had a great experience. Please leave us with your feedback to serve best to you and others. Cheers!
+			</p>
+			<p class="action-row">
+				<button type="button" class="button button-primary"
+					onclick="window.open('<?php echo $review_url; ?>', '_blank')">Review Now</button>
+				<button type="button" class="button" onclick="rmsziHideReviewRequestNotice(this)">Remind Me Later</button>
+				<span class="logo"><a target="_blank" href="https://commercebird.com">
+						<img src="
+						<?php
+						// echo esc_url(THWCFD_ASSETS_URL_ADMIN .'css/logo.svg');
+						?>
+								" />
+					</a></span>
 
-    public static function dismiss_rmszi_review_request_notice()
-    {
-        $nonse = isset($_REQUEST['rmszi_security_review_notice']) ? $_REQUEST['rmszi_security_review_notice'] : false;
-        if (!wp_verify_nonce($nonse, 'rmszi_review_request_notice') || !current_user_can('manage_woocommerce')) {
-            die();
-        }
-        set_transient('rmszi_review_request_notice_dismissed', true, apply_filters('rmszi_dismissed_review_request_notice_lifespan', 1 * YEAR_IN_SECONDS));
-    }
+			</p>
+		</div>
+		<?php
+	}
 
-    public static function skip_rmszi_review_request_notice()
-    {
-        $nonse = isset($_REQUEST['rmszi_security_review_notice']) ? $_REQUEST['rmszi_security_review_notice'] : false;
-        if (!wp_verify_nonce($nonse, 'rmszi_review_request_notice') || !current_user_can('manage_woocommerce')) {
-            die();
-        }
-        set_transient('rmszi_skip_review_request_notice', true, apply_filters('rmszi_skip_review_request_notice_lifespan', 1 * DAY_IN_SECONDS));
-    }
+	public static function dismiss_rmszi_review_request_notice() {
+		$nonse = isset( $_REQUEST['rmszi_security_review_notice'] ) ? $_REQUEST['rmszi_security_review_notice'] : false;
+		if ( ! wp_verify_nonce( $nonse, 'rmszi_review_request_notice' ) || ! current_user_can( 'manage_woocommerce' ) ) {
+			die();
+		}
+		set_transient( 'rmszi_review_request_notice_dismissed', true, apply_filters( 'rmszi_dismissed_review_request_notice_lifespan', 1 * YEAR_IN_SECONDS ) );
+	}
 
-    /**
-     * Plugins page
-     * @return array
-     */
-    public static function pluginRowMeta($links, $file)
-    {
-        if ($file == RMS_BASENAME) {
-            unset($links[2]);
+	public static function skip_rmszi_review_request_notice() {
+		$nonse = isset( $_REQUEST['rmszi_security_review_notice'] ) ? $_REQUEST['rmszi_security_review_notice'] : false;
+		if ( ! wp_verify_nonce( $nonse, 'rmszi_review_request_notice' ) || ! current_user_can( 'manage_woocommerce' ) ) {
+			die();
+		}
+		set_transient( 'rmszi_skip_review_request_notice', true, apply_filters( 'rmszi_skip_review_request_notice_lifespan', 1 * DAY_IN_SECONDS ) );
+	}
 
-            $customLinks = array(
-                'documentation' => '<a href="' . RMS_DOCUMENTATION_URL . '" target="_blank">' . __('Documentation', 'rmsZI') . '</a>',
-                'visit-plugin-site' => '<a href="' . RMS_PLUGIN_URL . '" target="_blank">' . __('Visit plugin site', 'rmsZI') . '</a>',
-            );
+	/**
+	 * Plugins page
+	 * @return array
+	 */
+	public static function pluginRowMeta( $links, $file ) {
+		if ( $file == RMS_BASENAME ) {
+			unset( $links[2] );
 
-            $links = array_merge($links, $customLinks);
-        }
+			$customLinks = array(
+				'documentation'     => '<a href="' . RMS_DOCUMENTATION_URL . '" target="_blank">' . __( 'Documentation', 'rmsZI' ) . '</a>',
+				'visit-plugin-site' => '<a href="' . RMS_PLUGIN_URL . '" target="_blank">' . __( 'Visit plugin site', 'rmsZI' ) . '</a>',
+			);
 
-        return $links;
-    }
+			$links = array_merge( $links, $customLinks );
+		}
 
-    /**
-     * Plugins page
-     * @return array
-     */
-    public static function actionLinks($links)
-    {
-        $customLinks = array_merge(array('settings' => '<a href="' . admin_url('admin.php?page=' . RMS_MENU_SLUG) . '">' . __('Settings', 'rmsZI') . '</a>'), $links);
+		return $links;
+	}
 
-        return $customLinks;
-    }
+	/**
+	 * Plugins page
+	 * @return array
+	 */
+	public static function actionLinks( $links ) {
+		$customLinks = array_merge( array( 'settings' => '<a href="' . admin_url( 'admin.php?page=' . RMS_MENU_SLUG ) . '">' . __( 'Settings', 'rmsZI' ) . '</a>' ), $links );
 
-    /**
-     * Admin footer
-     * @return void
-     */
-    public static function adminFooter()
-    {
-        ?>
-        <p><a href="https://commercebird.com/product/commercebird/" class="arg-review-link" target="_blank">
-                <?php echo sprintf(__('If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI'), RMS_PLUGIN_NAME); ?>
-            </a>
-            <?php _e('Thank you.', 'rmsZI'); ?>
-        </p>
-        <?php
-    }
+		return $customLinks;
+	}
+
+	/**
+	 * Admin footer
+	 * @return void
+	 */
+	public static function adminFooter() {
+		?>
+		<p><a href="https://commercebird.com/product/commercebird/" class="arg-review-link" target="_blank">
+				<?php printf( __( 'If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'rmsZI' ), RMS_PLUGIN_NAME ); ?>
+			</a>
+			<?php _e( 'Thank you.', 'rmsZI' ); ?>
+		</p>
+		<?php
+	}
 }

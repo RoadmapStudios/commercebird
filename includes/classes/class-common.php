@@ -16,14 +16,15 @@ if ( ! class_exists( 'ZI_CommonClass' ) ) {
 		 */
 		public function clear_orphan_data() {
 			global $wpdb;
-			$post_table = $wpdb->prefix . 'posts';
-			$meta_table = $wpdb->prefix . 'postmeta';
-
-			$post_query    = "DELETE o FROM $post_table o LEFT OUTER JOIN $post_table r ON o.post_parent = r.ID WHERE r.id IS null AND o.post_type = 'product_variation'";
-			$effected_rows = $wpdb->query( $wpdb->prepare( 'DELETE o FROM %s o LEFT OUTER JOIN %s r ON o.post_parent = r.ID WHERE r.id IS null AND o.post_type = %s', $post_table, $post_table, 'product_variation' ) );
-
-			$meta_query    = "DELETE m FROM $meta_table m LEFT JOIN $post_table p ON p.ID = m.post_id WHERE p.ID IS NULL";
-			$effected_rows = $wpdb->query( $wpdb->prepare( 'DELETE m FROM %s m LEFT JOIN %s p ON p.ID = m.post_id WHERE p.ID IS NULL', $meta_table, $post_table ) );
+			$result = absint(
+				$wpdb->query(
+					"DELETE products
+					FROM {$wpdb->posts} products
+					LEFT JOIN {$wpdb->posts} wp ON wp.ID = products.post_parent
+					WHERE wp.ID IS NULL AND products.post_type = 'product_variation';"
+				)
+			);
+			return $result;
 		}
 
 		/**

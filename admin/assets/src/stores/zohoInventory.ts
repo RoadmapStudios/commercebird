@@ -5,10 +5,7 @@ import type {
     Intervals,
     OrderSettings,
     PriceSettings,
-    ProductSettings,
-    TaxSettings,
-    WcTax,
-    ZohoTax
+    ProductSettings
 } from '@/types'
 import { acceptHMRUpdate, defineStore } from "pinia";
 import type { Ref, UnwrapRef } from "vue";
@@ -55,71 +52,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         loader.setLoading(connected);
         isConnected.value = await fetchData(connected, keys.connected);
         loader.clearLoading(connected);
-    };
-
-
-    /*
-     * -----------------------------------------------------------------------------------------------------------------
-     *  Tax Settings
-     * -----------------------------------------------------------------------------------------------------------------
-     */
-
-    const wc_taxes = ref<WcTax[]>([]);
-    const zoho_taxes = ref<ZohoTax[]>([]);
-    const tax_settings = reactive(<TaxSettings>{
-        decimalTax: false,
-        selectedTaxRates: [],
-        selectedVatExempt: "",
-    });
-    const get_wc_taxes = async () => {
-        const key = keys.wc_tax;
-        const instore = storage.get(key);
-        if (instore) {
-            wc_taxes.value = instore;
-        } else {
-            const action = actions.wc_taxes;
-            if (loader.isLoading(action)) return;
-            loader.setLoading(action);
-            wc_taxes.value = await fetchData(action, key);
-            loader.clearLoading(action);
-        }
-    };
-    const get_zoho_taxes = async () => {
-        const key = keys.zoho_tax;
-        const in_store = storage.get(key);
-        if (in_store) {
-            zoho_taxes.value = in_store;
-        } else {
-            const action = actions.zoho_taxes;
-            if (loader.isLoading(action)) return;
-            loader.setLoading(action);
-            zoho_taxes.value = await fetchData(action, key);
-            loader.clearLoading(action);
-        }
-    };
-
-    const encodeTax = (zoho_tax_rate: ZohoTax): string =>
-        `${zoho_tax_rate.tax_id}##${zoho_tax_rate.tax_name.replace(
-            " ",
-            "@@"
-        )}##${zoho_tax_rate.tax_type.replace(" ", "@@")}##${zoho_tax_rate.tax_percentage
-        }`;
-
-    const taxOptions = (woocommerce_tax_id: number) => {
-        const taxOptions: { [key: string]: string } = {};
-        for (const zoho_tax_rate of zoho_taxes.value) {
-            taxOptions[woocommerce_tax_id + "^^" + encodeTax(zoho_tax_rate)] =
-                zoho_tax_rate.tax_name;
-        }
-        return taxOptions;
-    };
-
-    const vatExemptOptions = () => {
-        const vatExemptOptions: { [key: string]: string } = {};
-        for (const zoho_tax_rate of zoho_taxes.value) {
-            vatExemptOptions[zoho_tax_rate.tax_id] = zoho_tax_rate.tax_name;
-        }
-        return vatExemptOptions;
     };
 
     /*
@@ -214,7 +146,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     */
     const zoho_warehouses = ref({});
     const order_settings = reactive(<OrderSettings>{
-        package_sync: false,
         disable_sync: false,
         enable_auto_number: false,
         enable_order_status: false,
@@ -330,10 +261,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 data = connection;
                 store = keys.connect
                 break;
-            case actions.tax.save:
-                data = tax_settings;
-                store = keys.tax
-                break;
             case actions.product.save:
                 data = product_settings;
                 store = keys.product
@@ -410,9 +337,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 response = await resetData(action, keys.connect);
                 storage.remove(keys.connect);
                 break;
-            case actions.tax.reset:
-                response = await resetData(action, keys.tax);
-                break;
             case actions.product.reset:
                 response = await resetData(action, keys.product);
                 storage.remove(keys.product);
@@ -452,11 +376,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     connection.redirect_uri = redirect_uri;
                     connection.account_domain = "";
                     break;
-                case actions.tax.reset:
-                    tax_settings.decimalTax = false;
-                    tax_settings.selectedTaxRates = [];
-                    tax_settings.selectedVatExempt = "";
-                    break;
                 case actions.product.reset:
                     product_settings.disable_product_sync = false;
                     product_settings.enable_accounting_stock = false;
@@ -472,7 +391,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     selected_categories.value = [];
                     break;
                 case actions.order.reset:
-                    order_settings.package_sync = false
                     order_settings.disable_sync = false
                     order_settings.enable_auto_number = false
                     order_settings.enable_order_status = false
@@ -525,16 +443,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     connection.account_domain = response.account_domain;
                 }
                 break;
-            case "tax":
-                get_wc_taxes();
-                get_zoho_taxes();
-                response = await loader.loadData(keys.tax, actions.tax.get);
-                if (response) {
-                    tax_settings.decimalTax = response.decimalTax;
-                    tax_settings.selectedTaxRates = response.selectedTaxRates;
-                    tax_settings.selectedVatExempt = response.selectedVatExempt;
-                }
-                break;
             case "product":
                 response = await loader.loadData(keys.product, actions.product.get);
                 if (response) {
@@ -569,7 +477,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 get_zoho_warehouses();
                 response = await loader.loadData(keys.order, actions.order.get);
                 if (response) {
-                    order_settings.package_sync = response.package_sync;
                     order_settings.disable_sync = response.disable_sync;
                     order_settings.enable_auto_number = response.enable_auto_number;
                     order_settings.enable_order_status = response.enable_order_status;
@@ -604,7 +511,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                             parsed = response.wcb2b
                         }
                         console.log(parsed, response.wcb2b);
-                        
+
                         Object.entries(parsed).forEach(([key, value]) => {
                             const existingObject = wcb2b_groups.value.some(field => field.key === value.key && field.value === value.value);
                             if (!existingObject) {
@@ -613,7 +520,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
                         });
                         console.log(wcb2b_groups.value);
-                        
+
                     }
                 }
                 if (wcb2b_groups.value.length === 0) {
@@ -658,11 +565,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         isConnectionValid,
         connection,
         connectionSettingsInvalid,
-        wc_taxes,
-        zoho_taxes,
-        tax_settings,
-        taxOptions,
-        vatExemptOptions,
         product_settings,
         sync,
         syncResponse,

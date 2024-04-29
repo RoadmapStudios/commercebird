@@ -1,5 +1,5 @@
 <?php
-class WC_REST_List_Items_API_By_commercebird_Controller extends WC_REST_CRUD_Controller {
+class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Controller {
 
 	protected $namespace  = 'wc/v2';
 	protected $namespace2 = 'wc/v3';
@@ -59,7 +59,7 @@ class WC_REST_List_Items_API_By_commercebird_Controller extends WC_REST_CRUD_Con
 				'type'              => 'string',
 				'default'           => 'desc',
 				'validate_callback' => function ( $param ) {
-					return in_array( strtolower( $param ), array( 'asc', 'desc' ) );
+					return in_array( strtolower( $param ), array( 'asc', 'desc' ), true );
 				},
 				'sanitize_callback' => function ( $param ) {
 					return strtolower( $param );

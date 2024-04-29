@@ -15,11 +15,8 @@ export const storeKey: StoreKey = {
         contact: 'zoho_contact',
         price: 'zoho_price',
         product: 'zoho_product',
-        tax: 'zoho_tax',
         fields: 'zoho_custom_fields',
-        wc_tax: 'wc_taxes',
         zoho_categories: 'zoho_categories',
-        zoho_tax: 'zoho_taxes',
         zoho_warehouses: 'zoho_warehouses',
     },
     exactOnline: {
@@ -33,10 +30,16 @@ export const storeKey: StoreKey = {
     zohoCrm:{
         connect: 'zcrm_connect',
         order: 'zcrm_order',
-        fields: 'zcrm_custom_fields',
-
-    }
-
+        fields:'zoho_custom_fields',
+        refresh_zoho_fields:'refresh_zoho_fields',
+        sales_orders_fields:'zcrm_sales_orders_fields',
+        contacts_fields:'zcrm_contacts_fields',
+        products_fields:'zcrm_products_fields',
+        sales_orders_custom_fields:'sales_orders_custom_fields',
+        contacts_custom_fields:'contacts_custom_fields',
+        products_custom_fields:'products_custom_fields',
+    },
+   
 }
 
 
@@ -85,11 +88,6 @@ export const backendAction: BackendAction = {
             save: 'save_zoho_connect',
             reset: 'reset_zoho_connect'
         },
-        tax: {
-            get: 'get_zoho_tax',
-            save: 'save_zoho_tax',
-            reset: 'reset_zoho_tax'
-        },
         product: {
             get: 'get_zoho_product',
             save: 'save_zoho_product',
@@ -121,8 +119,6 @@ export const backendAction: BackendAction = {
             reset: 'reset_zoho_fields'
         },
         connection: 'is_connected',
-        wc_taxes: 'get_wc_taxes',
-        zoho_taxes: 'get_zoho_taxes',
         zoho_categories: 'get_zoho_categories',
         custom_fields: 'get_all_custom_fields',
         zoho_prices: 'get_zoho_prices',
@@ -138,15 +134,16 @@ export const backendAction: BackendAction = {
             export: 'export_zcrm_order',
         },
         field: {
-            get: 'get_zcrm_fields',
-            save: 'save_zcrm_fields',
-            reset: 'reset_zcrm_fields'
+            get: 'zcrm_get_custom_fields',
+            save: 'zcrm_save_custom_fields',
+            reset: 'zcrm_reset_custom_fields'
         },
         connection: 'is_connected',
         custom_fields: 'get_all_custom_fields',
         refresh_zcrm_fields: 'refresh_zcrm_fields',
-        zcrm_orders_fields:'zcrm_orders_fields',
-        zcrm_contacts_fields:'zcrm_contacts_fields',
-        zcrm_products_fields:'zcrm_products_fields'
+        zcrm_fields:'zcrm_fields',
+    },
+    acf_fields: {
+        get_acf_fields: 'get_acf_fields',
     }
 }
