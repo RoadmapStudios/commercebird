@@ -80,12 +80,12 @@
 <script lang="ts" setup>
 import { useHomepageStore } from "@/stores/homepage";
 import { useLoadingStore } from "@/stores/loading";
-import {  formatDate } from "@/composable/helpers";
+import { formatDate } from "@/composable/helpers";
 import Card from "../ui/Card.vue";
 import BaseLink from "@/components/ui/BaseLink.vue";
 import LoaderIcon from "@/components/ui/LoaderIcon.vue";
 import Badge from "@/components/ui/Badge.vue";
-import {backendAction} from "@/keys";
+import { backendAction } from "@/keys";
 
 const store = useHomepageStore();
 const loader = useLoadingStore();
