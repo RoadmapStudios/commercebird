@@ -72,7 +72,7 @@ class ImageClass {
 		}
 
 		$attach_id = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
-		$image_exists_in_library = $this->compare_image_with_media_library( $item_image );
+		$image_exists_in_library = $this->compare_image_with_media_library( $item_name, $item_image );
 		// fwrite( $fd, PHP_EOL . 'Image Exists in Library: ' . $image_exists_in_library );
 		$image_post_id = 0;
 		if ( $image_exists_in_library ) {
@@ -214,7 +214,7 @@ class ImageClass {
 	 * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
 	 * @since 1.0.0
 	 */
-	protected function compare_image_with_media_library( $item_image ) {
+	protected function compare_image_with_media_library( $item_name, $item_image ) {
 
 		if ( ! empty( $item_image ) ) {
 			$args = array(
@@ -228,6 +228,9 @@ class ImageClass {
 				$existing_image_title = get_the_title( $media_image->ID );
 				// check if the existing image title contains the item image name
 				if ( strpos( $existing_image_title, $item_image ) !== false ) {
+					return $media_image->ID; // Return the ID of the existing image
+				}
+				if ( strpos( $existing_image_title, $item_name ) !== false ) {
 					return $media_image->ID; // Return the ID of the existing image
 				}
 			}
