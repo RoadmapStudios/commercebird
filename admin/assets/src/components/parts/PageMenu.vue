@@ -33,10 +33,10 @@ const clearCache = () => {
   loader.clearLoading("clear_cache");
 };
 
-const checkIfActiveIntegration = (integrationName) => {
+const checkIfActiveIntegration = (integrationName: any) => {
   if (homepage.subscription.fee_lines) {
     const integration = homepage.subscription.fee_lines.find(
-      (feeLine) => feeLine.name === integrationName
+      (feeLine: { name: any; }) => feeLine.name === integrationName
     );
     // This integration is active.
     if (!integration || !integration.name) {
@@ -47,7 +47,7 @@ const checkIfActiveIntegration = (integrationName) => {
         confirmButtonText: "Activate",
       }).then((action) => {
         if (action.isConfirmed) {
-          location.href = "https://app.commercebird.com/integrations";
+          window.open("https://app.commercebird.com/integrations", "_blank");
         }
       });
     }
