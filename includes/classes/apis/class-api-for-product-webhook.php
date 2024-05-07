@@ -9,7 +9,6 @@ use WC_Data_Exception;
 use WC_Product_Variation;
 use WP_REST_Response;
 use WP_REST_Server;
-use WP_User_Query;
 use wpdb;
 use ZI_CommonClass;
 
