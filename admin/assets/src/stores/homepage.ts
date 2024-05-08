@@ -16,7 +16,7 @@ export const useHomepageStore = defineStore('homepage', () => {
         cors: false,
         id: ''
     })
-    const subscription: Ref<Subscription> = ref({})
+    const subscription: Ref<Subscription | {}> = ref({})
     const changelog: Ref<Changelog[]> = ref([])
     const invalidId = ref(false)
 
@@ -60,7 +60,7 @@ export const useHomepageStore = defineStore('homepage', () => {
     }
     const isPremiumSubscription = async () => {
         if (!subscription.value) await get_subscription();
-        return subscription.value.plan.includes('Premium')
+        return (subscription.value as Subscription).plan.includes('Premium')
     }
     const load = async () => {
         await get_settings();

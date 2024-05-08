@@ -1,6 +1,9 @@
 import type {FunctionalComponent} from "vue";
 
 export type PluginObject = {
+    wcb2b_groups: any;
+    cosw_enabled: string;
+    api_token: any;
     security_token: string;
     redirect_uri: string;
     url: string;
