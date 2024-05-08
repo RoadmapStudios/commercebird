@@ -758,7 +758,7 @@ final class ZohoInventoryAjax {
 				'redirect' => $redirect,
 				'message' => 'We are redirecting you to zoho. please wait...',
 			);
-		} catch (Throwable $throwable) {
+		} catch ( Throwable $throwable ) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -804,7 +804,7 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$url                = $zoho_inventory_url . 'api/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
+		$url                = $zoho_inventory_url . 'inventory/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
 		try {
 			$execute_curl_call_handle = new ExecutecallClass();
 			$json                     = (array) $execute_curl_call_handle->ExecuteCurlCallGet( $url );
