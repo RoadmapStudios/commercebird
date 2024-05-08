@@ -1,9 +1,6 @@
 import type {FunctionalComponent} from "vue";
 
 export type PluginObject = {
-    wcb2b_groups: any;
-    cosw_enabled: string;
-    api_token: any;
     security_token: string;
     redirect_uri: string;
     url: string;
@@ -12,6 +9,7 @@ export type PluginObject = {
         'Order Create': string,
         'Shipping Status': string
     }
+    wc_tax_enabled: string;
     roles: {
         editor: string;
         administrator: string;
@@ -43,6 +41,13 @@ export type ConnectionSettings = {
     client_secret: string;
     redirect_uri: string;
     account_domain: string;
+}
+
+
+export type TaxSettings = {
+    decimalTax: boolean;
+    selectedTaxRates: any[];
+    selectedVatExempt: string;
 }
 
 export type ProductSettings = {
@@ -104,13 +109,16 @@ export type StoreKey = {
     zohoInventory: {
         connected: string;
         connect: string;
+        tax: string;
         product: string;
         cron: string;
         order: string;
         contact: string;
         price: string;
         fields: string;
+        wc_tax: string;
         zoho_categories: string;
+        zoho_tax: string;
         zoho_warehouses: string;
     };
 
@@ -145,6 +153,7 @@ export type BackendAction = {
 
     zohoInventory: {
         connect: { get: string; save: string; reset: string; };
+        tax: { get: string; save: string; reset: string; };
         product: { get: string; save: string; reset: string; };
         cron: { get: string; save: string; reset: string; };
         order: { get: string; save: string; reset: string; };
@@ -152,8 +161,10 @@ export type BackendAction = {
         price: { get: string; save: string; reset: string; };
         field: { get: string; save: string; reset: string; };
         custom_fields: string;
+        wc_taxes: string;
         zoho_categories: string;
         zoho_prices: string;
+        zoho_taxes: string;
         zoho_warehouses: string;
         connection: string;
     };
@@ -180,6 +191,40 @@ export type UseStorage = {
     remove: (key: string) => void;
     removeAll: () => void;
     hasNew: (key: string, data: Object) => boolean;
+}
+
+export type WcTax = {
+    tax_rate_id: string;
+    tax_rate_country: string;
+    tax_rate_state: string;
+    tax_rate: string;
+    tax_rate_name: string;
+    tax_rate_priority: string;
+    tax_rate_compound: string;
+    tax_rate_shipping: string;
+    tax_rate_order: number;
+    tax_rate_class: string;
+    postcode_count: number;
+    city_count: number;
+    id: number;
+}
+
+export type ZohoTax = {
+    tax_id: string;
+    tax_name: string;
+    tax_percentage: number;
+    tax_type: string;
+    tax_specific_type: string;
+    output_tax_account_name: string;
+    purchase_tax_account_name: string;
+    tax_account_id: string;
+    purchase_tax_account_id: string;
+    is_inactive: boolean;
+    is_value_added: boolean;
+    is_default_tax: boolean;
+    is_editable: boolean;
+    last_modified_time: string;
+    status: string;
 }
 
 
