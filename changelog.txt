@@ -1,3 +1,9 @@
+Version 2.1.17 - May 8 2024
+* Fix: duplication of images
+* Tweak: zoho api domain updated to zohoapis
+* Tweak: removed standard purchase price for variations
+* Revert: tax mapping (now as optional)
+
 Version 2.1.16 - April 27 2024
 * Fix: featured image import of Zoho Inventory product
 * Fix: group items import of Zoho Inventory

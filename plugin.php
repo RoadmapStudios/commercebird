@@ -3,7 +3,7 @@
  * Plugin Name: CommerceBird
  * Plugin URI:  https://commercebird.com
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
- * Version: 2.1.16
+ * Version: 2.1.17
  * Requires PHP: 7.4
  *
  * License: GNU General Public License v3.0
@@ -26,7 +26,7 @@ if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
 	define( 'RMS_PLUGIN_NAME', 'CommerceBird' );
 }
 if ( ! defined( 'RMS_VERSION' ) ) {
-	define( 'RMS_VERSION', '2.1.16' );
+	define( 'RMS_VERSION', '2.1.17' );
 }
 if ( ! defined( 'RMS_DIR_PATH' ) ) {
 	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
@@ -302,3 +302,28 @@ add_action(
 	10,
 	2
 );
+
+/**
+ * Perform actions when the plugin is updated
+ * @param string $upgrader_object
+ * @param array $options
+ * @return void
+ */
+add_action( 'upgrader_process_complete', 'cmbird_update_plugin_tasks', 10, 2 );
+
+function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
+	$this_plugin = plugin_basename( __FILE__ );
+
+	if ( $options['action'] === 'update' && $options['type'] === 'plugin' ) {
+		foreach ( $options['plugins'] as $plugin ) {
+			if ( $plugin === $this_plugin ) {
+				// Perform tasks when the plugin is updated
+				$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+				if ( $zoho_inventory_url ) {
+					$new_zoho_inventory_url = str_replace( 'inventory.zoho', 'www.zohoapis', $zoho_inventory_url );
+					update_option( 'zoho_inventory_url', $new_zoho_inventory_url );
+				}
+			}
+		}
+	}
+}
