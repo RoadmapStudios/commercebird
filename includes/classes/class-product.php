@@ -677,7 +677,6 @@ class ProductClass {
 						  $rate = $rateR;
 						  } */
 
-		// TODO: get tax rates from Zoho API.
 		$tax_rates = WC_Tax::get_base_tax_rates( $product_variable->get_tax_class() );
 		$tax_id_key = '';
 		foreach ( $tax_rates as $tax_key => $tax_value ) {
@@ -700,7 +699,6 @@ class ProductClass {
 		// $zidata .= '"unit" : "pcs",';
 		$zidata .= '"status" : "' . $zi_status . '",';
 		if ( empty( $zoho_item_id ) && $in_stock > 0 ) {
-			// $zidata .= '"purchase_rate" : "1",';
 			$zidata .= '"initial_stock" : ' . $in_stock . ',';
 			$zidata .= '"initial_stock_rate" : ' . $in_stock . ',';
 		}
@@ -788,41 +786,6 @@ class ProductClass {
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Update product name in zoho
-	 * TODO: perhaps remove this
-	 */
-	public function update_product_name( $product_id, $product_name ) {
-		$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
-		if ( ! $zi_disable_itemname_sync ) {
-			$name_update = array(
-				'ID' => $product_id,
-				'post_title' => $product_name,
-				'post_name' => $this->zi_convert_itemname( $product_name ),
-			);
-			$update_resp = wp_update_post( $name_update, false );
-			if ( is_wp_error( $update_resp ) ) {
-				$error_string = $update_resp->get_error_message();
-				return $error_string;
-			}
-		}
-	}
-
-	/**
-	 * Create seo-friendly post_name
-	 */
-	private function zi_convert_itemname( $item_name ) {
-		//Lower case everything
-		$item_name = strtolower( $item_name );
-		//Make alphanumeric (removes all other characters)
-		$item_name = preg_replace( '/[^a-z0-9_\s-]/', '', $item_name );
-		//Clean up multiple dashes or whitespaces
-		$item_name = preg_replace( '/[\s-]+/', ' ', $item_name );
-		//Convert whitespaces and underscore to dash
-		$item_name = preg_replace( '/[\s_]/', '-', $item_name );
-		return $item_name;
 	}
 
 	/**

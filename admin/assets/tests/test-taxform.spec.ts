@@ -19,7 +19,6 @@ test('test_tax_save_and_load', async ({page}) => {
     await page.locator('div').filter({ hasText: /^US ALPlease select onebasicproultimate$/ }).getByRole('combobox').selectOption('5^^4586309000000095036##basic##tax##10');
     await page.locator('div:nth-child(5) > .col-span-3 > .relative > .mt-1').selectOption('2^^4586309000000095036##basic##tax##10');
     await page.locator('div:nth-child(6) > .col-span-3 > .relative > .mt-1').selectOption('3^^4586309000000095036##basic##tax##10');
-    await page.locator('div').filter({ hasText: /^Vat ExemptPlease select onebasicproultimate$/ }).getByRole('combobox').selectOption('4586309000000095036');
     await page.getByText('Save Reset').click();
     await page.getByRole('button', { name: 'Save' }).click();
     await page.getByRole('link', { name: 'Checkout Form' }).click();
@@ -32,7 +31,7 @@ test('test_tax_save_and_load', async ({page}) => {
 
 test('test_tax_reset_and_load', async ({page}) => {
     await page.getByRole('button', {name: 'Reset'}).click();
-    
+
 })
 
 

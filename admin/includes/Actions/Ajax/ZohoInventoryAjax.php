@@ -30,9 +30,7 @@ final class ZohoInventoryAjax {
 			'id',
 		),
 		'tax'      => array(
-			'decimalTax',
 			'selectedTaxRates',
-			'selectedVatExempt',
 		),
 		'product'  => array(
 			'item_from_zoho',
@@ -659,8 +657,6 @@ final class ZohoInventoryAjax {
 		foreach ( $this->wc_taxes() as $tax ) {
 			$this->response['selectedTaxRates'][] = $tax['id'] . '^^' . get_option( 'zoho_inventory_tax_rate_' . $tax['id'] );
 		}
-		$this->response['selectedVatExempt'] = get_option( 'zi_vat_exempt' );
-		$this->response['decimalTax']        = get_option( 'zoho_enable_decimal_tax_status' );
 		$this->serve();
 	}
 
@@ -693,7 +689,7 @@ final class ZohoInventoryAjax {
 	 * Resets the tax settings.
 	 *
 	 * This function verifies the tax settings and then deletes the options
-	 * related to the tax rates, VAT exemption, and decimal tax status.
+	 * related to the tax rates
 	 *
 	 * @return void
 	 */
@@ -702,14 +698,12 @@ final class ZohoInventoryAjax {
 		foreach ( $this->wc_taxes() as $tax ) {
 			delete_option( 'zoho_inventory_tax_rate_' . $tax['id'] );
 		}
-		delete_option( 'zi_vat_exempt' );
-		delete_option( 'zoho_enable_decimal_tax_status' );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
 
 	/**
-	 * Saves tax rates and exempt status to the database.
+	 * Saves tax rates to the database.
 	 */
 	public function tax_set(): void {
 		$this->verify( self::FORMS['tax'] );
@@ -719,10 +713,6 @@ final class ZohoInventoryAjax {
 				$valarray = explode( '^^', $value );
 				update_option( 'zoho_inventory_tax_rate_' . $valarray[0], $valarray[1] );
 			}
-			if ( ! empty( $this->data['selectedVatExempt'] ) ) {
-				update_option( 'zi_vat_exempt', $this->data['selectedVatExempt'] );
-			}
-			update_option( 'zoho_enable_decimal_tax_status', $this->data['decimalTax'] );
 			$this->response = array( 'message' => 'Saved' );
 		} catch ( Throwable $throwable ) {
 			$this->errors = array( 'message' => $throwable->getMessage() );

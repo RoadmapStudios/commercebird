@@ -67,9 +67,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const wc_taxes = ref<WcTax[]>([]);
     const zoho_taxes = ref<ZohoTax[]>([]);
     const tax_settings = reactive(<TaxSettings>{
-        decimalTax: false,
         selectedTaxRates: [],
-        selectedVatExempt: "",
     });
     const get_wc_taxes = async () => {
         const key = keys.wc_tax;
@@ -112,14 +110,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 zoho_tax_rate.tax_name;
         }
         return taxOptions;
-    };
-
-    const vatExemptOptions = () => {
-        const vatExemptOptions: { [key: string]: string } = {};
-        for (const zoho_tax_rate of zoho_taxes.value) {
-            vatExemptOptions[zoho_tax_rate.tax_id] = zoho_tax_rate.tax_name;
-        }
-        return vatExemptOptions;
     };
 
     /*
@@ -452,9 +442,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     connection.account_domain = "";
                     break;
                 case actions.tax.reset:
-                    tax_settings.decimalTax = false;
                     tax_settings.selectedTaxRates = [];
-                    tax_settings.selectedVatExempt = "";
                     break;
                 case actions.product.reset:
                     product_settings.disable_product_sync = false;
@@ -528,9 +516,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 get_zoho_taxes();
                 response = await loader.loadData(keys.tax, actions.tax.get);
                 if (response) {
-                    tax_settings.decimalTax = response.decimalTax;
                     tax_settings.selectedTaxRates = response.selectedTaxRates;
-                    tax_settings.selectedVatExempt = response.selectedVatExempt;
                 }
                 break;
             case "product":
@@ -659,7 +645,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         zoho_taxes,
         tax_settings,
         taxOptions,
-        vatExemptOptions,
         product_settings,
         sync,
         syncResponse,

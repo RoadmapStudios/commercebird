@@ -20,9 +20,6 @@
       " :keys="action" @reset="store.handleReset(action.reset)"
         @submit="store.handleSubmit(action.save)"
     >
-      <InputGroup label="Enable Decimal Tax">
-        <Toggle v-model="store.tax_settings.decimalTax"/>
-      </InputGroup>
       <InputGroup
           v-for="(wc_tax_rate, index) in store.wc_taxes"
           :key="index"
@@ -31,12 +28,6 @@
         <SelectInput
             v-model="store.tax_settings.selectedTaxRates[index]"
             :options="store.taxOptions(wc_tax_rate.id)"
-        />
-      </InputGroup>
-      <InputGroup label="Vat Exempt">
-        <SelectInput
-            v-model="store.tax_settings.selectedVatExempt"
-            :options="store.vatExemptOptions()"
         />
       </InputGroup>
     </BaseForm>
@@ -51,7 +42,6 @@ import {backendAction} from "@/keys";
 import {useZohoInventoryStore} from "@/stores/zohoInventory";
 import {useLoadingStore} from "@/stores/loading";
 import InputGroup from "@/components/ui/inputs/InputGroup.vue";
-import Toggle from "@/components/ui/inputs/Toggle.vue";
 import SelectInput from "@/components/ui/inputs/SelectInput.vue";
 import BaseForm from "@/components/ui/BaseForm.vue";
 

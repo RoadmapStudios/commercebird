@@ -48,9 +48,7 @@ export type ConnectionSettings = {
 
 
 export type TaxSettings = {
-    decimalTax: boolean;
     selectedTaxRates: any[];
-    selectedVatExempt: string;
 }
 
 export type ProductSettings = {

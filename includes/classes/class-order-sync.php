@@ -739,25 +739,23 @@ class Sync_Order_Class {
 	 * @return string Tax ID.
 	 */
 	protected function zi_get_tax_id( $percentage ) {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-
-		$url = $zoho_inventory_url . 'inventory/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
-		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
-		$code = $json->code;
+		// $fd = fopen( __DIR__ . '/zi_get_tax_id.txt', 'a+' );
+		// get all options that contain zoho_inventory_tax_rate_ in the name using global $wpdb.
+		global $wpdb;
+		$zoho_tax_rates = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name LIKE 'zoho_inventory_tax_rate_%'" );
+		$input_tax_percentage = floor( $percentage * 10 ) / 10;
+		// fwrite( $fd, PHP_EOL . 'Input Tax Percentage: ' . $input_tax_percentage );
 		$tax_id = '';
-		if ( 0 === $code || '0' === $code ) {
-			foreach ( $json->taxes as $key => $value ) {
-				// Truncate the tax percentage to one digit after decimal point
-				$api_tax_percentage = floor( $value->tax_percentage * 10 ) / 10;
-				$input_tax_percentage = floor( $percentage * 10 ) / 10;
-
-				// Compare the truncated tax percentages
-				if ( $api_tax_percentage === $input_tax_percentage ) {
-					$tax_id = $value->tax_id;
-					break;
-				}
+		// for each zoho_tax_rate, check if the tax percentage matches the input percentage. The percentage at the end of the value e.g. 69497000002395146##BTW@@Hoog Exclusief##tax##21
+		foreach ( $zoho_tax_rates as $zoho_tax_rate ) {
+			$tax_rate = explode( '##', $zoho_tax_rate->option_value );
+			$tax_percentage = $tax_rate[3];
+			// Round the stored tax percentage to one decimal place for comparison
+			$stored_tax_percentage = round( $tax_percentage, 1 );
+			// Compare the rounded tax percentages with a tolerance for floating-point precision errors
+			if ( abs( $stored_tax_percentage - $input_tax_percentage ) < 0.01 ) {
+				$tax_id = $tax_rate[0];
+				break;
 			}
 		}
 		return $tax_id;
