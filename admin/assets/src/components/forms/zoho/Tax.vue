@@ -66,7 +66,7 @@ const hints = {
 const enableTax = {
   icon: DocumentIcon,
   message:
-      "Please enable Taxes in WC Settings with <strong>at least</strong> the Standard rate configured. Tax Mapping is <strong>required</strong> to sync Items.",
+      "Please enable Taxes in WC Settings with <strong>at least</strong> the Standard rate configured. Only do this if you have tax rates configured in Zoho.",
   link: "admin.php?page=wc-settings#:~:text=Shop%20country/region-,Enable%20taxes,-Enable%20taxes",
   linkText: "Visit Here",
 };
@@ -74,7 +74,7 @@ const enableTax = {
 const addZohoTax = {
   icon: DocumentIcon,
   message:
-      "You don't have any taxes in Zoho Inventory, Create a standard tax rate! Even if that rate is 0% for your shop.",
+      "You don't have any taxes in Zoho Inventory, then you don't need to map anything!",
   link: "admin.php?page=wc-settings&tab=tax&section=standard",
   linkText: "Visit Here",
 };
@@ -82,7 +82,7 @@ const addZohoTax = {
 const addWCTax = {
   icon: DocumentIcon,
   message:
-      "You don't have any taxes in WooCommerce, Create a standard tax rate! Even if that rate is 0% for your shop.",
+      "You don't have any taxes in WooCommerce, Create a standard tax rate!",
   link: "admin.php?page=wc-settings&tab=tax&section=standard",
   linkText: "Visit Here",
 };
