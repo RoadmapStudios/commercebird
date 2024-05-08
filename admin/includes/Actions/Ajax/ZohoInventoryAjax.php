@@ -28,17 +28,17 @@ final class ZohoInventoryAjax {
 			'cors',
 			'id',
 		),
-		'product'  => array(
+		'product' => array(
 			'item_from_zoho',
 			'disable_stock_sync',
 			'disable_product_sync',
 			'enable_accounting_stock',
 		),
-		'cron'     => array(
+		'cron' => array(
 			'form',
 			'categories',
 		),
-		'order'    => array(
+		'order' => array(
 			'disable_sync',
 			'enable_auto_number',
 			'enable_order_status',
@@ -47,10 +47,10 @@ final class ZohoInventoryAjax {
 			'warehouse_id',
 			'enable_warehousestock',
 		),
-		'contact'  => array(
+		'contact' => array(
 			'enable_cron',
 		),
-		'price'    => array(
+		'price' => array(
 			'wp_user_role',
 			'zoho_inventory_pricelist',
 			'wcb2b',
@@ -58,37 +58,37 @@ final class ZohoInventoryAjax {
 	);
 
 	private const ACTIONS = array(
-		'get_subscription'      => 'subscription_get',
-		'get_settings'          => 'settings_get',
-		'save_settings'         => 'settings_set',
-		'reset_settings'        => 'settings_reset',
-		'get_zoho_connect'      => 'connection_get',
-		'save_zoho_connect'     => 'connection_set',
-		'reset_zoho_connect'    => 'connection_reset',
-		'get_zoho_product'      => 'product_get',
-		'save_zoho_product'     => 'product_set',
-		'reset_zoho_product'    => 'product_reset',
-		'get_zoho_cron'         => 'cron_get',
-		'save_zoho_cron'        => 'cron_set',
-		'reset_zoho_cron'       => 'cron_reset',
-		'get_zoho_order'        => 'order_get',
-		'save_zoho_order'       => 'order_set',
-		'reset_zoho_order'      => 'order_reset',
-		'get_zoho_contact'      => 'contact_get',
-		'save_zoho_contact'     => 'contact_set',
-		'reset_zoho_contact'    => 'contact_reset',
-		'get_zoho_price'        => 'price_get',
-		'save_zoho_price'       => 'price_set',
-		'reset_zoho_price'      => 'price_reset',
-		'get_zoho_fields'       => 'fields_get',
-		'save_zoho_fields'      => 'fields_set',
-		'reset_zoho_fields'     => 'fields_reset',
-		'is_connected'          => 'connection_done',
-		'get_zoho_categories'   => 'zoho_categories_collect',
-		'get_zoho_warehouses'   => 'zoho_warehouses_collect',
-		'get_zoho_prices'       => 'zoho_prices_collect',
+		'get_subscription' => 'subscription_get',
+		'get_settings' => 'settings_get',
+		'save_settings' => 'settings_set',
+		'reset_settings' => 'settings_reset',
+		'get_zoho_connect' => 'connection_get',
+		'save_zoho_connect' => 'connection_set',
+		'reset_zoho_connect' => 'connection_reset',
+		'get_zoho_product' => 'product_get',
+		'save_zoho_product' => 'product_set',
+		'reset_zoho_product' => 'product_reset',
+		'get_zoho_cron' => 'cron_get',
+		'save_zoho_cron' => 'cron_set',
+		'reset_zoho_cron' => 'cron_reset',
+		'get_zoho_order' => 'order_get',
+		'save_zoho_order' => 'order_set',
+		'reset_zoho_order' => 'order_reset',
+		'get_zoho_contact' => 'contact_get',
+		'save_zoho_contact' => 'contact_set',
+		'reset_zoho_contact' => 'contact_reset',
+		'get_zoho_price' => 'price_get',
+		'save_zoho_price' => 'price_set',
+		'reset_zoho_price' => 'price_reset',
+		'get_zoho_fields' => 'fields_get',
+		'save_zoho_fields' => 'fields_set',
+		'reset_zoho_fields' => 'fields_reset',
+		'is_connected' => 'connection_done',
+		'get_zoho_categories' => 'zoho_categories_collect',
+		'get_zoho_warehouses' => 'zoho_warehouses_collect',
+		'get_zoho_prices' => 'zoho_prices_collect',
 		'get_all_custom_fields' => 'wc_custom_fields_collect',
-		'handle_code'           => 'handle_code',
+		'handle_code' => 'handle_code',
 	);
 
 	public function __construct() {
@@ -105,8 +105,8 @@ final class ZohoInventoryAjax {
 	 */
 	public function wc_custom_fields_collect(): void {
 		$this->verify();
-		$types         = array( 'billing', 'shipping', 'additional' );
-		$all_fields    = array();
+		$types = array( 'billing', 'shipping', 'additional' );
+		$all_fields = array();
 		$custom_fields = array();
 		// Get all the fields.
 		foreach ( $types as $type ) {
@@ -133,7 +133,7 @@ final class ZohoInventoryAjax {
 		// Loop through each field to see if it is a custom field.
 		foreach ( $all_fields as $name => $options ) {
 			if ( isset( $options['custom'] ) && $options['custom'] ) {
-				$label                  = trim( $options['label'] );
+				$label = trim( $options['label'] );
 				$custom_fields[ $name ] = empty( $label ) ? __( 'Please set label' ) : $label;
 			}
 		}
@@ -150,12 +150,12 @@ final class ZohoInventoryAjax {
 	 */
 	public function connection_get(): void {
 		$this->verify();
-		$this->response['account_domain']  = get_option( 'zoho_inventory_domain' );
+		$this->response['account_domain'] = get_option( 'zoho_inventory_domain' );
 		$this->response['organization_id'] = get_option( 'zoho_inventory_oid' );
-		$this->response['client_id']       = get_option( 'zoho_inventory_cid' );
-		$this->response['client_secret']   = get_option( 'zoho_inventory_cs' );
-		$this->response['inventory_url']   = get_option( 'zoho_inventory_url' );
-		$this->response['redirect_uri']    = get_option( 'authorization_redirect_uri' );
+		$this->response['client_id'] = get_option( 'zoho_inventory_cid' );
+		$this->response['client_secret'] = get_option( 'zoho_inventory_cs' );
+		$this->response['inventory_url'] = get_option( 'zoho_inventory_url' );
+		$this->response['redirect_uri'] = get_option( 'authorization_redirect_uri' );
 		$this->serve();
 	}
 
@@ -199,7 +199,7 @@ final class ZohoInventoryAjax {
 			sprintf( 'https://commercebird.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ),
 			array(
 				'headers' => array(
-					'Accept'        => 'application/json',
+					'Accept' => 'application/json',
 					'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
 				),
 			),
@@ -210,14 +210,14 @@ final class ZohoInventoryAjax {
 			return array();
 		}
 
-		$body   = wp_remote_retrieve_body( $response );
+		$body = wp_remote_retrieve_body( $response );
 		$decode = json_decode( $body, true );
 
 		if ( ! $decode || ! array_key_exists( 'line_items', $decode ) ) {
 			return array();
 		}
 
-		$data                 = $this->extract_data(
+		$data = $this->extract_data(
 			$decode,
 			array(
 				'fee_lines',
@@ -232,7 +232,7 @@ final class ZohoInventoryAjax {
 			),
 		);
 		$data['variation_id'] = array_column( $data['line_items'], 'variation_id' );
-		$data['plan']         = array_column( $data['line_items'], 'name' );
+		$data['plan'] = array_column( $data['line_items'], 'name' );
 
 		return $data;
 	}
@@ -277,7 +277,7 @@ final class ZohoInventoryAjax {
 					$this->data,
 				);
 			}
-		} catch ( Exception $exception ) {
+		} catch (Exception $exception) {
 			$this->errors = array( 'message' => $exception->getMessage() );
 		}
 		$this->serve();
@@ -304,7 +304,7 @@ final class ZohoInventoryAjax {
 		try {
 			update_option( 'wootozoho_custom_fields', $this->data['form'] );
 			$this->response = array( 'message' => 'saved' );
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 		$this->serve();
@@ -344,7 +344,7 @@ final class ZohoInventoryAjax {
 	public function price_get(): void {
 		$this->verify();
 		$this->response['zoho_inventory_pricelist'] = get_option( 'zoho_pricelist_id' );
-		$this->response['wp_user_role']             = get_option( 'zoho_pricelist_role' );
+		$this->response['wp_user_role'] = get_option( 'zoho_pricelist_role' );
 		if ( class_exists( 'WooCommerceB2B' ) ) {
 			$this->response['wcb2b'] = get_option( 'zoho_pricelist_wcb2b_groups' );
 		}
@@ -353,13 +353,13 @@ final class ZohoInventoryAjax {
 
 	/**
 	 * Sets the price and saves the pricelist.
-*
+	 *
 	 */
 	public function price_set(): void {
 		$this->verify( self::FORMS['price'] );
 		try {
 			$import_pricelist = new ImportPricelistClass();
-			$success          = $import_pricelist->save_price_list( $this->data );
+			$success = $import_pricelist->save_price_list( $this->data );
 			if ( class_exists( 'Addify_B2B_Plugin' ) ) {
 				update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
 			} else {
@@ -373,12 +373,12 @@ final class ZohoInventoryAjax {
 			} else {
 				$this->errors = array( 'message' => 'Failed to save' );
 			}
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 			$this->write_log(
 				array(
 					'message' => $throwable->getMessage(),
-					'files'   => wp_list_pluck( $throwable->getTrace(), 'file', 'line' ),
+					'files' => wp_list_pluck( $throwable->getTrace(), 'file', 'line' ),
 				),
 				'zoho-ajax-error'
 			);
@@ -395,8 +395,8 @@ final class ZohoInventoryAjax {
 	public function zoho_prices_collect(): void {
 		$this->verify();
 		$price_list_class = new ImportPricelistClass();
-		$prices           = $price_list_class->zi_get_all_pricelist();
-		$this->response   = wp_list_pluck( $prices, 'name', 'pricebook_id' );
+		$prices = $price_list_class->zi_get_all_pricelist();
+		$this->response = wp_list_pluck( $prices, 'name', 'pricebook_id' );
 		$this->serve();
 	}
 
@@ -485,12 +485,12 @@ final class ZohoInventoryAjax {
 	 */
 	public function zoho_warehouses_collect(): void {
 		$this->verify();
-		$zoho_inventory_oid       = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url       = get_option( 'zoho_inventory_url' );
-		$url                      = $zoho_inventory_url . 'api/v1/settings/warehouses?organization_id=' . $zoho_inventory_oid;
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$url = $zoho_inventory_url . 'inventory/v1/settings/warehouses?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
-		$this->response           = wp_list_pluck( $json->warehouses, 'warehouse_name', 'warehouse_id' );
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$this->response = wp_list_pluck( $json->warehouses, 'warehouse_name', 'warehouse_id' );
 		$this->serve();
 	}
 
@@ -525,8 +525,8 @@ final class ZohoInventoryAjax {
 	 */
 	public function cron_get(): void {
 		$this->verify();
-		$this->response                             = array();
-		$this->response['form']                     = $this->option_status_get(
+		$this->response = array();
+		$this->response['form'] = $this->option_status_get(
 			array(
 				'disable_name_sync',
 				'disable_price_sync',
@@ -535,7 +535,7 @@ final class ZohoInventoryAjax {
 			),
 		);
 		$this->response['form']['zi_cron_interval'] = get_option( 'zi_cron_interval', 'none' );
-		$this->response['categories']               = unserialize( get_option( 'zoho_item_category', '' ) );
+		$this->response['categories'] = unserialize( get_option( 'zoho_item_category', '' ) );
 		$this->serve();
 	}
 
@@ -576,7 +576,7 @@ final class ZohoInventoryAjax {
 		$categories = get_zoho_item_categories();
 		if ( gettype( $categories ) === 'array' && array_key_exists( 'categories', $categories ) ) {
 			$filtered = wp_list_pluck( $categories['categories'], 'name', 'category_id' );
-			unset( $filtered[-1] );
+			unset( $filtered[ -1 ] );
 			$this->response = $filtered;
 		}
 		$this->serve();
@@ -587,11 +587,11 @@ final class ZohoInventoryAjax {
 	 */
 	public function connection_done(): void {
 		$this->verify();
-		$zoho_inventory_url       = get_option( 'zoho_inventory_url' );
-		$zoho_inventory_oid       = get_option( 'zoho_inventory_oid' );
-		$url                      = $zoho_inventory_url . 'api/v1/organizations/?organization_id=' . $zoho_inventory_oid;
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$url = $zoho_inventory_url . 'inventory/v1/organizations/?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );
 		} elseif ( empty( $json ) ) {
@@ -651,7 +651,7 @@ final class ZohoInventoryAjax {
 			),
 		);
 		try {
-			$inventory = sprintf( 'https://inventory.zoho.%s/', $this->data['account_domain'] );
+			$inventory = sprintf( 'https://www.zohoapis.%s/', $this->data['account_domain'] );
 			update_option( 'zoho_inventory_domain', $this->data['account_domain'] );
 			update_option( 'zoho_inventory_oid', $this->data['organization_id'] );
 			update_option( 'zoho_inventory_cid', $this->data['client_id'] );
@@ -659,12 +659,12 @@ final class ZohoInventoryAjax {
 			update_option( 'zoho_inventory_url', $inventory );
 			update_option( 'authorization_redirect_uri', $this->data['redirect_uri'] );
 			update_option( 'woocommerce_enable_guest_checkout', 'no' );
-			$redirect       = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoInventory.FullAccess.all&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
+			$redirect = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoInventory.FullAccess.all&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
 			$this->response = array(
 				'redirect' => $redirect,
-				'message'  => 'We are redirecting you to zoho. please wait...',
+				'message' => 'We are redirecting you to zoho. please wait...',
 			);
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -690,7 +690,7 @@ final class ZohoInventoryAjax {
 			}
 			update_option( 'woocommerce_enable_guest_checkout', 'yes' );
 			$this->response = array( 'message' => 'Reset successfully!' );
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -704,7 +704,7 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		if ( array_key_exists( 'code', $this->request ) ) {
 			$class_functions = new Classfunctions();
-			$code            = $this->request['code'];
+			$code = $this->request['code'];
 			try {
 				$access_token = $class_functions->GetServiceZIAccessToken( $code );
 				if ( array_key_exists( 'access_token', $access_token ) ) {
@@ -716,7 +716,7 @@ final class ZohoInventoryAjax {
 				} else {
 					$this->errors = (array) $access_token;
 				}
-			} catch ( Throwable $throwable ) {
+			} catch (Throwable $throwable) {
 				$this->errors = array( 'message' => $throwable->getMessage() );
 			}
 		}

@@ -16,7 +16,7 @@ class MulticurrencyClass {
 		$config = array(
 
 			'MulticurrencyZI' => array(
-				'OID'    => get_option( 'zoho_inventory_oid' ),
+				'OID' => get_option( 'zoho_inventory_oid' ),
 				'APIURL' => get_option( 'zoho_inventory_url' ),
 
 			),
@@ -33,12 +33,12 @@ class MulticurrencyClass {
 
 		//execute curl
 
-		$url = $zoho_inventory_url . 'api/v1/settings/currencies?organization_id=' . $zoho_inventory_oid;
+		$url = $zoho_inventory_url . 'inventory/v1/settings/currencies?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$response                 = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$response = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
-		$code    = $response->code;
+		$code = $response->code;
 		$message = $response->message;
 
 		if ( 0 == $code || '0' == $code ) {

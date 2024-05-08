@@ -17,8 +17,8 @@ class Zoho {
 			self::$namespace,
 			'/zoho-active/',
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_zi_token' ),
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'get_zi_token' ),
 				'permission_callback' => array( $this, 'check_origin' ),
 			)
 		);
@@ -26,8 +26,8 @@ class Zoho {
 			self::$namespace,
 			'/zoho-invoices/',
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_zi_invoices' ),
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'get_zi_invoices' ),
 				'permission_callback' => array( $this, 'check_origin' ),
 			)
 		);
@@ -35,8 +35,8 @@ class Zoho {
 			self::$namespace,
 			'/zoho-invoice-detail/',
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_zi_invoice_detail' ),
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'get_zi_invoice_detail' ),
 				'permission_callback' => array( $this, 'check_origin' ),
 			)
 		);
@@ -50,16 +50,16 @@ class Zoho {
 		// connection
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$get_url            = $zoho_inventory_url . 'api/v1/organizations/' . $zoho_inventory_oid . '?organization_id=' . $zoho_inventory_oid;
+		$get_url = $zoho_inventory_url . 'inventory/v1/organizations/' . $zoho_inventory_oid . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
-		$code                     = $json->code;
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$code = $json->code;
 		if ( 0 === (int) $code ) {
-			$response['zi_org_name']  = $json->organization->name;
+			$response['zi_org_name'] = $json->organization->name;
 			$response['zi_org_email'] = $json->organization->email;
-			$response['zi_org_id']    = $zoho_inventory_oid;
-			$response['zi_api_url']   = $zoho_inventory_url;
+			$response['zi_org_id'] = $zoho_inventory_oid;
+			$response['zi_api_url'] = $zoho_inventory_url;
 
 			$rest_response->set_data( $response );
 			$rest_response->set_status( 200 );
@@ -80,11 +80,11 @@ class Zoho {
 		// connection
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$get_url            = $zoho_inventory_url . 'api/v1/invoices/' . '?organization_id=' . $zoho_inventory_oid;
+		$get_url = $zoho_inventory_url . 'inventory/v1/invoices/' . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
-		$code                     = $json->code;
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$code = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['invoices'] = $json->invoices;
 			$rest_response->set_data( $response );
@@ -109,11 +109,11 @@ class Zoho {
 		// connection
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$get_url            = $zoho_inventory_url . 'api/v1/invoices/' . $invoice_id . '?organization_id=' . $zoho_inventory_oid;
+		$get_url = $zoho_inventory_url . 'inventory/v1/invoices/' . $invoice_id . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
-		$code                     = $json->code;
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$code = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['invoice'] = $json->invoice;
 			$rest_response->set_data( $response );

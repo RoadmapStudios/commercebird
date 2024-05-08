@@ -58,11 +58,11 @@ class ProductClass {
 			$rate = $product->get_regular_price();
 			// $rateS = $product->get_sale_price();
 			/*
-							  if ($rateS) {
-							  $rate = $rateS;
-							  } else {
-							  $rate = $rateR;
-							  } */
+									   if ($rateS) {
+									   $rate = $rateS;
+									   } else {
+									   $rate = $rateR;
+									   } */
 			// parse the name
 			$pre_name = $product->get_name();
 			$name = preg_replace( "/[>\"''<`]/", '', $pre_name );
@@ -138,7 +138,7 @@ class ProductClass {
 					'JSONString' => '{' . $zidata . '}',
 					'organization_id' => $zoho_inventory_oid,
 				);
-				$url = $zoho_inventory_url . 'api/v1/items';
+				$url = $zoho_inventory_url . 'inventory/v1/items';
 
 				$execute_curl_call_handle = new ExecutecallClass();
 				$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
@@ -152,7 +152,7 @@ class ProductClass {
 				if ( $code === '1001' || $code === 1001 ) {
 					// fwrite($fd,PHP_EOL.'Inside SKU Check');
 					$sku_check = str_replace( ' ', '+', $sku );
-					$url = $zoho_inventory_url . 'api/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
+					$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
 					$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 					if ( $get_request->code === '0' || $get_request->code === 0 ) {
@@ -170,7 +170,7 @@ class ProductClass {
 						// If SKU check didn't find a match, perform name check
 						if ( ! $matching_item ) {
 							$item_name_check = str_replace( ' ', '+', $name );
-							$url = $zoho_inventory_url . 'api/v1/items?search_text=' . $item_name_check . '&organization_id=' . $zoho_inventory_oid;
+							$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $item_name_check . '&organization_id=' . $zoho_inventory_oid;
 							$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 							if ( $get_request->code === '0' || $get_request->code === 0 ) {
@@ -240,7 +240,7 @@ class ProductClass {
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-		$url = $zoho_inventory_url . 'api/v1/items/' . $item_id;
+		$url = $zoho_inventory_url . 'inventory/v1/items/' . $item_id;
 		// fwrite($fd,PHP_EOL.'JSON Data : '.'{' . $pdt3 . '}');
 		$data = array(
 			'JSONString' => '{' . $pdt3 . '}',
@@ -396,9 +396,9 @@ class ProductClass {
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
 		if ( $zoho_item_id && ctype_digit( $zoho_item_id ) ) {
-			$url_p = $zoho_inventory_url . 'api/v1/compositeitems/' . $zoho_item_id;
+			$url_p = $zoho_inventory_url . 'inventory/v1/compositeitems/' . $zoho_item_id;
 		} else {
-			$url_p = $zoho_inventory_url . 'api/v1/compositeitems';
+			$url_p = $zoho_inventory_url . 'inventory/v1/compositeitems';
 		}
 
 		$data_p = array(
@@ -424,7 +424,7 @@ class ProductClass {
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 			if ( $code == '1001' || $code == 1001 ) {
 				$sku_check = str_replace( ' ', '+', $sku );
-				$url = $zoho_inventory_url . 'api/v1/compositeitems/?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
+				$url = $zoho_inventory_url . 'inventory/v1/compositeitems/?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
 				$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 				if ( $get_request->code === '0' || $get_request->code === 0 ) {
 					$item_id = '';
@@ -555,14 +555,14 @@ class ProductClass {
 		$zoho_group_id = get_post_meta( $post_id, 'zi_item_id', true );
 
 		if ( ! empty( $zoho_group_id ) ) {
-			$url = $zoho_inventory_url . 'api/v1/itemgroups/' . $zoho_group_id . '?organization_id=' . $zoho_inventory_oid;
+			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/' . $zoho_group_id . '?organization_id=' . $zoho_inventory_oid;
 			$execute_curl_call_handle = new ExecutecallClass();
 			$json_p = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
 			$code = $json_p->code;
 			$errmsg = $json_p->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 		} else {
-			$url = $zoho_inventory_url . 'api/v1/itemgroups?organization_id=' . $zoho_inventory_oid;
+			$url = $zoho_inventory_url . 'inventory/v1/itemgroups?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
 			$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
@@ -671,11 +671,11 @@ class ProductClass {
 		$in_stock = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
 
 		/*
-					if ($rateS) {
-					$rate = $rateS;
-					} else {
-					$rate = $rateR;
-					} */
+						  if ($rateS) {
+						  $rate = $rateS;
+						  } else {
+						  $rate = $rateR;
+						  } */
 
 		// TODO: get tax rates from Zoho API.
 		$tax_rates = WC_Tax::get_base_tax_rates( $product_variable->get_tax_class() );
@@ -730,7 +730,7 @@ class ProductClass {
 			$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 			$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 			$sku_check = str_replace( ' ', '+', $sku );
-			$url = $zoho_inventory_url . 'api/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
+			$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
 			$execute_curl_call_handle = new ExecutecallClass();
 			$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 			$var_item_id = '';

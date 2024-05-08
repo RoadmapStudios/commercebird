@@ -184,7 +184,7 @@ class import_product_class {
 
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$urlitem = $zoho_inventory_url . 'api/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
+		$urlitem = $zoho_inventory_url . 'inventory/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
 		$execute_curl_call = new ExecutecallClass();
 		$json = $execute_curl_call->ExecuteCurlCallGet( $urlitem );
 		$code = (int) property_exists( $json, 'code' ) ? $json->code : '0';
@@ -292,7 +292,7 @@ class import_product_class {
 			if ( ! empty( $item_ids ) ) {
 				$item_id_str = implode( ',', $item_ids );
 				// fwrite($fd, PHP_EOL . 'Before Bulk sync');
-				$item_details_url = "{$zoho_inventory_url}api/v1/itemdetails?item_ids={$item_id_str}&organization_id={$zoho_inventory_oid}";
+				$item_details_url = "{$zoho_inventory_url}inventory/v1/itemdetails?item_ids={$item_id_str}&organization_id={$zoho_inventory_oid}";
 				$this->zi_item_bulk_sync( $item_details_url );
 
 				if ( $json->page_context['has_more_page'] ) {
@@ -375,7 +375,7 @@ class import_product_class {
 			$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 			$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-			$url = $zoho_inventory_url . 'api/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&filter_by=Status.Active';
+			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&filter_by=Status.Active';
 			// fwrite($fd, PHP_EOL . '$url : ' . $url);
 
 			$execute_curl_call = new ExecutecallClass();
@@ -494,7 +494,7 @@ class import_product_class {
 		}
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$url = $zoho_inventory_url . 'api/v1/itemgroups/' . $zi_group_id . '?organization_id=' . $zoho_inventory_oid;
+		$url = $zoho_inventory_url . 'inventory/v1/itemgroups/' . $zi_group_id . '?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call = new ExecutecallClass();
 		$json = $execute_curl_call->ExecuteCurlCallGet( $url );
 		$code = $json->code;
@@ -1148,7 +1148,7 @@ class import_product_class {
 		}
 		global $wpdb;
 
-		$url = $zi_url . 'api/v1/compositeitems/' . $composite_zoho_id . '?organization_id=' . $zi_org_id;
+		$url = $zi_url . 'inventory/v1/compositeitems/' . $composite_zoho_id . '?organization_id=' . $zi_org_id;
 
 		$execute_curl_call = new ExecutecallClass();
 		$json = $execute_curl_call->ExecuteCurlCallGet( $url );
@@ -1270,7 +1270,7 @@ class import_product_class {
 			$admin_author_id = 1;
 		}
 
-		$url = $zi_url . 'api/v1/compositeitems/?organization_id=' . $zi_org_id . '&filter_by=Status.Active&category_id=' . $category . '&page=' . $page;
+		$url = $zi_url . 'inventory/v1/compositeitems/?organization_id=' . $zi_org_id . '&filter_by=Status.Active&category_id=' . $category . '&page=' . $page;
 
 		$execute_curl_call = new ExecutecallClass();
 		$json = $execute_curl_call->ExecuteCurlCallGet( $url );
@@ -1474,7 +1474,7 @@ class import_product_class {
 				}
 
 				// sync dimensions and weight
-				$item_url = "{$zi_url}api/v1/compositeitems/{$zoho_comp_item_id}?organization_id={$zi_org_id}";
+				$item_url = "{$zi_url}inventory/v1/compositeitems/{$zoho_comp_item_id}?organization_id={$zi_org_id}";
 				$this->zi_item_dimension_weight( $item_url, $com_prod_id, true );
 
 				// If item synced append to log : logging purpose only.

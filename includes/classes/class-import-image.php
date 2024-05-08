@@ -46,7 +46,7 @@ class ImageClass {
 		global $wpdb;
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$url = $zoho_inventory_url . 'api/v1/items/' . $item_id . '/image';
+		$url = $zoho_inventory_url . 'inventory/v1/items/' . $item_id . '/image';
 		$url .= '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
@@ -180,7 +180,7 @@ class ImageClass {
 						}
 						// also delete the zoho_image folder files.
 						$folder_path = $folder_path . '/zoho_image/';
-						$file_paths  = glob( $folder_path . '/*' );
+						$file_paths = glob( $folder_path . '/*' );
 						foreach ( $file_paths as $file_path ) {
 							if ( is_file( $file_path ) ) {
 								wp_delete_file( $file_path );

@@ -13,7 +13,7 @@ class ImportPricelistClass {
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
-				'OID'    => get_option( 'zoho_inventory_oid' ),
+				'OID' => get_option( 'zoho_inventory_oid' ),
 				'APIURL' => get_option( 'zoho_inventory_url' ),
 			),
 		);
@@ -52,9 +52,9 @@ class ImportPricelistClass {
 			return $in_cache;
 		}
 
-		$url                      = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks?organization_id=' . $this->config['ProductZI']['OID'];
+		$url = $this->config['ProductZI']['APIURL'] . 'inventory/v1/pricebooks?organization_id=' . $this->config['ProductZI']['OID'];
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 		if ( isset( $json->pricebooks ) ) {
 			set_transient( 'zoho_pricelist', $json->pricebooks, MINUTE_IN_SECONDS );
@@ -96,9 +96,9 @@ class ImportPricelistClass {
 		if ( $in_cache ) {
 			return $in_cache;
 		}
-		$url                      = $this->config['ProductZI']['APIURL'] . 'api/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $this->config['ProductZI']['OID'];
+		$url = $this->config['ProductZI']['APIURL'] . 'inventory/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $this->config['ProductZI']['OID'];
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 		if ( is_object( $json ) && property_exists( $json, 'pricebook' ) ) {
 			$json = json_decode( wp_json_encode( $json->pricebook ), true );
 			set_transient( 'zoho_pricelist_' . $pricebook_id, $json, DAY_IN_SECONDS );
@@ -127,7 +127,7 @@ class ImportPricelistClass {
            				 FROM {$wpdb->postmeta} pm
            				 INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
            				 WHERE pm.meta_key = 'zi_item_id'
-           				 AND p.post_type in ('product', 'product_variation') 
+           				 AND p.post_type in ('product', 'product_variation')
            				 AND p.post_status = 'publish'
            				 AND pm.meta_value != ''",
 			ARRAY_A
@@ -147,7 +147,7 @@ class ImportPricelistClass {
 	 * @param string $role user role
 	 */
 	private function addify_b2b( int $pricebook_id, string $role ): bool {
-		$price_book  = $this->get_zoho_pricebook( $pricebook_id );
+		$price_book = $this->get_zoho_pricebook( $pricebook_id );
 		$zi_item_ids = $this->get_zoho_products();
 
 		if ( empty( $price_book ) ) {
@@ -156,8 +156,8 @@ class ImportPricelistClass {
 
 		$meta_collection = array();
 		if ( isset( $price_book['pricebook_type'] ) && $price_book['pricebook_type'] === 'fixed_percentage' ) {
-			$meta_collection['price']   = $price_book['percentage'] ?? 0;
-			$meta_collection['ids']     = array_fill_keys( array_values( $zi_item_ids ), $meta_collection['price'] );
+			$meta_collection['price'] = $price_book['percentage'] ?? 0;
+			$meta_collection['ids'] = array_fill_keys( array_values( $zi_item_ids ), $meta_collection['price'] );
 			$meta_collection['orderby'] = $price_book['is_increase'] ? 'percentage_increase' : 'percentage_decrease';
 		} else {
 			$meta_collection['orderby'] = 'fixed_price';
@@ -168,7 +168,7 @@ class ImportPricelistClass {
 						$priceBracket = $itemlist['price_brackets'][0];
 						$meta_collection['ids'][ $zi_item_ids[ $itemlist['item_id'] ] ] = array(
 							'start_quantity' => $priceBracket['start_quantity'] ?? 0,
-							'end_quantity'   => $priceBracket['end_quantity'] ?? 0,
+							'end_quantity' => $priceBracket['end_quantity'] ?? 0,
 							'pricebook_rate' => $priceBracket['pricebook_rate'] ?? 0,
 						);
 					} else {
@@ -184,21 +184,21 @@ class ImportPricelistClass {
 
 		foreach ( $meta_collection['ids'] as $product_id => $price ) {
 			$formatted_price = str_replace( '.', wc_get_price_decimal_separator(), $meta_collection['price'] ?? $price );
-			$metavalue       = array(
-				'discount_type'  => $meta_collection['orderby'],
-				'user_role'      => $role,
+			$metavalue = array(
+				'discount_type' => $meta_collection['orderby'],
+				'user_role' => $role,
 				'discount_value' => is_array( $formatted_price ) ? $formatted_price['pricebook_rate'] : $formatted_price,
-				'min_qty'        => is_array( $formatted_price ) ? $formatted_price['start_quantity'] : '',
-				'max_qty'        => is_array( $formatted_price ) ? $formatted_price['end_quantity'] : '',
+				'min_qty' => is_array( $formatted_price ) ? $formatted_price['start_quantity'] : '',
+				'max_qty' => is_array( $formatted_price ) ? $formatted_price['end_quantity'] : '',
 			);
-			$postmeta_array  = get_post_meta( $product_id, '_role_base_price', true );
-			$updated         = false;
+			$postmeta_array = get_post_meta( $product_id, '_role_base_price', true );
+			$updated = false;
 
 			if ( is_array( $postmeta_array ) && ! empty( $postmeta_array ) ) {
 				foreach ( $postmeta_array as &$postmeta ) {
 					if ( $postmeta['user_role'] === $role ) {
 						$postmeta = $metavalue;
-						$updated  = true;
+						$updated = true;
 						break;
 					}
 				}
@@ -220,7 +220,7 @@ class ImportPricelistClass {
 			return false;
 		}
 		foreach ( $group_settings as $group_setting ) {
-			$group_id     = $group_setting['key'];
+			$group_id = $group_setting['key'];
 			$pricebook_id = $group_setting['value'];
 			delete_transient( 'wcb2b_synced_groups' );
 			$price_book = $this->get_zoho_pricebook( $pricebook_id );
@@ -239,13 +239,13 @@ class ImportPricelistClass {
 						if ( ! isset( $zi_item_ids[ $pricebook_item['item_id'] ] ) ) {
 							continue;
 						}
-						$product_id           = $zi_item_ids[ $pricebook_item['item_id'] ];
+						$product_id = $zi_item_ids[ $pricebook_item['item_id'] ];
 						$product_group_prices = $product_group_min = $product_group_max = array();
 						if ( is_array( $pricebook_item['price_brackets'] ) && count( $pricebook_item['price_brackets'] ) > 0 ) {
 							$price = $pricebook_item['price_brackets'][0]['pricebook_rate'];
 							$product_group_prices[ $group_id ]['regular_price'] = $price;
-							$product_group_min[ $group_id ]                     = $pricebook_item['price_brackets'][0]['start_quantity'];
-							$product_group_max[ $group_id ]                     = $pricebook_item['price_brackets'][0]['end_quantity'];
+							$product_group_min[ $group_id ] = $pricebook_item['price_brackets'][0]['start_quantity'];
+							$product_group_max[ $group_id ] = $pricebook_item['price_brackets'][0]['end_quantity'];
 						} else {
 							$product_group_prices[ $group_id ]['regular_price'] = $pricebook_item['pricebook_rate'];
 						}
@@ -320,7 +320,7 @@ class ImportPricelistClass {
 		}
 		$grouped_data = array_reduce(
 			$results,
-			function ( $result, $item ) {
+			function ($result, $item) {
 				$result[ $item['rule'] ][] = $item['id'];
 
 				return $result;

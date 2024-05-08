@@ -52,7 +52,7 @@ class Sync_Order_Class {
 	 * @return void
 	 */
 	public function zi_orders_prepare_sync() {
-		$args     = func_get_args();
+		$args = func_get_args();
 		$order_id = $args[0];
 		if ( ! get_option( 'zoho_inventory_access_token' ) || ! $order_id ) {
 			return;
@@ -72,10 +72,10 @@ class Sync_Order_Class {
 			return;
 		}
 		// $fd = fopen(__DIR__ . '/on_insert_rest_api.txt', 'w+');
-		$request_body       = $request->get_body();
+		$request_body = $request->get_body();
 		$request_body_array = json_decode( $request_body, true );
-		$order_status       = $request_body_array['status'];
-		$order_id           = $object->get_id();
+		$order_status = $request_body_array['status'];
+		$order_id = $object->get_id();
 
 		// Check how many keys there are in the request body array. If there are only two keys then we don't need to do anything.
 		if ( count( $request_body_array ) === 2 ) {
@@ -110,27 +110,27 @@ class Sync_Order_Class {
 	public function zi_sync_customer_checkout( $order_id ) {
 		// $fd = fopen( __DIR__ . '/zi_sync_customer_checkout.txt', 'w+' );
 
-		$order          = wc_get_order( $order_id );
-		$userid         = $order->get_user_id();
-		$user_company   = $order->get_billing_company();
-		$user_email     = $order->get_billing_email();
+		$order = wc_get_order( $order_id );
+		$userid = $order->get_user_id();
+		$user_company = $order->get_billing_company();
+		$user_email = $order->get_billing_email();
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
 
 		// Get currency code of the order
 		$currency_id = intval( get_user_meta( $userid, 'zi_currency_id', true ) );
 		if ( empty( $currency_id ) ) {
-			$currency_code         = $order->get_currency();
+			$currency_code = $order->get_currency();
 			$multi_currency_handle = new MulticurrencyClass();
-			$currency_id           = $multi_currency_handle->zoho_currency_data( $currency_code, $userid );
+			$currency_id = $multi_currency_handle->zoho_currency_data( $currency_code, $userid );
 		}
 
 		if ( $zi_customer_id ) {
 			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-			$get_url            = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
+			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+			$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
 
 			// fwrite($fd,PHP_EOL.'customer_json: '.print_r($json, true));
 
@@ -155,12 +155,12 @@ class Sync_Order_Class {
 			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 			// fwrite($fd,PHP_EOL.'$user_mail : '.$user_email);
-			$url = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
+			$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+			$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
-			$code    = $json->code;
+			$code = $json->code;
 			$message = $json->message;
 			if ( $code === 0 || $code === '0' ) {
 				// fwrite($fd, PHP_EOL . 'customer_json: ' . print_r($json, true));
@@ -168,16 +168,16 @@ class Sync_Order_Class {
 					// Second check based on Company Name
 					if ( $user_company ) {
 						$company_name = str_replace( ' ', '%20', $user_company );
-						$url          = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&search_text=' . $company_name;
+						$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&search_text=' . $company_name;
 
 						$execute_curl_call_handle = new ExecutecallClass();
-						$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+						$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 						$code = $json->code;
 						if ( $code == 0 || $code == '0' ) {
 							if ( empty( $json->contacts ) ) {
 								$contact_class_handle = new ContactClass();
-								$zi_customer_id       = $contact_class_handle->contact_create_function( $userid );
+								$zi_customer_id = $contact_class_handle->contact_create_function( $userid );
 							} else {
 								foreach ( $json->contacts[0] as $key => $value ) {
 									if ( $key == 'contact_id' ) {
@@ -186,12 +186,12 @@ class Sync_Order_Class {
 									}
 								}
 								$contact_class_handle = new ContactClass();
-								$zi_customer_id       = $contact_class_handle->create_contact_person( $userid );
+								$zi_customer_id = $contact_class_handle->create_contact_person( $userid );
 							}
 						}
 					} else {
 						$contact_class_handle = new ContactClass();
-						$zi_customer_id       = $contact_class_handle->contact_create_function( $userid );
+						$zi_customer_id = $contact_class_handle->contact_create_function( $userid );
 					}
 				} else {
 					// fwrite($fd,PHP_EOL.'Contacts : '.print_r($json->contacts,true));
@@ -209,10 +209,10 @@ class Sync_Order_Class {
 		} else {
 			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-			$get_url            = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
+			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$contactpersons_response  = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+			$contactpersons_response = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
 
 			// fwrite( $fd, PHP_EOL . 'Contactpersons: ' . print_r($contactpersons_response, true) );
 
@@ -235,7 +235,7 @@ class Sync_Order_Class {
 						}
 					}
 				} else {
-					$get_url     = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
+					$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
 					$contact_res = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
 					if ( ( $contact_res->code == 0 || $contact_res->code == '0' ) && ! empty( $contact_res->contact ) ) {
 						foreach ( $contact_res as $contact_ ) {
@@ -269,16 +269,16 @@ class Sync_Order_Class {
 			$order_id = $_POST['arg_order_data'];
 		}
 
-		$order             = wc_get_order( $order_id );
-		$orders_date       = $order->get_date_created()->format( 'Y-m-d' );
-		$i                 = 1;
+		$order = wc_get_order( $order_id );
+		$orders_date = $order->get_date_created()->format( 'Y-m-d' );
+		$i = 1;
 		$zi_sales_order_id = $order->get_meta( 'zi_salesorder_id' );
-		$userid            = $order->get_user_id();
-		$order_status      = $order->get_status();
-		$note              = $order->get_customer_note();
-		$notes             = preg_replace( '/[^A-Za-z0-9\-]/', ' ', $note );
-		$total_shipping    = $order->get_shipping_total();
-		$shipping_method   = $order->get_shipping_method();
+		$userid = $order->get_user_id();
+		$order_status = $order->get_status();
+		$note = $order->get_customer_note();
+		$notes = preg_replace( '/[^A-Za-z0-9\-]/', ' ', $note );
+		$total_shipping = $order->get_shipping_total();
+		$shipping_method = $order->get_shipping_method();
 
 		// // Get WC Subscription Signup fee
 		// $adjustment = '';
@@ -288,15 +288,15 @@ class Sync_Order_Class {
 
 		foreach ( $order->get_items() as $item_id => $item ) {
 			// fwrite($fd, PHP_EOL . '-----------------------------------');
-			$sale_order['order']['suborder'][ $i ]['order_id']     = $item_id;
-			$sale_order['order']['suborder'][ $i ]['product_id']   = $item->get_product_id();
+			$sale_order['order']['suborder'][ $i ]['order_id'] = $item_id;
+			$sale_order['order']['suborder'][ $i ]['product_id'] = $item->get_product_id();
 			$sale_order['order']['suborder'][ $i ]['variation_id'] = $item->get_variation_id();
 			$item_data = $item->get_data();
-			$sale_order['order']['suborder'][ $i ]['quantity']      = $item_data['quantity'];
+			$sale_order['order']['suborder'][ $i ]['quantity'] = $item_data['quantity'];
 			$sale_order['order']['suborder'][ $i ]['post_order_id'] = $item_data['order_id'];
-			$sale_order['order']['suborder'][ $i ]['total']         = round( $item_data['total'], 2 );
-			$sale_order['order']['suborder'][ $i ]['subtotal']      = round( $item_data['subtotal'], 2 );
-			$sale_order['order']['suborder'][ $i ]['item_price']    = $item_data['subtotal'] / $item_data['quantity'];
+			$sale_order['order']['suborder'][ $i ]['total'] = round( $item_data['total'], 2 );
+			$sale_order['order']['suborder'][ $i ]['subtotal'] = round( $item_data['subtotal'], 2 );
+			$sale_order['order']['suborder'][ $i ]['item_price'] = $item_data['subtotal'] / $item_data['quantity'];
 
 			// WC Product-Addons support
 			$formatted_meta_data = $item->get_formatted_meta_data();
@@ -328,10 +328,10 @@ class Sync_Order_Class {
 			}
 			$val_order = array_shift( $sale_order );
 			// fwrite($fd, PHP_EOL . 'USER ID : ' . $userid);
-			$zi_customer_id  = get_user_meta( $userid, 'zi_contact_id', true );
-			$billing_id      = get_user_meta( $userid, 'zi_billing_address_id', true );
-			$shipping_id     = get_user_meta( $userid, 'zi_shipping_address_id', true );
-			$user_email      = get_user_meta( $userid, 'billing_email', true );
+			$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
+			$billing_id = get_user_meta( $userid, 'zi_billing_address_id', true );
+			$shipping_id = get_user_meta( $userid, 'zi_shipping_address_id', true );
+			$user_email = get_user_meta( $userid, 'billing_email', true );
 			$enable_incl_tax = get_option( 'woocommerce_prices_include_tax' );
 
 			if ( $order_status !== 'failed' ) {
@@ -347,16 +347,16 @@ class Sync_Order_Class {
 				foreach ( $val_order['suborder'] as $key => $val ) {
 					// fwrite( $fd, PHP_EOL . 'Val: ' . print_r( $val, true ) );
 
-					$proid  = $val['product_id'];
+					$proid = $val['product_id'];
 					$proidv = $val['variation_id'];
 					if ( $proidv > 0 ) {
-						$proid   = $proidv;
+						$proid = $proidv;
 						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					} else {
 						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
-						$product_handler  = new ProductClass();
+						$product_handler = new ProductClass();
 						$product_response = $product_handler->zi_product_sync( $proid );
 						// fwrite($fd,PHP_EOL.'Product sync: '.print_r($product_response, true));
 					}
@@ -370,10 +370,10 @@ class Sync_Order_Class {
 					}
 
 					$product_description = isset( $val['product_desc'] ) ? $val['product_desc'] : '';
-					$product_desc        = str_replace( '"', '', $product_description );
-					$discount_per_item   = '';
+					$product_desc = str_replace( '"', '', $product_description );
+					$discount_per_item = '';
 
-					$qty        = ( $val['quantity'] ) ? $val['quantity'] : 1;
+					$qty = ( $val['quantity'] ) ? $val['quantity'] : 1;
 					// adding warehouse_id in line items array
 					$warehouse_id = get_option( 'zoho_warehouse_id' );
 					if ( $warehouse_id > 0 ) {
@@ -383,7 +383,7 @@ class Sync_Order_Class {
 					}
 					// if $val['total] is lower than $val['subtotal'] then discount is applied
 					if ( $val['total'] < $val['subtotal'] ) {
-						$discount          = $val['subtotal'] - $val['total'];
+						$discount = $val['subtotal'] - $val['total'];
 						$discount_per_item = '"discount": "' . $discount . '",';
 					}
 
@@ -392,19 +392,19 @@ class Sync_Order_Class {
 					$item_price1 = round( $item_price, 2 );
 
 					// if there is vat exempt tax
-					$order_id  = $val['post_order_id'];
+					$order_id = $val['post_order_id'];
 					$tax_value = $order->get_total_tax();
 					$tax_rates = array();
 					// Apply tax rates zero only if order has no values
 					if ( ! empty( $tax_value ) ) {
 						foreach ( $order->get_items( 'tax' ) as $item ) {
-							$tax_rates[ $item->get_rate_id() ] = $item->get_rate_percent();
+							$tax_rates[ $item->get_rate_id()] = $item->get_rate_percent();
 						}
-						$order_item  = $order->get_item( $val['order_id'] );
-						$item_taxes  = $order_item->get_taxes();
+						$order_item = $order->get_item( $val['order_id'] );
+						$item_taxes = $order_item->get_taxes();
 						$tax_rate_id = current( array_keys( $item_taxes['subtotal'] ) );
 						$tax_percent = $tax_rates[ $tax_rate_id ];
-						$taxid       = '"tax_percentage": "' . $tax_percent . '",';
+						$taxid = '"tax_percentage": "' . $tax_percent . '",';
 
 						$item_price = $item_price1 * ( $tax_percent / 100 + 1 );
 						$item_price = round( $item_price, 2 );
@@ -418,17 +418,17 @@ class Sync_Order_Class {
 				}
 
 				// Shipping Tax
-				$shipping_tax_id    = '';
-				$shipping_tax       = $order->get_shipping_tax();
+				$shipping_tax_id = '';
+				$shipping_tax = $order->get_shipping_tax();
 				$shipping_tax_total = $order->get_shipping_total();
 
 				if ( ! empty( $shipping_tax ) && ! empty( $shipping_tax_total ) ) {
 
 					$tax_percentage = ( ( $shipping_tax / $shipping_tax_total ) * 100 );
 					if ( fmod( $tax_percentage, 1 ) !== 0 ) {
-						$percentage      = number_format( $tax_percentage, 2 );
+						$percentage = number_format( $tax_percentage, 2 );
 						$percent_decimal = $percentage * 100;
-						$decimal_place   = $percent_decimal % 10;
+						$decimal_place = $percent_decimal % 10;
 						if ( $decimal_place === 0 ) {
 							$percentage = number_format( $percentage, 1 );
 						}
@@ -446,7 +446,7 @@ class Sync_Order_Class {
 				// if there is shipping tax
 				if ( ! empty( $shipping_tax ) ) {
 					$shipping_tax_id = $this->zi_get_tax_id( $percentage );
-					$pdt1           .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
+					$pdt1 .= ',"shipping_charge_tax_id":"' . $shipping_tax_id . '"';
 				}
 
 				// Check if there are order fees total is more than 0
@@ -454,7 +454,7 @@ class Sync_Order_Class {
 				// $transaction_fee = get_transaction_fees($order_id);
 				if ( ! empty( $order_fees ) ) {
 					foreach ( $order_fees as $order_fee ) {
-						$fee_name  = $order_fee->get_name();
+						$fee_name = $order_fee->get_name();
 						$fee_total = $order_fee->get_total();
 					}
 					if ( $fee_total > 0 ) {
@@ -489,12 +489,12 @@ class Sync_Order_Class {
 
 				// Custom Field mapping with zoho.
 				$getmappedfields = get_option( 'wootozoho_custom_fields' );
-				$customfield     = ',"custom_fields":[';
+				$customfield = ',"custom_fields":[';
 
 				$data = json_decode( $getmappedfields, true );
 				if ( $data !== null ) {
 					$count = count( $data );
-					$i     = 0;
+					$i = 0;
 					foreach ( $data as $key => $label ) {
 						// Get the meta value which is the meta_key
 						$metavalue = $order->get_meta( $key );
@@ -510,7 +510,7 @@ class Sync_Order_Class {
 
 				// If auto order number is enabled.
 				$enabled_auto_no = get_option( 'zoho_enable_auto_number_status' );
-				$transaction_id  = $order->get_transaction_id();
+				$transaction_id = $order->get_transaction_id();
 				if ( empty( $transaction_id ) ) {
 					$transaction_id = $order->get_meta( '_order_number', true );
 				}
@@ -577,18 +577,18 @@ class Sync_Order_Class {
 		$order_status = $order->get_status();
 
 		if ( $order_status == 'cancelled' || $order_status == 'wc-merged' ) {
-			$zi_sales_order_id  = $order->get_meta( 'zi_salesorder_id', true );
+			$zi_sales_order_id = $order->get_meta( 'zi_salesorder_id', true );
 			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 
-			$url                      = $zoho_inventory_url . 'api/v1/salesorders/' . $zi_sales_order_id . '/status/void?organization_id=' .
+			$url = $zoho_inventory_url . 'inventory/v1/salesorders/' . $zi_sales_order_id . '/status/void?organization_id=' .
 				$zoho_inventory_oid;
-			$data                     = '';
+			$data = '';
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+			$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 			$errmsg = $json->message;
-			$code   = $json->code;
+			$code = $json->code;
 			if ( $code == '0' || $code == 0 ) {
 				// Add order meta key "zi_salesorder_void" to true
 				$order->update_meta_data( 'zi_salesorder_void', true );
@@ -616,7 +616,7 @@ class Sync_Order_Class {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 
 		$data = array(
-			'JSONString'      => '{' . $pdt1 . '}',
+			'JSONString' => '{' . $pdt1 . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
@@ -624,15 +624,15 @@ class Sync_Order_Class {
 		// fwrite($fd, PHP_EOL . 'Data log : ' . print_r($data, true));
 
 		$enabled_auto_no = get_option( 'zoho_enable_auto_number_status' );
-		$ignore_auto_no  = ( $enabled_auto_no ) ? 'false' : 'true';
-		$url             = $zoho_inventory_url . 'api/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
+		$ignore_auto_no = ( $enabled_auto_no ) ? 'false' : 'true';
+		$url = $zoho_inventory_url . 'inventory/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+		$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 		// fwrite( $fd, PHP_EOL . 'Data log : ' . print_r( $json, true ) );
 		$response = array();
-		$code     = $json->code;
+		$code = $json->code;
 		// fwrite($fd, PHP_EOL . 'Code : ' . $code);
 
 		if ( $code == '0' || $code == 0 ) {
@@ -644,7 +644,7 @@ class Sync_Order_Class {
 				}
 			}
 		}
-		$errmsg              = $json->message;
+		$errmsg = $json->message;
 		$response['message'] = $errmsg;
 		// fclose( $fd );
 
@@ -662,13 +662,13 @@ class Sync_Order_Class {
 	public function single_saleorder_zoho_inventory_update( $order_id, $zi_sales_order_id, $pdt1 ) {
 		// $fd = fopen( __DIR__. '/single_saleorder_update.txt', 'w+' );
 
-		$response           = array();
+		$response = array();
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 
-		$url  = $zoho_inventory_url . 'api/v1/salesorders/' . $zi_sales_order_id;
+		$url = $zoho_inventory_url . 'inventory/v1/salesorders/' . $zi_sales_order_id;
 		$data = array(
-			'JSONString'      => '{' . $pdt1 . '}',
+			'JSONString' => '{' . $pdt1 . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
@@ -677,11 +677,11 @@ class Sync_Order_Class {
 		// fwrite($fd, PHP_EOL. print_r($data, true)); //logging response
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
 
 		// $code = $json->code;
-		$errmsg                       = $json->message;
-		$response['message']          = $errmsg;
+		$errmsg = $json->message;
+		$response['message'] = $errmsg;
 		$response['zi_salesorder_id'] = $zi_sales_order_id;
 
 		// echo '<pre>'; print_r($errmsg);
@@ -717,9 +717,9 @@ class Sync_Order_Class {
 
 					$json_package = '"date": "' . $ship_date . '","line_items": [' . $impot . ']';
 
-					$url_package = $zoho_inventory_url . 'api/v1/packages/' . $package_id;
-					$data3       = array(
-						'JSONString'      => '{' . $json_package . '}',
+					$url_package = $zoho_inventory_url . 'inventory/v1/packages/' . $package_id;
+					$data3 = array(
+						'JSONString' => '{' . $json_package . '}',
 						'organization_id' => $zoho_inventory_oid,
 					);
 
@@ -742,15 +742,15 @@ class Sync_Order_Class {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 
-		$url                      = $zoho_inventory_url . 'api/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
+		$url = $zoho_inventory_url . 'inventory/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
-		$code                     = $json->code;
-		$tax_id                   = '';
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$code = $json->code;
+		$tax_id = '';
 		if ( 0 === $code || '0' === $code ) {
 			foreach ( $json->taxes as $key => $value ) {
 				// Truncate the tax percentage to one digit after decimal point
-				$api_tax_percentage   = floor( $value->tax_percentage * 10 ) / 10;
+				$api_tax_percentage = floor( $value->tax_percentage * 10 ) / 10;
 				$input_tax_percentage = floor( $percentage * 10 ) / 10;
 
 				// Compare the truncated tax percentages
