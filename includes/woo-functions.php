@@ -60,11 +60,8 @@ function zi_product_sync_class( $product_id ) {
 	if ( ! is_admin() ) {
 		return;
 	}
-	if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( $_POST['security'], 'zoho_product_sync_nonce' ) ) {
-		die( 'Invalid nonce' );
-	}
 	if ( ! $product_id ) {
-		if ( isset( $_POST['arg_product_data'] ) ) {
+		if ( isset( $_POST['arg_product_data'] ) && wp_verify_nonce( $_POST['security'], 'zoho_product_sync_nonce' ) ) {
 			$product_id = $_POST['arg_product_data'];
 		}
 	}
@@ -225,12 +222,13 @@ add_action( 'add_meta_boxes', 'zoho_product_metabox' );
  * Add Zoho and Exact Item IDs to Product and Variations
  * @return void
  */
-add_action( 'woocommerce_product_options_general_product_data', 'cmbird_item_id_field' );
+add_action( 'woocommerce_product_options_pricing', 'cmbird_item_id_field' );
 add_action( 'woocommerce_variation_options_pricing', 'cmbird_item_id_variation_field', 10, 3 );
 function cmbird_item_id_field() {
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'cost_price',
+			'wrapper_class' => 'form-row',
 			'label' => 'Cost Price',
 			'data_type' => 'price',
 		)
@@ -258,6 +256,7 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'cost_price[' . $loop . ']',
+			'wrapper_class' => 'form-row',
 			'data_type' => 'price',
 			'label' => __( 'Cost Price' ),
 			'value' => get_post_meta( $variation->ID, 'cost_price', true ),
@@ -295,6 +294,11 @@ function cmbird_save_cost_price( $product_id ) {
 			update_post_meta( $product_id, 'cost_price', $_POST['cost_price'] );
 		}
 	}
+}
+add_action( 'woocommerce_save_product_variation', 'cmbird_save_cost_price_variation', 10, 2 );
+function cmbird_save_cost_price_variation( $variation_id, $loop ) {
+	$text_field = ! empty( $_POST['cost_price'][ $loop ] ) ? $_POST['cost_price'][ $loop ] : '';
+	update_post_meta( $variation_id, 'cost_price', sanitize_text_field( $text_field ) );
 }
 
 /**
