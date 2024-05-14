@@ -288,6 +288,8 @@ class ProductWebhook {
 				if ( ! $product_found ) {
 					// remove all postmeta of that product id.
 					$wpdb->delete( $wpdb->postmeta, array( 'post_id' => $mapped_product_id ) );
+				} else {
+					$pdt_id = $mapped_product_id;
 				}
 			} elseif ( empty( $item['is_combo_product'] ) ) {
 				// fwrite($fd, PHP_EOL . 'Inside create product');
@@ -345,19 +347,18 @@ class ProductWebhook {
 				// stock
 				$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
 				if ( ! $zi_stock_sync ) {
-					// fwrite($fd, PHP_EOL . 'Inside1');
+					// fwrite( $fd, PHP_EOL . 'Inside1' );
 					if ( 'NULL' !== gettype( $item_stock ) ) {
-						// fwrite($fd, PHP_EOL . 'Inside1.1');
+						// fwrite( $fd, PHP_EOL . 'Inside1.1' );
 						// Set manage stock to yes
 						$simple_product->set_manage_stock( true );
 						// Update stock for simple product
 						$simple_product->set_stock_quantity( number_format( $item_stock, 0, '.', '' ) );
 						if ( $item_stock > 0 ) {
-							// fwrite($fd, PHP_EOL . 'Inside2');
-							$stock_status = 'instock';
+							// fwrite( $fd, PHP_EOL . 'Inside2' );
 							// Update stock status
-							$simple_product->set_stock_status( $stock_status );
-							wp_set_post_terms( $pdt_id, $stock_status, 'product_visibility', true );
+							$simple_product->set_stock_status( 'instock' );
+							wp_set_post_terms( $pdt_id, 'instock', 'product_visibility', true );
 						} else {
 							// fwrite($fd, PHP_EOL . 'Inside3');
 							$stock_status = $simple_product->backorders_allowed() ? 'onbackorder' : 'outofstock';
@@ -435,6 +436,8 @@ class ProductWebhook {
 		$response = new WP_REST_Response();
 		$response->set_data( 'success on variable product' );
 		$response->set_status( 200 );
+
+		// fclose( $fd ); // close logfile.
 
 		return $response;
 	}
