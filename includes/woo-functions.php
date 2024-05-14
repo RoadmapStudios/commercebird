@@ -60,8 +60,11 @@ function zi_product_sync_class( $product_id ) {
 	if ( ! is_admin() ) {
 		return;
 	}
+	if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( $_POST['security'], 'zoho_product_sync_nonce' ) ) {
+		die( 'Invalid nonce' );
+	}
 	if ( ! $product_id ) {
-		if ( isset( $_POST['arg_product_data'] ) && wp_verify_nonce( $_POST['nonce'], 'zi_product_sync_class' ) ) {
+		if ( isset( $_POST['arg_product_data'] ) ) {
 			$product_id = $_POST['arg_product_data'];
 		}
 	}
@@ -203,10 +206,13 @@ function zoho_product_metabox() {
 }
 function zoho_product_metabox_callback( $post ) {
 	$response = get_post_meta( $post->ID, 'zi_product_errmsg' );
-	echo 'API Response: ' . implode( $response ) . '<br>';
-	echo '<br><a href="javascript:void(0)" style="width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_product_ajax(' . $post->ID . ')">Sync Product</a>';
-	echo '<br><a href="javascript:void(0)" style="margin-top:10px; background:#b32d2e; border-color: #b32d2e; width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_unmap_product_ajax(' . $post->ID . ')">Unmap this Product</a>';
-	$product      = wc_get_product( $post->ID );
+	echo 'API Response: ' . esc_html( implode( $response ) ) . '<br>';
+	// Generate nonce
+	$nonce = wp_create_nonce( 'zoho_product_sync_nonce' );
+	$post_id = $post->ID;
+	echo '<br><a href="javascript:void(0)" style="width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_product_ajax(' . esc_attr( $post_id ) . ', \'' . esc_attr( $nonce ) . '\')">Sync Product</a>';
+	echo '<br><a href="javascript:void(0)" style="margin-top:10px; background:#b32d2e; border-color: #b32d2e; width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_unmap_product_ajax(' . esc_attr( $post_id ) . ')">Unmap this Product</a>';
+	$product = wc_get_product( $post->ID );
 	$product_type = $product->get_type();
 	if ( 'variable' === $product_type || 'variable-subscription' === $product_type ) {
 		echo '<p class="howto" style="color:#b32d2e;"><strong>Important : </strong> Please ensure all variations have price and SKU</p>';

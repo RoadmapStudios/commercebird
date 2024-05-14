@@ -43,7 +43,8 @@ function zoho_admin_order_ajax(data) {
     let action_name = 'zi_product_sync_class';
     var data = {
       'action': action_name,
-      'arg_product_data': data
+      'arg_product_data': data,
+      'security': nonce
     };
 
     jQuery.post(ajaxurl, data, function (_data, status) {
