@@ -93,6 +93,9 @@ class import_product_class {
 						$product->set_width( floatval( $details->width ) );
 						$product->set_height( floatval( $details->height ) );
 
+						// Update Purchase Rate as Cost Price
+						$product->update_meta_data( 'cost_price', $arr->purchase_rate );
+
 						// To check status of stock sync option.
 						$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
 						if ( ! $zi_stock_sync ) {

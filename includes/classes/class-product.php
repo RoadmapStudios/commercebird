@@ -112,6 +112,12 @@ class ProductClass {
 			$zidata .= '"tax_id" : "' . $tax_id . '",';
 			//$zidata .= '"image_name" : "' . $image . '",';
 
+			// Get cost_price from meta data.
+			$cost_price = $product->get_meta( 'cost_price' );
+			if ( ! empty( $cost_price ) && is_numeric( $cost_price ) ) {
+				$zidata .= '"purchase_rate" : "' . $cost_price . '",';
+			}
+
 			$dimensions = (object) array();
 			$dimensions->length = $product->get_length();
 			$dimensions->width = $product->get_width();
@@ -669,14 +675,7 @@ class ProductClass {
 		$sku = $product_variable->get_sku();
 		$stock_quantity = $product_variable->get_stock_quantity();
 		$in_stock = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
-
-		/*
-						  if ($rateS) {
-						  $rate = $rateS;
-						  } else {
-						  $rate = $rateR;
-						  } */
-
+		// Get Tax ID
 		$tax_rates = WC_Tax::get_base_tax_rates( $product_variable->get_tax_class() );
 		$tax_id_key = '';
 		foreach ( $tax_rates as $tax_key => $tax_value ) {
@@ -704,6 +703,11 @@ class ProductClass {
 		}
 		$zidata .= '"rate" : "' . $rate . '",';
 		$zidata .= '"tax_id" : "' . $tax_id . '",';
+		// Get cost_price from meta data.
+		$cost_price = get_post_meta( $post_id, 'cost_price', true );
+		if ( ! empty( $cost_price ) && is_numeric( $cost_price ) ) {
+			$zidata .= '"purchase_rate" : "' . $cost_price . '",';
+		}
 
 		$dimensions = (object) array();
 		$dimensions->length = $product_variable->get_length();

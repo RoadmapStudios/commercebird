@@ -186,6 +186,8 @@ class ProductWebhook {
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
 				}
+				// Update Purchase price
+				$variation->update_meta_data( 'cost_price', $item['purchase_rate'] );
 
 				$variation->save(); // Save the data
 			} elseif ( 'publish' === $item_status ) {
@@ -327,6 +329,8 @@ class ProductWebhook {
 				if ( empty( $sale_price ) ) {
 					$simple_product->set_price( $item_price );
 				}
+				// Update Purchase price
+				$simple_product->update_meta_data( 'cost_price', $item['purchase_rate'] );
 				// description
 				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {

@@ -214,37 +214,21 @@ function zoho_product_metabox_callback( $post ) {
 }
 add_action( 'add_meta_boxes', 'zoho_product_metabox' );
 
-//Add Zoho Item ID field on Product Edit page
-add_action( 'woocommerce_product_options_general_product_data', 'zoho_item_id_field' );
-add_action( 'woocommerce_variation_options_pricing', 'zoho_item_id_variation_field', 10, 3 );
-function zoho_item_id_field() {
-	woocommerce_wp_text_input(
-		array(
-			'id'          => 'zi_item_id',
-			'label'       => __( 'Zoho Item ID' ),
-			'class'       => 'readonly',
-			'desc_tip'    => true,
-			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
-		)
-	);
-}
-function zoho_item_id_variation_field( $loop, $variation_data, $variation ) {
-	woocommerce_wp_text_input(
-		array(
-			'id'          => 'zi_item_id[' . $loop . ']',
-			'class'       => 'readonly',
-			'label'       => __( 'Zoho Item ID' ),
-			'value'       => get_post_meta( $variation->ID, 'zi_item_id', true ),
-			'desc_tip'    => true,
-			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
-		)
-	);
-}
 
-//Add Exact Item ID field on Product Edit page
-add_action( 'woocommerce_product_options_general_product_data', 'exact_item_id_field' );
-add_action( 'woocommerce_variation_options_pricing', 'exact_item_id_variation_field', 10, 3 );
-function exact_item_id_field() {
+/**
+ * Add Zoho and Exact Item IDs to Product and Variations
+ * @return void
+ */
+add_action( 'woocommerce_product_options_general_product_data', 'cmbird_item_id_field' );
+add_action( 'woocommerce_variation_options_pricing', 'cmbird_item_id_variation_field', 10, 3 );
+function cmbird_item_id_field() {
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'cost_price',
+			'label' => 'Cost Price',
+			'data_type' => 'price',
+		)
+	);
 	woocommerce_wp_text_input(
 		array(
 			'id'          => 'eo_item_id',
@@ -254,8 +238,25 @@ function exact_item_id_field() {
 			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
 		)
 	);
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'zi_item_id',
+			'label' => __( 'Zoho Item ID' ),
+			'class' => 'readonly',
+			'desc_tip' => true,
+			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
+		)
+	);
 }
-function exact_item_id_variation_field( $loop, $variation_data, $variation ) {
+function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'cost_price[' . $loop . ']',
+			'data_type' => 'price',
+			'label' => __( 'Cost Price' ),
+			'value' => get_post_meta( $variation->ID, 'cost_price', true ),
+		)
+	);
 	woocommerce_wp_text_input(
 		array(
 			'id'          => 'eo_item_id[' . $loop . ']',
@@ -266,6 +267,28 @@ function exact_item_id_variation_field( $loop, $variation_data, $variation ) {
 			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
 		)
 	);
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'zi_item_id[' . $loop . ']',
+			'class' => 'readonly',
+			'label' => __( 'Zoho Item ID' ),
+			'value' => get_post_meta( $variation->ID, 'zi_item_id', true ),
+			'desc_tip' => true,
+			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
+		)
+	);
+}
+
+add_action( 'save_post_product', 'cmbird_save_cost_price' );
+function cmbird_save_cost_price( $product_id ) {
+	global $typenow;
+	if ( 'product' === $typenow ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+			return;
+		if ( isset( $_POST['cost_price'] ) ) {
+			update_post_meta( $product_id, 'cost_price', $_POST['cost_price'] );
+		}
+	}
 }
 
 /**
