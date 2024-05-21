@@ -56,14 +56,6 @@ class ProductClass {
 			// fwrite($fd,PHP_EOL.'Inside Regular: ');
 			// Simple product.
 			$rate = $product->get_regular_price();
-			// $rateS = $product->get_sale_price();
-			/*
-									   if ($rateS) {
-									   $rate = $rateS;
-									   } else {
-									   $rate = $rateR;
-									   } */
-			// parse the name
 			$pre_name = $product->get_name();
 			$name = preg_replace( "/[>\"''<`]/", '', $pre_name );
 

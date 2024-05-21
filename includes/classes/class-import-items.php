@@ -429,12 +429,20 @@ class import_product_class {
 								as_schedule_single_action( time(), 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
 							}
 						}
-
 						$existing_parent_product->save();
 						// ACF Fields
 						if ( ! empty( $gp_arr->custom_fields ) ) {
 							// fwrite($fd, PHP_EOL . 'Custom Fields : ' . print_r($gp_arr->custom_fields, true));
 							$this->sync_item_custom_fields( $gp_arr->custom_fields, $group_id );
+						}
+						// update Brand.
+						if ( ! empty( $gp_arr->brand ) ) {
+							// check if the Brand or Brands taxonomy exists and then update the term
+							if ( taxonomy_exists( 'product_brand' ) ) {
+								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brand' );
+							} elseif ( taxonomy_exists( 'product_brands' ) ) {
+								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brands' );
+							}
 						}
 					} else {
 						// Create the parent variable product
@@ -444,6 +452,16 @@ class import_product_class {
 						$parent_product->set_short_description( $gp_arr->description );
 						$parent_product->add_meta_data( 'zi_item_id', $zi_group_id );
 						$group_id = $parent_product->save();
+
+						// update Brand.
+						if ( ! empty( $gp_arr->brand ) ) {
+							// check if the Brand or Brands taxonomy exists and then update the term
+							if ( taxonomy_exists( 'product_brand' ) ) {
+								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brand' );
+							} elseif ( taxonomy_exists( 'product_brands' ) ) {
+								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brands' );
+							}
+						}
 
 						// fwrite($fd, PHP_EOL . 'New $group_id ' . $group_id);
 						// ACF Fields
