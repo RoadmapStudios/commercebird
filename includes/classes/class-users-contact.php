@@ -413,7 +413,11 @@ class ContactClass {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
-			$page = isset( $data->page ) ? $data->page : null;
+			if ( isset( $data['page'] ) ) {
+				$page = $data['page'];
+			} else {
+				$page = 1;
+			}
 		} else {
 			$page = 1;
 		}
@@ -431,31 +435,27 @@ class ContactClass {
 			foreach ( $json->contacts as $contacts ) {
 				// fwrite( $fd, PHP_EOL . 'Contact : ' . print_r( $contacts, true ) );
 				$contact_type = trim( $contacts->contact_type );
-				$zohocontact_id = $contacts->contact_id;
-				$phone = $contacts->phone;
-				$company_name = $contacts->company_name;
-				$first_name = $contacts->first_name;
-				$last_name = $contacts->last_name;
-				$email = trim( $contacts->email );
+				$zoho_contact_id = $contacts->contact_id;
+				$first_name = isset( $contacts->first_name ) ? $contacts->first_name : '';
+				$last_name = isset( $contacts->last_name ) ? $contacts->last_name : '';
+				$email = isset( $contacts->email ) ? $contacts->email : '';
+				$phone = isset( $contacts->phone ) ? $contacts->phone : '';
+				$company_name = isset( $contacts->company_name ) ? $contacts->company_name : '';
 				$credit_limit1 = $contacts->customer_credit_limit;
 				$credit_limit = preg_replace( '/[^0-9,]/', '', $credit_limit1 );
 				//check if user type is customer
-				if ( ! empty( $email ) && ! empty( $first_name ) && ! empty( $last_name ) ) {
+				if ( ! empty( $email ) ) {
 					if ( $contact_type === 'customer' && ! email_exists( $email ) ) {
-						/* Create Wp User */
-						$user_data = array(
-							'user_login' => $first_name . '.' . $last_name,
-							'display_name' => $first_name . ' ' . $last_name,
-							'user_email' => $email,
-							'first_name' => $first_name,
-							'last_name' => $last_name,
-							'role' => 'customer',
-						);
-						$user_id = wp_insert_user( $user_data );
+						/* Create WC Customer */
+						$user_id = wc_create_new_customer( $email, '', wp_generate_password() );
 						if ( ! is_wp_error( $user_id ) ) {
-							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
+							update_user_meta( $user_id, 'zi_contact_id', $zoho_contact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
+							update_user_meta( $user_id, 'billing_first_name', $first_name );
+							update_user_meta( $user_id, 'billing_last_name', $last_name );
+							update_user_meta( $user_id, 'first_name', $first_name );
+							update_user_meta( $user_id, 'last_name', $last_name );
 							if ( class_exists( 'WooCommerceB2B' ) ) {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
@@ -465,31 +465,27 @@ class ContactClass {
 					} elseif ( email_exists( $email ) ) {
 						/* Update Wp User if already exist */
 						$user_data = get_user_by( 'email', $email );
-						$user_id = $user_data->ID;
-						$is_err = wp_update_user(
-							array(
-								'ID' => $user_id,
-								'display_name' => $first_name . ' ' . $last_name,
-								'user_email' => $email,
-								'first_name' => $first_name,
-								'last_name' => $last_name,
-							)
-						);
-						if ( ! is_wp_error( $is_err ) ) {
-							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
+						if ( ! is_wp_error( $user_data ) ) {
+							$user_id = $user_data->ID;
+							update_user_meta( $user_id, 'zi_contact_id', $zoho_contact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
+							update_user_meta( $user_id, 'billing_first_name', $first_name );
+							update_user_meta( $user_id, 'billing_last_name', $last_name );
+							update_user_meta( $user_id, 'first_name', $first_name );
+							update_user_meta( $user_id, 'last_name', $last_name );
 							if ( class_exists( 'WooCommerceB2B' ) ) {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
 						} else {
-							echo $is_err->get_error_message();
+							echo $user_data->get_error_message();
 						}
 					}
+				} else {
+					continue;
 				}
 			}
-			// fclose( $fd ); // end logging
-			if ( $json->page_context['has_more_page'] === true ) {
+			if ( $json->page_context->has_more_page ) {
 				$data_arr = (object) array();
 				$data_arr->page = $page + 1;
 				$existing_schedule = as_has_scheduled_action( 'sync_zi_import_contacts', array( $data_arr ) );
@@ -498,6 +494,7 @@ class ContactClass {
 				}
 			}
 		}
+		// fclose( $fd );
 	}
 
 	/**

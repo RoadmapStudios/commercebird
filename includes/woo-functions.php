@@ -498,3 +498,11 @@ function commercebird_action_scheduler_purge() {
 	return WEEK_IN_SECONDS;
 }
 add_filter( 'action_scheduler_retention_period', 'commercebird_action_scheduler_purge' );
+
+add_filter(
+	'action_scheduler_default_cleaner_statuses',
+	function ( $statuses ) {
+		$statuses[] = ActionScheduler_Store::STATUS_FAILED;
+		return $statuses;
+	}
+);

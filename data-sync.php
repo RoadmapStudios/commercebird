@@ -74,9 +74,7 @@ function zoho_ajax_call_variable_item_from_zoho() {
 
 			// Check if the scheduled action exists
 			if ( ! $existing_schedule ) {
-				// Schedule the cron job
-				$response = as_schedule_single_action( time(), 'import_group_items_cron', array( $data_arr ) );
-
+				as_schedule_single_action( time(), 'import_group_items_cron', array( $data_arr ) );
 			}
 
 			// Update the last synced category index in the options

@@ -31,13 +31,6 @@ class import_product_class {
 		$json = $execute_curl_call->ExecuteCurlCallGet( $url );
 		$code = $json->code;
 
-		/* Conditional code to load file only if source is cron. */
-		$current_user = wp_get_current_user();
-		$admin_author_id = $current_user->ID;
-		if ( empty( $current_user ) ) {
-			$admin_author_id = '1';
-		}
-
 		// $message = $json->message;
 		// fwrite($fd, PHP_EOL . '$json->item : ' . print_r($json, true));
 
@@ -173,11 +166,12 @@ class import_product_class {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
-			if ( is_object( $data ) ) {
-				$data = (array) $data;
+			if ( isset( $data['page'] ) && isset( $data['category'] ) ) {
+				$page = $data['page'];
+				$category = $data['category'];
+			} else {
+				return;
 			}
-			$page = $data['page'];
-			$category = $data['category'];
 		} else {
 			return;
 		}
@@ -188,6 +182,8 @@ class import_product_class {
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 		$urlitem = $zoho_inventory_url . 'inventory/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
+		// fwrite( $fd, PHP_EOL . 'URL : ' . $urlitem );
+
 		$execute_curl_call = new ExecutecallClass();
 		$json = $execute_curl_call->ExecuteCurlCallGet( $urlitem );
 		$code = (int) property_exists( $json, 'code' ) ? $json->code : '0';
@@ -364,11 +360,12 @@ class import_product_class {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
-			if ( is_object( $data ) ) {
-				$data = (array) $data;
+			if ( isset( $data['page'] ) && isset( $data['category'] ) ) {
+				$page = $data['page'];
+				$category = $data['category'];
+			} else {
+				return;
 			}
-			$page = $data['page'];
-			$category = $data['category'];
 
 			// Keep backup of current syncing page of particular category.
 			update_option( 'group_item_sync_page_cat_id_' . $category, $page );
@@ -483,8 +480,14 @@ class import_product_class {
 				} // end foreach group items
 
 				if ( $json->page_context->has_more_page ) {
-					$data['page'] = $page + 1;
-					$this->sync_groupitem_recursively( $data );
+					$data_arr = (object) array();
+					$data_arr->page = $page + 1;
+					$data_arr->category = $category;
+					$existing_schedule = as_has_scheduled_action( 'import_group_items_cron', array( $data_arr ) );
+					// Check if the scheduled action exists
+					if ( ! $existing_schedule ) {
+						as_schedule_single_action( time(), 'import_group_items_cron', array( $data_arr ) );
+					}
 				} else {
 					// If there is no more page to sync last backup page will be starting from 1.
 					// This we have used because in shared hosting only 1000 records are syncing.
@@ -495,6 +498,8 @@ class import_product_class {
 			// End of logging.
 			// fclose( $fd );
 			return $response_msg;
+		} else {
+			return;
 		}
 	}
 
@@ -521,7 +526,6 @@ class import_product_class {
 		$code = $json->code;
 
 		global $wpdb;
-		$admin_author_id = '1';
 		// fwrite($fd, PHP_EOL . '$admin_author_id : ' . $admin_author_id);
 
 		// Accounting stock mode check
@@ -938,8 +942,8 @@ class import_product_class {
 			// fwrite($fd, PHP_EOL . 'Inside item sync : ' . $item_name);
 			// Brand
 			if ( isset( $item->brand ) && ! empty( $group_id ) ) {
-				if ( taxonomy_exists( 'product_brand' ) ) {
-					wp_set_object_terms( $group_id, $item->brand, 'product_brand' );
+				if ( taxonomy_exists( 'product_brands' ) ) {
+					wp_set_object_terms( $group_id, $item->brand, 'product_brands' );
 				}
 			}
 
@@ -950,7 +954,10 @@ class import_product_class {
 				if ( ! empty( $item->sku ) ) {
 					$variation->set_sku( $item->sku );
 				}
-
+				// update purchase price as meta data
+				if ( ! empty( $item->purchase_rate ) ) {
+					update_post_meta( $variation_id, 'cost_price', $item->purchase_rate );
+				}
 				// Price - Imported
 				$zi_disable_price_sync = get_option( 'zoho_disable_price_sync_status' );
 				$variation_sale_price = $variation->get_sale_price();
@@ -958,7 +965,6 @@ class import_product_class {
 					$variation->set_sale_price( $item->rate );
 				}
 				$variation->set_regular_price( $item->rate );
-
 				// Set Tax Class
 				if ( $item->tax_id ) {
 					$zi_common_class = new ZI_CommonClass();
@@ -966,21 +972,27 @@ class import_product_class {
 					$variation->set_tax_status( 'taxable' );
 					$variation->set_tax_class( $woo_tax_class );
 				}
-
 				// Stock Imported code
 				if ( $stock_quantity > 0 ) {
 					$variation->set_manage_stock( true );
 					$variation->set_stock_quantity( $stock_quantity );
 					$variation->set_stock_status( 'instock' );
-				} else {
-					$variation->set_manage_stock( false );
+				} elseif ( $stock_quantity <= 0 ) {
+					$variation->set_manage_stock( true );
 					$variation->set_stock_quantity( $stock_quantity );
 					$stock_status = $variation->backorders_allowed() ? 'onbackorder' : 'outofstock';
 					$variation->set_stock_status( $stock_status );
 				}
+				// enable or disable based on status from Zoho
+				$status = ( 'active' === $item->status ) ? 'publish' : 'draft';
+				$variation->set_status( $status );
 				$variation->save();
 			} else {
 				// create new variation
+				// if status is not active then return
+				if ( 'active' !== $item->status ) {
+					return;
+				}
 				// fwrite( $fd, PHP_EOL . 'New Variation: ' . $item->name );
 
 				$attribute_name11 = $item->attribute_option_name1;
@@ -1006,11 +1018,10 @@ class import_product_class {
 					'stock_qty' => $stock_quantity,
 				);
 
-				$status = ( $item->status === 'active' ) ? 'publish' : 'draft';
 				$variation_post = array(
 					'post_title' => $item->name,
 					'post_name' => $item->name,
-					'post_status' => $status,
+					'post_status' => 'publish',
 					'post_parent' => $group_id,
 					'post_type' => 'product_variation',
 					'guid' => get_the_permalink( $group_id ),
@@ -1050,6 +1061,10 @@ class import_product_class {
 				if ( empty( $variation_sale_price ) ) {
 					// $variation->set_price($variation_data['regular_price']);
 					update_post_meta( $variation_id, '_price', $variation_data['regular_price'] );
+				}
+				// update purchase price as meta data
+				if ( ! empty( $item->purchase_rate ) ) {
+					update_post_meta( $variation_id, 'cost_price', $item->purchase_rate );
 				}
 				// Stock
 				update_post_meta( $variation_id, '_stock', $stock_quantity );

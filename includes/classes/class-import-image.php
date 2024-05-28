@@ -106,7 +106,7 @@ class ImageClass {
 					'type' => $file_type,
 					'tmp_name' => $temp_file,
 					'error' => 0,
-					'size' => filesize( $temp_file ),
+					'size' => wp_filesize( $temp_file ),
 				);
 
 				$overrides = array(
