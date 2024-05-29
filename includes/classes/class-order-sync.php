@@ -521,7 +521,7 @@ class Sync_Order_Class {
 				} elseif ( ! empty( $order_prefix ) ) {
 					$reference_no = $order_prefix . '-' . $order_id;
 				} else {
-					$reference_no = 'WC-' . $order_id;
+					$reference_no = $order_id;
 				}
 
 				if ( $enabled_auto_no ) {
