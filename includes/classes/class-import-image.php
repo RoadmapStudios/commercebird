@@ -76,7 +76,7 @@ class ImageClass {
 		// fwrite( $fd, PHP_EOL . 'Image Exists in Library: ' . $image_exists_in_library );
 		$image_post_id = 0;
 		if ( $image_exists_in_library ) {
-			$attach_id = $image_exists_in_library;
+			$image_post_id = $image_exists_in_library;
 			wp_delete_file( $temp_file );
 			wp_delete_file( $image_url );
 		} else {
@@ -102,11 +102,11 @@ class ImageClass {
 				// fwrite( $fd, PHP_EOL . 'Inside new image: ' . $image_post_id );
 				// Set variables for storage, fix file filename for query strings.
 				$file = array(
-					'name' => $image_name,
-					'type' => $file_type,
+					'name'     => $image_name,
+					'type'     => $file_type,
 					'tmp_name' => $temp_file,
-					'error' => 0,
-					'size' => wp_filesize( $temp_file ),
+					'error'    => 0,
+					'size'     => wp_filesize( $temp_file ),
 				);
 
 				$overrides = array(

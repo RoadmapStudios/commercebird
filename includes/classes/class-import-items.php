@@ -561,10 +561,16 @@ class import_product_class {
 					$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $zi_item_id ) );
 
 					if ( ! empty( $variation_id ) ) {
-						$product = wc_get_product( $variation_id );
-						$product_type = $product->get_type();
-						if ( $product_type === 'simple' ) {
+						$v_product = wc_get_product( $variation_id );
+						// Check if the product object is valid
+						if ( $v_product && is_a( $v_product, 'WC_Product' ) ) {
+							if ( $v_product->is_type( 'simple' ) ) {
+								wp_delete_post( $variation_id, true );
+							}
+						} else {
 							wp_delete_post( $variation_id, true );
+							// Log or handle the case where the product could not be retrieved
+							error_log( "Product with ID $variation_id could not be found or is not a valid product." );
 						}
 					}
 					// SKU check of the variation, if exits then remove it
@@ -656,6 +662,13 @@ class import_product_class {
 					if ( ! empty( $variation_data['featured_image'] ) ) {
 						$image_class = new ImageClass();
 						$image_class->args_attach_image( $item->item_id, $item->name, $variation_id, $item->image_name );
+						if ( ! has_post_thumbnail( $group_id ) ) {
+							$variation_product = wc_get_product( $variation_id );
+							$variation_image_id = $variation_product->get_image_id();
+							if ( $variation_image_id ) {
+								set_post_thumbnail( $group_id, $variation_image_id );
+							}
+						}
 					}
 
 					// Sync the data of the variation in the parent variable product (TODO: this is causing errors in the logs)
@@ -664,9 +677,11 @@ class import_product_class {
 				// End group item add process
 				// array_push($response_msg, $this->zi_response_message('SUCCESS', 'Zoho variable item created for zoho item id ' . $zi_item_id, $variation_id));
 			}
-
-			$data_store = $product->get_data_store();
-			$data_store->sort_all_product_variations( $group_id );
+			if ( $product && is_a( $product, 'WC_Product_Variable' ) ) {
+				// Sort the variations
+				$data_store = $product->get_data_store();
+				$data_store->sort_all_product_variations( $group_id );
+			}
 			// End of Logging
 			// fclose($fd);
 		}

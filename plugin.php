@@ -314,6 +314,10 @@ add_action( 'upgrader_process_complete', 'cmbird_update_plugin_tasks', 10, 2 );
 function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
 	$this_plugin = plugin_basename( __FILE__ );
 
+	if ( '2.1.18' >= RMS_VERSION ) {
+		return;
+	}
+
 	if ( $options['action'] === 'update' && $options['type'] === 'plugin' ) {
 		foreach ( $options['plugins'] as $plugin ) {
 			if ( $plugin === $this_plugin ) {
