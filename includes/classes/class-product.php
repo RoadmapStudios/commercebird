@@ -794,7 +794,7 @@ class ProductClass {
 	public function zi_product_to_woocommerce( $item, $item_stock = '', $type = '' ) {
 		// $fd = fopen( __DIR__ . '/zi_product_to_woocommerce.txt', 'a+' );
 		try {
-			if ( $item['status'] == 'active' ) {
+			if ( 'active' === $item['status'] ) {
 				$status = 'publish';
 			} else {
 				return;
@@ -836,7 +836,7 @@ class ProductClass {
 			}
 
 			return $product_id;
-		} catch (Exception $e) {
+		} catch ( Exception $e ) {
 			// Handle the exception, log it, or perform any necessary actions.
 			error_log( 'Error creating WooCommerce product: ' . $e->getMessage() );
 			return false;

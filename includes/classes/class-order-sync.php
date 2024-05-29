@@ -375,7 +375,7 @@ class Sync_Order_Class {
 
 					$qty = ( $val['quantity'] ) ? $val['quantity'] : 1;
 					// adding warehouse_id in line items array
-					$warehouse_id = get_option( 'zoho_warehouse_id' );
+					$warehouse_id = get_option( 'zoho_warehouse_id_status' );
 					if ( $warehouse_id > 0 ) {
 						$warehouse_id = '"warehouse_id": "' . $warehouse_id . '"';
 					} else {

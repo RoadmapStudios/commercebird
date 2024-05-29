@@ -202,7 +202,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 			'zoho_enable_order_status',
 			'wootozoho_custom_fields',
 			'zoho_pricelist_id',
-			'zoho_warehouse_id',
+			'zoho_warehouse_id_status',
 			'zoho_inventory_auth_code',
 			'zoho_inventory_access_token',
 			'zoho_inventory_refresh_token',

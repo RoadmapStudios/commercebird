@@ -48,7 +48,7 @@ class ProductWebhook {
 		// Accounting stock mode check
 		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 		$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-		$warehouse_id = get_option( 'zoho_warehouse_id' );
+		$warehouse_id = get_option( 'zoho_warehouse_id_status' );
 
 		// variable item sync
 		if ( array_key_exists( 'item', $data ) ) {

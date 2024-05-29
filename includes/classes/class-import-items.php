@@ -97,9 +97,9 @@ class import_product_class {
 							$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 							// Sync from specific warehouse check
 							$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-							$warehouse_id = get_option( 'zoho_warehouse_id' );
+							$warehouse_id = get_option( 'zoho_warehouse_id_status' );
 							$warehouses = $arr->warehouses;
-							if ( $zi_enable_warehousestock == true ) {
+							if ( $zi_enable_warehousestock ) {
 								foreach ( $warehouses as $warehouse ) {
 									if ( $warehouse->warehouse_id === $warehouse_id ) {
 										if ( $accounting_stock ) {
@@ -119,8 +119,7 @@ class import_product_class {
 								$product->set_manage_stock( true );
 								$product->set_stock_quantity( number_format( $stock, 0, '.', '' ) );
 								if ( $stock > 0 ) {
-									$status = 'instock';
-									$product->set_stock_status( $status );
+									$product->set_stock_status( 'instock' );
 								} else {
 									$backorder_status = $product->backorders_allowed();
 									$status = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
@@ -227,12 +226,14 @@ class import_product_class {
 				$pdt = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $arr->item_id ) );
 				$pdt_id = $pdt ? $pdt->post_id : '';
 
-				if ( empty( $pdt_id ) && $allow_to_import === true ) {
+				if ( empty( $pdt_id ) && $allow_to_import && 'active' === $arr->status ) {
 					$product_class = new ProductClass();
 					$item_array = json_decode( wp_json_encode( $arr ), true );
 					$pdt_id = $product_class->zi_product_to_woocommerce( $item_array, '', '' );
 					if ( $pdt_id ) {
 						update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
+					} else {
+						continue;
 					}
 				}
 
@@ -296,7 +297,7 @@ class import_product_class {
 
 				if ( $json->page_context['has_more_page'] ) {
 					$data = (object) array();
-					$data->page = ++$page;
+					$data->page = $page + 1;
 					$data->category = $category;
 					$existing_schedule = as_has_scheduled_action( 'import_simple_items_cron', array( $data ) );
 					if ( ! $existing_schedule ) {
@@ -553,6 +554,10 @@ class import_product_class {
 					$attribute_name3 = $arr;
 				}
 
+				if ( empty( $items ) ) {
+					return;
+				}
+
 				foreach ( $items as $item ) {
 					$variation_data = array(); // reset this array
 					$attribute_arr = array();
@@ -583,7 +588,7 @@ class import_product_class {
 
 					// Stock mode check
 					$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-					$warehouse_id = get_option( 'zoho_warehouse_id' );
+					$warehouse_id = get_option( 'zoho_warehouse_id_status' );
 					$warehouses = $item->warehouses;
 
 					if ( $zi_enable_warehousestock && $warehouse_id ) {
@@ -1341,7 +1346,7 @@ class import_product_class {
 				// fwrite( $fd, PHP_EOL . 'Composite Item : ' . print_r( $comp_item, true ) );
 				// Sync stock from specific warehouse check
 				$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-				$warehouse_id = get_option( 'zoho_warehouse_id' );
+				$warehouse_id = get_option( 'zoho_warehouse_id_status' );
 				$warehouses = $comp_item->warehouses;
 
 				if ( $zi_enable_warehousestock === true ) {
