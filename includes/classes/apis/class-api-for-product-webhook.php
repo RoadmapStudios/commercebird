@@ -345,8 +345,8 @@ class ProductWebhook {
 					wp_set_object_terms( $pdt_id, $item_brand, 'product_brands' );
 				}
 				// stock
-				$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
-				if ( ! $zi_stock_sync ) {
+				$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+				if ( ! $zi_disable_stock_sync ) {
 					// fwrite( $fd, PHP_EOL . 'Inside1' );
 					if ( 'NULL' !== gettype( $item_stock ) ) {
 						// fwrite( $fd, PHP_EOL . 'Inside1.1' );
@@ -466,10 +466,10 @@ class ProductWebhook {
 
 		if ( ! empty( $mapped_product_id ) ) {
 			// stock
-			$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
+			$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
 			$product = wc_get_product( $mapped_product_id );
 			// Check if the product is in stock
-			if ( ! $zi_stock_sync ) {
+			if ( ! $zi_disable_stock_sync ) {
 				if ( $product->is_in_stock() ) {
 					// Get stock quantity
 					$stock_quantity = $product->get_stock_quantity();

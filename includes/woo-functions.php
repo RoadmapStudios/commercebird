@@ -65,7 +65,7 @@ function zi_product_sync_class( $product_id ) {
 			$product_id = $_POST['arg_product_data'];
 		}
 	}
-	$zi_product_sync             = get_option( 'zoho_product_sync_status' );
+	$zi_product_sync             = get_option( 'zoho_disable_product_sync_status' );
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( ! $zi_product_sync && ! empty( $zoho_inventory_access_token ) ) {
 		$product_handler = new ProductClass();

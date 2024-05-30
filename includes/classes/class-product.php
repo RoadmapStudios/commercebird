@@ -794,25 +794,23 @@ class ProductClass {
 	public function zi_product_to_woocommerce( $item, $item_stock = '', $type = '' ) {
 		// $fd = fopen( __DIR__ . '/zi_product_to_woocommerce.txt', 'a+' );
 		try {
-			if ( 'active' === $item['status'] ) {
-				$status = 'publish';
-			} else {
+			if ( 'active' !== $item['status'] ) {
 				return;
 			}
 			$product = new WC_Product();
 
 			$allow_backorders = get_option( 'woocommerce_allow_backorders' );
-			$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
+			$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
 
 			// Set the product data
-			$product->set_status( $status );
+			$product->set_status( 'publish' );
 			$product->set_name( $item['name'] );
 			$product->set_regular_price( $item['rate'] );
 			$product->set_short_description( $item['description'] );
 			$product->set_sku( $item['sku'] );
 
 			// Set the stock management properties
-			if ( ! empty( $item_stock ) && ! $zi_stock_sync ) {
+			if ( ! empty( $item_stock ) && ! $zi_disable_stock_sync ) {
 				$product->set_manage_stock( true );
 				$product->set_stock_quantity( $item_stock );
 

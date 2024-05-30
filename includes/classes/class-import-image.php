@@ -43,6 +43,11 @@ class ImageClass {
 	public function args_attach_image( $item_id, $item_name, $post_id, $item_image ) {
 		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+' );
 
+		$image_exists_in_library = $this->compare_image_with_media_library( $item_name, $item_image );
+		if ( $image_exists_in_library ) {
+			return;
+		}
+
 		global $wpdb;
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
@@ -51,6 +56,9 @@ class ImageClass {
 
 		$execute_curl_call_handle = new ExecutecallClass();
 		$image_url = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url );
+		if ( is_wp_error( $image_url ) ) {
+			return;
+		}
 		// fwrite($fd, PHP_EOL . 'Sync init');
 		$temp_file = download_url( $image_url );
 		// Get the MIME type of the downloaded image
@@ -72,7 +80,6 @@ class ImageClass {
 		}
 
 		$attach_id = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
-		$image_exists_in_library = $this->compare_image_with_media_library( $item_name, $item_image );
 		// fwrite( $fd, PHP_EOL . 'Image Exists in Library: ' . $image_exists_in_library );
 		$image_post_id = 0;
 		if ( $image_exists_in_library ) {
