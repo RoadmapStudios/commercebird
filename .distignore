@@ -28,6 +28,7 @@ vendor/
 build/
 admin/assets
 commercebird.zip
+commercebird
 build.sh
 build-mac.sh
 README.md
