@@ -419,6 +419,9 @@ class import_product_class {
 						$zi_disable_name_sync = get_option( 'zoho_disable_name_sync_status' );
 						if ( ! empty( $gp_arr->name ) && ! $zi_disable_name_sync ) {
 							$existing_parent_product->set_name( $gp_arr->name );
+							// santize the name for slug and save the slug
+							$slug = sanitize_title( $gp_arr->name );
+							$existing_parent_product->set_slug( $slug );
 						}
 						// create attributes if not exists.
 						$attributes = $existing_parent_product->get_attributes();
