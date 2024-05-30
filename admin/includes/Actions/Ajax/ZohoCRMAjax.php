@@ -10,15 +10,14 @@ use RMS\Admin\Traits\LogWriter;
 use Throwable;
 
 
-defined('RMS_PLUGIN_NAME') || exit;
+defined( 'RMS_PLUGIN_NAME' ) || exit;
 
 /**
  * Initializes the Zoho CRM class.
  * @since 1.0.0
  * @return void
  */
-final class ZohoCRMAjax
-{
+final class ZohoCRMAjax {
 
 	use Singleton;
 	use AjaxRequest;
@@ -34,14 +33,14 @@ final class ZohoCRMAjax
 		'product' => array(
 			'importProducts',
 		),
-		'order' => array('range'),
+		'order' => array( 'range' ),
 		'customer' => array(
 			'importCustomers',
 		),
 		'fields' => array(
 			'form',
-			'module'
-		)
+			'module',
+		),
 	);
 	private const ACTIONS = array(
 		'save_sync_order_via_cron' => 'sync_order',
@@ -56,7 +55,7 @@ final class ZohoCRMAjax
 		'zcrm_get_custom_fields' => 'zcrm_get_custom_fields',
 		'zcrm_save_custom_fields' => 'zcrm_save_custom_fields',
 		'zcrm_reset_custom_fields' => 'zcrm_reset_custom_fields',
-		'zcrm_fields' => 'get_zcrm_fields'
+		'zcrm_fields' => 'get_zcrm_fields',
 	);
 	private const OPTIONS = array(
 		'connect' => array(
@@ -67,8 +66,7 @@ final class ZohoCRMAjax
 		'zcrm_products_fields' => 'zcrm_products_fields',
 	);
 
-	public function __construct()
-	{
+	public function __construct() {
 		$this->load_actions();
 	}
 
@@ -77,29 +75,26 @@ final class ZohoCRMAjax
 	 * @since 1.0.0
 	 * @return mixed
 	 */
-	public function get_token()
-	{
-		return get_option(self::OPTIONS['connect']['token'], '');
+	public function get_token() {
+		return get_option( self::OPTIONS['connect']['token'], '' );
 	}
 
-	public function connect_save()
-	{
-		$this->verify(self::FORMS['connect']);
-		if (isset($this->data['token']) && !empty($this->data['token'])) {
-			update_option(self::OPTIONS['connect']['token'], $this->data['token']);
-			$this->response['message'] = __('Saved', 'commercebird');
+	public function connect_save() {
+		$this->verify( self::FORMS['connect'] );
+		if ( isset( $this->data['token'] ) && ! empty( $this->data['token'] ) ) {
+			update_option( self::OPTIONS['connect']['token'], $this->data['token'] );
+			$this->response['message'] = __( 'Saved', 'commercebird' );
 			$this->response['data'] = $this->data;
 		} else {
-			$this->errors['message'] = __('Token is required', 'commercebird');
+			$this->errors['message'] = __( 'Token is required', 'commercebird' );
 		}
 
 		$this->serve();
 	}
 
-	public function connect_load()
-	{
+	public function connect_load() {
 		$this->verify();
-		$this->response['token'] = get_option(self::OPTIONS['connect']['token'], '');
+		$this->response['token'] = get_option( self::OPTIONS['connect']['token'], '' );
 		$this->serve();
 	}
 
@@ -108,37 +103,34 @@ final class ZohoCRMAjax
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function refresh_zcrm_fields()
-	{
-		$module = isset($_GET['module']) ? $_GET['module'] : '';
-		if (empty($module)) {
+	public function refresh_zcrm_fields() {
+		$module = isset( $_GET['module'] ) ? $_GET['module'] : '';
+		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
-		}
-		else{
-			$fields = (new CommerceBird())->get_zcrm_fields($module);
-			if (is_wp_error($fields)) {
+		} else {
+			$fields = ( new CommerceBird() )->get_zcrm_fields( $module );
+			if ( is_wp_error( $fields ) ) {
 				$this->errors['message'] = $fields->get_error_message();
 			} else {
-				$option_name = 'zcrm_' . strtolower($module) . '_fields';
-				update_option(self::OPTIONS[$option_name], $fields);
-				$this->response = array('message' => 'Refresh successfully!');
+				$option_name = 'zcrm_' . strtolower( $module ) . '_fields';
+				update_option( self::OPTIONS[ $option_name ], $fields );
+				$this->response = array( 'message' => 'Refresh successfully!' );
 				$this->response['fields'] = $fields;
 			}
 			$this->serve();
 		}
-		
+
 	}
 
 	/**
 	 * Get Zoho CRM fields from wordpress database.
 	 */
-	public function get_zcrm_fields()
-	{
-		$module = isset($_GET['module']) ? $_GET['module'] : '';
-		if (empty($module)) {
+	public function get_zcrm_fields() {
+		$module = isset( $_GET['module'] ) ? $_GET['module'] : '';
+		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
-			$fields = get_option('zcrm_' . strtolower($module) . '_fields', array());
+			$fields = get_option( 'zcrm_' . strtolower( $module ) . '_fields', array() );
 			$this->response['fields'] = $fields;
 			$this->serve();
 		}
@@ -149,18 +141,16 @@ final class ZohoCRMAjax
 	 *
 	 * @return void
 	 */
-	public function zcrm_get_custom_fields(): void
-	{
-		$module = isset($_GET['module']) ? $_GET['module'] : '';
-		if (empty($module)) {
+	public function zcrm_get_custom_fields(): void {
+		$module = isset( $_GET['module'] ) ? $_GET['module'] : '';
+		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
 			$this->verify();
-			$option_name = strtolower($module) . '_custom_fields';
-			$this->response['form'] = get_option($option_name, array());
+			$option_name = strtolower( $module ) . '_custom_fields';
+			$this->response['form'] = get_option( $option_name, array() );
 			$this->serve();
 		}
-
 	}
 
 	/**
@@ -168,23 +158,21 @@ final class ZohoCRMAjax
 	 *
 	 * @return void
 	 */
-	public function zcrm_save_custom_fields(): void
-	{
-		$this->verify(self::FORMS['fields']);
-		$module = isset($this->data['module']) ? $this->data['module'] : '';
-		if (empty($module)) {
+	public function zcrm_save_custom_fields(): void {
+		$this->verify( self::FORMS['fields'] );
+		$module = isset( $this->data['module'] ) ? $this->data['module'] : '';
+		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
 			try {
-				$option_name = strtolower($module) . '_custom_fields';
-				update_option($option_name, $this->data['form']);
-				$this->response = array('message' => 'saved');
-			} catch (Throwable $throwable) {
-				$this->errors = array('message' => $throwable->getMessage());
+				$option_name = strtolower( $module ) . '_custom_fields';
+				update_option( $option_name, $this->data['form'] );
+				$this->response = array( 'message' => 'saved' );
+			} catch ( Throwable $throwable ) {
+				$this->errors = array( 'message' => $throwable->getMessage() );
 			}
 			$this->serve();
 		}
-
 	}
 
 	/**
@@ -192,18 +180,16 @@ final class ZohoCRMAjax
 	 *
 	 * @return void
 	 */
-	public function zcrm_reset_custom_fields(): void
-	{
-		$module = isset($_GET['module']) ? $_GET['module'] : '';
-		if (empty($module)) {
+	public function zcrm_reset_custom_fields(): void {
+		$module = isset( $_GET['module'] ) ? $_GET['module'] : '';
+		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
 			$this->verify();
-			$option_name = strtolower($module) . '_custom_fields';
-			delete_option($option_name);
-			$this->response = array('message' => 'Reset successfully!');
+			$option_name = strtolower( $module ) . '_custom_fields';
+			delete_option( $option_name );
+			$this->response = array( 'message' => 'Reset successfully!' );
 			$this->serve();
 		}
 	}
-
 }
