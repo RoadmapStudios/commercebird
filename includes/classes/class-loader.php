@@ -83,7 +83,7 @@ class CMreviewReminder {
 			$class = 'notice notice-error';
 			$message = get_option( 'rms-zi-admin-error' );
 
-			printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 		}
 		self::output_review_request_link();
 	}
@@ -147,19 +147,19 @@ class CMreviewReminder {
 	}
 
 	public static function dismiss_cmbird_review_request_notice() {
-		$nonse = isset( $_REQUEST['cmbird_security_review_notice'] ) ? $_REQUEST['cmbird_security_review_notice'] : false;
-		if ( ! wp_verify_nonce( $nonse, 'cmbird_review_request_notice' ) || ! current_user_can( 'manage_woocommerce' ) ) {
+		$nonce = isset( $_REQUEST['cmbird_security_review_notice'] ) ? $_REQUEST['cmbird_security_review_notice'] : false;
+		if ( ! wp_verify_nonce( $nonce, 'dismiss_cmbird_review_request_notice' ) || ! current_user_can( 'manage_woocommerce' ) ) {
 			die();
 		}
-		set_transient( 'cmbird_review_request_notice_dismissed', true, apply_filters( 'cmbird_dismissed_review_request_notice_lifespan', 1 * YEAR_IN_SECONDS ) );
+		set_transient( 'cmbird_review_request_notice_dismissed', true, apply_filters( 'cmbird_dismissed_review_request_notice_lifespan', 1 * MONTH_IN_SECONDS ) );
 	}
 
 	public static function skip_cmbird_review_request_notice() {
 		$nonse = isset( $_REQUEST['cmbird_security_review_notice'] ) ? $_REQUEST['cmbird_security_review_notice'] : false;
-		if ( ! wp_verify_nonce( $nonse, 'cmbird_review_request_notice' ) || ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! wp_verify_nonce( $nonse, 'skip_cmbird_review_request_notice' ) || ! current_user_can( 'manage_woocommerce' ) ) {
 			die();
 		}
-		set_transient( 'cmbird_skip_review_request_notice', true, apply_filters( 'cmbird_skip_review_request_notice_lifespan', 1 * DAY_IN_SECONDS ) );
+		set_transient( 'cmbird_skip_review_request_notice', true, apply_filters( 'cmbird_skip_review_request_notice_lifespan', 10 * DAY_IN_SECONDS ) );
 	}
 
 	/**

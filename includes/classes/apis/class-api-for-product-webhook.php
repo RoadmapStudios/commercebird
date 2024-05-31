@@ -189,6 +189,14 @@ class ProductWebhook {
 				// Update Purchase price
 				$variation->update_meta_data( 'cost_price', $item['purchase_rate'] );
 
+				// Map taxes while syncing product from zoho.
+				if ( $item['tax_id'] ) {
+					$zi_common_class = new ZI_CommonClass();
+					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
+					$variation->set_tax_status( 'taxable' );
+					$variation->set_tax_class( $woo_tax_class );
+				}
+
 				$variation->save(); // Save the data
 			} elseif ( 'publish' === $item_status ) {
 				$attribute_name11 = $item['attribute_option_name1'];

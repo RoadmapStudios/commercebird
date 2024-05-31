@@ -333,12 +333,13 @@ add_filter( 'manage_woocommerce_page_wc-orders_columns', 'zi_sync_column_orders_
  */
 function zi_add_zoho_orders_content( $column, $order_id ) {
 	$zi_url = get_option( 'zoho_inventory_url' );
+	$zi_visit_url = str_replace( 'www.zohoapis', 'inventory.zoho', $zi_url );
 	switch ( $column ) {
 		case 'zoho_sync':
 			// Get custom order meta data.
 			$order       = wc_get_order( $order_id );
 			$zi_order_id = $order->get_meta( 'zi_salesorder_id', true, 'edit' );
-			$url         = $zi_url . 'app#/salesorders/' . $zi_order_id;
+			$url         = $zi_visit_url . 'app#/salesorders/' . $zi_order_id;
 			if ( $zi_order_id ) {
 				echo '<span class="dashicons dashicons-yes-alt" style="color:green;"></span><a href="' . esc_url( $url ) . '" target="_blank"> <span class="dashicons dashicons-external" style="color:green;"></span> </a>';
 			} else {
