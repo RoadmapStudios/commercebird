@@ -213,6 +213,7 @@ class ExecutecallClass {
 			try {
 				$wp_filesystem->put_contents( $upload_dir, $body );
 			} catch ( Exception $e ) {
+				wp_delete_file( $upload_dir );
 				// return an instance of WP_Error class with the error message
 				return new WP_Error( 'image_upload_error', $e->getMessage() );
 			}

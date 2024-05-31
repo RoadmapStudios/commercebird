@@ -37,7 +37,7 @@ class Zoho extends WP_REST_Controller {
 			$this->prefix,
 			'/' . $this->rest_base . '/invoice-detail/',
 			array(
-				'methods' => WP_REST_Server::READABLE,
+				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => array( $this, 'get_zi_invoice_detail' ),
 				'permission_callback' => array( $this, 'permission_check' ),
 			)
@@ -55,7 +55,7 @@ class Zoho extends WP_REST_Controller {
 			$this->prefix,
 			'/' . $this->rest_base . '/purchase-detail/',
 			array(
-				'methods' => WP_REST_Server::READABLE,
+				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => array( $this, 'get_zi_purchase_detail' ),
 				'permission_callback' => array( $this, 'permission_check' ),
 			)

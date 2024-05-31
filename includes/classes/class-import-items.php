@@ -5,6 +5,8 @@
  * @package  zoho_inventory_api
  */
 
+use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
+
 class import_product_class {
 
 	private $config;
@@ -940,6 +942,8 @@ class import_product_class {
 
 			// Save the meta entry for product attributes
 			update_post_meta( $group_id, '_product_attributes', $attributes );
+			$lookup_data_store = new LookupDataStore();
+			$lookup_data_store->create_data_for_product( $group_id );
 		}
 		// fclose($fd);
 		return $success;
@@ -952,9 +956,10 @@ class import_product_class {
 	 * @return: void
 	 */
 	public function sync_variation_of_group( $item ) {
-		// $fd = fopen( __DIR__ . '/sync_variation_of_group.txt', 'w+' );
+		// $fd = fopen( __DIR__ . '/sync_variation_of_group.txt', 'a+' );
 		global $wpdb;
 		// Stock mode check
+		$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
 		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 		if ( $accounting_stock ) {
 			$stock = $item->available_stock;
@@ -980,6 +985,9 @@ class import_product_class {
 			}
 
 			$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $item_id ) );
+			if ( ! empty( $item->sku ) && empty( $variation_id ) ) {
+				$variation_id = wc_get_product_id_by_sku( $item->sku );
+			}
 			if ( $variation_id ) {
 				$variation = new WC_Product_Variation( $variation_id );
 				// SKU - Imported
@@ -1019,107 +1027,121 @@ class import_product_class {
 				$status = ( 'active' === $item->status ) ? 'publish' : 'draft';
 				$variation->set_status( $status );
 				$variation->save();
+				// clear cache
+				wc_delete_product_transients( $variation_id );
 			} else {
 				// create new variation
 				// if status is not active then return
 				if ( 'active' !== $item->status ) {
 					return;
 				}
-				// fwrite( $fd, PHP_EOL . 'New Variation: ' . $item->name );
 
-				$attribute_name11 = $item->attribute_option_name1;
-				$attribute_name12 = $item->attribute_option_name2;
-				$attribute_name13 = $item->attribute_option_name3;
-
-				if ( ! empty( $attribute_name11 ) ) {
-
-					$attribute_arr[ $item->attribute_name1 ] = $attribute_name11;
+				$attribute_name1 = $item->attribute_option_name1;
+				$attribute_name2 = $item->attribute_option_name2;
+				$attribute_name3 = $item->attribute_option_name3;
+				// Prepare the variation data
+				$attribute_arr = array();
+				if ( ! empty( $attribute_name1 ) ) {
+					$sanitized_name1 = wc_sanitize_taxonomy_name( $item->attribute_name1 );
+					$attribute_arr[ $sanitized_name1 ] = $attribute_name1;
 				}
-				if ( ! empty( $attribute_name12 ) ) {
-
-					$attribute_arr[ $item->attribute_name2 ] = $attribute_name12;
+				if ( ! empty( $attribute_name2 ) ) {
+					$sanitized_name2 = wc_sanitize_taxonomy_name( $item->attribute_name2 );
+					$attribute_arr[ $sanitized_name2 ] = $attribute_name2;
 				}
-				if ( ! empty( $attribute_name13 ) ) {
-
-					$attribute_arr[ $item->attribute_name3 ] = $attribute_name13;
+				if ( ! empty( $attribute_name3 ) ) {
+					$sanitized_name3 = wc_sanitize_taxonomy_name( $item->attribute_name3 );
+					$attribute_arr[ $sanitized_name3 ] = $attribute_name3;
 				}
-				$variation_data = array(
-					'attributes' => $attribute_arr,
-					'sku' => $item->sku,
-					'regular_price' => $item->rate,
-					'stock_qty' => $stock_quantity,
-				);
+				// fwrite( $fd, PHP_EOL . 'Attributes_arr: ' . print_r( $attribute_arr, true ) );
 
-				$variation_post = array(
-					'post_title' => $item->name,
-					'post_name' => $item->name,
-					'post_status' => 'publish',
-					'post_parent' => $group_id,
-					'post_type' => 'product_variation',
-					'guid' => get_the_permalink( $group_id ),
-				);
+				// here actually create new variation because sku not found
+				$variation = new WC_Product_Variation();
+				$variation->set_parent_id( $group_id );
+				$variation->set_status( 'publish' );
+				$variation->set_regular_price( $item->rate );
+				$variation->set_sku( $item->sku );
+				if ( ! $zi_disable_stock_sync ) {
+					$variation->set_stock_quantity( $stock );
+					$variation->set_manage_stock( true );
+					$variation->set_stock_status( '' );
+				} else {
+					$variation->set_manage_stock( false );
+				}
+				$variation->add_meta_data( 'zi_item_id', $item->item_id );
+				$variation_id = $variation->save();
 
-				// Map variation based on sku
-				if ( ! empty( $variation_data['sku'] ) ) {
-					// here we do actual mapping based on same sku
-					// fwrite($fd, PHP_EOL . 'Before SKU :' . $variation_data['sku']);
-					$sku_prod_id = wc_get_product_id_by_sku( $variation_data['sku'] );
-					// fwrite($fd, PHP_EOL . 'Before $sku_prod_id :' . $sku_prod_id);
-					if ( ! empty( $sku_prod_id ) ) {
-						// fwrite($fd, PHP_EOL . 'sku_prod_id :' . $sku_prod_id);
-						$variation_id = $sku_prod_id;
-						// fwrite($fd, PHP_EOL . 'This is product having already exists sku: ' . print_r($variation, true));
-					} else {
-						// here actually create new variation because sku not found
-						$variation_id = wp_insert_post( $variation_post );
-						update_post_meta( $variation_id, '_sku', $variation_data['sku'] );
-						// fwrite($fd, PHP_EOL . '$variation_2 : ');
+				// Get the variation attributes with correct attribute values
+				foreach ( $attribute_arr as $attribute => $term_name ) {
+					$taxonomy = $attribute;
+					// If taxonomy doesn't exists we create it
+					if ( ! taxonomy_exists( $taxonomy ) ) {
+						register_taxonomy(
+							$taxonomy,
+							'product_variation',
+							array(
+								'hierarchical' => false,
+								'label' => ucfirst( $attribute ),
+								'query_var' => true,
+								'rewrite' => array( 'slug' => sanitize_title( $attribute ) ),
+							),
+						);
 					}
-				}
-				// Creating the product variation
-				// $variation_id = wp_insert_post($variation_post);
 
-				// fwrite($fd, PHP_EOL . 'This is Variations : ' . print_r($variation, true));
-				// Iterating through the variations attributes
-				foreach ( $variation_data['attributes'] as $attribute => $term_name ) {
-					update_post_meta( $variation_id, 'attribute_' . strtolower( str_replace( ' ', '-', $attribute ) ), trim( $term_name ) );
-					update_post_meta( $variation_id, 'group_id_store', $group_id );
+					// Check if the Term name exist and if not we create it.
+					if ( ! term_exists( $term_name, $taxonomy ) ) {
+						wp_insert_term( $term_name, $taxonomy );
+					}
+
+					$term_slug = get_term_by( 'name', $term_name, $taxonomy )->slug;
+					// Get the post Terms names from the parent variable product.
+					$post_term_names = wp_get_post_terms( $group_id, $taxonomy, array( 'fields' => 'names' ) );
+					// Check if the post term exist and if not we set it in the parent variable product.
+					if ( ! in_array( $term_name, $post_term_names, true ) ) {
+						wp_set_post_terms( $group_id, $term_name, $taxonomy, true );
+					}
+					// Set/save the attribute data in the product variation
+					update_post_meta( $variation_id, 'attribute_' . $taxonomy, $term_slug );
 				}
 
-				// Prices
-				// $variation->set_regular_price($variation_data['regular_price']);
-				update_post_meta( $variation_id, '_regular_price', $variation_data['regular_price'] );
-				$variation_sale_price = get_post_meta( $variation_id, '_sale_price', true );
-				if ( empty( $variation_sale_price ) ) {
-					// $variation->set_price($variation_data['regular_price']);
-					update_post_meta( $variation_id, '_price', $variation_data['regular_price'] );
-				}
 				// update purchase price as meta data
 				if ( ! empty( $item->purchase_rate ) ) {
 					update_post_meta( $variation_id, 'cost_price', $item->purchase_rate );
 				}
 				// Stock
-				update_post_meta( $variation_id, '_stock', $stock_quantity );
-				update_post_meta( $variation_id, 'stock_qty', $stock_quantity );
-				if ( ! empty( $variation_data['stock_qty'] ) ) {
-					// update_post_meta($variation_id, '_stock', $variation_data['stock_qty']);
+				if ( ! empty( $stock ) && ! $zi_disable_stock_sync ) {
 					update_post_meta( $variation_id, 'manage_stock', true );
-					update_post_meta( $variation_id, '_stock_status', 'instock' );
-					// $variation->set_stock_status('');
-				} else {
-					$backorder_status = get_post_meta( $variation_id, '_backorders', true );
-					if ( $backorder_status === 'yes' ) {
-						update_post_meta( $variation_id, '_stock_status', 'onbackorder' );
+					if ( $stock > 0 ) {
+						update_post_meta( $variation_id, '_stock', $stock );
+						update_post_meta( $variation_id, '_stock_status', 'instock' );
 					} else {
-						update_post_meta( $variation_id, '_stock_status', 'outofstock' );
+						$backorder_status = get_post_meta( $group_id, '_backorders', true );
+						update_post_meta( $variation_id, '_stock', $stock );
+						if ( $backorder_status === 'yes' ) {
+							update_post_meta( $variation_id, '_stock_status', 'onbackorder' );
+						} else {
+							update_post_meta( $variation_id, '_stock_status', 'outofstock' );
+						}
 					}
-					update_post_meta( $variation_id, 'manage_stock', false );
+				}
+				// Featured Image of variation
+				if ( ! empty( $item->featured_image ) ) {
+					$image_class = new ImageClass();
+					$image_class->args_attach_image( $item->item_id, $item->name, $variation_id, $item->image_name );
+					if ( ! has_post_thumbnail( $group_id ) ) {
+						$variation_product = wc_get_product( $variation_id );
+						$variation_image_id = $variation_product->get_image_id();
+						if ( $variation_image_id ) {
+							set_post_thumbnail( $group_id, $variation_image_id );
+						}
+					}
 				}
 				update_post_meta( $variation_id, 'zi_item_id', $item_id );
 				WC_Product_Variable::sync( $group_id );
-
+				// Regenerate lookup table for attributes
+				$lookup_data_store = new LookupDataStore();
+				$lookup_data_store->create_data_for_product( $group_id );
 				// End group item add process
-				wc_delete_product_transients( $variation_id ); // Clear/refresh the variation cache
 				unset( $attribute_arr );
 			}
 			// end of grouped item updating
@@ -1128,7 +1150,7 @@ class import_product_class {
 			return;
 		}
 		// fwrite($fd, PHP_EOL . 'After group item sync');
-		// fclose($fd);
+		// fclose( $fd );
 	}
 
 	// variable category check functionality
