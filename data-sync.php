@@ -69,6 +69,9 @@ function zoho_ajax_call_variable_item_from_zoho() {
 			// If no page number available, it will start from zero.
 			$last_synced_page = get_option( 'group_item_sync_page_cat_id_' . $category_id );
 			$data_arr->page = $last_synced_page;
+			if ( ! intval( $last_synced_page ) ) {
+				$data_arr->page = 1;
+			}
 			$data_arr->category = $category_id;
 			$existing_schedule = as_has_scheduled_action( 'import_group_items_cron', array( $data_arr ) );
 
@@ -121,6 +124,9 @@ function zoho_ajax_call_item_from_zoho_func() {
 		foreach ( $categories as $index => $category_id ) {
 			$data = (object) array();
 			$last_synced_page = get_option( 'simple_item_sync_page_cat_id_' . $category_id );
+			if ( ! intval( $last_synced_page ) ) {
+				$last_synced_page = 1;
+			}
 
 			$data->page = $last_synced_page;
 			$data->category = $category_id;

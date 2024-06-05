@@ -225,20 +225,27 @@ class import_product_class {
 				}
 
 				// Get the post id by doing a meta query on the postmeta table.
-				$pdt = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $arr->item_id ) );
-				$pdt_id = $pdt ? $pdt->post_id : '';
+				if ( empty( $prod_id ) ) {
+					$pdt = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $arr->item_id ) );
+					$pdt_id = $pdt ? $pdt->post_id : '';
+				} else {
+					$pdt_id = $prod_id;
+				}
 
 				if ( empty( $pdt_id ) && $allow_to_import && 'active' === $arr->status ) {
-					$product = new WC_Product();
-					$product->set_name( $arr->name );
-					$product->set_status( 'publish' );
-					$product->set_sku( $arr->sku );
-					$product->set_regular_price( $arr->rate );
-					$product->set_short_description( $arr->description );
-					$pdt_id = $product->save();
-					if ( $pdt_id ) {
-						update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
-					} else {
+					// Create the product if it does not exist
+					try {
+						$product = new WC_Product();
+						$product->set_name( $arr->name );
+						$product->set_status( 'publish' );
+						$product->set_sku( $arr->sku );
+						$product->set_regular_price( $arr->rate );
+						$pdt_id = $product->save();
+						if ( $pdt_id ) {
+							update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
+						}
+					} catch ( Exception $e ) {
+						// fwrite( $fd, PHP_EOL . 'Error : ' . $e->getMessage() );
 						continue;
 					}
 				}
