@@ -1,3 +1,9 @@
+Version 2.1.21 - June 5 2024
+* Fix: simple products import via cron
+* Fix: disable product sync now also applies to changes made via the app
+* Tweak: improved pagination of products import
+* Compatibility with WooCommerce 8.9
+
 Version 2.1.20 - May 31 2024
 * Fix: variation import of existing parent product via cron
 * Fix: zoho inventory salesorder url on orders listing is restored
