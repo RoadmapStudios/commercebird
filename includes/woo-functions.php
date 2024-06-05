@@ -22,7 +22,8 @@ function cmbird_clear_product_cache( $object, $request, $is_creating ) {
 	if ( ! $is_creating ) {
 		$product_id                  = $object->get_id();
 		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-		if ( ! empty( $zoho_inventory_access_token ) ) {
+		$zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
+		if ( ! empty( $zoho_inventory_access_token ) && ! $zi_product_sync ) {
 			$product_handler = new ProductClass();
 			$product_handler->zi_product_sync( $product_id );
 		}
