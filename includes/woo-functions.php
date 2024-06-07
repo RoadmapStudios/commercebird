@@ -22,7 +22,8 @@ function cmbird_clear_product_cache( $object, $request, $is_creating ) {
 	if ( ! $is_creating ) {
 		$product_id                  = $object->get_id();
 		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-		if ( ! empty( $zoho_inventory_access_token ) ) {
+		$zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
+		if ( ! empty( $zoho_inventory_access_token ) && ! $zi_product_sync ) {
 			$product_handler = new ProductClass();
 			$product_handler->zi_product_sync( $product_id );
 		}
@@ -61,11 +62,11 @@ function zi_product_sync_class( $product_id ) {
 		return;
 	}
 	if ( ! $product_id ) {
-		if ( isset( $_POST['arg_product_data'] ) && wp_verify_nonce( $_POST['nonce'], 'zi_product_sync_class' ) ) {
+		if ( isset( $_POST['arg_product_data'] ) && wp_verify_nonce( $_POST['security'], 'zoho_product_sync_nonce' ) ) {
 			$product_id = $_POST['arg_product_data'];
 		}
 	}
-	$zi_product_sync             = get_option( 'zoho_product_sync_status' );
+	$zi_product_sync             = get_option( 'zoho_disable_product_sync_status' );
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( ! $zi_product_sync && ! empty( $zoho_inventory_access_token ) ) {
 		$product_handler = new ProductClass();
@@ -203,10 +204,13 @@ function zoho_product_metabox() {
 }
 function zoho_product_metabox_callback( $post ) {
 	$response = get_post_meta( $post->ID, 'zi_product_errmsg' );
-	echo 'API Response: ' . implode( $response ) . '<br>';
-	echo '<br><a href="javascript:void(0)" style="width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_product_ajax(' . $post->ID . ')">Sync Product</a>';
-	echo '<br><a href="javascript:void(0)" style="margin-top:10px; background:#b32d2e; border-color: #b32d2e; width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_unmap_product_ajax(' . $post->ID . ')">Unmap this Product</a>';
-	$product      = wc_get_product( $post->ID );
+	echo 'API Response: ' . esc_html( implode( $response ) ) . '<br>';
+	// Generate nonce
+	$nonce = wp_create_nonce( 'zoho_product_sync_nonce' );
+	$post_id = $post->ID;
+	echo '<br><a href="javascript:void(0)" style="width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_product_ajax(' . esc_attr( $post_id ) . ', \'' . esc_attr( $nonce ) . '\')">Sync Product</a>';
+	echo '<br><a href="javascript:void(0)" style="margin-top:10px; background:#b32d2e; border-color: #b32d2e; width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_unmap_product_ajax(' . esc_attr( $post_id ) . ')">Unmap this Product</a>';
+	$product = wc_get_product( $post->ID );
 	$product_type = $product->get_type();
 	if ( 'variable' === $product_type || 'variable-subscription' === $product_type ) {
 		echo '<p class="howto" style="color:#b32d2e;"><strong>Important : </strong> Please ensure all variations have price and SKU</p>';
@@ -214,37 +218,22 @@ function zoho_product_metabox_callback( $post ) {
 }
 add_action( 'add_meta_boxes', 'zoho_product_metabox' );
 
-//Add Zoho Item ID field on Product Edit page
-add_action( 'woocommerce_product_options_general_product_data', 'zoho_item_id_field' );
-add_action( 'woocommerce_variation_options_pricing', 'zoho_item_id_variation_field', 10, 3 );
-function zoho_item_id_field() {
-	woocommerce_wp_text_input(
-		array(
-			'id'          => 'zi_item_id',
-			'label'       => __( 'Zoho Item ID' ),
-			'class'       => 'readonly',
-			'desc_tip'    => true,
-			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
-		)
-	);
-}
-function zoho_item_id_variation_field( $loop, $variation_data, $variation ) {
-	woocommerce_wp_text_input(
-		array(
-			'id'          => 'zi_item_id[' . $loop . ']',
-			'class'       => 'readonly',
-			'label'       => __( 'Zoho Item ID' ),
-			'value'       => get_post_meta( $variation->ID, 'zi_item_id', true ),
-			'desc_tip'    => true,
-			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
-		)
-	);
-}
 
-//Add Exact Item ID field on Product Edit page
-add_action( 'woocommerce_product_options_general_product_data', 'exact_item_id_field' );
-add_action( 'woocommerce_variation_options_pricing', 'exact_item_id_variation_field', 10, 3 );
-function exact_item_id_field() {
+/**
+ * Add Zoho and Exact Item IDs to Product and Variations
+ * @return void
+ */
+add_action( 'woocommerce_product_options_pricing', 'cmbird_item_id_field' );
+add_action( 'woocommerce_variation_options_pricing', 'cmbird_item_id_variation_field', 10, 3 );
+function cmbird_item_id_field() {
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'cost_price',
+			'wrapper_class' => 'form-row',
+			'label' => 'Cost Price',
+			'data_type' => 'price',
+		)
+	);
 	woocommerce_wp_text_input(
 		array(
 			'id'          => 'eo_item_id',
@@ -254,8 +243,26 @@ function exact_item_id_field() {
 			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
 		)
 	);
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'zi_item_id',
+			'label' => __( 'Zoho Item ID' ),
+			'class' => 'readonly',
+			'desc_tip' => true,
+			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
+		)
+	);
 }
-function exact_item_id_variation_field( $loop, $variation_data, $variation ) {
+function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'cost_price[' . $loop . ']',
+			'wrapper_class' => 'form-row',
+			'data_type' => 'price',
+			'label' => __( 'Cost Price' ),
+			'value' => get_post_meta( $variation->ID, 'cost_price', true ),
+		)
+	);
 	woocommerce_wp_text_input(
 		array(
 			'id'          => 'eo_item_id[' . $loop . ']',
@@ -266,6 +273,33 @@ function exact_item_id_variation_field( $loop, $variation_data, $variation ) {
 			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
 		)
 	);
+	woocommerce_wp_text_input(
+		array(
+			'id' => 'zi_item_id[' . $loop . ']',
+			'class' => 'readonly',
+			'label' => __( 'Zoho Item ID' ),
+			'value' => get_post_meta( $variation->ID, 'zi_item_id', true ),
+			'desc_tip' => true,
+			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
+		)
+	);
+}
+
+add_action( 'save_post_product', 'cmbird_save_cost_price' );
+function cmbird_save_cost_price( $product_id ) {
+	global $typenow;
+	if ( 'product' === $typenow ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+			return;
+		if ( isset( $_POST['cost_price'] ) ) {
+			update_post_meta( $product_id, 'cost_price', $_POST['cost_price'] );
+		}
+	}
+}
+add_action( 'woocommerce_save_product_variation', 'cmbird_save_cost_price_variation', 10, 2 );
+function cmbird_save_cost_price_variation( $variation_id, $loop ) {
+	$text_field = ! empty( $_POST['cost_price'][ $loop ] ) ? $_POST['cost_price'][ $loop ] : '';
+	update_post_meta( $variation_id, 'cost_price', sanitize_text_field( $text_field ) );
 }
 
 /**
@@ -300,12 +334,13 @@ add_filter( 'manage_woocommerce_page_wc-orders_columns', 'zi_sync_column_orders_
  */
 function zi_add_zoho_orders_content( $column, $order_id ) {
 	$zi_url = get_option( 'zoho_inventory_url' );
+	$zi_visit_url = str_replace( 'www.zohoapis', 'inventory.zoho', $zi_url );
 	switch ( $column ) {
 		case 'zoho_sync':
 			// Get custom order meta data.
 			$order       = wc_get_order( $order_id );
 			$zi_order_id = $order->get_meta( 'zi_salesorder_id', true, 'edit' );
-			$url         = $zi_url . 'app#/salesorders/' . $zi_order_id;
+			$url         = $zi_visit_url . 'app#/salesorders/' . $zi_order_id;
 			if ( $zi_order_id ) {
 				echo '<span class="dashicons dashicons-yes-alt" style="color:green;"></span><a href="' . esc_url( $url ) . '" target="_blank"> <span class="dashicons dashicons-external" style="color:green;"></span> </a>';
 			} else {
@@ -465,3 +500,11 @@ function commercebird_action_scheduler_purge() {
 	return WEEK_IN_SECONDS;
 }
 add_filter( 'action_scheduler_retention_period', 'commercebird_action_scheduler_purge' );
+
+add_filter(
+	'action_scheduler_default_cleaner_statuses',
+	function ( $statuses ) {
+		$statuses[] = ActionScheduler_Store::STATUS_FAILED;
+		return $statuses;
+	}
+);

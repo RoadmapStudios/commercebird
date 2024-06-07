@@ -20,8 +20,8 @@ class CreateSFOrderWebhook {
 			self::$namespace,
 			self::$endpoint,
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'handle' ),
+				'methods' => 'POST',
+				'callback' => array( $this, 'handle' ),
 				'permission_callback' => array( $this, 'permission_check' ),
 			)
 		);
@@ -36,15 +36,15 @@ class CreateSFOrderWebhook {
 			return $response;
 		}
 
-		$billing_address  = $order_data['billing'];
+		$billing_address = $order_data['billing'];
 		$shipping_address = $order_data['shipping'];
 		if ( isset( $order_data['billing']['email'] ) ) {
 			$customer_data = $order_data['billing'];
 			$customer_mail = $customer_data['email'];
-			$customer      = get_user_by( 'email', $customer_mail );
+			$customer = get_user_by( 'email', $customer_mail );
 			if ( empty( $customer ) ) {
 				$customer_id = wc_create_new_customer( $customer_mail );
-				$customer    = get_user_by( 'id', $customer_id );
+				$customer = get_user_by( 'id', $customer_id );
 			}
 		}
 		if ( 'joananwolf+test@cobracrm.nl' === $customer_mail ) {
@@ -54,14 +54,14 @@ class CreateSFOrderWebhook {
 		}
 
 		if ( empty( $order_data['line_items'] ) ) {
-				$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ) );
-				error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
-				$response->set_status( 500 );
-				$response->set_data( $message );
-				return $response;
+			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ) );
+			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
+			$response->set_status( 500 );
+			$response->set_data( $message );
+			return $response;
 		}
 
-		$line_items  = $this->get_items( $order_data['line_items'] );
+		$line_items = $this->get_items( $order_data['line_items'] );
 		$coupon_code = $this->get_coupon_code( $order_data );
 
 		if ( ! empty( $line_items['not_found'] ) ) {
@@ -84,7 +84,7 @@ class CreateSFOrderWebhook {
 			}
 			// Add products to the order// Add products to the order
 			foreach ( $order_data['line_items'] as $order_data_item ) {
-				$sku        = isset( $order_data_item['SKU'] ) ? $order_data_item['SKU'] : ( isset( $order_data_item['variation_SKU'] ) ? $order_data_item['variation_SKU'] : null );
+				$sku = isset( $order_data_item['SKU'] ) ? $order_data_item['SKU'] : ( isset( $order_data_item['variation_SKU'] ) ? $order_data_item['variation_SKU'] : null );
 				$product_id = wc_get_product_id_by_sku( $sku );
 				if ( ! empty( $product_id ) ) {
 					$product = wc_get_product( $product_id );
@@ -118,10 +118,10 @@ class CreateSFOrderWebhook {
 			wc_delete_shop_order_transients( $existing_order );
 			$response->set_data(
 				array(
-					'order_id'    => $order_id,
+					'order_id' => $order_id,
 					'payment_url' => $existing_order->get_checkout_payment_url(),
-					'total'       => $existing_order->get_total(),
-					'status'      => 'Success',
+					'total' => $existing_order->get_total(),
+					'status' => 'Success',
 				)
 			);
 			$response->set_status( 200 );
@@ -133,7 +133,7 @@ class CreateSFOrderWebhook {
 			// Add products to the order
 			foreach ( $order_data['line_items'] as $order_data_item ) {
 
-				$sku        = isset( $order_data_item['SKU'] ) ? $order_data_item['SKU'] : ( isset( $order_data_item['variation_SKU'] ) ? $order_data_item['variation_SKU'] : null );
+				$sku = isset( $order_data_item['SKU'] ) ? $order_data_item['SKU'] : ( isset( $order_data_item['variation_SKU'] ) ? $order_data_item['variation_SKU'] : null );
 				$product_id = wc_get_product_id_by_sku( $sku );
 				if ( ! empty( $product_id ) ) {
 					$product = wc_get_product( $product_id );
@@ -172,10 +172,10 @@ class CreateSFOrderWebhook {
 			$order->add_order_note( 'Synced via Salesforce' );
 			$response->set_data(
 				array(
-					'order_id'    => $order_id,
+					'order_id' => $order_id,
 					'payment_url' => $order->get_checkout_payment_url(),
-					'total'       => $order->get_total(),
-					'status'      => 'Success',
+					'total' => $order->get_total(),
+					'status' => 'Success',
 				)
 			);
 			$response->set_status( 200 );
@@ -199,7 +199,7 @@ class CreateSFOrderWebhook {
 
 	private function get_items( $line_items ): array {
 		$product_ids = array();
-		$not_found   = array();
+		$not_found = array();
 
 		foreach ( $line_items as $item ) {
 			// Check if the SKU key is present, if not, fallback to variation_SKU
@@ -228,28 +228,34 @@ class CreateSFOrderWebhook {
 		if ( isset( $order_data['Discount'] ) && ! empty( $order_data['Discount'] ) ) {
 			$fixed_cart_amount = $order_data['Discount'];
 			// Search for an existing coupon by fixed cart amount
-			$current_datetime = gmdate( 'Y-m-d H:i:s' );
-			$existing_coupon  = get_posts(
+			$current_datetime = time();
+			$existing_coupon = get_posts(
 				array(
-					'post_type'   => 'shop_coupon',
+					'post_type' => 'shop_coupon',
 					'post_status' => 'publish',
-					'meta_query'  => array(
+					'post_per_page' => -1,
+					'meta_query' => array(
 						'relation' => 'AND',
 						array(
-							'key'   => 'discount_type',
+							'key' => 'discount_type',
 							'value' => 'percent',
 						),
 						array(
-							'key'     => 'coupon_amount',
-							'value'   => $fixed_cart_amount,
+							'key' => 'coupon_amount',
+							'value' => $fixed_cart_amount,
 							'compare' => '=',
-							'type'    => 'NUMERIC',
 						),
 						array(
-							'key'     => 'expiry_date',
-							'value'   => $current_datetime,
-							'compare' => '>=',
-							'type'    => 'DATETIME',
+							'relation' => 'OR',
+							array(
+								'key' => 'date_expires',
+								'compare' => 'NOT EXISTS',
+							),
+							array(
+								'key' => 'date_expires',
+								'value' => $current_datetime,
+								'compare' => '>=',
+							),
 						),
 					),
 				)
@@ -261,7 +267,7 @@ class CreateSFOrderWebhook {
 			} else {
 				// If not found, create a new coupon with a random code
 				$coupon_code = 'AUTO_' . wp_generate_password( 8, false );
-				$coupon      = new WC_Coupon();
+				$coupon = new WC_Coupon();
 				$coupon->set_code( $coupon_code );
 				$coupon->set_description( 'Auto-generated coupon.' );
 				$coupon->set_discount_type( 'percent' );

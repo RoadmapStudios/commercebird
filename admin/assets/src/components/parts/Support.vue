@@ -37,7 +37,7 @@ const links = {
   meeting: {
     title: "Schedule a Meeting",
     subtitle: "Book a Demo with our Sales Team",
-    link: "https://commercebird.zohobookings.eu",
+    link: "https://book.commercebird.com/#/customer/roadmapstudios",
     icon: CalendarDaysIcon,
     button: "Book Now",
   },

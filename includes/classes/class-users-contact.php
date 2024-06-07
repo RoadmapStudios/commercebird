@@ -15,7 +15,7 @@ class ContactClass {
 		$config = array(
 
 			'ContactZI' => array(
-				'OID'    => get_option( 'zoho_inventory_oid' ),
+				'OID' => get_option( 'zoho_inventory_oid' ),
 				'APIURL' => get_option( 'zoho_inventory_url' ),
 
 			),
@@ -34,52 +34,52 @@ class ContactClass {
 
 		if ( $user_order ) {
 			// Billing Details
-			$contact_name     = $user_order->get_billing_first_name() . ' ' . $user_order->get_billing_last_name();
-			$company_name     = $user_order->get_billing_company();
-			$billing_address  = $user_order->get_billing_address_1();
+			$contact_name = $user_order->get_billing_first_name() . ' ' . $user_order->get_billing_last_name();
+			$company_name = $user_order->get_billing_company();
+			$billing_address = $user_order->get_billing_address_1();
 			$billing_address2 = $user_order->get_billing_address_2();
-			$billing_city     = $user_order->get_billing_city();
-			$billing_state    = $user_order->get_billing_state();
+			$billing_city = $user_order->get_billing_city();
+			$billing_state = $user_order->get_billing_state();
 			$billing_postcode = $user_order->get_billing_postcode();
-			$billing_country  = $user_order->get_billing_country();
+			$billing_country = $user_order->get_billing_country();
 
 			// Shipping Details
 			$shipping_attention = $user_order->get_shipping_first_name() . ' ' . $user_order->get_shipping_last_name();
-			$shipping_address   = $user_order->get_shipping_address_1();
-			$shipping_address2  = $user_order->get_shipping_address_2();
-			$shipping_city      = $user_order->get_shipping_city();
-			$shipping_state     = $user_order->get_shipping_state();
-			$shipping_postcode  = $user_order->get_shipping_postcode();
-			$shipping_country   = $user_order->get_shipping_country();
+			$shipping_address = $user_order->get_shipping_address_1();
+			$shipping_address2 = $user_order->get_shipping_address_2();
+			$shipping_city = $user_order->get_shipping_city();
+			$shipping_state = $user_order->get_shipping_state();
+			$shipping_postcode = $user_order->get_shipping_postcode();
+			$shipping_country = $user_order->get_shipping_country();
 
 			// Customer Details
 			$first_name = $user_order->get_billing_first_name();
-			$last_name  = $user_order->get_billing_last_name();
-			$email      = $user_order->get_billing_email();
-			$mobile     = $user_order->get_billing_phone();
+			$last_name = $user_order->get_billing_last_name();
+			$email = $user_order->get_billing_email();
+			$mobile = $user_order->get_billing_phone();
 		} else {
 			// If no order found, fallback to user meta
-			$contact_name     = get_user_meta( $userid, 'first_name', true ) . ' ' . get_user_meta( $userid, 'last_name', true );
-			$company_name     = get_user_meta( $userid, 'billing_company', true );
-			$billing_address  = get_user_meta( $userid, 'billing_address_1', true );
+			$contact_name = get_user_meta( $userid, 'first_name', true ) . ' ' . get_user_meta( $userid, 'last_name', true );
+			$company_name = get_user_meta( $userid, 'billing_company', true );
+			$billing_address = get_user_meta( $userid, 'billing_address_1', true );
 			$billing_address2 = get_user_meta( $userid, 'billing_address_2', true );
-			$billing_city     = get_user_meta( $userid, 'billing_city', true );
-			$billing_state    = get_user_meta( $userid, 'billing_state', true );
+			$billing_city = get_user_meta( $userid, 'billing_city', true );
+			$billing_state = get_user_meta( $userid, 'billing_state', true );
 			$billing_postcode = get_user_meta( $userid, 'billing_postcode', true );
-			$billing_country  = get_user_meta( $userid, 'billing_country', true );
+			$billing_country = get_user_meta( $userid, 'billing_country', true );
 
 			$shipping_attention = get_user_meta( $userid, 'shipping_first_name', true ) . ' ' . get_user_meta( $userid, 'shipping_last_name', true );
-			$shipping_address   = get_user_meta( $userid, 'shipping_address_1', true );
-			$shipping_address2  = get_user_meta( $userid, 'shipping_address_2', true );
-			$shipping_city      = get_user_meta( $userid, 'shipping_city', true );
-			$shipping_state     = get_user_meta( $userid, 'shipping_state', true );
-			$shipping_postcode  = get_user_meta( $userid, 'shipping_postcode', true );
-			$shipping_country   = get_user_meta( $userid, 'shipping_country', true );
+			$shipping_address = get_user_meta( $userid, 'shipping_address_1', true );
+			$shipping_address2 = get_user_meta( $userid, 'shipping_address_2', true );
+			$shipping_city = get_user_meta( $userid, 'shipping_city', true );
+			$shipping_state = get_user_meta( $userid, 'shipping_state', true );
+			$shipping_postcode = get_user_meta( $userid, 'shipping_postcode', true );
+			$shipping_country = get_user_meta( $userid, 'shipping_country', true );
 
 			$first_name = get_user_meta( $userid, 'first_name', true );
-			$last_name  = get_user_meta( $userid, 'last_name', true );
-			$email      = get_user_meta( $userid, 'billing_email', true );
-			$mobile     = get_user_meta( $userid, 'billing_phone', true );
+			$last_name = get_user_meta( $userid, 'last_name', true );
+			$email = get_user_meta( $userid, 'billing_email', true );
+			$mobile = get_user_meta( $userid, 'billing_phone', true );
 		}
 
 		$zi_customer_id = 0;
@@ -118,7 +118,7 @@ class ContactClass {
 		if ( empty( $currency_id ) && $userid ) {
 			$user_order = wc_get_customer_last_order( $userid );
 			if ( ! empty( $user_order ) ) {
-				$user_currency         = $user_order->get_currency();
+				$user_currency = $user_order->get_currency();
 				$multi_currency_handle = new MulticurrencyClass();
 				$multi_currency_handle->zoho_currency_data( $user_currency, $userid );
 			}
@@ -144,7 +144,7 @@ class ContactClass {
 		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
 
 		$data = array(
-			'JSONString'      => '{' . $pdt1 . '}',
+			'JSONString' => '{' . $pdt1 . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
@@ -153,10 +153,10 @@ class ContactClass {
 		// end logging
 		//fclose($fd);
 
-		$url = $zoho_inventory_url . 'api/v1/contacts';
+		$url = $zoho_inventory_url . 'inventory/v1/contacts';
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+		$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 		$code = $json->code;
 
@@ -201,53 +201,53 @@ class ContactClass {
 		// $fd=fopen(__DIR__.'/contact-update-sync.txt','w+');
 
 		if ( $order_id ) {
-			$order      = wc_get_order( $order_id );
+			$order = wc_get_order( $order_id );
 			$order_data = $order->get_data();
 
 			// BILLING INFORMATION:
-			$fname        = $order_data['billing']['first_name'];
-			$lname        = $order_data['billing']['last_name'];
-			$name         = $fname . ' ' . $lname;
+			$fname = $order_data['billing']['first_name'];
+			$lname = $order_data['billing']['last_name'];
+			$name = $fname . ' ' . $lname;
 			$contact_name = $name;
 
-			$company_name     = $order_data['billing']['company'];
-			$billing_address  = $order_data['billing']['address_1'];
+			$company_name = $order_data['billing']['company'];
+			$billing_address = $order_data['billing']['address_1'];
 			$billing_address2 = $order_data['billing']['address_2'];
-			$billing_city     = $order_data['billing']['city'];
-			$billing_state    = $order_data['billing']['state'];
+			$billing_city = $order_data['billing']['city'];
+			$billing_state = $order_data['billing']['state'];
 			$billing_postcode = $order_data['billing']['postcode'];
-			$billing_country  = $order_data['billing']['country'];
+			$billing_country = $order_data['billing']['country'];
 
 			// SHIPPING INFORMATION:
 			$shipping_first_name = $order_data['shipping']['first_name'];
-			$shipping_last_name  = $order_data['shipping']['last_name'];
-			$shipping_address    = $order_data['shipping']['address_1'];
-			$shipping_address2   = $order_data['shipping']['address_2'];
-			$shipping_city       = $order_data['shipping']['city'];
-			$shipping_state      = $order_data['shipping']['state'];
-			$shipping_postcode   = $order_data['shipping']['postcode'];
-			$shipping_country    = $order_data['shipping']['country'];
+			$shipping_last_name = $order_data['shipping']['last_name'];
+			$shipping_address = $order_data['shipping']['address_1'];
+			$shipping_address2 = $order_data['shipping']['address_2'];
+			$shipping_city = $order_data['shipping']['city'];
+			$shipping_state = $order_data['shipping']['state'];
+			$shipping_postcode = $order_data['shipping']['postcode'];
+			$shipping_country = $order_data['shipping']['country'];
 		} else {
-			$fname               = get_user_meta( $userid, 'billing_first_name', true );
-			$lname               = get_user_meta( $userid, 'billing_last_name', true );
-			$name                = $fname . ' ' . $lname;
-			$contact_name        = $name;
-			$company_name        = get_user_meta( $userid, 'billing_company', true );
-			$billing_address     = get_user_meta( $userid, 'billing_address_1', true );
-			$billing_address2    = get_user_meta( $userid, 'billing_address_2', true );
-			$billing_city        = get_user_meta( $userid, 'billing_city', true );
-			$billing_state       = get_user_meta( $userid, 'billing_state', true );
-			$billing_postcode    = get_user_meta( $userid, 'billing_postcode', true );
-			$billing_country     = get_user_meta( $userid, 'billing_country', true );
+			$fname = get_user_meta( $userid, 'billing_first_name', true );
+			$lname = get_user_meta( $userid, 'billing_last_name', true );
+			$name = $fname . ' ' . $lname;
+			$contact_name = $name;
+			$company_name = get_user_meta( $userid, 'billing_company', true );
+			$billing_address = get_user_meta( $userid, 'billing_address_1', true );
+			$billing_address2 = get_user_meta( $userid, 'billing_address_2', true );
+			$billing_city = get_user_meta( $userid, 'billing_city', true );
+			$billing_state = get_user_meta( $userid, 'billing_state', true );
+			$billing_postcode = get_user_meta( $userid, 'billing_postcode', true );
+			$billing_country = get_user_meta( $userid, 'billing_country', true );
 			$shipping_first_name = get_user_meta( $userid, 'shipping_first_name', true );
-			$shipping_last_name  = get_user_meta( $userid, 'shipping_last_name', true );
-			$shipping_attention  = $shipping_first_name . ' ' . $shipping_last_name;
-			$shipping_address    = get_user_meta( $userid, 'shipping_address_1', true );
-			$shipping_address2   = get_user_meta( $userid, 'shipping_address_2', true );
-			$shipping_city       = get_user_meta( $userid, 'shipping_city', true );
-			$shipping_state      = get_user_meta( $userid, 'shipping_state', true );
-			$shipping_postcode   = get_user_meta( $userid, 'shipping_postcode', true );
-			$shipping_country    = get_user_meta( $userid, 'shipping_country', true );
+			$shipping_last_name = get_user_meta( $userid, 'shipping_last_name', true );
+			$shipping_attention = $shipping_first_name . ' ' . $shipping_last_name;
+			$shipping_address = get_user_meta( $userid, 'shipping_address_1', true );
+			$shipping_address2 = get_user_meta( $userid, 'shipping_address_2', true );
+			$shipping_city = get_user_meta( $userid, 'shipping_city', true );
+			$shipping_state = get_user_meta( $userid, 'shipping_state', true );
+			$shipping_postcode = get_user_meta( $userid, 'shipping_postcode', true );
+			$shipping_country = get_user_meta( $userid, 'shipping_country', true );
 		}
 
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
@@ -298,16 +298,16 @@ class ContactClass {
 		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
 
 		$data = array(
-			'JSONString'      => '{' . $pdt2 . '}',
+			'JSONString' => '{' . $pdt2 . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 		// fwrite($fd,PHP_EOL.'data: '.print_r($data, true));
-		$url = $zoho_inventory_url . 'api/v1/contacts/' . $zi_customer_id;
+		$url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id;
 		// fwrite($fd,PHP_EOL.'URL: '. $url);
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
 		// fwrite($fd, PHP_EOL.'Response log : '.print_r($json, true));
-		$code   = $json->code;
+		$code = $json->code;
 		$errmsg = $json->message;
 
 		//logging
@@ -350,29 +350,29 @@ class ContactClass {
 		// $fd=fopen(__DIR__.'/create_contact_person.txt','w+');
 
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
-		$fname          = get_user_meta( $userid, 'first_name', true );
-		$lname          = get_user_meta( $userid, 'last_name', true );
-		$email          = get_user_meta( $userid, 'billing_email', true );
-		$mobile         = get_user_meta( $userid, 'billing_phone', true );
+		$fname = get_user_meta( $userid, 'first_name', true );
+		$lname = get_user_meta( $userid, 'last_name', true );
+		$email = get_user_meta( $userid, 'billing_email', true );
+		$mobile = get_user_meta( $userid, 'billing_phone', true );
 
 		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
 		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
 
 		$contact_person_data = '"contact_id": "' . $zi_customer_id . '","first_name": "' . $fname . '","last_name":"' . $lname . '","email": "' . $email . '","phone": "' . $mobile . '","mobile": "' . $mobile . '"';
-		$data                = array(
-			'JSONString'      => '{' . $contact_person_data . '}',
+		$data = array(
+			'JSONString' => '{' . $contact_person_data . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
-		$url = $zoho_inventory_url . 'api/v1/contacts/contactpersons';
+		$url = $zoho_inventory_url . 'inventory/v1/contacts/contactpersons';
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+		$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 		// fwrite($fd, PHP_EOL.'JSON : '.print_r($json, true));
 
 		// fclose($fd);
-		$code   = $json->code;
+		$code = $json->code;
 		$errmsg = $json->message;
 		if ( $code == 0 || $code == '0' ) {
 			return $json->contact_id;
@@ -383,26 +383,26 @@ class ContactClass {
 
 	public function update_contact_person( $userid, $contact_person_id ) {
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
-		$fname          = get_user_meta( $userid, 'first_name', true );
-		$lname          = get_user_meta( $userid, 'last_name', true );
-		$email          = get_user_meta( $userid, 'billing_email', true );
-		$mobile         = get_user_meta( $userid, 'billing_phone', true );
+		$fname = get_user_meta( $userid, 'first_name', true );
+		$lname = get_user_meta( $userid, 'last_name', true );
+		$email = get_user_meta( $userid, 'billing_email', true );
+		$mobile = get_user_meta( $userid, 'billing_phone', true );
 
 		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
 		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
 
 		$contact_person_data = '"contact_id": ' . $zi_customer_id . ',"first_name": "' . $fname . '","last_name":"' . $lname . '","email": "' . $email . '","phone": "' . $mobile . '","mobile": "' . $mobile . '"';
-		$data                = array(
-			'JSONString'      => '{' . $contact_person_data . '}',
+		$data = array(
+			'JSONString' => '{' . $contact_person_data . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
-		$url = $zoho_inventory_url . 'api/v1/contacts/contactpersons/' . $contact_person_id;
+		$url = $zoho_inventory_url . 'inventory/v1/contacts/contactpersons/' . $contact_person_id;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
 
-		$code   = $json->code;
+		$code = $json->code;
 		$errmsg = $json->message;
 		return $errmsg;
 	}
@@ -413,49 +413,49 @@ class ContactClass {
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
 			$data = $args[0];
-			$page = isset( $data->page ) ? $data->page : null;
+			if ( isset( $data['page'] ) ) {
+				$page = $data['page'];
+			} else {
+				$page = 1;
+			}
 		} else {
 			$page = 1;
 		}
 
-			/* Get Url and org id */
-			$zoho_inventory_oid = $this->config['ContactZI']['OID'];
-			$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
+		/* Get Url and org id */
+		$zoho_inventory_oid = $this->config['ContactZI']['OID'];
+		$zoho_inventory_url = $this->config['ContactZI']['APIURL'];
 
-			/* Get call url */
-			$url                      = $zoho_inventory_url . 'api/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&per_page=100&page=' . $page;
-			$execute_curl_call_handle = new ExecutecallClass();
-			$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		/* Get call url */
+		$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&per_page=100&page=' . $page;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 		if ( isset( $json->contacts ) ) {
 			foreach ( $json->contacts as $contacts ) {
 				// fwrite( $fd, PHP_EOL . 'Contact : ' . print_r( $contacts, true ) );
-				$contact_type   = trim( $contacts->contact_type );
-				$zohocontact_id = $contacts->contact_id;
-				$phone          = $contacts->phone;
-				$company_name   = $contacts->company_name;
-				$first_name     = $contacts->first_name;
-				$last_name      = $contacts->last_name;
-				$email          = trim( $contacts->email );
-				$credit_limit1  = $contacts->customer_credit_limit;
-				$credit_limit   = preg_replace( '/[^0-9,]/', '', $credit_limit1 );
+				$contact_type = trim( $contacts->contact_type );
+				$zoho_contact_id = $contacts->contact_id;
+				$first_name = isset( $contacts->first_name ) ? $contacts->first_name : '';
+				$last_name = isset( $contacts->last_name ) ? $contacts->last_name : '';
+				$email = isset( $contacts->email ) ? $contacts->email : '';
+				$phone = isset( $contacts->phone ) ? $contacts->phone : '';
+				$company_name = isset( $contacts->company_name ) ? $contacts->company_name : '';
+				$credit_limit1 = $contacts->customer_credit_limit;
+				$credit_limit = preg_replace( '/[^0-9,]/', '', $credit_limit1 );
 				//check if user type is customer
-				if ( ! empty( $email ) && ! empty( $first_name ) && ! empty( $last_name ) ) {
+				if ( ! empty( $email ) ) {
 					if ( $contact_type === 'customer' && ! email_exists( $email ) ) {
-						/* Create Wp User */
-						$user_data = array(
-							'user_login'   => $first_name . '.' . $last_name,
-							'display_name' => $first_name . ' ' . $last_name,
-							'user_email'   => $email,
-							'first_name'   => $first_name,
-							'last_name'    => $last_name,
-							'role'         => 'customer',
-						);
-						$user_id   = wp_insert_user( $user_data );
+						/* Create WC Customer */
+						$user_id = wc_create_new_customer( $email, '', wp_generate_password() );
 						if ( ! is_wp_error( $user_id ) ) {
-							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
+							update_user_meta( $user_id, 'zi_contact_id', $zoho_contact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
+							update_user_meta( $user_id, 'billing_first_name', $first_name );
+							update_user_meta( $user_id, 'billing_last_name', $last_name );
+							update_user_meta( $user_id, 'first_name', $first_name );
+							update_user_meta( $user_id, 'last_name', $last_name );
 							if ( class_exists( 'WooCommerceB2B' ) ) {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
@@ -465,39 +465,36 @@ class ContactClass {
 					} elseif ( email_exists( $email ) ) {
 						/* Update Wp User if already exist */
 						$user_data = get_user_by( 'email', $email );
-						$user_id   = $user_data->ID;
-						$is_err    = wp_update_user(
-							array(
-								'ID'           => $user_id,
-								'display_name' => $first_name . ' ' . $last_name,
-								'user_email'   => $email,
-								'first_name'   => $first_name,
-								'last_name'    => $last_name,
-							)
-						);
-						if ( ! is_wp_error( $is_err ) ) {
-							update_user_meta( $user_id, 'zi_contact_id', $zohocontact_id );
+						if ( ! is_wp_error( $user_data ) ) {
+							$user_id = $user_data->ID;
+							update_user_meta( $user_id, 'zi_contact_id', $zoho_contact_id );
 							update_user_meta( $user_id, 'billing_company', $company_name );
 							update_user_meta( $user_id, 'billing_phone', $phone );
+							update_user_meta( $user_id, 'billing_first_name', $first_name );
+							update_user_meta( $user_id, 'billing_last_name', $last_name );
+							update_user_meta( $user_id, 'first_name', $first_name );
+							update_user_meta( $user_id, 'last_name', $last_name );
 							if ( class_exists( 'WooCommerceB2B' ) ) {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
 						} else {
-							echo $is_err->get_error_message();
+							echo $user_data->get_error_message();
 						}
 					}
+				} else {
+					continue;
 				}
 			}
-			// fclose( $fd ); // end logging
-			if ( $json->page_context['has_more_page'] === true ) {
-				$data_arr          = (object) array();
-				$data_arr->page    = $page + 1;
+			if ( $json->page_context->has_more_page ) {
+				$data_arr = (object) array();
+				$data_arr->page = $page + 1;
 				$existing_schedule = as_has_scheduled_action( 'sync_zi_import_contacts', array( $data_arr ) );
 				if ( ! $existing_schedule ) {
 					as_schedule_single_action( time(), 'sync_zi_import_contacts', array( $data_arr ) );
 				}
 			}
 		}
+		// fclose( $fd );
 	}
 
 	/**
@@ -507,17 +504,17 @@ class ContactClass {
 	 */
 	protected function update_customer_store_credit_balance( $user_id, $credit_limit ) {
 		if ( ! empty( $user_id ) ) {
-			$endpoint             = '/wc-store-credits/v1/entries‌';
+			$endpoint = '/wc-store-credits/v1/entries‌';
 			$store_credit_balance = get_user_meta( $user_id, 'acfw_store_credit_balance', true );
 			if ( $store_credit_balance !== $credit_limit ) {
 				// first remove the user meta store credit
 				update_user_meta( $user_id, 'acfw_store_credit_balance', $credit_limit );
 				// create payload for store credit.
 				$payload = array(
-					'user_id'   => $user_id,
-					'amount'    => $credit_limit,
-					'type'      => 'increase',
-					'action'    => 'admin_increase',
+					'user_id' => $user_id,
+					'amount' => $credit_limit,
+					'type' => 'increase',
+					'action' => 'admin_increase',
 					'object_id' => 1,
 				);
 

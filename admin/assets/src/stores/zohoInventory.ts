@@ -5,7 +5,10 @@ import type {
     Intervals,
     OrderSettings,
     PriceSettings,
-    ProductSettings
+    ProductSettings,
+    TaxSettings,
+    WcTax,
+    ZohoTax
 } from '@/types'
 import { acceptHMRUpdate, defineStore } from "pinia";
 import type { Ref, UnwrapRef } from "vue";
@@ -52,6 +55,61 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         loader.setLoading(connected);
         isConnected.value = await fetchData(connected, keys.connected);
         loader.clearLoading(connected);
+    };
+
+
+    /*
+     * -----------------------------------------------------------------------------------------------------------------
+     *  Tax Settings
+     * -----------------------------------------------------------------------------------------------------------------
+     */
+
+    const wc_taxes = ref<WcTax[]>([]);
+    const zoho_taxes = ref<ZohoTax[]>([]);
+    const tax_settings = reactive(<TaxSettings>{
+        selectedTaxRates: [],
+    });
+    const get_wc_taxes = async () => {
+        const key = keys.wc_tax;
+        const instore = storage.get(key);
+        if (instore) {
+            wc_taxes.value = instore;
+        } else {
+            const action = actions.wc_taxes;
+            if (loader.isLoading(action)) return;
+            loader.setLoading(action);
+            wc_taxes.value = await fetchData(action, key);
+            loader.clearLoading(action);
+        }
+    };
+    const get_zoho_taxes = async () => {
+        const key = keys.zoho_tax;
+        const in_store = storage.get(key);
+        if (in_store) {
+            zoho_taxes.value = in_store;
+        } else {
+            const action = actions.zoho_taxes;
+            if (loader.isLoading(action)) return;
+            loader.setLoading(action);
+            zoho_taxes.value = await fetchData(action, key);
+            loader.clearLoading(action);
+        }
+    };
+
+    const encodeTax = (zoho_tax_rate: ZohoTax): string =>
+        `${zoho_tax_rate.tax_id}##${zoho_tax_rate.tax_name.replace(
+            " ",
+            "@@"
+        )}##${zoho_tax_rate.tax_type.replace(" ", "@@")}##${zoho_tax_rate.tax_percentage
+        }`;
+
+    const taxOptions = (woocommerce_tax_id: number) => {
+        const taxOptions: { [key: string]: string } = {};
+        for (const zoho_tax_rate of zoho_taxes.value) {
+            taxOptions[woocommerce_tax_id + "^^" + encodeTax(zoho_tax_rate)] =
+                zoho_tax_rate.tax_name;
+        }
+        return taxOptions;
     };
 
     /*
@@ -261,6 +319,10 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 data = connection;
                 store = keys.connect
                 break;
+            case actions.tax.save:
+                data = tax_settings;
+                store = keys.tax
+                break;
             case actions.product.save:
                 data = product_settings;
                 store = keys.product
@@ -337,6 +399,9 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 response = await resetData(action, keys.connect);
                 storage.remove(keys.connect);
                 break;
+            case actions.tax.reset:
+                response = await resetData(action, keys.tax);
+                break;
             case actions.product.reset:
                 response = await resetData(action, keys.product);
                 storage.remove(keys.product);
@@ -375,6 +440,9 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     connection.client_secret = "";
                     connection.redirect_uri = redirect_uri;
                     connection.account_domain = "";
+                    break;
+                case actions.tax.reset:
+                    tax_settings.selectedTaxRates = [];
                     break;
                 case actions.product.reset:
                     product_settings.disable_product_sync = false;
@@ -441,6 +509,14 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     connection.client_secret = response.client_secret;
                     connection.redirect_uri = redirect_uri;
                     connection.account_domain = response.account_domain;
+                }
+                break;
+            case "tax":
+                get_wc_taxes();
+                get_zoho_taxes();
+                response = await loader.loadData(keys.tax, actions.tax.get);
+                if (response) {
+                    tax_settings.selectedTaxRates = response.selectedTaxRates;
                 }
                 break;
             case "product":
@@ -565,6 +641,10 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         isConnectionValid,
         connection,
         connectionSettingsInvalid,
+        wc_taxes,
+        zoho_taxes,
+        tax_settings,
+        taxOptions,
         product_settings,
         sync,
         syncResponse,

@@ -65,27 +65,35 @@ class ExactOnlineSync {
 	 */
 	public static function import( string $type, array $data ) {
 		$endpoint = '';
-		$payload  = array();
+		$payload = array();
 		switch ( $type ) {
 			case 'product':
 				$endpoint = '/wc/v3/products';
-				$payload  = array(
-					'name'           => $data['Description'],
-					'sku'            => $data['Code'],
-					'status'         => 'publish',
-					'type'           => 'simple',
-					'regular_price'  => (string) $data['StandardSalesPrice'],
+				$payload = array(
+					'name' => $data['Description'],
+					'sku' => $data['Code'],
+					'status' => 'publish',
+					'type' => 'simple',
+					'regular_price' => (string) $data['StandardSalesPrice'],
 					'stock_quantity' => (string) $data['Stock'],
-					'images'         => array(
+					'images' => array(
 						array(
 							'src' => $data['PictureUrl'],
 						),
 					),
-					'meta_data'      => array(
+					'meta_data' => array(
 						array(
-							'key'   => 'eo_item_id',
+							'key' => 'eo_item_id',
 
 							'value' => $data['ID'],
+						),
+						array(
+							'key' => 'cost_price',
+							'value' => $data['CostPriceStandard'],
+						),
+						array(
+							'key' => 'eo_unit',
+							'value' => $data['Unit'],
 						),
 					),
 
@@ -95,34 +103,34 @@ class ExactOnlineSync {
 				if ( empty( $data['Email'] ) ) {
 					break;
 				}
-				$endpoint   = '/wc/v3/customers';
-				$names      = explode( ' ', $data['Name'] );
+				$endpoint = '/wc/v3/customers';
+				$names = explode( ' ', $data['Name'] );
 				$first_name = $names[0] ?? '';
-				$last_name  = $names[1] ?? '';
-				$address    = array(
+				$last_name = $names[1] ?? '';
+				$address = array(
 					'first_name' => $first_name,
-					'last_name'  => $last_name,
-					'address_1'  => $data['AddressLine1'] ?? '',
-					'address_2'  => $data['AddressLine2'] ?? '',
-					'city'       => $data['City'],
-					'country'    => $data['Country'],
-					'postcode'   => $data['Postcode'],
-					'phone'      => $data['Phone'] ?? '',
-					'email'      => $data['Email'],
+					'last_name' => $last_name,
+					'address_1' => $data['AddressLine1'] ?? '',
+					'address_2' => $data['AddressLine2'] ?? '',
+					'city' => $data['City'],
+					'country' => $data['Country'],
+					'postcode' => $data['Postcode'],
+					'phone' => $data['Phone'] ?? '',
+					'email' => $data['Email'],
 				);
-				$payload    = array(
-					'email'      => $data['Email'],
+				$payload = array(
+					'email' => $data['Email'],
 					'first_name' => $first_name,
-					'last_name'  => $last_name,
-					'billing'    => $address,
-					'shipping'   => $address,
-					'meta_data'  => array(
+					'last_name' => $last_name,
+					'billing' => $address,
+					'shipping' => $address,
+					'meta_data' => array(
 						array(
-							'key'   => 'eo_account_id',
+							'key' => 'eo_account_id',
 							'value' => $data['ID'],
 						),
 						array(
-							'key'   => 'eo_contact_id',
+							'key' => 'eo_contact_id',
 							'value' => $data['MainContact'] ?? '',
 						),
 					),
@@ -155,6 +163,23 @@ class ExactOnlineSync {
 				}
 				if ( ! empty( $wc_product_id ) ) {
 					update_post_meta( $wc_product_id, 'eo_item_id', $data['ID'] );
+					update_post_meta( $wc_product_id, 'cost_price', $data['CostPriceStandard'] );
+					update_post_meta( $wc_product_id, 'eo_unit', $data['Unit'] );
+					$wc_product = wc_get_product( $wc_product_id );
+					$wc_product->set_regular_price( $data['StandardSalesPrice'] );
+					$stock = $data['Stock'];
+					if ( is_numeric( $stock ) ) {
+						$wc_product->set_manage_stock( true );
+						$wc_product->set_stock_quantity( $data['Stock'] );
+						if ( $stock > 0 ) {
+							$wc_product->set_stock_status( 'instock' );
+						} else {
+							$backorder_status = $wc_product->backorders_allowed();
+							$status = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
+							$wc_product->set_stock_status( $status );
+						}
+					}
+					$wc_product->save();
 				}
 				break;
 			case 'customer':
@@ -168,14 +193,14 @@ class ExactOnlineSync {
 					update_user_meta( $user_id, 'eo_contact_id', $data['MainContact'] );
 				}
 				break;
-                case 'orders':
-                    $order = wc_get_order( $data['Description'] );
-                    if ( empty( $order ) ) {
-                        break;
-                    }
-                    $order->update_meta_data( 'eo_order_id', $data['OrderID'] );
-                    $order->save();
-                    break;
+			case 'orders':
+				$order = wc_get_order( $data['Description'] );
+				if ( empty( $order ) ) {
+					break;
+				}
+				$order->update_meta_data( 'eo_order_id', $data['OrderID'] );
+				$order->save();
+				break;
 			default:
 				break;
 		}
@@ -184,10 +209,10 @@ class ExactOnlineSync {
 	private static function get_product_id_by_title( string $product_title ) {
 		// Set up the query arguments
 		$args = array(
-			'post_type'      => 'product',
+			'post_type' => 'product',
 			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			's'              => $product_title, // Search by product title
+			'fields' => 'ids',
+			's' => $product_title, // Search by product title
 		);
 
 		// Run the query

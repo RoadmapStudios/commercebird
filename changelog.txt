@@ -1,3 +1,36 @@
+Version 2.1.21 - June 5 2024
+* Fix: simple products import via cron
+* Fix: disable product sync now also applies to changes made via the app
+* Tweak: improved pagination of products import
+* Compatibility with WooCommerce 8.9
+
+Version 2.1.20 - May 31 2024
+* Fix: variation import of existing parent product via cron
+* Fix: zoho inventory salesorder url on orders listing is restored
+* Fix: dismiss review banner
+* Fix: disable product sync to zoho restored
+* Fix: disable stock sync restored
+* Tweak: zoho image import fail will no longer break sync of rest of category
+* Tweak: zoho image name must be unique when changed for existing item
+
+Version 2.1.19 - May 29 2024
+* Fix: warehouse stock sync
+* Fix: group items import
+* Fix: brand import of group items
+* Tweak: order prefix will be empty if not set
+* Tweak: featured image of first variation will now be featured image of parent variable product
+
+Version 2.1.18 - May 14 2024
+* Fix: webhook sync of simple items
+* Fix: manual item sync from woo to zoho - now secure with nonce
+* New: added Zoho Purchase Price as Cost Price as product meta
+
+Version 2.1.17 - May 8 2024
+* Fix: duplication of images
+* Tweak: zoho api domain updated to zohoapis
+* Tweak: removed standard purchase price for variations
+* Revert: tax mapping (now as optional)
+
 Version 2.1.16 - April 27 2024
 * Fix: featured image import of Zoho Inventory product
 * Fix: group items import of Zoho Inventory

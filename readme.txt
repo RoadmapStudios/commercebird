@@ -2,10 +2,10 @@
 Contributors: fawadinho
 Author link: https://commercebird.com
 Tags: shop,store,ecommerce,commerce,e-commerce
-Requires at least: 6.0
-Tested up to: 6.4
+Requires at least: 6.5
+Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 2.1.5
+Stable tag: 2.1.19
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -49,6 +49,79 @@ A: Please visit https://support.commercebird.com to read the docs and open suppo
 
 
 == Changelog ==
+= 2.1.19 - May 29 2024 =
+* Fix: warehouse stock sync
+* Fix: group items import
+* Fix: brand import of group items
+* Tweak: order prefix will be empty if not set
+* Tweak: featured image of first variation will now be featured image of parent variable product
+
+= 2.1.18 - May 14 2024 =
+* Fix: webhook sync of simple items
+* Fix: manual item sync from woo to zoho - now secure with nonce
+* New: added Zoho Purchase Price as Cost Price as product meta
+
+= 2.1.17 - May 8 2024 =
+* Fix: duplication of images
+* Tweak: zoho api domain updated to zohoapis
+* Tweak: removed standard purchase price for variations
+* Revert: tax mapping (now as optional)
+
+= 2.1.16 - April 27 2024 =
+* Fix: featured image import of Zoho Inventory product
+* Fix: group items import of Zoho Inventory
+* Fix: order status draft for Zoho Inventory
+* Fix: product description import of Zoho Inventory
+
+= 2.1.15 - April 18 2024 =
+* New: product brands taxonomy
+* Fix: custom fields of products
+* Reverted: shipping charge tax
+* Compatible with WooCommerce 8.8
+
+= 2.1.14 - April 9 2024 =
+* Fix: address update for existing customers of Zoho Inventory
+* Removed: shipping charge tax
+
+= 2.1.13 - April 3 2024 =
+* Fix: order sync
+* Fix: orders with coupon sync
+* Removed: tax mapping - no longer required by zoho api
+
+= 2.1.12 - April 1 2024 =
+* Removed: package sync - as its now part of Sales Order Cycle in Zoho
+* Fix: remove 'deleted product' from dB cache in order to resync
+* Fix: webhook changes reverted
+
+= 2.1.11 - March 29 2024 =
+* Fix: PHP 8.x improved compatibility
+
+= 2.1.10 - March 27 2024 =
+* Fix: PHP 8 error
+* Fix: simple items import
+* Fix: only run cronjob if zoho is connected
+
+= 2.1.9 - March 25 2024 =
+* Fix: first time stock update via inventory adjustment
+* Fix: child items of bundles not added
+* Fix: cronjob not updating variations
+* Compatibility with WooCommerce 8.7 verified
+
+= 2.1.8  - March 20 2024 =
+* New: customer import with cron option
+* New: support for Advanced Coupons plugin - customer credit
+* Fix: image import
+* Fix: order sync
+
+= 2.1.7 - March 13 2024 =
+* Fix: checkout fields readonly conflict
+* Fix: cronjob adjustment not working
+* Fix: package sync
+* Fix: composite items import
+
+= 2.1.6 - March 7th 2024 =
+* New: connect Zoho Inventory to Exact Online
+* Fix: toggle save options
 
 = 2.1.5 - Februari 29 2024 =
 * New: Zoho CRM tab to bulk export orders to Zoho CRM

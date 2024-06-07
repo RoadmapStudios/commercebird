@@ -19,8 +19,8 @@ class ShippingWebhook {
 			self::$namespace,
 			self::$endpoint,
 			array(
-				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'handle' ),
+				'methods' => WP_REST_Server::EDITABLE,
+				'callback' => array( $this, 'handle' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -35,18 +35,18 @@ class ShippingWebhook {
 			$salesorder = $order_data['salesorder'];
 			/* Getting Salesorder id */
 
-			$salesorder_id    = $salesorder['salesorder_id'];
+			$salesorder_id = $salesorder['salesorder_id'];
 			$formatted_status = trim( $salesorder['shipped_status_formatted'] );
-			$ship_status      = strtolower( $formatted_status );
-			$packages         = $salesorder['packages'];
+			$ship_status = strtolower( $formatted_status );
+			$packages = $salesorder['packages'];
 
 			/* Customer Query to get Order Id */
 			$order_statuses = wc_get_order_statuses();
 			// Find orders with the specific meta key and value
 			$orders = wc_get_orders(
 				array(
-					'meta_key'    => 'zi_salesorder_id',
-					'meta_value'  => $salesorder_id,
+					'meta_key' => 'zi_salesorder_id',
+					'meta_value' => $salesorder_id,
 					'numberposts' => -1,
 				)
 			);
@@ -68,11 +68,11 @@ class ShippingWebhook {
 
 			/* Getting Packages if empty in response */
 			if ( empty( $packages ) && ! empty( $post_id ) ) {
-				$zoho_inventory_oid       = get_option( 'zoho_inventory_oid' );
-				$zoho_inventory_url       = get_option( 'zoho_inventory_url' );
-				$package_url              = $zoho_inventory_url . 'api/v1/packages?organization_id=' . $zoho_inventory_oid;
+				$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+				$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+				$package_url = $zoho_inventory_url . 'inventory/v1/packages?organization_id=' . $zoho_inventory_oid;
 				$execute_curl_call_handle = new ExecutecallClass();
-				$json                     = $execute_curl_call_handle->ExecuteCurlCallGet( $package_url );
+				$json = $execute_curl_call_handle->ExecuteCurlCallGet( $package_url );
 				if ( 0 === (int) $json->code ) {
 					$all_packages = $json->packages;
 					foreach ( $all_packages as $packs ) {
@@ -90,8 +90,8 @@ class ShippingWebhook {
 				foreach ( $packages as $package ) {
 					/* getting all ship and trace data from package */
 					$tracking_number = $package['tracking_number'];
-					$carrier         = $package['carrier'];
-					$status          = $package['status'];
+					$carrier = $package['carrier'];
+					$status = $package['status'];
 					if ( empty( $ship_status ) ) {
 						$ship_status = trim( $status );
 					}

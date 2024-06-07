@@ -43,14 +43,22 @@ class ImageClass {
 	public function args_attach_image( $item_id, $item_name, $post_id, $item_image ) {
 		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+' );
 
+		$image_exists_in_library = $this->compare_image_with_media_library( $item_name, $item_image );
+		if ( $image_exists_in_library ) {
+			return;
+		}
+
 		global $wpdb;
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$url = $zoho_inventory_url . 'api/v1/items/' . $item_id . '/image';
+		$url = $zoho_inventory_url . 'inventory/v1/items/' . $item_id . '/image';
 		$url .= '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
 		$image_url = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url );
+		if ( is_wp_error( $image_url ) ) {
+			return;
+		}
 		// fwrite($fd, PHP_EOL . 'Sync init');
 		$temp_file = download_url( $image_url );
 		// Get the MIME type of the downloaded image
@@ -72,11 +80,10 @@ class ImageClass {
 		}
 
 		$attach_id = intval( get_post_meta( $post_id, 'zoho_product_image_id', true ) );
-		$image_exists_in_library = $this->compare_image_with_media_library( $item_image );
 		// fwrite( $fd, PHP_EOL . 'Image Exists in Library: ' . $image_exists_in_library );
 		$image_post_id = 0;
 		if ( $image_exists_in_library ) {
-			$attach_id = $image_exists_in_library;
+			$image_post_id = $image_exists_in_library;
 			wp_delete_file( $temp_file );
 			wp_delete_file( $image_url );
 		} else {
@@ -102,11 +109,11 @@ class ImageClass {
 				// fwrite( $fd, PHP_EOL . 'Inside new image: ' . $image_post_id );
 				// Set variables for storage, fix file filename for query strings.
 				$file = array(
-					'name' => $image_name,
-					'type' => $file_type,
+					'name'     => $image_name,
+					'type'     => $file_type,
 					'tmp_name' => $temp_file,
-					'error' => 0,
-					'size' => filesize( $temp_file ),
+					'error'    => 0,
+					'size'     => wp_filesize( $temp_file ),
 				);
 
 				$overrides = array(
@@ -180,7 +187,7 @@ class ImageClass {
 						}
 						// also delete the zoho_image folder files.
 						$folder_path = $folder_path . '/zoho_image/';
-						$file_paths  = glob( $folder_path . '/*' );
+						$file_paths = glob( $folder_path . '/*' );
 						foreach ( $file_paths as $file_path ) {
 							if ( is_file( $file_path ) ) {
 								wp_delete_file( $file_path );
@@ -214,7 +221,7 @@ class ImageClass {
 	 * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
 	 * @since 1.0.0
 	 */
-	protected function compare_image_with_media_library( $item_image ) {
+	protected function compare_image_with_media_library( $item_name, $item_image ) {
 
 		if ( ! empty( $item_image ) ) {
 			$args = array(
@@ -228,6 +235,9 @@ class ImageClass {
 				$existing_image_title = get_the_title( $media_image->ID );
 				// check if the existing image title contains the item image name
 				if ( strpos( $existing_image_title, $item_image ) !== false ) {
+					return $media_image->ID; // Return the ID of the existing image
+				}
+				if ( strpos( $existing_image_title, $item_name ) !== false ) {
 					return $media_image->ID; // Return the ID of the existing image
 				}
 			}

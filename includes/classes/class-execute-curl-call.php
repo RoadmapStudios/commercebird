@@ -5,6 +5,8 @@
  *
  * @package  Inventory
  */
+require_once ABSPATH . 'wp-admin/includes/file.php';
+WP_Filesystem();
 
 class ExecutecallClass {
 	/**
@@ -158,7 +160,6 @@ class ExecutecallClass {
 	 */
 	public function ExecuteCurlCallImageGet( $url ) {
 		// $fd = fopen( __DIR__ . '/ExecuteCurlCallImageGet.txt', 'w' );
-
 		global $wp_filesystem;
 
 		$handlefunction = new Classfunctions();
@@ -210,14 +211,20 @@ class ExecutecallClass {
 				wp_mkdir_p( $absolute_upload_path );
 			}
 			// Save the image file
-			$wp_filesystem->put_contents( $upload_dir, $body );
-
+			try {
+				$wp_filesystem->put_contents( $upload_dir, $body );
+			} catch ( Exception $e ) {
+				wp_delete_file( $upload_dir );
+				// return an instance of WP_Error class with the error message
+				return new WP_Error( 'image_upload_error', $e->getMessage() );
+			}
 			// Use trailingslashit to make sure the URL ends with a single slash
 			return trailingslashit( $url_upload_path ) . $img;
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			return 'Error: ' . $error_message;
+			// return an instance of WP error class with the error message
+			return new WP_Error( 'image_upload_error', $error_message );
 		}
 	}
 }

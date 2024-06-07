@@ -9,7 +9,6 @@ use WC_Data_Exception;
 use WC_Product_Variation;
 use WP_REST_Response;
 use WP_REST_Server;
-use WP_User_Query;
 use wpdb;
 use ZI_CommonClass;
 
@@ -49,7 +48,7 @@ class ProductWebhook {
 		// Accounting stock mode check
 		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
 		$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-		$warehouse_id = get_option( 'zoho_warehouse_id' );
+		$warehouse_id = get_option( 'zoho_warehouse_id_status' );
 
 		// variable item sync
 		if ( array_key_exists( 'item', $data ) ) {
@@ -85,12 +84,6 @@ class ProductWebhook {
 		$item_status = $item['status'] === 'active' ? 'publish' : 'draft';
 		$item_brand = $item['brand'];
 		$custom_fields = $item['custom_fields'];
-		$item_tags_hash = $item['custom_field_hash'];
-		if ( isset( $item_tags_hash['cf_tags'] ) ) {
-			$item_tags = $item_tags_hash['cf_tags'];
-		} else {
-			$item_tags = '';
-		}
 		// Stock mode check
 		$warehouses = $item['warehouses'];
 		if ( true === $zi_enable_warehousestock ) {
@@ -137,26 +130,24 @@ class ProductWebhook {
 
 			if ( ! empty( $group_id ) ) {
 				$existing_parent_product = wc_get_product( $group_id );
-
 				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					// fwrite($fd, PHP_EOL . 'Item description update : ' . $item_description);
 					$existing_parent_product->set_short_description( $item_description );
 				}
-
-				// Tags
-				if ( ! empty( $item_tags ) ) {
-					$final_tags = explode( ',', $item_tags );
-					wp_set_object_terms( $groupid, $final_tags, 'product_tag' );
+				// Update the name of the variable product if allowed
+				$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
+				if ( ! $zi_disable_itemname_sync ) {
+					$existing_parent_product->set_name( $item_name );
+					$slug = sanitize_title( $item_name );
+					$existing_parent_product->set_slug( $slug );
 				}
-
 				// Brand update if taxonomy product_brand exists
 				if ( ! empty( $item_brand ) && taxonomy_exists( 'product_brand' ) ) {
 					wp_set_object_terms( $groupid, $item_brand, 'product_brand' );
 				} elseif ( ! empty( $item_brand ) && taxonomy_exists( 'product_brands' ) ) {
 					wp_set_object_terms( $groupid, $item_brand, 'product_brands' );
 				}
-
 				// Update the custom fields if the custom fields are not empty
 				if ( ! empty( $custom_fields ) ) {
 					$import_class = new import_product_class();
@@ -194,6 +185,16 @@ class ProductWebhook {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
+				}
+				// Update Purchase price
+				$variation->update_meta_data( 'cost_price', $item['purchase_rate'] );
+
+				// Map taxes while syncing product from zoho.
+				if ( $item['tax_id'] ) {
+					$zi_common_class = new ZI_CommonClass();
+					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
+					$variation->set_tax_status( 'taxable' );
+					$variation->set_tax_class( $woo_tax_class );
 				}
 
 				$variation->save(); // Save the data
@@ -292,24 +293,14 @@ class ProductWebhook {
 			$pdt_id = '';
 			if ( ! empty( $mapped_product_id ) ) {
 				$product_found = wc_get_product( $mapped_product_id );
-				if ( $product_found ) {
-					$pdt_id = $mapped_product_id;
-					// Sync product name if that is allowed.
-					$product_class = new ProductClass();
-					$product_class->update_product_name( $pdt_id, $item_name );
-				} else {
+				if ( ! $product_found ) {
 					// remove all postmeta of that product id.
 					$wpdb->delete( $wpdb->postmeta, array( 'post_id' => $mapped_product_id ) );
+				} else {
+					$pdt_id = $mapped_product_id;
 				}
 			} elseif ( empty( $item['is_combo_product'] ) ) {
 				// fwrite($fd, PHP_EOL . 'Inside create product');
-				$current_user = wp_get_current_user();
-				if ( ! empty( $current_user ) && $current_user->ID ) {
-					$admin_author_id = $current_user->ID;
-					// get admin user id who started the cron job.
-				} else {
-					$admin_author_id = get_option( 'zi_cron_admin' );
-				}
 
 				// Check if Category is selected before creating simple item
 				if ( 'publish' === $item_status ) {
@@ -329,6 +320,13 @@ class ProductWebhook {
 			// If there is product id then update metadata.
 			if ( ! empty( $pdt_id ) ) {
 				$simple_product = wc_get_product( $pdt_id );
+				// update the name if its allowed
+				$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
+				if ( ! $zi_disable_itemname_sync ) {
+					$simple_product->set_name( $item_name );
+					$slug = sanitize_title( $item_name );
+					$simple_product->set_slug( $slug );
+				}
 				// update the zi_item_id using the product instance
 				$simple_product->update_meta_data( 'zi_item_id', $item_id );
 				// update the status using set_status()
@@ -341,6 +339,8 @@ class ProductWebhook {
 				if ( empty( $sale_price ) ) {
 					$simple_product->set_price( $item_price );
 				}
+				// Update Purchase price
+				$simple_product->update_meta_data( 'cost_price', $item['purchase_rate'] );
 				// description
 				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
@@ -353,21 +353,20 @@ class ProductWebhook {
 					wp_set_object_terms( $pdt_id, $item_brand, 'product_brands' );
 				}
 				// stock
-				$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
-				if ( ! $zi_stock_sync ) {
-					// fwrite($fd, PHP_EOL . 'Inside1');
+				$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+				if ( ! $zi_disable_stock_sync ) {
+					// fwrite( $fd, PHP_EOL . 'Inside1' );
 					if ( 'NULL' !== gettype( $item_stock ) ) {
-						// fwrite($fd, PHP_EOL . 'Inside1.1');
+						// fwrite( $fd, PHP_EOL . 'Inside1.1' );
 						// Set manage stock to yes
 						$simple_product->set_manage_stock( true );
 						// Update stock for simple product
 						$simple_product->set_stock_quantity( number_format( $item_stock, 0, '.', '' ) );
 						if ( $item_stock > 0 ) {
-							// fwrite($fd, PHP_EOL . 'Inside2');
-							$stock_status = 'instock';
+							// fwrite( $fd, PHP_EOL . 'Inside2' );
 							// Update stock status
-							$simple_product->set_stock_status( $stock_status );
-							wp_set_post_terms( $pdt_id, $stock_status, 'product_visibility', true );
+							$simple_product->set_stock_status( 'instock' );
+							wp_set_post_terms( $pdt_id, 'instock', 'product_visibility', true );
 						} else {
 							// fwrite($fd, PHP_EOL . 'Inside3');
 							$stock_status = $simple_product->backorders_allowed() ? 'onbackorder' : 'outofstock';
@@ -446,6 +445,8 @@ class ProductWebhook {
 		$response->set_data( 'success on variable product' );
 		$response->set_status( 200 );
 
+		// fclose( $fd ); // close logfile.
+
 		return $response;
 	}
 
@@ -473,10 +474,10 @@ class ProductWebhook {
 
 		if ( ! empty( $mapped_product_id ) ) {
 			// stock
-			$zi_stock_sync = get_option( 'zoho_stock_sync_status' );
+			$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
 			$product = wc_get_product( $mapped_product_id );
 			// Check if the product is in stock
-			if ( ! $zi_stock_sync ) {
+			if ( ! $zi_disable_stock_sync ) {
 				if ( $product->is_in_stock() ) {
 					// Get stock quantity
 					$stock_quantity = $product->get_stock_quantity();

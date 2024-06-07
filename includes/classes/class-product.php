@@ -11,7 +11,7 @@ class ProductClass {
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
-				'OID'    => get_option( 'zoho_inventory_oid' ),
+				'OID' => get_option( 'zoho_inventory_oid' ),
 				'APIURL' => get_option( 'zoho_inventory_url' ),
 			),
 		);
@@ -38,7 +38,7 @@ class ProductClass {
 
 		if ( is_array( $post_id ) ) {
 			$product_id = intval( $post_id['0'] );
-			$post_id    = $product_id;
+			$post_id = $product_id;
 		}
 
 		if ( 'publish' !== get_post_status( $post_id ) ) {
@@ -56,39 +56,31 @@ class ProductClass {
 			// fwrite($fd,PHP_EOL.'Inside Regular: ');
 			// Simple product.
 			$rate = $product->get_regular_price();
-			// $rateS = $product->get_sale_price();
-			/*
-			if ($rateS) {
-			$rate = $rateS;
-			} else {
-			$rate = $rateR;
-			} */
-			// parse the name
 			$pre_name = $product->get_name();
-			$name     = preg_replace( "/[>\"''<`]/", '', $pre_name );
+			$name = preg_replace( "/[>\"''<`]/", '', $pre_name );
 
-			$sku            = $product->get_sku();
+			$sku = $product->get_sku();
 			$stock_quantity = $product->get_stock_quantity();
-			$in_stock       = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
+			$in_stock = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
 			// fwrite($fd,PHP_EOL.'$product->get_stock_quantity() : '.$product->get_stock_quantity());
 			$in_stock_rate = $in_stock * (int) $rate;
 
-			$tax_rates  = WC_Tax::get_base_tax_rates( $product->get_tax_class() );
+			$tax_rates = WC_Tax::get_base_tax_rates( $product->get_tax_class() );
 			$tax_id_key = '';
 			foreach ( $tax_rates as $tax_key => $tax_value ) {
 				$tax_id_key = $tax_key;
 				break;
 			}
 			$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
-			$tax_id     = explode( '##', $tax_option )[0];
+			$tax_id = explode( '##', $tax_option )[0];
 
 			$zi_status = ( 'publish' === get_post_status( $post_id ) ) ? 'active' : 'inactive';
 			// request data for adding/updating value to zoho.
-			$zi_disable_itemname_sync = get_option( 'zoho_disable_itemname_sync_status' );
-			$zoho_itemId              = get_post_meta( $post_id, 'zi_item_id', true );
+			$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
+			$zoho_item_id = get_post_meta( $post_id, 'zi_item_id', true );
 
 			$zidata = '';
-			if ( empty( $zoho_itemId ) || 'true' != $zi_disable_itemname_sync ) {
+			if ( empty( $zoho_item_id ) || 'true' != $zi_disable_itemname_sync ) {
 				$zidata .= '"name" : "' . $name . '",';
 			}
 
@@ -104,7 +96,7 @@ class ProductClass {
 			// $zidata .= '"unit" : "pcs",';
 			$zidata .= '"status" : "' . $zi_status . '",';
 			// Initial stock update only if item sync for first time.
-			if ( empty( $zoho_itemId ) ) {
+			if ( empty( $zoho_item_id ) ) {
 				$zidata .= '"initial_stock" : ' . $in_stock . ',';
 				$zidata .= '"initial_stock_rate" : "' . $in_stock_rate . '",';
 			}
@@ -112,12 +104,18 @@ class ProductClass {
 			$zidata .= '"tax_id" : "' . $tax_id . '",';
 			//$zidata .= '"image_name" : "' . $image . '",';
 
-			$dimensions         = (object) array();
+			// Get cost_price from meta data.
+			$cost_price = $product->get_meta( 'cost_price' );
+			if ( ! empty( $cost_price ) && is_numeric( $cost_price ) ) {
+				$zidata .= '"purchase_rate" : "' . $cost_price . '",';
+			}
+
+			$dimensions = (object) array();
 			$dimensions->length = $product->get_length();
-			$dimensions->width  = $product->get_width();
+			$dimensions->width = $product->get_width();
 			$dimensions->height = $product->get_height();
 			$dimensions->weight = $product->get_weight();
-			$zidata            .= '"package_details" : ' . wp_json_encode( $dimensions ) . ',';
+			$zidata .= '"package_details" : ' . wp_json_encode( $dimensions ) . ',';
 
 			// Send category only if category ID available.
 			$zi_category_id = $this->get_prod_updated_category( $post_id );
@@ -126,22 +124,22 @@ class ProductClass {
 			}
 
 			// $zidata .= '"image_type" : "' . $ext . '"';
-			if ( ! empty( $zoho_itemId ) && ctype_digit( $zoho_itemId ) ) {
+			if ( ! empty( $zoho_item_id ) && ctype_digit( $zoho_item_id ) ) {
 				// fwrite($fd,PHP_EOL.'Inside Update: ');
-				$this->product_zoho_update_inventory_post( $post_id, $zoho_itemId, $zidata );
+				$this->product_zoho_update_inventory_post( $post_id, $zoho_item_id, $zidata );
 			} else {
 				// fwrite($fd,PHP_EOL.'Inside Create ');
 				$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 				$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
 				$data = array(
-					'JSONString'      => '{' . $zidata . '}',
+					'JSONString' => '{' . $zidata . '}',
 					'organization_id' => $zoho_inventory_oid,
 				);
-				$url  = $zoho_inventory_url . 'api/v1/items';
+				$url = $zoho_inventory_url . 'inventory/v1/items';
 
 				$execute_curl_call_handle = new ExecutecallClass();
-				$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+				$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 				$errmsg = $json->message;
 				update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
@@ -149,45 +147,45 @@ class ProductClass {
 				$code = $json->code;
 				// fwrite($fd,PHP_EOL.'JSON Response : '.print_r($json,true));
 				// Check if the the given sku has product at zoho inventory.
-				if ( $code == '1001' || $code == 1001 ) {
+				if ( $code === '1001' || $code === 1001 ) {
 					// fwrite($fd,PHP_EOL.'Inside SKU Check');
-					$sku_check  = str_replace( ' ', '+', $sku );
-					$url        = $zoho_inventory_url . 'api/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
-					$getRequest = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+					$sku_check = str_replace( ' ', '+', $sku );
+					$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
+					$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
-					if ( $getRequest->code === '0' || $getRequest->code === 0 ) {
-						$item_id      = '';
-						$matchingItem = null;
+					if ( $get_request->code === '0' || $get_request->code === 0 ) {
+						$item_id = '';
+						$matching_item = null;
 
-						foreach ( $getRequest->items as $zohoItem ) {
-							if ( $zohoItem->sku === $sku ) {
+						foreach ( $get_request->items as $zoho_item ) {
+							if ( $zoho_item->sku === $sku ) {
 								// SKU matched
-								$matchingItem = $zohoItem;
+								$matching_item = $zoho_item;
 								break;
 							}
 						}
 
 						// If SKU check didn't find a match, perform name check
-						if ( ! $matchingItem ) {
+						if ( ! $matching_item ) {
 							$item_name_check = str_replace( ' ', '+', $name );
-							$url             = $zoho_inventory_url . 'api/v1/items?search_text=' . $item_name_check . '&organization_id=' . $zoho_inventory_oid;
-							$getRequest      = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+							$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $item_name_check . '&organization_id=' . $zoho_inventory_oid;
+							$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
-							if ( $getRequest->code === '0' || $getRequest->code === 0 ) {
-								foreach ( $getRequest->items as $zohoItem ) {
-									if ( $zohoItem->name === $name ) {
+							if ( $get_request->code === '0' || $get_request->code === 0 ) {
+								foreach ( $get_request->items as $zoho_item ) {
+									if ( $zoho_item->name === $name ) {
 										// Name matched
-										$matchingItem = $zohoItem;
+										$matching_item = $zoho_item;
 										break;
 									}
 								}
 							}
 						}
 
-						if ( $matchingItem ) {
-							$code       = 0;
-							$json->item = $matchingItem;
-							update_post_meta( $post_id, 'zi_product_errmsg', 'Product "' . $matchingItem->name . '" is mapped successfully with Zoho' );
+						if ( $matching_item ) {
+							$code = 0;
+							$json->item = $matching_item;
+							update_post_meta( $post_id, 'zi_product_errmsg', 'Product "' . $matching_item->name . '" is mapped successfully with Zoho' );
 						}
 					}
 				}
@@ -236,21 +234,21 @@ class ProductClass {
 	protected function product_zoho_update_inventory_post( $proid, $item_id, $pdt3, $bundle = '' ) {
 		// $fd = fopen(__DIR__.'/product_class.txt','a+');
 		// fwrite($fd,PHP_EOL.'Inside update : ');
-		$errmsg             = '';
+		$errmsg = '';
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-		$url = $zoho_inventory_url . 'api/v1/items/' . $item_id;
+		$url = $zoho_inventory_url . 'inventory/v1/items/' . $item_id;
 		// fwrite($fd,PHP_EOL.'JSON Data : '.'{' . $pdt3 . '}');
 		$data = array(
-			'JSONString'      => '{' . $pdt3 . '}',
+			'JSONString' => '{' . $pdt3 . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json                     = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
 		// fwrite($fd,PHP_EOL.'Update response : '.print_r($json,true));
-		$code   = $json->code;
+		$code = $json->code;
 		$errmsg = $json->message;
 		update_post_meta( $proid, 'zi_product_errmsg', $errmsg );
 		// fclose($fd);
@@ -280,14 +278,14 @@ class ProductClass {
 		// $fd = fopen(__DIR__ . '/zi_bundle_product_data_zoho.txt', 'w+');
 
 		$bundled_product = new WC_Product_Bundle( $bundle_id );
-		$bundle_childs   = $bundled_product->get_bundled_items();
+		$bundle_childs = $bundled_product->get_bundled_items();
 
 		// Allow Bundle Product
 		$child_array = array();
 		foreach ( $bundle_childs as $child ) {
 			$parent_product = $child->product;
-			$child_id       = $child->product_id;
-			$meta_value     = $this->zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'quantity_max' );
+			$child_id = $child->product_id;
+			$meta_value = $this->zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'quantity_max' );
 
 			$zi_child_ids = array(); // Array to store zi_child_ids
 
@@ -296,7 +294,7 @@ class ProductClass {
 
 				foreach ( $meta_data as $meta ) {
 					if ( $meta->meta_key === 'allowed_variations' ) {
-						$serialized_value   = $meta->meta_value;
+						$serialized_value = $meta->meta_value;
 						$deserialized_value = maybe_unserialize( $serialized_value );
 
 						if ( is_array( $deserialized_value ) ) {
@@ -318,7 +316,7 @@ class ProductClass {
 
 			foreach ( $zi_child_ids as $zi_child_id ) {
 				$json_child = (object) array(
-					'item_id'  => $zi_child_id,
+					'item_id' => $zi_child_id,
 					'quantity' => $meta_value[0]->meta_value,
 				);
 				array_push( $child_array, $json_child );
@@ -339,33 +337,33 @@ class ProductClass {
 			$child_items = $this->zi_bundle_product_data_zoho( $post_id );
 		}
 
-		$priceR = $item->get_regular_price();
-		$priceS = $item->get_sale_price();
+		$price_r = $item->get_regular_price();
+		$price_s = $item->get_sale_price();
 
-		if ( $priceS ) {
-			$rate = round( $priceS, 2 );
+		if ( $price_s ) {
+			$rate = round( $price_s, 2 );
 		} else {
-			$rate = round( $priceR, 2 );
+			$rate = round( $price_r, 2 );
 		}
 		//$rate = 500;
 		// $proid = $item->ID;
-		$pre_name       = $item->get_name();
-		$name           = preg_replace( "/[>\"''<`]/", '', $pre_name );
-		$sku            = $item->get_sku();
+		$pre_name = $item->get_name();
+		$name = preg_replace( "/[>\"''<`]/", '', $pre_name );
+		$sku = $item->get_sku();
 		$stock_quantity = $item->get_stock_quantity();
-		$in_stock       = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
-		$in_stock_rate  = ( $in_stock * $rate );
+		$in_stock = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
+		$in_stock_rate = ( $in_stock * $rate );
 
 		$product_type = 'goods';
-		$item_type    = 'inventory';
-		$tax_rates    = WC_Tax::get_base_tax_rates( $item->get_tax_class() );
-		$tax_id_key   = '';
+		$item_type = 'inventory';
+		$tax_rates = WC_Tax::get_base_tax_rates( $item->get_tax_class() );
+		$tax_id_key = '';
 		foreach ( $tax_rates as $tax_key => $tax_value ) {
 			$tax_id_key = $tax_key;
 			break;
 		}
 		$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
-		$tax_id     = explode( '##', $tax_option )[0];
+		$tax_id = explode( '##', $tax_option )[0];
 		if ( ! empty( $tax_rates ) ) {
 			$tax_rate = reset( $tax_rates );
 		}
@@ -378,31 +376,31 @@ class ProductClass {
 		//     $pdt1 .= ',"category_id" : "' . $zi_category_id . '"';
 		// }
 
-		$zoho_itemId = get_post_meta( $post_id, 'zi_item_id', true );
-		if ( empty( $zoho_itemId ) ) {
+		$zoho_item_id = get_post_meta( $post_id, 'zi_item_id', true );
+		if ( empty( $zoho_item_id ) ) {
 			$pdt1 .= ',"initial_stock" : ' . $in_stock . ',';
 			$pdt1 .= '"initial_stock_rate" : "' . $in_stock_rate . '"';
 		}
 
 		// Dimensions data append to update call.
-		$dimensions         = (object) array();
+		$dimensions = (object) array();
 		$dimensions->length = $item->get_length();
-		$dimensions->width  = $item->get_width();
+		$dimensions->width = $item->get_width();
 		$dimensions->height = $item->get_height();
 		$dimensions->weight = $item->get_weight();
-		$pdt1              .= ',"package_details" : ' . wp_json_encode( $dimensions ) . ',';
+		$pdt1 .= ',"package_details" : ' . wp_json_encode( $dimensions ) . ',';
 
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-		if ( $zoho_itemId && ctype_digit( $zoho_itemId ) ) {
-			$url_p = $zoho_inventory_url . 'api/v1/compositeitems/' . $zoho_itemId;
+		if ( $zoho_item_id && ctype_digit( $zoho_item_id ) ) {
+			$url_p = $zoho_inventory_url . 'inventory/v1/compositeitems/' . $zoho_item_id;
 		} else {
-			$url_p = $zoho_inventory_url . 'api/v1/compositeitems';
+			$url_p = $zoho_inventory_url . 'inventory/v1/compositeitems';
 		}
 
 		$data_p = array(
-			'JSONString'      => '{' . $pdt1 . '}',
+			'JSONString' => '{' . $pdt1 . '}',
 			'organization_id' => $zoho_inventory_oid,
 		);
 
@@ -410,28 +408,28 @@ class ProductClass {
 
 		$execute_curl_call_handle = new ExecutecallClass();
 
-		if ( $zoho_itemId && ctype_digit( $zoho_itemId ) ) {
+		if ( $zoho_item_id && ctype_digit( $zoho_item_id ) ) {
 
-			$json   = $execute_curl_call_handle->ExecuteCurlCallPut( $url_p, $data_p );
+			$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url_p, $data_p );
 			$errmsg = $json->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 		} else {
 
 			$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url_p, $data_p );
 
-			$code   = $json->code;
+			$code = $json->code;
 			$errmsg = $json->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 			if ( $code == '1001' || $code == 1001 ) {
-				$sku_check  = str_replace( ' ', '+', $sku );
-				$url        = $zoho_inventory_url . 'api/v1/compositeitems/?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
-				$getRequest = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
-				if ( $getRequest->code === '0' || $getRequest->code === 0 ) {
+				$sku_check = str_replace( ' ', '+', $sku );
+				$url = $zoho_inventory_url . 'inventory/v1/compositeitems/?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
+				$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+				if ( $get_request->code === '0' || $get_request->code === 0 ) {
 					$item_id = '';
-					foreach ( $getRequest->composite_items as $zoho_composite ) {
-						// fwrite($fd,PHP_EOL.'ZOHO Item : '.print_r($zohoItem, true));
+					foreach ( $get_request->composite_items as $zoho_composite ) {
+						// fwrite($fd,PHP_EOL.'ZOHO Item : '.print_r($zoho_item, true));
 						if ( $zoho_composite->sku === $sku ) {
-							$code                 = 0;
+							$code = 0;
 							$json->composite_item = $zoho_composite;
 							update_post_meta( $post_id, 'zi_product_errmsg', 'Product "' . $zoho_composite->name . '" is mapped successfully with Zoho' );
 							break;
@@ -439,25 +437,25 @@ class ProductClass {
 					}
 				}
 			}
-			if ( $code == '0' || $code == 0 ) {
+			if ( $code === '0' || $code === 0 ) {
 				foreach ( $json->composite_item as $key => $value ) {
 
-					if ( $key == 'composite_item_id' ) {
+					if ( $key === 'composite_item_id' ) {
 						$item_id = $value;
 					}
-					if ( $key == 'purchase_account_id' ) {
+					if ( $key === 'purchase_account_id' ) {
 						$purchase_account_id = $value;
 					}
-					if ( $key == 'account_id' ) {
+					if ( $key === 'account_id' ) {
 						$account_id = $value;
 					}
-					if ( $key == 'account_name' ) {
+					if ( $key === 'account_name' ) {
 						$account_name = $value;
 					}
-					if ( $key == 'inventory_account_id' ) {
+					if ( $key === 'inventory_account_id' ) {
 						$inventory_account_id = $value;
 					}
-					if ( $key == 'category_id' && ! empty( $value ) ) {
+					if ( $key === 'category_id' && ! empty( $value ) ) {
 						update_post_meta( $post_id, 'zi_category_id', $value );
 					}
 				}
@@ -479,16 +477,16 @@ class ProductClass {
 		$product = wc_get_product( $post_id );
 
 		$pre_name = $product->get_title();
-		$name     = preg_replace( "/[>\"''<`]/", '', $pre_name );
+		$name = preg_replace( "/[>\"''<`]/", '', $pre_name );
 
-		$tax_rates  = WC_Tax::get_base_tax_rates( $product->get_tax_class() );
+		$tax_rates = WC_Tax::get_base_tax_rates( $product->get_tax_class() );
 		$tax_id_key = '';
 		foreach ( $tax_rates as $tax_key => $tax_value ) {
 			$tax_id_key = $tax_key;
 			break;
 		}
-		$tax_option     = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
-		$tax_id         = explode( '##', $tax_option )[0];
+		$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
+		$tax_id = explode( '##', $tax_option )[0];
 		$zi_category_id = $this->get_prod_updated_category( $post_id );
 
 		$zidata = '"group_name" : "' . $name . '", "tax_id" : "' . $tax_id . '","category_id" : "' . $zi_category_id . '",';
@@ -497,32 +495,32 @@ class ProductClass {
 		$attributes = $product->get_attributes();
 		// fwrite($fd, PHP_EOL . 'ATTRIBUTES : ' . print_r($attributes, true));
 
-		$attributeName1 = '';
-		$attributeName2 = '';
-		$attributeName3 = '';
+		$attribute_name1 = '';
+		$attribute_name2 = '';
+		$attribute_name3 = '';
 		foreach ( $attributes as $attribute ) {
 			if ( ! empty( $attribute ) ) {
 				$attrname1 = $attribute->get_name();
-				$attrname  = str_replace( '"', '', $attrname1 );
+				$attrname = str_replace( '"', '', $attrname1 );
 				if ( ! empty( $attrname ) && $attribute['variation'] ) {
-					if ( empty( $attributeName1 ) ) {
-						$attributeName1 = $attrname;
-					} elseif ( empty( $attributeName2 ) ) {
-						$attributeName2 = $attrname;
-					} elseif ( empty( $attributeName3 ) ) {
-						$attributeName3 = $attrname;
+					if ( empty( $attribute_name1 ) ) {
+						$attribute_name1 = $attrname;
+					} elseif ( empty( $attribute_name2 ) ) {
+						$attribute_name2 = $attrname;
+					} elseif ( empty( $attribute_name3 ) ) {
+						$attribute_name3 = $attrname;
 					}
 				}
 			}
 		}
-		if ( ! empty( $attributeName1 ) ) {
-			$zidata .= '"attribute_name1": "' . $attributeName1 . '",';
+		if ( ! empty( $attribute_name1 ) ) {
+			$zidata .= '"attribute_name1": "' . $attribute_name1 . '",';
 		}
-		if ( ! empty( $attributeName2 ) ) {
-			$zidata .= '"attribute_name2": "' . $attributeName2 . '",';
+		if ( ! empty( $attribute_name2 ) ) {
+			$zidata .= '"attribute_name2": "' . $attribute_name2 . '",';
 		}
-		if ( ! empty( $attributeName3 ) ) {
-			$zidata .= '"attribute_name3": "' . $attributeName3 . '",';
+		if ( ! empty( $attribute_name3 ) ) {
+			$zidata .= '"attribute_name3": "' . $attribute_name3 . '",';
 		}
 
 		$available_variations = $product->get_available_variations();
@@ -532,7 +530,7 @@ class ProductClass {
 			foreach ( $available_variations as $child_data ) {
 
 				$product_variable = wc_get_product( $child_data['variation_id'] );
-				$items[]          = $this->variants_products( $product_variable, $child_data['variation_id'], $attributeName1, $attributeName2, $attributeName3 );
+				$items[] = $this->variants_products( $product_variable, $child_data['variation_id'], $attribute_name1, $attribute_name2, $attribute_name3 );
 			}
 		}
 
@@ -543,7 +541,7 @@ class ProductClass {
 		// }
 
 		$zidata .= '"items" :[' . implode( ',', $items ) . ']';
-		$data    = array(
+		$data = array(
 			'JSONString' => '{' . $zidata . '}',
 		);
 
@@ -552,20 +550,20 @@ class ProductClass {
 
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$zoho_groupId       = get_post_meta( $post_id, 'zi_item_id', true );
+		$zoho_group_id = get_post_meta( $post_id, 'zi_item_id', true );
 
-		if ( ! empty( $zoho_groupId ) ) {
-			$url                      = $zoho_inventory_url . 'api/v1/itemgroups/' . $zoho_groupId . '?organization_id=' . $zoho_inventory_oid;
+		if ( ! empty( $zoho_group_id ) ) {
+			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/' . $zoho_group_id . '?organization_id=' . $zoho_inventory_oid;
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json_p                   = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
-			$code                     = $json_p->code;
-			$errmsg                   = $json_p->message;
+			$json_p = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+			$code = $json_p->code;
+			$errmsg = $json_p->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 		} else {
-			$url = $zoho_inventory_url . 'api/v1/itemgroups?organization_id=' . $zoho_inventory_oid;
+			$url = $zoho_inventory_url . 'inventory/v1/itemgroups?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json                     = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+			$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
 
 			$errmsg = $json->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
@@ -574,18 +572,18 @@ class ProductClass {
 
 				// This item will keep the copy of zoho item_id with respect to product.
 				//  name as key synced to zoho.
-				$childItems = array();
+				$child_items = array();
 				foreach ( $json->item_group as $key => $value ) {
 					if ( $key == 'group_id' ) {
 						$group_id = $value;
 					}
 
-					if ( $key == 'items' ) {
+					if ( $key === 'items' ) {
 						foreach ( $value as $key2 => $val2 ) {
 							$zi_name = str_replace( ' ', '-', $val2->name );
 							//    echo '<br>';
-							$zi_name                = $val2->name;
-							$childItems[ $zi_name ] = $val2->item_id;
+							$zi_name = $val2->name;
+							$child_items[ $zi_name ] = $val2->item_id;
 						}
 					}
 				}
@@ -602,9 +600,9 @@ class ProductClass {
 						$pname .= $terms_slug;
 					}
 
-					$vname       = $product_variable->get_name();
+					$vname = $product_variable->get_name();
 					$product_key = $vname . '-' . $pname;
-					update_post_meta( $child_data['variation_id'], 'zi_item_id', $childItems[ $product_key ] );
+					update_post_meta( $child_data['variation_id'], 'zi_item_id', $child_items[ $product_key ] );
 				}
 			}
 		}
@@ -627,25 +625,25 @@ class ProductClass {
 
 		$attributes = $product_variable->get_variation_attributes();
 		// fwrite($fd,PHP_EOL.'$variation_attributes : '.print_r($attributes,true));
-		$arrtibuteString = '';
+		$arrtibute_string = '';
 		if ( ! empty( $attr1 ) ) {
-			$attr_key         = strtolower( $attr1 );
-			$attr_key         = 'attribute_' . str_replace( ' ', '-', $attr_key );
-			$arrtibuteString .= '"attribute_option_name1": "' . str_replace( '"', '', $attributes[ $attr_key ] ) . '",';
+			$attr_key = strtolower( $attr1 );
+			$attr_key = 'attribute_' . str_replace( ' ', '-', $attr_key );
+			$arrtibute_string .= '"attribute_option_name1": "' . str_replace( '"', '', $attributes[ $attr_key ] ) . '",';
 		}
 		if ( ! empty( $attr2 ) ) {
-			$attr_key         = strtolower( $attr2 );
-			$attr_key         = 'attribute_' . str_replace( ' ', '-', $attr_key );
-			$arrtibuteString .= '"attribute_option_name2": "' . str_replace( '"', '', $attributes[ $attr_key ] ) . '",';
+			$attr_key = strtolower( $attr2 );
+			$attr_key = 'attribute_' . str_replace( ' ', '-', $attr_key );
+			$arrtibute_string .= '"attribute_option_name2": "' . str_replace( '"', '', $attributes[ $attr_key ] ) . '",';
 		}
 		if ( ! empty( $attr3 ) ) {
-			$attr_key         = strtolower( $attr3 );
-			$attr_key         = 'attribute_' . str_replace( ' ', '-', $attr_key );
-			$arrtibuteString .= '"attribute_option_name3": "' . str_replace( '"', '', $attributes[ $attr_key ] ) . '",';
+			$attr_key = strtolower( $attr3 );
+			$attr_key = 'attribute_' . str_replace( ' ', '-', $attr_key );
+			$arrtibute_string .= '"attribute_option_name3": "' . str_replace( '"', '', $attributes[ $attr_key ] ) . '",';
 		}
-		// fwrite($fd,PHP_EOL.'$arrtibuteString : '.$arrtibuteString);
+		// fwrite($fd,PHP_EOL.'$arrtibute_string : '.$arrtibute_string);
 		// fclose($fd);
-		$zoho_itemId = get_post_meta( $post_id, 'zi_item_id', true );
+		$zoho_item_id = get_post_meta( $post_id, 'zi_item_id', true );
 
 		// $product_variable      = wc_get_product($post_id);
 		$pname = '';
@@ -655,43 +653,35 @@ class ProductClass {
 		}
 
 		$vname = $product_variable->get_name();
-		$name  = str_replace( '"', '', $vname );
-		$rate  = $product_variable->get_regular_price();
+		$name = str_replace( '"', '', $vname );
+		$rate = $product_variable->get_regular_price();
 		// $rateS = $product_variable->get_sale_price();
 		if ( $product_variable->is_virtual( 'yes' ) ) {
 			$product_type = 'service';
-			$item_type    = 'sales';
+			$item_type = 'sales';
 		} else {
 			$product_type = 'goods';
-			$item_type    = 'inventory';
+			$item_type = 'inventory';
 		}
 
-		$sku            = $product_variable->get_sku();
+		$sku = $product_variable->get_sku();
 		$stock_quantity = $product_variable->get_stock_quantity();
-		$in_stock       = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
-
-		/*
-		if ($rateS) {
-		$rate = $rateS;
-		} else {
-		$rate = $rateR;
-		} */
-
-		// TODO: get tax rates from Zoho API.
-		$tax_rates  = WC_Tax::get_base_tax_rates( $product_variable->get_tax_class() );
+		$in_stock = ( $stock_quantity > 0 ) ? $stock_quantity : 0;
+		// Get Tax ID
+		$tax_rates = WC_Tax::get_base_tax_rates( $product_variable->get_tax_class() );
 		$tax_id_key = '';
 		foreach ( $tax_rates as $tax_key => $tax_value ) {
 			$tax_id_key = $tax_key;
 			break;
 		}
 		$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
-		$tax_id     = explode( '##', $tax_option )[0];
+		$tax_id = explode( '##', $tax_option )[0];
 
 		$zi_status = ( 'publish' === get_post_status( $post_id ) ) ? 'active' : 'inactive';
 		// request data for adding/updating value to zoho.
 		$zidata = '';
-		if ( ! empty( $arrtibuteString ) ) {
-			$zidata .= $arrtibuteString;
+		if ( ! empty( $arrtibute_string ) ) {
+			$zidata .= $arrtibute_string;
 		}
 		$zidata .= '"name" : "' . $name . '",';
 		$zidata .= '"product_type" : "' . $product_type . '",';
@@ -699,17 +689,21 @@ class ProductClass {
 		$zidata .= '"item_type" : "' . $item_type . '",';
 		// $zidata .= '"unit" : "pcs",';
 		$zidata .= '"status" : "' . $zi_status . '",';
-		if ( empty( $zoho_itemId ) && $in_stock > 0 ) {
-			$zidata .= '"purchase_rate" : "1",';
+		if ( empty( $zoho_item_id ) && $in_stock > 0 ) {
 			$zidata .= '"initial_stock" : ' . $in_stock . ',';
 			$zidata .= '"initial_stock_rate" : ' . $in_stock . ',';
 		}
 		$zidata .= '"rate" : "' . $rate . '",';
 		$zidata .= '"tax_id" : "' . $tax_id . '",';
+		// Get cost_price from meta data.
+		$cost_price = get_post_meta( $post_id, 'cost_price', true );
+		if ( ! empty( $cost_price ) && is_numeric( $cost_price ) ) {
+			$zidata .= '"purchase_rate" : "' . $cost_price . '",';
+		}
 
-		$dimensions         = (object) array();
+		$dimensions = (object) array();
 		$dimensions->length = $product_variable->get_length();
-		$dimensions->width  = $product_variable->get_width();
+		$dimensions->width = $product_variable->get_width();
 		$dimensions->height = $product_variable->get_height();
 		$dimensions->weight = $product_variable->get_weight();
 		if ( ! empty( $dimensions ) ) {
@@ -718,31 +712,31 @@ class ProductClass {
 
 		// $fd = fopen(__DIR__ . '/variations.txt', 'a+');
 		// fwrite($fd,PHP_EOL.'Get data for $post_id '.$post_id);
-		if ( ctype_digit( $zoho_itemId ) ) {
+		if ( ctype_digit( $zoho_item_id ) ) {
 			// fwrite($fd, PHP_EOL . 'Update Item');
-			$update_error_msg = $this->product_zoho_update_inventory_post( $post_id, $zoho_itemId, $zidata );
-			$zidataa          = '';
+			$update_error_msg = $this->product_zoho_update_inventory_post( $post_id, $zoho_item_id, $zidata );
+			$zidataa = '';
 			// fwrite($fd, PHP_EOL . '{' . $zidata . '}');
 			return $zidataa .= '{' . $zidata . '}';
 		} else {
 			// fwrite($fd, PHP_EOL . 'Create Item');
 			// Check if the the given sku has product in zoho inventory.
-			$zoho_inventory_oid       = $this->config['ProductZI']['OID'];
-			$zoho_inventory_url       = $this->config['ProductZI']['APIURL'];
-			$sku_check                = str_replace( ' ', '+', $sku );
-			$url                      = $zoho_inventory_url . 'api/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
+			$zoho_inventory_oid = $this->config['ProductZI']['OID'];
+			$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
+			$sku_check = str_replace( ' ', '+', $sku );
+			$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
 			$execute_curl_call_handle = new ExecutecallClass();
-			$getRequest               = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
-			$var_item_id              = '';
-			$groupitem_id             = '';
-			// fwrite($fd, PHP_EOL . '$getRequest->code : ' . $getRequest->code);
-			if ( $getRequest->code === '0' || $getRequest->code === 0 ) {
-				foreach ( $getRequest->items as $zohoItem ) {
-					// fwrite($fd, PHP_EOL . '$zohoItem->sku : ' . $zohoItem->sku);
-					if ( $zohoItem->sku === $sku ) {
-						// fwrite($fd, PHP_EOL . 'Product found with same sku $zohoItem : ' . print_r($zohoItem, true));
-						$var_item_id  = $zohoItem->item_id;
-						$groupitem_id = $zohoItem->group_id;
+			$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+			$var_item_id = '';
+			$groupitem_id = '';
+			// fwrite($fd, PHP_EOL . '$get_request->code : ' . $get_request->code);
+			if ( $get_request->code === '0' || $get_request->code === 0 ) {
+				foreach ( $get_request->items as $zoho_item ) {
+					// fwrite($fd, PHP_EOL . '$zoho_item->sku : ' . $zoho_item->sku);
+					if ( $zoho_item->sku === $sku ) {
+						// fwrite($fd, PHP_EOL . 'Product found with same sku $zoho_item : ' . print_r($zoho_item, true));
+						$var_item_id = $zoho_item->item_id;
+						$groupitem_id = $zoho_item->group_id;
 						// Item sku is mached
 						// Assign mached zoho item to json so fields can be mapped.
 						break;
@@ -772,7 +766,7 @@ class ProductClass {
 		if ( $terms ) {
 			foreach ( $terms as $term ) {
 				$product_cat_id = $term->term_id;
-				$zoho_cat_id    = get_option( "zoho_id_for_term_id_{$product_cat_id}" );
+				$zoho_cat_id = get_option( "zoho_id_for_term_id_{$product_cat_id}" );
 				if ( $zoho_cat_id ) {
 					break;
 				}
@@ -791,41 +785,6 @@ class ProductClass {
 	}
 
 	/**
-	 * Update product name in zoho
-	 * TODO: perhaps remove this
-	 */
-	public function update_product_name( $product_id, $product_name ) {
-		$zi_disable_itemname_sync = get_option( 'zoho_disable_itemname_sync_status' );
-		if ( ! $zi_disable_itemname_sync ) {
-			$name_update = array(
-				'ID'         => $product_id,
-				'post_title' => $product_name,
-				'post_name'  => $this->zi_convert_itemname( $product_name ),
-			);
-			$update_resp = wp_update_post( $name_update, false );
-			if ( is_wp_error( $update_resp ) ) {
-				$error_string = $update_resp->get_error_message();
-				return $error_string;
-			}
-		}
-	}
-
-	/**
-	 * Create seo-friendly post_name
-	 */
-	private function zi_convert_itemname( $item_name ) {
-		//Lower case everything
-		$item_name = strtolower( $item_name );
-		//Make alphanumeric (removes all other characters)
-		$item_name = preg_replace( '/[^a-z0-9_\s-]/', '', $item_name );
-		//Clean up multiple dashes or whitespaces
-		$item_name = preg_replace( '/[\s-]+/', ' ', $item_name );
-		//Convert whitespaces and underscore to dash
-		$item_name = preg_replace( '/[\s_]/', '-', $item_name );
-		return $item_name;
-	}
-
-	/**
 	 * Function for adding Simple product from Zoho to woocommerce.
 	 *
 	 * @param $prod - Product object for adding new product in woocommerce.
@@ -835,25 +794,23 @@ class ProductClass {
 	public function zi_product_to_woocommerce( $item, $item_stock = '', $type = '' ) {
 		// $fd = fopen( __DIR__ . '/zi_product_to_woocommerce.txt', 'a+' );
 		try {
-			if ( $item['status'] == 'active' ) {
-				$status = 'publish';
-			} else {
+			if ( 'active' !== $item['status'] ) {
 				return;
 			}
 			$product = new WC_Product();
 
 			$allow_backorders = get_option( 'woocommerce_allow_backorders' );
-			$zi_stock_sync    = get_option( 'zoho_stock_sync_status' );
+			$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
 
 			// Set the product data
-			$product->set_status( $status );
+			$product->set_status( 'publish' );
 			$product->set_name( $item['name'] );
 			$product->set_regular_price( $item['rate'] );
 			$product->set_short_description( $item['description'] );
 			$product->set_sku( $item['sku'] );
 
 			// Set the stock management properties
-			if ( ! empty( $item_stock ) && ! $zi_stock_sync ) {
+			if ( ! empty( $item_stock ) && ! $zi_disable_stock_sync ) {
 				$product->set_manage_stock( true );
 				$product->set_stock_quantity( $item_stock );
 

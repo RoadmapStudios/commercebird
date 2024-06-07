@@ -42,8 +42,7 @@ if ( ! class_exists( 'ZI_CommonClass' ) ) {
 
 			// Round the percentage to the determined number of decimal places
 			$rounded_percentage = round( $percentage, $decimal_places );
-			$sql_query          = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates WHERE ROUND(tax_rate, %d) = %f", $decimal_places, $rounded_percentage );
-			$tax_rates          = $wpdb->get_results( $sql_query );
+			$tax_rates          = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates WHERE ROUND(tax_rate, %d) = %f", $decimal_places, $rounded_percentage ) );
 
 			// If tax rates are found
 			if ( $tax_rates ) {

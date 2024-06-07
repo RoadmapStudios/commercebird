@@ -3,8 +3,10 @@
  * Plugin Name: CommerceBird
  * Plugin URI:  https://commercebird.com
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
- * Version: 2.1.16
+ * Version: 2.1.21
  * Requires PHP: 7.4
+ * Requires Plugins: WooCommerce
+ * Requires at least: 6.5
  *
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +18,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.html GPL-3.0-or-later
  *
  * WC requires at least: 8.0.0
- * WC tested up to: 8.8.2
+ * WC tested up to: 8.9.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +28,7 @@ if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
 	define( 'RMS_PLUGIN_NAME', 'CommerceBird' );
 }
 if ( ! defined( 'RMS_VERSION' ) ) {
-	define( 'RMS_VERSION', '2.1.16' );
+	define( 'RMS_VERSION', '2.1.21' );
 }
 if ( ! defined( 'RMS_DIR_PATH' ) ) {
 	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
@@ -52,7 +54,6 @@ require_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
 require_once RMS_DIR_PATH . 'includes/taxonomies/taxonomy-product_brands.php';
 require_once RMS_DIR_PATH . 'data-sync.php';
 require_once RMS_DIR_PATH . 'includes/wc-am-client.php';
-require_once RMS_DIR_PATH . 'includes/tgm-plugin-activation.php';
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -71,8 +72,8 @@ use RMS\API\ShippingWebhook;
 use RMS\API\Zoho;
 
 /* Check the minimum PHP version on activation hook */
-function woozo_check_plugin_requirements() {
-	$php_min_version     = '7.4';
+function cmbird_check_plugin_requirements() {
+	$php_min_version = '7.4';
 	$php_current_version = phpversion();
 
 	if ( version_compare( $php_min_version, $php_current_version, '>' ) ) {
@@ -84,7 +85,7 @@ function woozo_check_plugin_requirements() {
 			esc_html( $error_message ),
 			'Plugin Activation Error',
 			array(
-				'response'  => 200,
+				'response' => 200,
 				'back_link' => true,
 			)
 		);
@@ -96,7 +97,7 @@ function woozo_check_plugin_requirements() {
 	}
 }
 
-add_action( 'admin_init', 'woozo_check_plugin_requirements' );
+add_action( 'admin_init', 'cmbird_check_plugin_requirements' );
 
 // Activate plugin.
 register_activation_hook( __FILE__, array( CMReviewReminder::class, 'activate' ) );
@@ -128,7 +129,7 @@ register_activation_hook(__FILE__, 'zi_create_order_log_table');
 register_activation_hook( __FILE__, 'zi_custom_zoho_cron_activate' );
 
 function zi_custom_zoho_cron_activate() {
-	$interval     = get_option( 'zi_cron_interval', 'daily' );
+	$interval = get_option( 'zi_cron_interval', 'daily' );
 	$access_token = get_option( 'zoho_inventory_access_token' );
 	if ( 'none' !== $interval && ! empty( $access_token ) ) {
 		if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
@@ -153,7 +154,7 @@ function zi_zoho_cron_deactivate() {
 add_action(
 	'before_woocommerce_init',
 	function () {
-		if ( class_exists( FeaturesUtil::class ) ) {
+		if ( class_exists( FeaturesUtil::class) ) {
 			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 		}
 	}
@@ -174,6 +175,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 			'zi_inventory_account_id',
 			'zi_salesorder_id',
 			'zi_category_id',
+			'cost_price',
 		);
 		$user_meta_keys = array(
 			'zi_contact_id',
@@ -203,7 +205,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 			'zoho_enable_order_status',
 			'wootozoho_custom_fields',
 			'zoho_pricelist_id',
-			'zoho_warehouse_id',
+			'zoho_warehouse_id_status',
 			'zoho_inventory_auth_code',
 			'zoho_inventory_access_token',
 			'zoho_inventory_refresh_token',
@@ -230,7 +232,7 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
-		$sql        = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s', $table_name, '%zoho_id_for_term_id_%' ) );
+		$sql = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %s WHERE option_name LIKE %s', $table_name, '%zoho_id_for_term_id_%' ) );
 		foreach ( $sql as $key => $row ) {
 			$option_name = $row->option_name;
 			$wpdb->delete( $table_name, array( 'option_name' => $option_name ), array( '%s' ) );
@@ -241,11 +243,11 @@ if ( ! function_exists( 'rms_cron_unsubscribe' ) ) {
 /**
  * Hooks for WC Action Scheduler to import or export products
  */
-$import_products  = new import_product_class();
+$import_products = new import_product_class();
 $import_pricelist = new ImportPricelistClass();
-$product_class    = new ProductClass();
-$order_class      = new Sync_Order_Class();
-$contact_class    = new ContactClass();
+$product_class = new ProductClass();
+$order_class = new Sync_Order_Class();
+$contact_class = new ContactClass();
 $import_pricelist->wc_b2b_groups();
 add_action( 'import_group_items_cron', array( $import_products, 'sync_groupitem_recursively' ), 10, 2 );
 add_action( 'import_simple_items_cron', array( $import_products, 'sync_item_recursively' ), 10, 2 );
@@ -274,13 +276,14 @@ new CommerceBird_WC_API();
 // Load License Key library
 if ( class_exists( 'commercebird_AM_Client' ) ) {
 	$wcam_lib_custom_menu = array(
-		'menu_type'   => 'add_submenu_page',
+		'menu_type' => 'add_submenu_page',
 		'parent_slug' => 'commercebird-app',
-		'page_title'  => 'API key Activation',
-		'menu_title'  => 'License Activation',
+		'page_title' => 'API key Activation',
+		'menu_title' => 'License Activation',
 	);
-	$wcam_lib             = new commercebird_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
+	$wcam_lib = new commercebird_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
 }
+// add classes to REST API
 add_action(
 	'rest_api_init',
 	function () {
@@ -292,7 +295,6 @@ add_action(
 	}
 );
 
-
 add_action(
 	'save_post',
 	function ( $post_id, $post ) {
@@ -303,3 +305,32 @@ add_action(
 	10,
 	2
 );
+
+/**
+ * Perform actions when the plugin is updated
+ * @param string $upgrader_object
+ * @param array $options
+ * @return void
+ */
+add_action( 'upgrader_process_complete', 'cmbird_update_plugin_tasks', 10, 2 );
+
+function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
+	$this_plugin = plugin_basename( __FILE__ );
+
+	if ( '2.1.18' >= RMS_VERSION ) {
+		return;
+	}
+
+	if ( $options['action'] === 'update' && $options['type'] === 'plugin' ) {
+		foreach ( $options['plugins'] as $plugin ) {
+			if ( $plugin === $this_plugin ) {
+				// Perform tasks when the plugin is updated
+				$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+				if ( $zoho_inventory_url ) {
+					$new_zoho_inventory_url = str_replace( 'inventory.zoho', 'www.zohoapis', $zoho_inventory_url );
+					update_option( 'zoho_inventory_url', $new_zoho_inventory_url );
+				}
+			}
+		}
+	}
+}

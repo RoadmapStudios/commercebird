@@ -43,7 +43,8 @@ function zoho_admin_order_ajax(data) {
     let action_name = 'zi_product_sync_class';
     var data = {
       'action': action_name,
-      'arg_product_data': data
+      'arg_product_data': data,
+      'security': nonce
     };
 
     jQuery.post(ajaxurl, data, function (_data, status) {
@@ -121,12 +122,12 @@ function zoho_admin_order_ajax(data) {
   /**
    * All code related to ReviewRequestNotice
    */
-  function rmsziHideReviewRequestNotice(elem){
+  function cmbirdHideReviewRequestNotice(elem){
     var wrapper = jQuery(elem).closest('div.thpladmin-notice');
     var nonce = wrapper.data("nonce");
     var data = {
-      rmszi_security_review_notice: nonce,
-      action: 'skip_rmszi_review_request_notice',
+      cmbird_security_review_notice: nonce,
+      action: 'skip_cmbird_review_request_notice',
     };
     jQuery.post( ajaxurl, data, function() {
 
@@ -139,8 +140,8 @@ function zoho_admin_order_ajax(data) {
     var nonce = wrapper.data("nonce");
     var action = wrapper.data("action");
     var data = {
-      rmszi_security_review_notice: nonce,
-      action: action,
+      cmbird_security_review_notice: nonce,
+      action: 'dismiss_cmbird_review_request_notice',
     };
     $.post( ajaxurl, data, function() {
 
@@ -149,6 +150,6 @@ function zoho_admin_order_ajax(data) {
 
   jQuery(document).ready(function($){
     setTimeout(function(){
-       $("#rmszi_review_request_notice").fadeIn(500);
+       $("#cmbird_review_request_notice").fadeIn(500);
     }, 2000);
    });
