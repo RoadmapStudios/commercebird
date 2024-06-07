@@ -5,6 +5,8 @@
  *
  * @package  Inventory
  */
+require_once ABSPATH . 'wp-admin/includes/file.php';
+WP_Filesystem();
 
 class ExecutecallClass {
 	/**
@@ -158,7 +160,6 @@ class ExecutecallClass {
 	 */
 	public function ExecuteCurlCallImageGet( $url ) {
 		// $fd = fopen( __DIR__ . '/ExecuteCurlCallImageGet.txt', 'w' );
-
 		global $wp_filesystem;
 
 		$handlefunction = new Classfunctions();

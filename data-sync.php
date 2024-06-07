@@ -363,7 +363,7 @@ function ajax_subcategory_sync_call() {
 	//echo '<pre>'; print_r($zoho_categories);
 	foreach ( $zoho_subcategories as $subcategory ) {
 		if ( $subcategory['parent_category_id'] > 0 ) {
-			if ( $subcategory['category_id'] != '-1' && $subcategory['category_id'] > 0 ) {
+			if ( $subcategory['category_id'] !== '-1' && $subcategory['category_id'] > 0 ) {
 				$term = get_term_by( 'name', $subcategory['name'], 'product_cat' );
 
 				if ( $subcategory['parent_category_id'] > 0 ) {
@@ -595,10 +595,9 @@ function subcategories_term_id( $option_value ) {
 
 	global $wpdb;
 
-	$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM {$wpdb->prefix} options WHERE option_value = %s', $option_value ) );
+	$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}options WHERE option_value = %s", $option_value ) );
 
 	if ( ! empty( $row->option_name ) ) {
-
 		$ex = explode( 'zoho_id_for_term_id_', $row->option_name );
 		$cat_id = $ex[1];
 	} else {
