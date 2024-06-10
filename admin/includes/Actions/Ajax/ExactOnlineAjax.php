@@ -26,6 +26,9 @@ final class ExactOnlineAjax {
 		'customer' => array(
 			'importCustomers',
 		),
+		'webhooks' => array(
+			'topic',
+		),
 	);
 	private const ACTIONS = array(
 		'save_sync_order_via_cron'      => 'sync_order',
