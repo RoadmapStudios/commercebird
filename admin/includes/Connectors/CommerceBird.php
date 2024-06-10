@@ -17,11 +17,23 @@ final class CommerceBird {
 	const ITEM          = 'customs/exact/bulk-items';
 	const CUSTOMER      = 'customs/exact/bulk-customers';
 	const ORDER         = 'customs/exact/bulk-orders';
+	const WEBHOOKS 		= 'customs/exact/webhooks';
 	const API           = 'https://api.commercebird.com';
 	const ZCRMFIELDS    = 'customs/zoho/fields';
 
 	public function cost_centers() {
 		return $this->request( self::COST_CENTERS );
+	}
+
+	/**
+	 * Suscribe to Exact Online Webhooks. Pass the webhook URL to Exact Online and Topic
+	 *
+	 * @param array $data array ( callback_url, topic )
+	 * @return array|WP_Error array ( webhook_id, topic )
+	 */
+	public function subscribe_exact_webhooks( array $data ) {
+		$response = $this->request( self::WEBHOOKS, 'POST', $data );
+		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
 	/**
