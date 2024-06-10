@@ -5,12 +5,10 @@ namespace RMS\API;
 use WP_REST_Response;
 use WP_REST_Server;
 use WP_REST_Controller;
-use RMS\API\Authenticatable;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit();
 
 class Exact extends WP_REST_Controller {
-	use Authenticatable;
 
 	protected $prefix = 'v2';
 	protected $rest_base = 'exact-webhooks';
@@ -33,10 +31,7 @@ class Exact extends WP_REST_Controller {
 		// if current site contains localhost, use https://dev.commercebird.com
 		$current_site_url = isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '';
 		$site_url = str_contains( $current_site_url, 'localhost' ) ? 'https://dev.commercebird.com' : site_url();
-		// use authenticatable trait to verify the request
-		// if ( ! $this->authenticate( $data, $webhook_secret ) ) {
-		// 	return new WP_REST_Response( 'Unauthorized', 401 );
-		// }
+
 		// TODO: process the webhook data
 		// make new POST API call to our api endpoint and send the object_id and topic as body
 		$response = wp_remote_post(
