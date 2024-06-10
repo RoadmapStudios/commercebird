@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-namespace RMS\Admin\Traits;
+namespace RMS\Api;
 
 trait Authenticatable {
 	public function authenticate( string $request_content, string $webhook_secret ): bool {
