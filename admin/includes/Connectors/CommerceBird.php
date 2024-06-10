@@ -18,7 +18,6 @@ final class CommerceBird {
 	const CUSTOMER      = 'customs/exact/bulk-customers';
 	const ORDER         = 'customs/exact/bulk-orders';
 	const API           = 'https://api.commercebird.com';
-	const WEBAPP_ORDERS = 'webapp/orders/synced-orders';
 	const ZCRMFIELDS    = 'customs/zoho/fields';
 
 	public function cost_centers() {
@@ -89,22 +88,6 @@ final class CommerceBird {
 
 	public function cost_units() {
 		return $this->request( self::COST_UNITS );
-	}
-
-	public function map_orders() {
-		global $pagenow, $typenow;
-		if ( 'shop_order' !== $typenow || 'edit.php' !== $pagenow || ! isset( $_GET['get_zcrm_statuses'] ) || $_GET['get_zcrm_statuses'] !== 'yes' ) {
-			return '';
-		}
-		$response = $this->request( self::WEBAPP_ORDERS );
-		if ( $response['code'] !== 200 ) {
-			return $response['message'];
-		}
-		foreach ( $response as $item ) {
-			update_post_meta( $item['wooId'], 'eo_order_id', $item['zohoId'] );
-		}
-
-		return $response['message'];
 	}
 
 	/**
