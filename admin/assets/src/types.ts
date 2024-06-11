@@ -1,4 +1,4 @@
-import type {FunctionalComponent} from "vue";
+import type { FunctionalComponent } from "vue";
 
 export type PluginObject = {
     wcb2b_groups: any;
@@ -83,12 +83,17 @@ export type OrderSettings = {
 }
 
 export type ContactSettings = {
-    enable_cron : boolean
+    enable_cron: boolean
 }
 
 export type PriceSettings = {
     zoho_inventory_pricelist: string;
     wp_user_role: string;
+}
+export type ExactWebhookSettings = {
+    enable_SalesInvoices: boolean;
+    enable_StockPostion: boolean;
+    enable_Item: boolean;
 }
 
 export type StoreKey = {
@@ -105,6 +110,7 @@ export type StoreKey = {
         customer: string;
         product: string;
         order: string;
+        webhooks: string;
     };
 
     zohoInventory: {
@@ -145,11 +151,12 @@ export type BackendAction = {
     }
     exactOnline: {
         connect: { get: string; save: string; reset: string; };
-        product: { map: string}
+        product: { map: string }
         customer: { map: string };
-        order: { map: string, export:string, sync:string };
+        order: { map: string, export: string, sync: string };
         cost_center: { get: string; save: string; reset: string; };
         cost_unit: { get: string; save: string; reset: string; };
+        webhooks: { get: string; save: string; reset: string; };
     };
 
     zohoInventory: {
@@ -172,7 +179,7 @@ export type BackendAction = {
 
     zohoCrm: {
         connect: { get: string; save: string; reset: string; };
-        order: { export:string };
+        order: { export: string };
         field: { get: string; save: string; reset: string; };
         custom_fields: string;
         refresh_zcrm_fields: string;
@@ -180,7 +187,7 @@ export type BackendAction = {
         connection: string;
     };
 
-    acf_fields:{
+    acf_fields: {
         get_acf_fields: string;
     }
 }

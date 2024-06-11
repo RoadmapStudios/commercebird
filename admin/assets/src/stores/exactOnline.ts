@@ -5,6 +5,7 @@ import { useStorage } from "@/composable/storage";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { Toast, eo_sync, notify, site_url } from "@/composable/helpers";
+import { ExactWebhookSettings } from "@/types";
 
 const actionKey = backendAction.exactOnline;
 const localKey = storeKey.exactOnline;
@@ -74,6 +75,13 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
         );
         connection.token = response?.token;
         break;
+      case "webhooks":
+        response = await loader.loadData(localKey.webhooks, actionKey.webhooks.get);
+        if (response) {
+          webhook_settings.enable_SalesInvoices = response.enable_SalesInvoices;
+          webhook_settings.enable_StockPostion = response.enable_StockPostion;
+          webhook_settings.enable_Item = response.enable_Item;
+        }
       default:
         break;
     }
@@ -134,6 +142,18 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
       localKey.customer
     );
   };
+
+  /*
+   * -----------------------------------------------------------------------------------------------------------------
+   *  Webhook Settings
+   * -----------------------------------------------------------------------------------------------------------------
+   */
+  const webhook_settings = reactive(<ExactWebhookSettings>{
+    enable_SalesInvoices: false,
+    enable_StockPostion: false,
+    enable_Item: false
+
+  })
   /*
    * -----------------------------------------------------------------------------------------------------------------
    *  Form Submit
@@ -168,6 +188,9 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
         data = connection;
         store = localKey.connect;
         break;
+      case actionKey.webhooks.save:
+        data = webhook_settings;
+        store = localKey.webhooks;
       default:
         break;
     }
@@ -228,7 +251,8 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
     importCustomers,
     mapCustomers,
     handleSubmit,
-    handleReset
+    handleReset,
+    webhook_settings
   };
 });
 
