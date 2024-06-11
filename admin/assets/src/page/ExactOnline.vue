@@ -1,5 +1,11 @@
 <script lang="ts" setup>
-import { CurrencyDollarIcon, LinkIcon, ShoppingBagIcon, UsersIcon, TruckIcon } from "@heroicons/vue/24/outline";
+import {
+  CurrencyDollarIcon,
+  LinkIcon,
+  ShoppingBagIcon,
+  UsersIcon,
+  TruckIcon,
+} from "@heroicons/vue/24/outline";
 import { onBeforeMount } from "vue";
 import { useExactOnlineStore } from "@/stores/exactOnline";
 import TabComponent from "@/components/ui/tabs/TabComponent.vue";
@@ -11,18 +17,21 @@ import { acf_enabled } from "@/composable/helpers";
 import Cost from "@/components/forms/exact-online/Cost.vue";
 import Customer from "@/components/forms/exact-online/Customer.vue";
 import Order from "@/components/forms/exact-online/Order.vue";
-
-const store = useExactOnlineStore()
-
+import Webhooks from "@components/forms/exact-online/Webhooks.vue";
+const store = useExactOnlineStore();
 
 const tabs = {
   connect: { title: "Connect", component: Connect, icon: LinkIcon },
   product: { title: "Products", component: Product, icon: ShoppingBagIcon },
   order: { title: "Orders", component: Order, icon: TruckIcon },
   customers: { title: "Customers", component: Customer, icon: UsersIcon },
-  cost_center_unit: { title: "Cost Centers/Units", component: Cost, icon: CurrencyDollarIcon },
+  cost_center_unit: {
+    title: "Cost Centers/Units",
+    component: Cost,
+    icon: CurrencyDollarIcon,
+  },
+  webhooks: { title: "Webhooks", component: Webhooks, icon: LinkIcon },
 };
-
 
 onBeforeMount(() => {
   store.selectedTab = "connect";
@@ -31,7 +40,12 @@ onBeforeMount(() => {
 
 <template>
   <div>
-    <RequiredNotice v-if="!acf_enabled" name="ACF" slug="advanced-custom-fields" type="plugin" />
+    <RequiredNotice
+      v-if="!acf_enabled"
+      name="ACF"
+      slug="advanced-custom-fields"
+      type="plugin"
+    />
     <TabComponent :tabs="tabs" v-model="store.selectedTab" />
   </div>
 </template>
