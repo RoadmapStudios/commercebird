@@ -30,7 +30,6 @@ final class Cors {
 		}
 		$this->headers();
 		add_filter( 'rest_pre_serve_request', array( $this, 'headers' ) );
-
 	}
 
 	/**
@@ -42,7 +41,7 @@ final class Cors {
 	public function headers(): void {
 
 		header( 'Access-Control-Allow-Origin: *', true );
-		header( "Access-Control-Allow-Methods: *", true );
+		header( 'Access-Control-Allow-Methods: *', true );
 		header( 'Access-Control-Allow-Headers: *', true );
 		header( 'Access-Control-Allow-Credentials: true', true );
 	}

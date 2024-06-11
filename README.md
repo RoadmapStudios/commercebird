@@ -11,7 +11,7 @@ This plugin is certified by Zoho and is also available in the Zoho Marketplace.
 4. Go to wp-admin and activate plugin
 
 ## How to build a zip
-1. run ./build.sh
+1. run ./build-mac.sh
 2. use .zip file as production version.
 
 ## Features:
