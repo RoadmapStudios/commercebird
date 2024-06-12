@@ -92,7 +92,7 @@ export type PriceSettings = {
 }
 export type ExactWebhookSettings = {
     enable_SalesInvoices: boolean;
-    enable_StockPostion: boolean;
+    enable_StockPosition: boolean;
     enable_Item: boolean;
 }
 
