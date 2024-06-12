@@ -10,7 +10,7 @@
           <Toggle v-model="store.webhook_settings.enable_SalesInvoices" />
         </InputGroup>
         <InputGroup label="StockPosition Webhook" type="toggle">
-          <Toggle v-model="store.webhook_settings.enable_StockPostion" />
+          <Toggle v-model="store.webhook_settings.enable_StockPosition" />
         </InputGroup>
         <InputGroup label="Item Webhook" type="toggle">
           <Toggle v-model="store.webhook_settings.enable_Item" />
