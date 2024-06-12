@@ -17,7 +17,7 @@ import { acf_enabled } from "@/composable/helpers";
 import Cost from "@/components/forms/exact-online/Cost.vue";
 import Customer from "@/components/forms/exact-online/Customer.vue";
 import Order from "@/components/forms/exact-online/Order.vue";
-import Webhooks from "@components/forms/exact-online/Webhooks.vue";
+import Webhooks from "@/components/forms/exact-online/Webhooks.vue";
 const store = useExactOnlineStore();
 
 const tabs = {
