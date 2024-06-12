@@ -1,4 +1,4 @@
-import type {BackendAction, StoreKey} from "@/types";
+import type { BackendAction, StoreKey } from "@/types";
 
 export const storeKey: StoreKey = {
     currentRoute: 'commercebird_current_route',
@@ -29,20 +29,21 @@ export const storeKey: StoreKey = {
         customer: 'exactOnline_customer',
         cost_center: 'exactOnline_cost_center',
         cost_unit: 'exactOnline_cost_unit',
+        webhooks: 'exactOnline_webhooks'
     },
-    zohoCrm:{
+    zohoCrm: {
         connect: 'zcrm_connect',
         order: 'zcrm_order',
-        fields:'zoho_custom_fields',
-        refresh_zoho_fields:'refresh_zoho_fields',
-        sales_orders_fields:'zcrm_sales_orders_fields',
-        contacts_fields:'zcrm_contacts_fields',
-        products_fields:'zcrm_products_fields',
-        sales_orders_custom_fields:'sales_orders_custom_fields',
-        contacts_custom_fields:'contacts_custom_fields',
-        products_custom_fields:'products_custom_fields',
+        fields: 'zoho_custom_fields',
+        refresh_zoho_fields: 'refresh_zoho_fields',
+        sales_orders_fields: 'zcrm_sales_orders_fields',
+        contacts_fields: 'zcrm_contacts_fields',
+        products_fields: 'zcrm_products_fields',
+        sales_orders_custom_fields: 'sales_orders_custom_fields',
+        contacts_custom_fields: 'contacts_custom_fields',
+        products_custom_fields: 'products_custom_fields',
     },
-   
+
 }
 
 
@@ -73,6 +74,11 @@ export const backendAction: BackendAction = {
             get: 'get_exact_online_cost_unit',
             save: 'save_exact_online_cost_unit',
             reset: 'reset_exact_online_cost_unit'
+        },
+        webhooks: {
+            get: 'get_exact_online_webhooks',
+            save: 'save_exact_online_webhooks',
+            reset: 'reset_exact_online_webhooks'
         }
     },
     homepage: {
@@ -151,7 +157,7 @@ export const backendAction: BackendAction = {
         connection: 'is_connected',
         custom_fields: 'get_all_custom_fields',
         refresh_zcrm_fields: 'refresh_zcrm_fields',
-        zcrm_fields:'zcrm_fields',
+        zcrm_fields: 'zcrm_fields',
     },
     acf_fields: {
         get_acf_fields: 'get_acf_fields',
