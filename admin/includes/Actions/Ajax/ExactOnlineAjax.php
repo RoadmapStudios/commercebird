@@ -331,6 +331,17 @@ final class ExactOnlineAjax
     public function webhooks_save(): void
     {
         $this->verify(self::FORMS['webhooks']);
+        $form_data = $this->data;
+        $callback_url = 'https://your-callback-url.com/webhook/';
+        foreach ($form_data as $topic => $is_active) {
+            $webhooks[] = array(
+                'topic' => $topic,
+                'callback_url' => $callback_url,
+                'status' => $is_active ? 'active' : 'inactive',
+            );
+        }
+        $response = (new CommerceBird())->subscribe_exact_webhooks($webhooks);
+        error_log(print_r($response, true));
         $this->option_status_update($this->data);
         $this->response = array('message' => 'Saved!');
         $this->serve();
