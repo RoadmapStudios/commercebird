@@ -314,7 +314,10 @@ final class ExactOnlineAjax {
 	public function webhooks_save(): void {
 		$this->verify( self::FORMS['webhooks'] );
 		$form_data = $this->data;
-		$callback_url = 'https://your-callback-url.com/webhook/';
+		// if current site contains localhost, use https://dev.commercebird.com
+		$current_site_url   = isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '';
+		$callback_url       = str_contains( $current_site_url, 'localhost' ) ? 'https://dev.commercebird.com' : site_url();
+        $callback_url       .= '/wp-json/v2/exact-webhooks/process/';
 		foreach ( $form_data as $topic => $is_active ) {
 			$webhooks[] = array(
 				'topic' => $topic,
