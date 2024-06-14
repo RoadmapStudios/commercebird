@@ -18,7 +18,7 @@ final class CommerceBird {
 	const CUSTOMER = 'customs/exact/bulk-customers';
 	const ORDER = 'customs/exact/bulk-orders';
 	const WEBHOOKS = 'customs/exact/webhooks';
-	const API = 'https://ce92-103-183-81-114.ngrok-free.app';
+	const API = 'https://api.commercebird.com';
 	const ZCRMFIELDS = 'customs/zoho/fields';
 
 	public function cost_centers() {

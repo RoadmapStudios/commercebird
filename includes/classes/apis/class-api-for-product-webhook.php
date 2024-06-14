@@ -7,12 +7,15 @@ use import_product_class;
 use ProductClass;
 use WC_Data_Exception;
 use WC_Product_Variation;
+use WC_Product_Variable;
 use WP_REST_Response;
 use WP_REST_Server;
 use wpdb;
 use ZI_CommonClass;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit();
+
+use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 
 class ProductWebhook {
 
@@ -81,7 +84,7 @@ class ProductWebhook {
 		$item_price = $item['rate'];
 		$item_sku = $item['sku'];
 		$item_description = $item['description'];
-		$item_status = $item['status'] === 'active' ? 'publish' : 'draft';
+		$item_status = $item['status'] === 'active' ? 'publish' : 'private';
 		$item_brand = $item['brand'];
 		$custom_fields = $item['custom_fields'];
 		// Stock mode check
@@ -138,8 +141,8 @@ class ProductWebhook {
 				// Update the name of the variable product if allowed
 				$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
 				if ( ! $zi_disable_itemname_sync ) {
-					$existing_parent_product->set_name( $item_name );
-					$slug = sanitize_title( $item_name );
+					$existing_parent_product->set_name( $item['group_name'] );
+					$slug = sanitize_title( $item['group_name'] );
 					$existing_parent_product->set_slug( $slug );
 				}
 				// Brand update if taxonomy product_brand exists
@@ -155,7 +158,7 @@ class ProductWebhook {
 				}
 
 				// set the product status of the variable parent product
-				$existing_parent_product->set_status( $item_status );
+				// $existing_parent_product->set_status( $item_status );
 				$existing_parent_product->save();
 			}
 
@@ -165,12 +168,13 @@ class ProductWebhook {
 				// updating existing variations
 				$variation = new WC_Product_Variation( $variation_id );
 				// Prices
-				if ( ! empty( $item['rate'] ) ) {
-					$variation->set_price( $item['rate'] );
+				if ( ! empty( $item_price ) ) {
+					$variation->set_price( $item_price );
 				}
-				$variation->set_regular_price( $item['rate'] );
+				$variation->set_regular_price( $item_price );
 				// Stock
-				if ( ! empty( $item_stock ) ) {
+				$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+				if ( ! empty( $item_stock ) && ! $zi_disable_stock_sync ) {
 					// fwrite($fd, PHP_EOL . 'Stock is here:'. $item_stock);
 					$variation->set_stock_quantity( $item_stock );
 					$variation->set_manage_stock( true );
@@ -186,6 +190,8 @@ class ProductWebhook {
 					$image_class = new ImageClass();
 					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
 				}
+				// Disable or enable the variation based on the item_status
+				$variation->set_status( $item_status );
 				// Update Purchase price
 				$variation->update_meta_data( 'cost_price', $item['purchase_rate'] );
 
@@ -196,60 +202,91 @@ class ProductWebhook {
 					$variation->set_tax_status( 'taxable' );
 					$variation->set_tax_class( $woo_tax_class );
 				}
+				// weight & dimensions
+				$variation->set_weight( $weight );
+				$variation->set_length( $length );
+				$variation->set_width( $width );
+				$variation->set_height( $height );
 
 				$variation->save(); // Save the data
 			} elseif ( 'publish' === $item_status ) {
 				$attribute_name11 = $item['attribute_option_name1'];
 				$attribute_name12 = $item['attribute_option_name2'];
 				$attribute_name13 = $item['attribute_option_name3'];
-
+				// Prepare the variation data
+				$attribute_arr = array();
 				if ( ! empty( $attribute_name11 ) ) {
-
-					$attribute_arr[ $item['attribute_name1'] ] = $attribute_name11;
+					$sanitized_name1 = wc_sanitize_taxonomy_name( $item['attribute_name1'] );
+					$attribute_arr[ $sanitized_name1 ] = $attribute_name11;
 				}
 				if ( ! empty( $attribute_name12 ) ) {
-
-					$attribute_arr[ $item['attribute_name2'] ] = $attribute_name12;
+					$sanitized_name2 = wc_sanitize_taxonomy_name( $item['attribute_name2'] );
+					$attribute_arr[ $sanitized_name2 ] = $attribute_name12;
 				}
 				if ( ! empty( $attribute_name13 ) ) {
-
-					$attribute_arr[ $item['attribute_name3'] ] = $attribute_name13;
-				}
-				$variation_data = array(
-					'attributes' => $attribute_arr,
-					'sku' => $item['sku'],
-					'regular_price' => $item['rate'],
-					'stock_qty' => $item_stock,
-				);
-
-				$variation_post = array(
-					'post_title' => $item['name'],
-					'post_name' => $item['name'],
-					'post_status' => 'publish',
-					'post_parent' => $group_id,
-					'post_type' => 'product_variation',
-					'guid' => get_the_permalink( $group_id ),
-				);
-				// Creating the product variation
-				$variation_id = wp_insert_post( $variation_post );
-
-				// Get an instance of the WC_Product_Variation object
-				$variation = new WC_Product_Variation( $variation_id );
-
-				// Iterating through the variations attributes
-				foreach ( $variation_data['attributes'] as $attribute => $term_name ) {
-					update_post_meta( $variation_id, 'attribute_' . strtolower( str_replace( ' ', '-', $attribute ) ), trim( $term_name ) );
-					update_post_meta( $variation_id, 'group_id_store', $group_id );
+					$sanitized_name3 = wc_sanitize_taxonomy_name( $item['attribute_name3'] );
+					$attribute_arr[ $sanitized_name3 ] = $attribute_name13;
 				}
 
-				// SKU
-				// $variation->set_sku($variation_data['sku']);
+				// here actually create new variation because sku not found
+				$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+				$variation = new WC_Product_Variation();
+				$variation->set_parent_id( $group_id );
+				$variation->set_status( 'publish' );
+				$variation->set_regular_price( $item_price );
+				$variation->set_sku( $item_sku );
+				$variation->set_weight( $weight );
+				$variation->set_length( $length );
+				$variation->set_width( $width );
+				$variation->set_height( $height );
+				if ( ! $zi_disable_stock_sync ) {
+					$variation->set_stock_quantity( $item_stock );
+					$variation->set_manage_stock( true );
+					$variation->set_stock_status( '' );
+				} else {
+					$variation->set_manage_stock( false );
+				}
+				// Map taxes while syncing product from zoho.
+				if ( $item['tax_id'] ) {
+					$zi_common_class = new ZI_CommonClass();
+					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
+					$variation->set_tax_status( 'taxable' );
+					$variation->set_tax_class( $woo_tax_class );
+				}
+				$variation->add_meta_data( 'zi_item_id', $item->item_id );
+				$variation_id = $variation->save();
 
-				// Prices
-				$variation->set_regular_price( $variation_data['regular_price'] );
-				$variation_sale_price = $variation->get_sale_price();
-				if ( empty( $variation_sale_price ) ) {
-					$variation->set_price( $variation_data['regular_price'] );
+				// Get the variation attributes with correct attribute values
+				foreach ( $attribute_arr as $attribute => $term_name ) {
+					$taxonomy = $attribute;
+					// If taxonomy doesn't exists we create it
+					if ( ! taxonomy_exists( $taxonomy ) ) {
+						register_taxonomy(
+							$taxonomy,
+							'product_variation',
+							array(
+								'hierarchical' => false,
+								'label' => ucfirst( $attribute ),
+								'query_var' => true,
+								'rewrite' => array( 'slug' => sanitize_title( $attribute ) ),
+							),
+						);
+					}
+
+					// Check if the Term name exist and if not we create it.
+					if ( ! term_exists( $term_name, $taxonomy ) ) {
+						wp_insert_term( $term_name, $taxonomy );
+					}
+
+					$term_slug = get_term_by( 'name', $term_name, $taxonomy )->slug;
+					// Get the post Terms names from the parent variable product.
+					$post_term_names = wp_get_post_terms( $group_id, $taxonomy, array( 'fields' => 'names' ) );
+					// Check if the post term exist and if not we set it in the parent variable product.
+					if ( ! in_array( $term_name, $post_term_names, true ) ) {
+						wp_set_post_terms( $group_id, $term_name, $taxonomy, true );
+					}
+					// Set/save the attribute data in the product variation
+					update_post_meta( $variation_id, 'attribute_' . $taxonomy, $term_slug );
 				}
 
 				// featured image
@@ -259,27 +296,14 @@ class ProductWebhook {
 					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
 				}
 
-				// Stock
-				if ( ! empty( $variation_data['stock_qty'] ) ) {
-					$variation->set_stock_quantity( $variation_data['stock_qty'] );
-					$variation->set_manage_stock( true );
-					$variation->set_stock_status( '' );
-				} else {
-					$variation->set_manage_stock( false );
-				}
-				$variation->set_weight( '' ); // weight (reseting)
-				$variation->save(); // Save the data
 				update_post_meta( $variation_id, 'zi_item_id', $item_id );
-
+				// Sync variation data with parent variable product
+				WC_Product_Variable::sync( $group_id );
+				// Regenerate lookup table for attributes
+				$lookup_data_store = new LookupDataStore();
+				$lookup_data_store->create_data_for_product( $group_id );
 				// End group item add process
 				unset( $attribute_arr );
-			}
-			if ( $variation_id ) {
-				// weight & dimensions
-				$variation->set_weight( $weight );
-				$variation->set_length( $length );
-				$variation->set_width( $width );
-				$variation->set_height( $height );
 			}
 			wc_delete_product_transients( $group_id ); // Clear/refresh cache
 			// end of grouped item creation
