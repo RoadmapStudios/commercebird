@@ -1,3 +1,7 @@
+Version 2.1.22 - June 14 2024
+* Fix: featured image sync now compatible with WordPress 6.5
+* Fix: variation sync via webhook will now create new attribute option if not found in attributes
+
 Version 2.1.21 - June 5 2024
 * Fix: simple products import via cron
 * Fix: disable product sync now also applies to changes made via the app
