@@ -1,3 +1,9 @@
+Version 2.1.23 - June 18 2024
+* Fix: importing group items variations
+* Tweak: importing group items variations now also possible via product edit page manual sync
+* Tweak: disabled review banner
+* Compatibility with WooCommerce 9.0
+
 Version 2.1.22 - June 14 2024
 * Fix: featured image sync now compatible with WordPress 6.5
 * Fix: variation sync via webhook will now create new attribute option if not found in attributes
