@@ -41,7 +41,7 @@ class CMreviewReminder {
 		add_action( 'admin_init', array( CMReviewReminder::class, 'adminInit' ) );
 
 		//Admin notices
-		add_action( 'admin_notices', array( CMReviewReminder::class, 'adminNotices' ) );
+		// add_action( 'admin_notices', array( CMReviewReminder::class, 'adminNotices' ) );
 		add_action( 'wp_ajax_dismiss_cmbird_review_request_notice', array( CMReviewReminder::class, 'dismiss_cmbird_review_request_notice' ) );
 		add_action( 'wp_ajax_skip_cmbird_review_request_notice', array( CMReviewReminder::class, 'skip_cmbird_review_request_notice' ) );
 
@@ -119,7 +119,7 @@ class CMreviewReminder {
 	}
 
 	public static function render_review_request_notice() {
-		$review_url = 'https://commercebird.com/product/commercebird';
+		$review_url = 'https://commercebird.com/product/commercebird/#reviews';
 		?>
 		<div id="cmbird_review_request_notice" class="notice notice-info is-dismissible thpladmin-notice"
 			data-nonce="<?php echo wp_create_nonce( 'cmbird_review_request_notice' ); ?>"
@@ -152,6 +152,7 @@ class CMreviewReminder {
 			die();
 		}
 		set_transient( 'cmbird_review_request_notice_dismissed', true, apply_filters( 'cmbird_dismissed_review_request_notice_lifespan', 1 * MONTH_IN_SECONDS ) );
+		wp_send_json_success();
 	}
 
 	public static function skip_cmbird_review_request_notice() {
@@ -159,7 +160,8 @@ class CMreviewReminder {
 		if ( ! wp_verify_nonce( $nonse, 'skip_cmbird_review_request_notice' ) || ! current_user_can( 'manage_woocommerce' ) ) {
 			die();
 		}
-		set_transient( 'cmbird_skip_review_request_notice', true, apply_filters( 'cmbird_skip_review_request_notice_lifespan', 10 * DAY_IN_SECONDS ) );
+		set_transient( 'cmbird_skip_review_request_notice', true, apply_filters( 'cmbird_skip_review_request_notice_lifespan', 1 * YEAR_IN_SECONDS ) );
+		wp_send_json_success();
 	}
 
 	/**

@@ -56,14 +56,20 @@ add_action( 'profile_update', 'cmbird_update_contact_via_accountpage' );
  * @return void
  */
 add_action( 'woocommerce_update_product', 'zi_product_sync_class', 10, 1 );
-add_action( 'wp_ajax_zi_product_sync_class', 'zi_product_sync_class' );
+add_action( 'wp_ajax_zoho_admin_product_sync', 'zi_product_sync_class' );
 function zi_product_sync_class( $product_id ) {
 	if ( ! is_admin() ) {
 		return;
 	}
 	if ( ! $product_id ) {
-		if ( isset( $_POST['arg_product_data'] ) && wp_verify_nonce( $_POST['security'], 'zoho_product_sync_nonce' ) ) {
-			$product_id = $_POST['arg_product_data'];
+		// Check nonce for security
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zoho_admin_product_sync' ) ) {
+			wp_send_json_error( 'Nonce verification failed' );
+		} else {
+			$product_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+			if ( ! $product_id ) {
+				wp_send_json_error( 'Invalid Product ID' );
+			}
 		}
 	}
 	$zi_product_sync             = get_option( 'zoho_disable_product_sync_status' );
@@ -72,6 +78,19 @@ function zi_product_sync_class( $product_id ) {
 		$product_handler = new ProductClass();
 		$product_handler->zi_product_sync( $product_id );
 	}
+	// if its variable product but without variations, then sync it.
+	$product = wc_get_product( $product_id );
+	if ( $product->is_type( 'variable' ) ) {
+		$variations = $product->get_available_variations();
+		if ( isset( $variations ) && count( $variations ) === 0 ) {
+			$zi_product_id = get_post_meta( $product_id, 'zi_item_id', true );
+			if ( ! empty( $zi_product_id ) ) {
+				$product_handler = new import_product_class();
+				$product_handler->import_variable_product_variations( $zi_product_id, $product_id );
+			}
+		}
+	}
+	wp_send_json_success();
 }
 
 /**
@@ -206,7 +225,7 @@ function zoho_product_metabox_callback( $post ) {
 	$response = get_post_meta( $post->ID, 'zi_product_errmsg' );
 	echo 'API Response: ' . esc_html( implode( $response ) ) . '<br>';
 	// Generate nonce
-	$nonce = wp_create_nonce( 'zoho_product_sync_nonce' );
+	$nonce = wp_create_nonce( 'zoho_admin_product_sync' );
 	$post_id = $post->ID;
 	echo '<br><a href="javascript:void(0)" style="width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_product_ajax(' . esc_attr( $post_id ) . ', \'' . esc_attr( $nonce ) . '\')">Sync Product</a>';
 	echo '<br><a href="javascript:void(0)" style="margin-top:10px; background:#b32d2e; border-color: #b32d2e; width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_unmap_product_ajax(' . esc_attr( $post_id ) . ')">Unmap this Product</a>';
@@ -214,6 +233,11 @@ function zoho_product_metabox_callback( $post ) {
 	$product_type = $product->get_type();
 	if ( 'variable' === $product_type || 'variable-subscription' === $product_type ) {
 		echo '<p class="howto" style="color:#b32d2e;"><strong>Important : </strong> Please ensure all variations have price and SKU</p>';
+	}
+	// echo the zi_category_id
+	$zi_category_id = get_post_meta( $post->ID, 'zi_category_id', true );
+	if ( $zi_category_id ) {
+		echo '<p class="howto"><strong>Zoho Category: </strong>' . esc_html( $zi_category_id ) . '</p>';
 	}
 }
 add_action( 'add_meta_boxes', 'zoho_product_metabox' );

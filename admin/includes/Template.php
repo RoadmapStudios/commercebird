@@ -18,7 +18,6 @@ final class Template {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ) );
-		add_action( 'restrict_manage_posts', array( new CommerceBird(), 'map_orders' ) );
 	}
 
 	public function menu(): void {

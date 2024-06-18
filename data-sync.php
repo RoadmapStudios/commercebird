@@ -571,6 +571,7 @@ function create_woo_cat_to_zoho( $cat_name, $term_id = '0', $pid = '' ) {
  * Function for getting zoho categories.
  */
 function get_zoho_item_categories() {
+	// $fd = fopen( __DIR__ . '/get_zoho_item_categories.txt', 'a+' );
 
 	$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 	$zoho_inventory_url = get_option( 'zoho_inventory_url' );
@@ -581,7 +582,8 @@ function get_zoho_item_categories() {
 	$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
 
 	$response = wp_json_encode( $json );
-
+	// fwrite( $fd, PHP_EOL . '$response : ' . print_r( $response, true ) );
+	// fclose( $fd );
 	return json_decode( $response, true );
 }
 
