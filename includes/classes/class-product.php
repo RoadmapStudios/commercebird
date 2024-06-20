@@ -6,7 +6,7 @@
  */
 
 class ProductClass {
-
+	private $config;
 
 	public function __construct() {
 		$this->config = array(
@@ -568,7 +568,7 @@ class ProductClass {
 			$errmsg = $json->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 			$code = $json->code;
-			if ( $code == '0' || $code == 0 ) {
+			if ( $code === '0' || $code === 0 ) {
 
 				// This item will keep the copy of zoho item_id with respect to product.
 				//  name as key synced to zoho.
