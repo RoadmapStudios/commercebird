@@ -3,9 +3,9 @@ Contributors: fawadinho
 Author link: https://commercebird.com
 Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
-Tested up to: 6.5
+Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 2.1.19
+Stable tag: 2.1.23
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -49,6 +49,35 @@ A: Please visit https://support.commercebird.com to read the docs and open suppo
 
 
 == Changelog ==
+= 2.1.24 - June 21 2024 =
+* Fix: product save was giving json output
+* Tweak: secured all ajax calls with wp nonce
+
+= 2.1.23 - June 18 2024 =
+* Fix: importing group items variations
+* Tweak: importing group items variations now also possible via product edit page manual sync
+* Tweak: disabled review banner
+* Compatibility with WooCommerce 9.0
+
+= 2.1.22 - June 14 2024 =
+* Fix: featured image sync now compatible with WordPress 6.5
+* Fix: variation sync via webhook will now create new attribute option if not found in attributes
+
+= 2.1.21 - June 5 2024 =
+* Fix: simple products import via cron
+* Fix: disable product sync now also applies to changes made via the app
+* Tweak: improved pagination of products import
+* Compatibility with WooCommerce 8.9
+
+= 2.1.20 - May 31 2024 =
+* Fix: variation import of existing parent product via cron
+* Fix: zoho inventory salesorder url on orders listing is restored
+* Fix: dismiss review banner
+* Fix: disable product sync to zoho restored
+* Fix: disable stock sync restored
+* Tweak: zoho image import fail will no longer break sync of rest of category
+* Tweak: zoho image name must be unique when changed for existing item
+
 = 2.1.19 - May 29 2024 =
 * Fix: warehouse stock sync
 * Fix: group items import
