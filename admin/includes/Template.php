@@ -2,7 +2,6 @@
 
 namespace RMS\Admin;
 
-use RMS\Admin\Connectors\CommerceBird;
 use RMS\Admin\Traits\Singleton;
 use RMS\API\CreateOrderWebhook;
 use RMS\API\ProductWebhook;

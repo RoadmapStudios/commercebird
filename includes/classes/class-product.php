@@ -617,7 +617,6 @@ class ProductClass {
 	 * @return void
 	 */
 	protected function variants_products( $product_variable, $post_id, $attr1 = '', $attr2 = '', $attr3 = '' ) {
-		// $post_id = $product_variable->ID;
 		// $fd = fopen(__DIR__.'/variations_products.txt','a+');
 		// fwrite($fd,PHP_EOL.'-------------------------------');
 		// fwrite($fd,PHP_EOL.'$attr1 : '.$attr1.' | $attr2 : '.$attr2.' | $attr3 : '.$attr3.' $post_id : '.$post_id);
@@ -737,8 +736,8 @@ class ProductClass {
 						// fwrite($fd, PHP_EOL . 'Product found with same sku $zoho_item : ' . print_r($zoho_item, true));
 						$var_item_id = $zoho_item->item_id;
 						$groupitem_id = $zoho_item->group_id;
-						// Item sku is mached
-						// Assign mached zoho item to json so fields can be mapped.
+						// Item sku is matched
+						// Assign matched zoho item to json so fields can be mapped.
 						break;
 					}
 				}

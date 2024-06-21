@@ -90,7 +90,6 @@ function zi_product_sync_class( $product_id ) {
 			}
 		}
 	}
-	wp_send_json_success();
 }
 
 /**

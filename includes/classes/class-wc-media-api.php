@@ -1,5 +1,9 @@
 <?php
 
+namespace CommerceBird;
+
+defined( 'RMS_PLUGIN_NAME' ) || exit;
+
 /**
  * Extending the WC API with our custom endpoints.
  *
