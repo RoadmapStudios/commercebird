@@ -411,15 +411,20 @@ function ajax_subcategory_sync_call() {
 		foreach ( $categories_terms as $parent_term ) {
 
 			$subcategories_terms = get_terms(
-				'product_cat',
 				array(
-					'parent' => $parent_term->term_id,
+					'taxonomy'   => 'product_cat',
+					'hide_empty' => false,
+					'child_of'   => true,
 				)
 			);
 
 			if ( $subcategories_terms && count( $subcategories_terms ) > 0 ) {
 
 				foreach ( $subcategories_terms as $term ) {
+					//remove uncategorized from loop
+					if ( $term->slug == 'uncategorized' ) {
+						continue;
+					}
 
 					$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $term->term_id );
 					if ( empty( $zoho_cat_id ) ) {
@@ -506,6 +511,10 @@ function ajax_category_sync_call() {
 	if ( $categories_terms && count( $categories_terms ) > 0 ) {
 
 		foreach ( $categories_terms as $term ) {
+			//remove uncategorized from loop
+			if ( $term->slug == 'uncategorized' ) {
+				continue;
+			}
 
 			$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $term->term_id );
 			if ( empty( $zoho_cat_id ) ) {
@@ -561,10 +570,7 @@ function create_woo_cat_to_zoho( $cat_name, $term_id = '0', $pid = '' ) {
 
 	//echo '<pre>'; print_r($json);
 
-	return (object) array(
-		'resp_id' => $code,
-		'message' => $response_msg,
-	);
+	return zi_response_message( $code, $response_msg, $term_id );
 }
 
 /**

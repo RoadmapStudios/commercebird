@@ -113,6 +113,10 @@ function cmbird_zi_sync_all_orders_to_zoho_handler( $redirect, $action, $object_
 // output the message of bulk action
 add_action( 'admin_notices', 'cmbird_sync_order_to_zoho_notices' );
 function cmbird_sync_order_to_zoho_notices() {
+	// verify nonce
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'bulk-orders' ) ) {
+		return;
+	}
 	if ( ! empty( $_REQUEST['sync_order_to_zoho_done'] ) ) {
 		echo '<div id="message" class="updated notice is-dismissible">
 			<p>Orders Synced. If order is not synced, please click on Edit Order to see the API response.</p>

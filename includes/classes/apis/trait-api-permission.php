@@ -21,24 +21,6 @@ trait Api {
 		return get_rest_url() . self::$namespace . '/' . self::$endpoint;
 	}
 
-	public function check_origin( WP_REST_Request $request ) {
-		// Check if the request is from the domain example.com
-		$allowed_domain = array(
-			'http://localhost:8100',
-			'https://app.commercebird.com',
-			'capacitor://localhost',
-		);
-		$origin         = $request->get_header( 'Origin' );
-		// check if the origin is in our array of allowed domains
-		if ( in_array( $origin, $allowed_domain, true ) ) {
-			// Allow the REST request
-			return true;
-		}
-
-		// If not from the allowed domain, return a permission error
-		return new WP_Error( 'rest_forbidden', 'Sorry, this API endpoint is not accessible from your domain.', array( 'status' => 403 ) );
-	}
-
 	public function permission_check() {
 		// Get all headers
 		$headers = getallheaders();

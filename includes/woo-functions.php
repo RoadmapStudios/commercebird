@@ -128,6 +128,10 @@ function zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_ids ) {
 // output the message of bulk action
 add_action( 'admin_notices', 'sync_item_to_zoho_notices' );
 function sync_item_to_zoho_notices() {
+	// verify nonce
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-edit-products' ) ) {
+		return;
+	}
 	if ( ! empty( $_REQUEST['sync_item_to_zoho_done'] ) ) {
 		echo '<div id="message" class="updated notice is-dismissible">
 			<p>Products Synced. If product is not synced, please click on Edit Product to see the API response.</p>
@@ -423,6 +427,10 @@ function zi_sync_column_filterable() {
 
 	if ( 'product' === $typenow ) {
 		// code here
+		// verify nonce
+		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-edit-products' ) ) {
+			return;
+		}
 		$value = isset( $_GET['zoho_sync_filter'] ) ? $_GET['zoho_sync_filter'] : '';
 
 		echo '<select name="zoho_sync_filter">';
@@ -480,6 +488,10 @@ add_action( 'restrict_manage_posts', 'zi_sync_column_filterable' );
  */
 function zi_sync_column_filter_query( $query ) {
 	global $typenow, $pagenow;
+	// verify nonce
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-edit-products' ) ) {
+		return;
+	}
 
 	if ( $typenow === 'product' && $pagenow === 'edit.php' && isset( $_GET['zoho_sync_filter'] ) && $_GET['zoho_sync_filter'] !== '' ) {
 		$value = $_GET['zoho_sync_filter'];
