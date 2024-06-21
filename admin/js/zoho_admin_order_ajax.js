@@ -2,12 +2,13 @@
  * @description function for making ajax call.
  * @param {string} action_type - Action for which we call ajax
  */
-function zoho_admin_order_ajax(data) {
+function zoho_admin_order_ajax(data, nonce) {
 
     let action_name = 'zoho_admin_order_sync';
     var data = {
       'action': action_name,
-      'arg_order_data': data
+      'arg_order_data': data,
+      'nonce': nonce
     };
 
     jQuery.post(ajaxurl, data, function (_data, status) {
@@ -70,12 +71,13 @@ function zoho_admin_order_ajax(data) {
    * @description function for making ajax call of Product unmapping.
    * @param {string} productId - product Id
    */
-  function zoho_admin_unmap_product_ajax(productId) {
+  function zoho_admin_unmap_product_ajax(productId, nonce) {
 
     let action_name = 'zi_product_unmap_hook';
     var data = {
       'action': action_name,
-      'product_id': productId
+      'product_id': productId,
+      'nonce': nonce
     };
 
     jQuery.post(ajaxurl, data, function (_data, status) {
@@ -97,12 +99,13 @@ function zoho_admin_order_ajax(data) {
    * @description function for making ajax call of Customer unmapping.
    * @param {string} orderId - order Id
    */
-   function zoho_admin_customer_unmap(orderId) {
+   function zoho_admin_customer_unmap(orderId, nonce) {
 
     let action_name = 'zi_customer_unmap_hook';
     var data = {
       'action': action_name,
-      'order_id': orderId
+      'order_id': orderId,
+      'nonce': nonce
     };
 
     jQuery.post(ajaxurl, data, function (_data, status) {

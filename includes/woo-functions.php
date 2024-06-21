@@ -141,6 +141,10 @@ function sync_item_to_zoho_notices() {
  */
 add_action( 'wp_ajax_zi_product_unmap_hook', 'zi_product_unmap_hook' );
 function zi_product_unmap_hook( $product_id ) {
+	// verify Nonce
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zi_product_unmap_hook' ) ) {
+		wp_send_json_error( 'Nonce verification failed' );
+	}
 	if ( ! $product_id ) {
 		$product_id = $_POST['product_id'];
 	}
@@ -178,6 +182,10 @@ function zi_product_unmap_hook( $product_id ) {
  */
 add_action( 'wp_ajax_zi_customer_unmap_hook', 'zi_customer_unmap_hook' );
 function zi_customer_unmap_hook( $order_id ) {
+	// verify Nonce
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zi_customer_unmap_hook' ) ) {
+		wp_send_json_error( 'Nonce verification failed' );
+	}
 	if ( ! $order_id ) {
 		$order_id = $_POST['order_id'];
 	}
@@ -225,9 +233,10 @@ function zoho_product_metabox_callback( $post ) {
 	echo 'API Response: ' . esc_html( implode( $response ) ) . '<br>';
 	// Generate nonce
 	$nonce = wp_create_nonce( 'zoho_admin_product_sync' );
+	$nonce_unmap = wp_create_nonce( 'zi_product_unmap_hook' );
 	$post_id = $post->ID;
 	echo '<br><a href="javascript:void(0)" style="width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_product_ajax(' . esc_attr( $post_id ) . ', \'' . esc_attr( $nonce ) . '\')">Sync Product</a>';
-	echo '<br><a href="javascript:void(0)" style="margin-top:10px; background:#b32d2e; border-color: #b32d2e; width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_unmap_product_ajax(' . esc_attr( $post_id ) . ')">Unmap this Product</a>';
+	echo '<br><a href="javascript:void(0)" style="margin-top:10px; background:#b32d2e; border-color: #b32d2e; width:100%; text-align: center;" class="button button-primary" onclick="zoho_admin_unmap_product_ajax(' . esc_attr( $post_id ) . ', \'' . esc_attr( $nonce_unmap ) . '\')">Unmap this Product</a>';
 	$product = wc_get_product( $post->ID );
 	$product_type = $product->get_type();
 	if ( 'variable' === $product_type || 'variable-subscription' === $product_type ) {
@@ -252,9 +261,11 @@ function cmbird_item_id_field() {
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'cost_price',
+			'class' => 'readonly',
 			'wrapper_class' => 'form-row',
 			'label' => 'Cost Price',
 			'data_type' => 'price',
+			'description' => __( 'You can edit this via the CommerceBird App' ),
 		)
 	);
 	woocommerce_wp_text_input(
@@ -280,10 +291,12 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'cost_price[' . $loop . ']',
+			'class' => 'readonly',
 			'wrapper_class' => 'form-row',
 			'data_type' => 'price',
 			'label' => __( 'Cost Price' ),
 			'value' => get_post_meta( $variation->ID, 'cost_price', true ),
+			'description' => __( 'You can edit this via the CommerceBird App' ),
 		)
 	);
 	woocommerce_wp_text_input(
@@ -306,23 +319,6 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
 			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
 		)
 	);
-}
-
-add_action( 'save_post_product', 'cmbird_save_cost_price' );
-function cmbird_save_cost_price( $product_id ) {
-	global $typenow;
-	if ( 'product' === $typenow ) {
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-			return;
-		if ( isset( $_POST['cost_price'] ) ) {
-			update_post_meta( $product_id, 'cost_price', $_POST['cost_price'] );
-		}
-	}
-}
-add_action( 'woocommerce_save_product_variation', 'cmbird_save_cost_price_variation', 10, 2 );
-function cmbird_save_cost_price_variation( $variation_id, $loop ) {
-	$text_field = ! empty( $_POST['cost_price'][ $loop ] ) ? $_POST['cost_price'][ $loop ] : '';
-	update_post_meta( $variation_id, 'cost_price', sanitize_text_field( $text_field ) );
 }
 
 /**
@@ -450,7 +446,7 @@ function zi_sync_column_filterable() {
 		if ( $synced_count > 0 ) {
 			$synced_label .= ' (' . $synced_count . ')';
 		}
-		echo '<option value="synced" ' . selected( $value, 'synced', false ) . '>' . $synced_label . '</option>';
+		echo '<option value="synced" ' . selected( $value, 'synced', false ) . '>' . esc_html( $synced_label ) . '</option>';
 
 		// Count not synced products
 		$not_synced_count = new WP_Query(
@@ -470,7 +466,7 @@ function zi_sync_column_filterable() {
 		if ( $not_synced_count > 0 ) {
 			$not_synced_label .= ' (' . $not_synced_count . ')';
 		}
-		echo '<option value="not_synced" ' . selected( $value, 'not_synced', false ) . '>' . $not_synced_label . '</option>';
+		echo '<option value="not_synced" ' . selected( $value, 'not_synced', false ) . '>' . esc_html( $not_synced_label ) . '</option>';
 
 		echo '</select>';
 	}
