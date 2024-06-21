@@ -1039,7 +1039,7 @@ class import_product_class {
 					$variation->set_tax_class( $woo_tax_class );
 				}
 				// Stock Imported code
-				if ( $stock_quantity > 0 ) {
+				if ( ! $zi_disable_stock_sync && $stock_quantity ) {
 					$variation->set_manage_stock( true );
 					$variation->set_stock_quantity( $stock_quantity );
 					$variation->set_stock_status( 'instock' );
