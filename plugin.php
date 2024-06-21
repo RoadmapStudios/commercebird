@@ -3,7 +3,6 @@
  * Plugin Name: CommerceBird
  * Plugin URI:  https://commercebird.com
  * Author:      CommerceBird
- * Author URI:  https://commercebird.com
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
  * Version: 2.1.24
  * Requires PHP: 7.4
