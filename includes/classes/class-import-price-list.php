@@ -54,7 +54,7 @@ class ImportPricelistClass {
 
 		$url = $this->config['ProductZI']['APIURL'] . 'inventory/v1/pricebooks?organization_id=' . $this->config['ProductZI']['OID'];
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 		if ( isset( $json->pricebooks ) ) {
 			set_transient( 'zoho_pricelist', $json->pricebooks, MINUTE_IN_SECONDS );
@@ -98,7 +98,7 @@ class ImportPricelistClass {
 		}
 		$url = $this->config['ProductZI']['APIURL'] . 'inventory/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $this->config['ProductZI']['OID'];
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_object( $json ) && property_exists( $json, 'pricebook' ) ) {
 			$json = json_decode( wp_json_encode( $json->pricebook ), true );
 			set_transient( 'zoho_pricelist_' . $pricebook_id, $json, DAY_IN_SECONDS );

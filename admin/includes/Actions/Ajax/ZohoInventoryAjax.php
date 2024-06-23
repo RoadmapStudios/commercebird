@@ -29,10 +29,10 @@ final class ZohoInventoryAjax {
 			'cors',
 			'id',
 		),
-		'tax'      => array(
+		'tax' => array(
 			'selectedTaxRates',
 		),
-		'product'  => array(
+		'product' => array(
 			'item_from_zoho',
 			'disable_stock_sync',
 			'disable_product_sync',
@@ -62,40 +62,40 @@ final class ZohoInventoryAjax {
 	);
 
 	private const ACTIONS = array(
-		'get_subscription'      => 'subscription_get',
-		'get_settings'          => 'settings_get',
-		'save_settings'         => 'settings_set',
-		'reset_settings'        => 'settings_reset',
-		'get_zoho_connect'      => 'connection_get',
-		'save_zoho_connect'     => 'connection_set',
-		'reset_zoho_connect'    => 'connection_reset',
-		'get_zoho_tax'          => 'tax_get',
-		'save_zoho_tax'         => 'tax_set',
-		'reset_zoho_tax'        => 'tax_reset',
-		'get_zoho_product'      => 'product_get',
-		'save_zoho_product'     => 'product_set',
-		'reset_zoho_product'    => 'product_reset',
-		'get_zoho_cron'         => 'cron_get',
-		'save_zoho_cron'        => 'cron_set',
-		'reset_zoho_cron'       => 'cron_reset',
-		'get_zoho_order'        => 'order_get',
-		'save_zoho_order'       => 'order_set',
-		'reset_zoho_order'      => 'order_reset',
-		'get_zoho_contact'      => 'contact_get',
-		'save_zoho_contact'     => 'contact_set',
-		'reset_zoho_contact'    => 'contact_reset',
-		'get_zoho_price'        => 'price_get',
-		'save_zoho_price'       => 'price_set',
-		'reset_zoho_price'      => 'price_reset',
-		'get_zoho_fields'       => 'fields_get',
-		'save_zoho_fields'      => 'fields_set',
-		'reset_zoho_fields'     => 'fields_reset',
-		'is_connected'          => 'connection_done',
-		'get_wc_taxes'          => 'wc_tax_collect',
-		'get_zoho_taxes'        => 'zoho_tax_rates_collect',
-		'get_zoho_categories'   => 'zoho_categories_collect',
-		'get_zoho_warehouses'   => 'zoho_warehouses_collect',
-		'get_zoho_prices'       => 'zoho_prices_collect',
+		'get_subscription' => 'subscription_get',
+		'get_settings' => 'settings_get',
+		'save_settings' => 'settings_set',
+		'reset_settings' => 'settings_reset',
+		'get_zoho_connect' => 'connection_get',
+		'save_zoho_connect' => 'connection_set',
+		'reset_zoho_connect' => 'connection_reset',
+		'get_zoho_tax' => 'tax_get',
+		'save_zoho_tax' => 'tax_set',
+		'reset_zoho_tax' => 'tax_reset',
+		'get_zoho_product' => 'product_get',
+		'save_zoho_product' => 'product_set',
+		'reset_zoho_product' => 'product_reset',
+		'get_zoho_cron' => 'cron_get',
+		'save_zoho_cron' => 'cron_set',
+		'reset_zoho_cron' => 'cron_reset',
+		'get_zoho_order' => 'order_get',
+		'save_zoho_order' => 'order_set',
+		'reset_zoho_order' => 'order_reset',
+		'get_zoho_contact' => 'contact_get',
+		'save_zoho_contact' => 'contact_set',
+		'reset_zoho_contact' => 'contact_reset',
+		'get_zoho_price' => 'price_get',
+		'save_zoho_price' => 'price_set',
+		'reset_zoho_price' => 'price_reset',
+		'get_zoho_fields' => 'fields_get',
+		'save_zoho_fields' => 'fields_set',
+		'reset_zoho_fields' => 'fields_reset',
+		'is_connected' => 'connection_done',
+		'get_wc_taxes' => 'wc_tax_collect',
+		'get_zoho_taxes' => 'zoho_tax_rates_collect',
+		'get_zoho_categories' => 'zoho_categories_collect',
+		'get_zoho_warehouses' => 'zoho_warehouses_collect',
+		'get_zoho_prices' => 'zoho_prices_collect',
 		'get_all_custom_fields' => 'wc_custom_fields_collect',
 		'handle_code' => 'handle_code',
 	);
@@ -498,7 +498,7 @@ final class ZohoInventoryAjax {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$url = $zoho_inventory_url . 'inventory/v1/settings/warehouses?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		$this->response = wp_list_pluck( $json->warehouses, 'warehouse_name', 'warehouse_id' );
 		$this->serve();
 	}
@@ -600,7 +600,7 @@ final class ZohoInventoryAjax {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$url = $zoho_inventory_url . 'inventory/v1/organizations/?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );
 		} elseif ( empty( $json ) ) {
@@ -667,7 +667,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function wc_taxes(): array {
 		$wc_tax_array = array();
-		$tax_classes  = WC_Tax::get_tax_classes(); // Retrieve all tax classes.
+		$tax_classes = WC_Tax::get_tax_classes(); // Retrieve all tax classes.
 		if ( ! in_array( '', $tax_classes ) ) { // Make sure "Standard rate" (empty class name) is present.
 			array_unshift( $tax_classes, '' );
 		}
@@ -676,7 +676,7 @@ final class ZohoInventoryAjax {
 			$taxes = WC_Tax::get_rates_for_tax_class( $tax_class );
 
 			foreach ( $taxes as $key => $tax ) {
-				$taxarray       = (array) $tax;
+				$taxarray = (array) $tax;
 				$taxarray['id'] = $key;
 				$wc_tax_array[] = $taxarray;
 			}
@@ -714,7 +714,7 @@ final class ZohoInventoryAjax {
 				update_option( 'zoho_inventory_tax_rate_' . $valarray[0], $valarray[1] );
 			}
 			$this->response = array( 'message' => 'Saved' );
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -748,7 +748,7 @@ final class ZohoInventoryAjax {
 				'redirect' => $redirect,
 				'message' => 'We are redirecting you to zoho. please wait...',
 			);
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -774,7 +774,7 @@ final class ZohoInventoryAjax {
 			}
 			update_option( 'woocommerce_enable_guest_checkout', 'yes' );
 			$this->response = array( 'message' => 'Reset successfully!' );
-		} catch ( Throwable $throwable) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -794,16 +794,16 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$url                = $zoho_inventory_url . 'inventory/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
+		$url = $zoho_inventory_url . 'inventory/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
 		try {
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json                     = (array) $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+			$json = (array) $execute_curl_call_handle->execute_curl_call_get( $url );
 			if ( array_key_exists( 'taxes', $json ) ) {
 				$this->response = $json['taxes'];
 			} else {
 				$this->errors = array( 'message' => 'Something went wrong!' );
 			}
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -831,7 +831,7 @@ final class ZohoInventoryAjax {
 			$class_functions = new Classfunctions();
 			$code = $this->request['code'];
 			try {
-				$access_token = $class_functions->GetServiceZIAccessToken( $code );
+				$access_token = $class_functions->get_zi_access_token( $code );
 				if ( array_key_exists( 'access_token', $access_token ) ) {
 					update_option( 'zoho_inventory_auth_code', $code );
 					update_option( 'zoho_inventory_access_token', $access_token['access_token'] );

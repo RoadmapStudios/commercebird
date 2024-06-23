@@ -188,7 +188,7 @@ class ProductWebhook {
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
+					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image );
 				}
 				// Disable or enable the variation based on the item_status
 				$variation->set_status( $item_status );
@@ -293,7 +293,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $variation_id, $item_image );
+					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image );
 				}
 
 				update_post_meta( $variation_id, 'zi_item_id', $item_id );
@@ -410,7 +410,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new ImageClass();
-					$image_class->args_attach_image( $item_id, $item_name, $pdt_id, $item_image );
+					$image_class->cmbird_zi_get_image( $item_id, $item_name, $pdt_id, $item_image );
 				}
 
 				// category

@@ -412,9 +412,9 @@ function ajax_subcategory_sync_call() {
 
 			$subcategories_terms = get_terms(
 				array(
-					'taxonomy'   => 'product_cat',
+					'taxonomy' => 'product_cat',
 					'hide_empty' => false,
-					'child_of'   => true,
+					'child_of' => true,
 				)
 			);
 
@@ -554,7 +554,7 @@ function create_woo_cat_to_zoho( $cat_name, $term_id = '0', $pid = '' ) {
 	$url = $zoho_inventory_url . 'inventory/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
 	$execute_curl_call_handle = new ExecutecallClass();
-	$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+	$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 	$code = $json->code;
 
@@ -585,7 +585,7 @@ function get_zoho_item_categories() {
 	$url = $zoho_inventory_url . 'inventory/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
 	$execute_curl_call_handle = new ExecutecallClass();
-	$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+	$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 	$response = wp_json_encode( $json );
 	// fwrite( $fd, PHP_EOL . '$response : ' . print_r( $response, true ) );

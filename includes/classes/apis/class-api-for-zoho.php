@@ -83,7 +83,7 @@ class Zoho extends WP_REST_Controller {
 		$get_url = $zoho_inventory_url . 'inventory/v1/organizations/' . $zoho_inventory_oid . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['zi_org_name'] = $json->organization->name;
@@ -113,7 +113,7 @@ class Zoho extends WP_REST_Controller {
 		$get_url = $zoho_inventory_url . 'inventory/v1/invoices/' . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['invoices'] = $json->invoices;
@@ -147,7 +147,7 @@ class Zoho extends WP_REST_Controller {
 		$get_url = $zoho_inventory_url . 'inventory/v1/invoices/' . $invoice_id . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['invoice'] = $json->invoice;
@@ -173,7 +173,7 @@ class Zoho extends WP_REST_Controller {
 		$get_url = $zoho_inventory_url . 'inventory/v1/purchaseorders/' . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['purchaseorders'] = $json->purchaseorders;
@@ -208,7 +208,7 @@ class Zoho extends WP_REST_Controller {
 		$get_url = $zoho_inventory_url . 'inventory/v1/purchaseorders/' . $purchaseorder_id . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
 			$response['purchase_order'] = $json->purchase_order;

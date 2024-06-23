@@ -139,7 +139,7 @@ class ProductClass {
 				$url = $zoho_inventory_url . 'inventory/v1/items';
 
 				$execute_curl_call_handle = new ExecutecallClass();
-				$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+				$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 				$errmsg = $json->message;
 				update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
@@ -151,7 +151,7 @@ class ProductClass {
 					// fwrite($fd,PHP_EOL.'Inside SKU Check');
 					$sku_check = str_replace( ' ', '+', $sku );
 					$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
-					$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+					$get_request = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 					if ( $get_request->code === '0' || $get_request->code === 0 ) {
 						$item_id = '';
@@ -169,7 +169,7 @@ class ProductClass {
 						if ( ! $matching_item ) {
 							$item_name_check = str_replace( ' ', '+', $name );
 							$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $item_name_check . '&organization_id=' . $zoho_inventory_oid;
-							$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+							$get_request = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 							if ( $get_request->code === '0' || $get_request->code === 0 ) {
 								foreach ( $get_request->items as $zoho_item ) {
@@ -246,7 +246,7 @@ class ProductClass {
 		);
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 		// fwrite($fd,PHP_EOL.'Update response : '.print_r($json,true));
 		$code = $json->code;
 		$errmsg = $json->message;
@@ -410,12 +410,12 @@ class ProductClass {
 
 		if ( $zoho_item_id && ctype_digit( $zoho_item_id ) ) {
 
-			$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url_p, $data_p );
+			$json = $execute_curl_call_handle->execute_curl_call_put( $url_p, $data_p );
 			$errmsg = $json->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 		} else {
 
-			$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url_p, $data_p );
+			$json = $execute_curl_call_handle->execute_curl_call_post( $url_p, $data_p );
 
 			$code = $json->code;
 			$errmsg = $json->message;
@@ -423,7 +423,7 @@ class ProductClass {
 			if ( $code == '1001' || $code == 1001 ) {
 				$sku_check = str_replace( ' ', '+', $sku );
 				$url = $zoho_inventory_url . 'inventory/v1/compositeitems/?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
-				$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+				$get_request = $execute_curl_call_handle->execute_curl_call_get( $url );
 				if ( $get_request->code === '0' || $get_request->code === 0 ) {
 					$item_id = '';
 					foreach ( $get_request->composite_items as $zoho_composite ) {
@@ -555,7 +555,7 @@ class ProductClass {
 		if ( ! empty( $zoho_group_id ) ) {
 			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/' . $zoho_group_id . '?organization_id=' . $zoho_inventory_oid;
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json_p = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+			$json_p = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 			$code = $json_p->code;
 			$errmsg = $json_p->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
@@ -563,7 +563,7 @@ class ProductClass {
 			$url = $zoho_inventory_url . 'inventory/v1/itemgroups?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+			$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 			$errmsg = $json->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
@@ -725,7 +725,7 @@ class ProductClass {
 			$sku_check = str_replace( ' ', '+', $sku );
 			$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
 			$execute_curl_call_handle = new ExecutecallClass();
-			$get_request = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+			$get_request = $execute_curl_call_handle->execute_curl_call_get( $url );
 			$var_item_id = '';
 			$groupitem_id = '';
 			// fwrite($fd, PHP_EOL . '$get_request->code : ' . $get_request->code);

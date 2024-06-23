@@ -156,7 +156,7 @@ class ContactClass {
 		$url = $zoho_inventory_url . 'inventory/v1/contacts';
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+		$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 		$code = $json->code;
 
@@ -305,7 +305,7 @@ class ContactClass {
 		$url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id;
 		// fwrite($fd,PHP_EOL.'URL: '. $url);
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 		// fwrite($fd, PHP_EOL.'Response log : '.print_r($json, true));
 		$code = $json->code;
 		$errmsg = $json->message;
@@ -367,7 +367,7 @@ class ContactClass {
 		$url = $zoho_inventory_url . 'inventory/v1/contacts/contactpersons';
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+		$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 		// fwrite($fd, PHP_EOL.'JSON : '.print_r($json, true));
 
@@ -400,7 +400,7 @@ class ContactClass {
 		$url = $zoho_inventory_url . 'inventory/v1/contacts/contactpersons/' . $contact_person_id;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 
 		$code = $json->code;
 		$errmsg = $json->message;
@@ -429,7 +429,7 @@ class ContactClass {
 		/* Get call url */
 		$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&per_page=100&page=' . $page;
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 		if ( isset( $json->contacts ) ) {
 			foreach ( $json->contacts as $contacts ) {

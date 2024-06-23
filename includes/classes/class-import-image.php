@@ -40,7 +40,7 @@ class ImageClass {
 	 * @param [string] $item_image - Image name.
 	 * @return void
 	 */
-	public function args_attach_image( $item_id, $item_name, $post_id, $item_image ) {
+	public function cmbird_zi_get_image( $item_id, $item_name, $post_id, $item_image ) {
 		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+' );
 
 		$image_exists_in_library = $this->compare_image_with_media_library( $item_name, $item_image );
@@ -55,7 +55,7 @@ class ImageClass {
 		$url .= '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$image_url = $execute_curl_call_handle->ExecuteCurlCallImageGet( $url );
+		$image_url = $execute_curl_call_handle->execute_curl_call_image_get( $url );
 		if ( is_wp_error( $image_url ) ) {
 			return;
 		}
@@ -109,11 +109,11 @@ class ImageClass {
 				// fwrite( $fd, PHP_EOL . 'Inside new image: ' . $image_post_id );
 				// Set variables for storage, fix file filename for query strings.
 				$file = array(
-					'name'     => $image_name,
-					'type'     => $file_type,
+					'name' => $image_name,
+					'type' => $file_type,
 					'tmp_name' => $temp_file,
-					'error'    => 0,
-					'size'     => wp_filesize( $temp_file ),
+					'error' => 0,
+					'size' => wp_filesize( $temp_file ),
 				);
 
 				$overrides = array(

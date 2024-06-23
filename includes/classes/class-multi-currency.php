@@ -36,7 +36,7 @@ class MulticurrencyClass {
 		$url = $zoho_inventory_url . 'inventory/v1/settings/currencies?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$response = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+		$response = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 		$code = $response->code;
 		$message = $response->message;

@@ -519,10 +519,10 @@ add_action( 'pre_get_posts', 'zi_sync_column_filter_query' );
  * Change Action Scheduler default purge to 1 week
  * @return int
  */
-function commercebird_action_scheduler_purge() {
+function cmbird_action_scheduler_purge() {
 	return WEEK_IN_SECONDS;
 }
-add_filter( 'action_scheduler_retention_period', 'commercebird_action_scheduler_purge' );
+add_filter( 'action_scheduler_retention_period', 'cmbird_action_scheduler_purge' );
 
 add_filter(
 	'action_scheduler_default_cleaner_statuses',

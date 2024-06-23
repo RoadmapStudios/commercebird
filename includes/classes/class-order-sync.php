@@ -13,7 +13,7 @@ class Zi_Order_Sync {
 		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 		if ( ! empty( $zoho_inventory_access_token ) ) {
 			add_action( 'woocommerce_rest_insert_shop_order_object', array( $this, 'on_insert_rest_api' ), 20, 3 );
-			add_filter( 'wcs_renewal_order_created', array( $this, 'sync_renewal_order' ), 10, 2 );
+			add_filter( 'wcs_renewal_order_created', array( $this, 'cmbird_zi_sync_renewal_order' ), 10, 2 );
 			add_action( 'wp_ajax_zoho_admin_order_sync', array( $this, 'zi_order_sync' ) );
 			add_action( 'woocommerce_update_order', array( $this, 'salesorder_void' ) );
 			add_action( 'woocommerce_thankyou', array( $this, 'zi_sync_frontend_order' ) );
@@ -91,7 +91,7 @@ class Zi_Order_Sync {
 	/**
 	 * Sync Renewal Order to Zoho once it's created.
 	 */
-	public function sync_renewal_order( $renewal_order, $subscription ) {
+	public function cmbird_zi_sync_renewal_order( $renewal_order, $subscription ) {
 		if ( empty( get_option( 'zoho_inventory_access_token' ) ) ) {
 			return $renewal_order;
 		}
@@ -130,7 +130,7 @@ class Zi_Order_Sync {
 			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+			$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 
 			// fwrite($fd,PHP_EOL.'customer_json: '.print_r($json, true));
 
@@ -158,7 +158,7 @@ class Zi_Order_Sync {
 			$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+			$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 			$code = $json->code;
 			$message = $json->message;
@@ -171,7 +171,7 @@ class Zi_Order_Sync {
 						$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&search_text=' . $company_name;
 
 						$execute_curl_call_handle = new ExecutecallClass();
-						$json = $execute_curl_call_handle->ExecuteCurlCallGet( $url );
+						$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 						$code = $json->code;
 						if ( $code == 0 || $code == '0' ) {
@@ -212,7 +212,7 @@ class Zi_Order_Sync {
 			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new ExecutecallClass();
-			$contactpersons_response = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+			$contactpersons_response = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 
 			// fwrite( $fd, PHP_EOL . 'Contactpersons: ' . print_r($contactpersons_response, true) );
 
@@ -236,7 +236,7 @@ class Zi_Order_Sync {
 					}
 				} else {
 					$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
-					$contact_res = $execute_curl_call_handle->ExecuteCurlCallGet( $get_url );
+					$contact_res = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 					if ( ( $contact_res->code == 0 || $contact_res->code == '0' ) && ! empty( $contact_res->contact ) ) {
 						foreach ( $contact_res as $contact_ ) {
 							if ( trim( $contact_->email ) == trim( $user_email ) ) {
@@ -589,7 +589,7 @@ class Zi_Order_Sync {
 				$zoho_inventory_oid;
 			$data = '';
 			$execute_curl_call_handle = new ExecutecallClass();
-			$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+			$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 			$errmsg = $json->message;
 			$code = $json->code;
@@ -632,7 +632,7 @@ class Zi_Order_Sync {
 		$url = $zoho_inventory_url . 'inventory/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallPost( $url, $data );
+		$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 		// fwrite( $fd, PHP_EOL . 'Data log : ' . print_r( $json, true ) );
 		$response = array();
@@ -681,7 +681,7 @@ class Zi_Order_Sync {
 		// fwrite($fd, PHP_EOL. print_r($data, true)); //logging response
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->ExecuteCurlCallPut( $url, $data );
+		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 
 		// $code = $json->code;
 		$errmsg = $json->message;
@@ -727,7 +727,7 @@ class Zi_Order_Sync {
 						'organization_id' => $zoho_inventory_oid,
 					);
 
-					$res_package = $execute_curl_call_handle->ExecuteCurlCallPut( $url_package, $data3 );
+					$res_package = $execute_curl_call_handle->execute_curl_call_put( $url_package, $data3 );
 				}
 			}
 		}

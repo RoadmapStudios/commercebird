@@ -17,29 +17,29 @@ class ExecutecallClass {
 	public function __construct() {
 		$this->config = array(
 			'ExecutecallZI' => array(
-				'OID'         => get_option( 'zoho_inventory_oid' ),
-				'ATOKEN'      => get_option( 'zoho_inventory_access_token' ),
-				'RTOKEN'      => get_option( 'zoho_inventory_refresh_token' ),
+				'OID' => get_option( 'zoho_inventory_oid' ),
+				'ATOKEN' => get_option( 'zoho_inventory_access_token' ),
+				'RTOKEN' => get_option( 'zoho_inventory_refresh_token' ),
 				'EXPIRESTIME' => get_option( 'zoho_inventory_timestamp' ),
 			),
 		);
 	}
 
 	// Get Call Zoho
-	public function ExecuteCurlCallGet( $url ) {
+	public function execute_curl_call_get( $url ) {
 		// Sleep for .5 sec for each api calls
 		usleep( 500000 );
 		$handlefunction = new Classfunctions();
 
-		$zoho_inventory_access_token  = $this->config['ExecutecallZI']['ATOKEN'];
+		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
 			if ( empty( $respo_at_js ) || ! array_key_exists( 'access_token', $respo_at_js ) ) {
 				return new WP_Error( 403, 'Access denied!' );
 			}
@@ -49,7 +49,7 @@ class ExecutecallClass {
 
 		}
 
-		$args     = array(
+		$args = array(
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
 			),
@@ -72,18 +72,18 @@ class ExecutecallClass {
 
 	// Post Call Zoho
 
-	public function ExecuteCurlCallPost( $url, $data ) {
+	public function execute_curl_call_post( $url, $data ) {
 		$handlefunction = new Classfunctions();
 
-		$zoho_inventory_access_token  = $this->config['ExecutecallZI']['ATOKEN'];
+		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
 
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
@@ -91,8 +91,8 @@ class ExecutecallClass {
 
 		}
 
-		$args     = array(
-			'body'    => $data,
+		$args = array(
+			'body' => $data,
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
 			),
@@ -113,30 +113,30 @@ class ExecutecallClass {
 
 	// Put Call Zoho
 
-	public function ExecuteCurlCallPut( $url, $data ) {
+	public function execute_curl_call_put( $url, $data ) {
 
 		$handlefunction = new Classfunctions();
 
-		$zoho_inventory_access_token  = $this->config['ExecutecallZI']['ATOKEN'];
+		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js                 = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
 			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 		}
 
-		$args     = array(
-			'body'    => $data,
+		$args = array(
+			'body' => $data,
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
 			),
-			'method'  => 'PUT',
+			'method' => 'PUT',
 		);
 		$response = wp_remote_request( $url, $args );
 		// Check if the request was successful
@@ -158,27 +158,27 @@ class ExecutecallClass {
 	 * @param mixed $url - URL of the image.
 	 * @return string
 	 */
-	public function ExecuteCurlCallImageGet( $url ) {
-		// $fd = fopen( __DIR__ . '/ExecuteCurlCallImageGet.txt', 'w' );
+	public function execute_curl_call_image_get( $url ) {
+		// $fd = fopen( __DIR__ . '/execute_curl_call_image_get.txt', 'w' );
 		global $wp_filesystem;
 
 		$handlefunction = new Classfunctions();
-		$zoho_inventory_access_token  = $this->config['ExecutecallZI']['ATOKEN'];
+		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp     = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->GetServiceZIRefreshToken( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
 
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
 			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 
 		}
-		$args     = array(
+		$args = array(
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
 			),
@@ -193,12 +193,12 @@ class ExecutecallClass {
 			$body = wp_remote_retrieve_body( $response );
 
 			// Set up the upload directory
-			$upload               = wp_upload_dir();
+			$upload = wp_upload_dir();
 			$absolute_upload_path = $upload['basedir'] . '/zoho_image/';
-			$url_upload_path      = $upload['baseurl'] . '/zoho_image/';
+			$url_upload_path = $upload['baseurl'] . '/zoho_image/';
 
 			// Generate a unique image name
-			$img        = 'image_' . wp_rand();
+			$img = 'image_' . wp_rand();
 			$upload_dir = $absolute_upload_path . '/' . $img;
 
 			// remove the file if it exists
@@ -213,7 +213,7 @@ class ExecutecallClass {
 			// Save the image file
 			try {
 				$wp_filesystem->put_contents( $upload_dir, $body );
-			} catch ( Exception $e ) {
+			} catch (Exception $e) {
 				wp_delete_file( $upload_dir );
 				// return an instance of WP_Error class with the error message
 				return new WP_Error( 'image_upload_error', $e->getMessage() );

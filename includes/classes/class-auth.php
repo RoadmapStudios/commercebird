@@ -11,15 +11,15 @@ class Classfunctions {
 		$config = array(
 
 			'ServiceZI' => array(
-				'OID'          => get_option( 'zoho_inventory_oid' ),
+				'OID' => get_option( 'zoho_inventory_oid' ),
 				'CLIENTSECRET' => get_option( 'zoho_inventory_cs' ),
-				'CLIENTID'     => get_option( 'zoho_inventory_cid' ),
-				'REDIRECTURL'  => get_option( 'authorization_redirect_uri' ),
-				'APIURL'       => get_option( 'zoho_inventory_url' ),
-				'DOMAINNAME'   => get_option( 'zoho_inventory_domain' ),
-				'SCOPE'        => 'ZohoInventory.FullAccess.all',
+				'CLIENTID' => get_option( 'zoho_inventory_cid' ),
+				'REDIRECTURL' => get_option( 'authorization_redirect_uri' ),
+				'APIURL' => get_option( 'zoho_inventory_url' ),
+				'DOMAINNAME' => get_option( 'zoho_inventory_domain' ),
+				'SCOPE' => 'ZohoInventory.FullAccess.all',
 				//'STATE' => wp_create_nonce('redirect_url'),
-				'AUTHURL'      => 'https://accounts.zoho.' . get_option( 'zoho_inventory_domain' ) . '/oauth/v2/token',
+				'AUTHURL' => 'https://accounts.zoho.' . get_option( 'zoho_inventory_domain' ) . '/oauth/v2/token',
 
 			),
 
@@ -28,24 +28,24 @@ class Classfunctions {
 		$this->config = $config;
 	}
 
-	public function GetServiceZIAccessToken( $code ) {
+	public function get_zi_access_token( $code ) {
 
 		$headers = array( 'Content-Type: application/x-www-form-urlencoded' );
-		$params  = array(
-			'code'          => $code,
-			'client_id'     => $this->config['ServiceZI']['CLIENTID'],
+		$params = array(
+			'code' => $code,
+			'client_id' => $this->config['ServiceZI']['CLIENTID'],
 			'client_secret' => $this->config['ServiceZI']['CLIENTSECRET'],
-			'redirect_uri'  => $this->config['ServiceZI']['REDIRECTURL'],
-			'scope'         => $this->config['ServiceZI']['SCOPE'],
-			'grant_type'    => 'authorization_code',
+			'redirect_uri' => $this->config['ServiceZI']['REDIRECTURL'],
+			'scope' => $this->config['ServiceZI']['SCOPE'],
+			'grant_type' => 'authorization_code',
 		);
 		// Set up the request arguments
 		$args = array(
 			'headers' => $headers,
-			'body'    => $params,
-			'method'  => 'POST',
+			'body' => $params,
+			'method' => 'POST',
 		);
-		$url  = $this->config['ServiceZI']['AUTHURL'];
+		$url = $this->config['ServiceZI']['AUTHURL'];
 		// Make the request using wp_remote_post()
 		$response = wp_remote_post( $url, $args );
 
@@ -65,21 +65,21 @@ class Classfunctions {
 
 
 	//get refresh token in ServiceZI
-	public function GetServiceZIRefreshToken( $refresh_token ) {
+	public function get_zi_refresh_token( $refresh_token ) {
 		$headers = array( 'Content-Type: application/x-www-form-urlencoded' );
-		$params  = array(
+		$params = array(
 			'refresh_token' => $refresh_token,
-			'grant_type'    => 'refresh_token',
-			'client_id'     => $this->config['ServiceZI']['CLIENTID'],
+			'grant_type' => 'refresh_token',
+			'client_id' => $this->config['ServiceZI']['CLIENTID'],
 			'client_secret' => $this->config['ServiceZI']['CLIENTSECRET'],
 		);
 		// Set up the request arguments
 		$args = array(
 			'headers' => $headers,
-			'body'    => $params,
-			'method'  => 'POST',
+			'body' => $params,
+			'method' => 'POST',
 		);
-		$url  = $this->config['ServiceZI']['AUTHURL'];
+		$url = $this->config['ServiceZI']['AUTHURL'];
 		// Make the request using wp_remote_post()
 		$response = wp_remote_post( $url, $args );
 
