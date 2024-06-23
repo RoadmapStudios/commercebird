@@ -334,7 +334,7 @@ class ProductWebhook {
 						$opt_category = unserialize( $opt_category );
 						if ( in_array( $category_id, $opt_category, true ) ) {
 							$product_class = new ProductClass();
-							$pdt_id = $product_class->zi_product_to_woocommerce( $item, $item_stock );
+							$pdt_id = $product_class->cmbird_zi_product_to_woocommerce( $item, $item_stock );
 						}
 					}
 				}

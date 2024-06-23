@@ -101,16 +101,16 @@ add_action(
 $import_products = new import_product_class();
 $import_pricelist = new ImportPricelistClass();
 $product_class = new ProductClass();
-$order_class = new Sync_Order_Class();
+$order_class = new Zi_Order_Sync();
 $contact_class = new ContactClass();
 $import_pricelist->wc_b2b_groups();
 add_action( 'import_group_items_cron', array( $import_products, 'sync_groupitem_recursively' ), 10, 2 );
 add_action( 'import_simple_items_cron', array( $import_products, 'sync_item_recursively' ), 10, 2 );
 add_action( 'import_variable_product_cron', array( $import_products, 'import_variable_product_variations' ), 10, 2 );
-add_action( 'sync_zi_product_cron', array( $product_class, 'zi_products_prepare_sync' ), 10, 2 );
+add_action( 'sync_zi_product_cron', array( $product_class, 'cmbird_zi_products_prepare_sync' ), 10, 2 );
 add_action( 'sync_zi_pricelist', array( $import_pricelist, 'zi_get_pricelist' ), 10, 2 );
 add_action( 'sync_zi_order', array( $order_class, 'zi_orders_prepare_sync' ), 10, 2 );
-add_action( 'sync_zi_import_contacts', array( $contact_class, 'get_zoho_contacts' ), 10, 2 );
+add_action( 'sync_zi_import_contacts', array( $contact_class, 'cmbird_get_zoho_contacts' ), 10, 2 );
 // Exact Online Hooks
 add_action( 'sync_eo', array( ExactOnlineSync::class, 'sync' ), 10, 3 );
 

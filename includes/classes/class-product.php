@@ -17,11 +17,11 @@ class ProductClass {
 		);
 	}
 
-	public function zi_products_prepare_sync( $product_ids ) {
+	public function cmbird_zi_products_prepare_sync( $product_ids ) {
 
 		if ( is_array( $product_ids ) ) {
 			foreach ( $product_ids as $product_id ) {
-				$this->zi_product_sync( $product_id );
+				$this->cmbird_zi_product_sync( $product_id );
 			}
 		}
 	}
@@ -32,7 +32,7 @@ class ProductClass {
 	 * @param [type] $post_id
 	 * @return void
 	 */
-	public function zi_product_sync( $post_id ) {
+	public function cmbird_zi_product_sync( $post_id ) {
 
 		// $fd = fopen(__DIR__.'/product_class.txt','a+');
 
@@ -51,7 +51,7 @@ class ProductClass {
 			$this->zi_bundle_product_to_zoho( $post_id );
 		} elseif ( $product->is_type( 'variable' ) ) {
 			// fwrite($fd,PHP_EOL.'Inside variable: ');
-			$this->zi_variation_product_to_zoho( $post_id );
+			$this->cmbird_zi_variation_product_to_zoho( $post_id );
 		} else {
 			// fwrite($fd,PHP_EOL.'Inside Regular: ');
 			// Simple product.
@@ -118,7 +118,7 @@ class ProductClass {
 			$zidata .= '"package_details" : ' . wp_json_encode( $dimensions ) . ',';
 
 			// Send category only if category ID available.
-			$zi_category_id = $this->get_prod_updated_category( $post_id );
+			$zi_category_id = $this->cmbird_zi_get_prod_updated_category( $post_id );
 			if ( $zi_category_id ) {
 				$zidata .= '"category_id" : "' . $zi_category_id . '"';
 			}
@@ -126,7 +126,7 @@ class ProductClass {
 			// $zidata .= '"image_type" : "' . $ext . '"';
 			if ( ! empty( $zoho_item_id ) && ctype_digit( $zoho_item_id ) ) {
 				// fwrite($fd,PHP_EOL.'Inside Update: ');
-				$this->product_zoho_update_inventory_post( $post_id, $zoho_item_id, $zidata );
+				$this->cmbird_zi_product_post( $post_id, $zoho_item_id, $zidata );
 			} else {
 				// fwrite($fd,PHP_EOL.'Inside Create ');
 				$zoho_inventory_oid = $this->config['ProductZI']['OID'];
@@ -231,7 +231,7 @@ class ProductClass {
 	 * @param mixed  $pdt3 - Zoho item object for post request.
 	 * @return string
 	 */
-	protected function product_zoho_update_inventory_post( $proid, $item_id, $pdt3, $bundle = '' ) {
+	protected function cmbird_zi_product_post( $proid, $item_id, $pdt3, $bundle = '' ) {
 		// $fd = fopen(__DIR__.'/product_class.txt','a+');
 		// fwrite($fd,PHP_EOL.'Inside update : ');
 		$errmsg = '';
@@ -258,7 +258,7 @@ class ProductClass {
 	/**
 	 * Create Add And Update Bundle producttype
 	 */
-	protected function zi_get_bundle_item_meta_data( $bundle_item_id, $bundle_id, $meta_key = '' ) {
+	protected function cmbird_zi_get_bundle_item_meta_data( $bundle_item_id, $bundle_id, $meta_key = '' ) {
 		global $wpdb;
 		$table_meta = $wpdb->prefix . 'woocommerce_bundled_itemmeta';
 		$table_item = $wpdb->prefix . 'woocommerce_bundled_items';
@@ -274,8 +274,8 @@ class ProductClass {
 		}
 	}
 
-	protected function zi_bundle_product_data_zoho( $bundle_id ) {
-		// $fd = fopen(__DIR__ . '/zi_bundle_product_data_zoho.txt', 'w+');
+	protected function cmbird_zi_bundle_product_data_zoho( $bundle_id ) {
+		// $fd = fopen(__DIR__ . '/cmbird_zi_bundle_product_data_zoho.txt', 'w+');
 
 		$bundled_product = new WC_Product_Bundle( $bundle_id );
 		$bundle_childs = $bundled_product->get_bundled_items();
@@ -285,12 +285,12 @@ class ProductClass {
 		foreach ( $bundle_childs as $child ) {
 			$parent_product = $child->product;
 			$child_id = $child->product_id;
-			$meta_value = $this->zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'quantity_max' );
+			$meta_value = $this->cmbird_zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'quantity_max' );
 
 			$zi_child_ids = array(); // Array to store zi_child_ids
 
 			if ( $parent_product->is_type( 'variable' ) ) {
-				$meta_data = $this->zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'allowed_variations' );
+				$meta_data = $this->cmbird_zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'allowed_variations' );
 
 				foreach ( $meta_data as $meta ) {
 					if ( $meta->meta_key === 'allowed_variations' ) {
@@ -334,7 +334,7 @@ class ProductClass {
 		$item = wc_get_product( $post_id );
 		if ( $item->is_type( 'bundle' ) ) {
 
-			$child_items = $this->zi_bundle_product_data_zoho( $post_id );
+			$child_items = $this->cmbird_zi_bundle_product_data_zoho( $post_id );
 		}
 
 		$price_r = $item->get_regular_price();
@@ -371,7 +371,7 @@ class ProductClass {
 		$pdt1 = '"name" : "' . $name . '","mapped_items":' . wp_json_encode( $child_items ) . ', "product_type" : "' . $product_type . '","tax_id" : "' . $tax_id . '","rate" : "' . $rate . '","sku" : "' . $sku . '","item_type" : "' . $item_type . '"';
 		// If zoho category id is not mapped to product, then assign mapped product category with zoho.
 
-		// $zi_category_id = $this->get_prod_updated_category($post_id);
+		// $zi_category_id = $this->cmbird_zi_get_prod_updated_category($post_id);
 		// if ($zi_category_id) {
 		//     $pdt1 .= ',"category_id" : "' . $zi_category_id . '"';
 		// }
@@ -471,8 +471,8 @@ class ProductClass {
 
 	//variation product post zoho start
 
-	protected function zi_variation_product_to_zoho( $post_id ) {
-		// $fd = fopen(__DIR__ . '/zi_variation_product_to_zoho.txt', 'w+');
+	protected function cmbird_zi_variation_product_to_zoho( $post_id ) {
+		// $fd = fopen(__DIR__ . '/cmbird_zi_variation_product_to_zoho.txt', 'w+');
 
 		$product = wc_get_product( $post_id );
 
@@ -487,7 +487,7 @@ class ProductClass {
 		}
 		$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
 		$tax_id = explode( '##', $tax_option )[0];
-		$zi_category_id = $this->get_prod_updated_category( $post_id );
+		$zi_category_id = $this->cmbird_zi_get_prod_updated_category( $post_id );
 
 		$zidata = '"group_name" : "' . $name . '", "tax_id" : "' . $tax_id . '","category_id" : "' . $zi_category_id . '",';
 
@@ -530,12 +530,12 @@ class ProductClass {
 			foreach ( $available_variations as $child_data ) {
 
 				$product_variable = wc_get_product( $child_data['variation_id'] );
-				$items[] = $this->variants_products( $product_variable, $child_data['variation_id'], $attribute_name1, $attribute_name2, $attribute_name3 );
+				$items[] = $this->cmbird_zi_variants_products( $product_variable, $child_data['variation_id'], $attribute_name1, $attribute_name2, $attribute_name3 );
 			}
 		}
 
 		// get category id
-		// $zi_category_id = $this->get_prod_updated_category($post_id);
+		// $zi_category_id = $this->cmbird_zi_get_prod_updated_category($post_id);
 		// if ($zi_category_id) {
 		//     $zidata .= '"category_id" : "' . $zi_category_id . '",';
 		// }
@@ -616,7 +616,7 @@ class ProductClass {
 	 * @param  $zi_category_id - Zoho category id of parent of a variation.
 	 * @return void
 	 */
-	protected function variants_products( $product_variable, $post_id, $attr1 = '', $attr2 = '', $attr3 = '' ) {
+	protected function cmbird_zi_variants_products( $product_variable, $post_id, $attr1 = '', $attr2 = '', $attr3 = '' ) {
 		// $fd = fopen(__DIR__.'/variations_products.txt','a+');
 		// fwrite($fd,PHP_EOL.'-------------------------------');
 		// fwrite($fd,PHP_EOL.'$attr1 : '.$attr1.' | $attr2 : '.$attr2.' | $attr3 : '.$attr3.' $post_id : '.$post_id);
@@ -713,7 +713,7 @@ class ProductClass {
 		// fwrite($fd,PHP_EOL.'Get data for $post_id '.$post_id);
 		if ( ctype_digit( $zoho_item_id ) ) {
 			// fwrite($fd, PHP_EOL . 'Update Item');
-			$update_error_msg = $this->product_zoho_update_inventory_post( $post_id, $zoho_item_id, $zidata );
+			$update_error_msg = $this->cmbird_zi_product_post( $post_id, $zoho_item_id, $zidata );
 			$zidataa = '';
 			// fwrite($fd, PHP_EOL . '{' . $zidata . '}');
 			return $zidataa .= '{' . $zidata . '}';
@@ -759,7 +759,7 @@ class ProductClass {
 	/**
 	 * Check if category already exists and return updated one
 	 */
-	protected function get_prod_updated_category( $product_id ) {
+	protected function cmbird_zi_get_prod_updated_category( $product_id ) {
 		// Check if product category already synced.
 		$terms = get_the_terms( $product_id, 'product_cat' );
 		if ( $terms ) {
@@ -790,8 +790,8 @@ class ProductClass {
 	 * @param $user_id - Current Active user Id
 	 * @param string $type - product is composite item or not (composite)
 	 */
-	public function zi_product_to_woocommerce( $item, $item_stock = '', $type = '' ) {
-		// $fd = fopen( __DIR__ . '/zi_product_to_woocommerce.txt', 'a+' );
+	public function cmbird_zi_product_to_woocommerce( $item, $item_stock = '', $type = '' ) {
+		// $fd = fopen( __DIR__ . '/cmbird_zi_product_to_woocommerce.txt', 'a+' );
 		try {
 			if ( 'active' !== $item['status'] ) {
 				return;
@@ -833,7 +833,7 @@ class ProductClass {
 			}
 
 			return $product_id;
-		} catch ( Exception $e ) {
+		} catch (Exception $e) {
 			// Handle the exception, log it, or perform any necessary actions.
 			error_log( 'Error creating WooCommerce product: ' . $e->getMessage() );
 			return false;

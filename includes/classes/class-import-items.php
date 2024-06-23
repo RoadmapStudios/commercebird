@@ -663,7 +663,7 @@ class import_product_class {
 					$variation->add_meta_data( 'zi_item_id', $item->item_id );
 					// $variation->set_attributes($variation_attributes);
 					$variation_id = $variation->save();
-				} catch ( Exception $e ) {
+				} catch (Exception $e) {
 					// fwrite( $fd, PHP_EOL . 'Error : ' . $e->getMessage() );
 					continue;
 				}
@@ -1462,7 +1462,7 @@ class import_product_class {
 					if ( $allow_to_import ) {
 						$product_class = new ProductClass();
 						$item_array = json_decode( wp_json_encode( $comp_item ), true );
-						$com_prod_id = $product_class->zi_product_to_woocommerce( $item_array, $stock, 'composite' );
+						$com_prod_id = $product_class->cmbird_zi_product_to_woocommerce( $item_array, $stock, 'composite' );
 						update_post_meta( $com_prod_id, 'zi_item_id', $zoho_comp_item_id );
 					}
 				}

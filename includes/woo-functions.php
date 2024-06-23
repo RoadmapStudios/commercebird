@@ -20,12 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function cmbird_clear_product_cache( $object, $request, $is_creating ) {
 	if ( ! $is_creating ) {
-		$product_id                  = $object->get_id();
+		$product_id = $object->get_id();
 		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-		$zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
-		if ( ! empty( $zoho_inventory_access_token ) && ! $zi_product_sync ) {
+		$cmbird_zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
+		if ( ! empty( $zoho_inventory_access_token ) && ! $cmbird_zi_product_sync ) {
 			$product_handler = new ProductClass();
-			$product_handler->zi_product_sync( $product_id );
+			$product_handler->cmbird_zi_product_sync( $product_id );
 		}
 		wc_delete_product_transients( $product_id );
 	}
@@ -42,7 +42,7 @@ function cmbird_update_contact_via_accountpage( $user_id ) {
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( ! empty( $zoho_inventory_access_token ) ) {
 		$contact_class_handle = new ContactClass();
-		$contact_class_handle->contact_update_function( $user_id );
+		$contact_class_handle->cmbird_contact_update_function( $user_id );
 	} else {
 		return;
 	}
@@ -55,9 +55,9 @@ add_action( 'profile_update', 'cmbird_update_contact_via_accountpage' );
  * @param $product_id
  * @return void
  */
-add_action( 'woocommerce_update_product', 'zi_product_sync_class', 10, 1 );
-add_action( 'wp_ajax_zoho_admin_product_sync', 'zi_product_sync_class' );
-function zi_product_sync_class( $product_id ) {
+add_action( 'woocommerce_update_product', 'cmbird_zi_product_sync_class', 10, 1 );
+add_action( 'wp_ajax_zoho_admin_product_sync', 'cmbird_zi_product_sync_class' );
+function cmbird_zi_product_sync_class( $product_id ) {
 	if ( ! is_admin() ) {
 		return;
 	}
@@ -72,11 +72,11 @@ function zi_product_sync_class( $product_id ) {
 			}
 		}
 	}
-	$zi_product_sync             = get_option( 'zoho_disable_product_sync_status' );
+	$cmbird_zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-	if ( ! $zi_product_sync && ! empty( $zoho_inventory_access_token ) ) {
+	if ( ! $cmbird_zi_product_sync && ! empty( $zoho_inventory_access_token ) ) {
 		$product_handler = new ProductClass();
-		$product_handler->zi_product_sync( $product_id );
+		$product_handler->cmbird_zi_product_sync( $product_id );
 	}
 	// if its variable product but without variations, then sync it.
 	$product = wc_get_product( $product_id );
@@ -114,7 +114,7 @@ function zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_ids ) {
 
 		foreach ( $object_ids as $post_id ) {
 			$product_handler = new ProductClass();
-			$product_handler->zi_product_sync( $post_id );
+			$product_handler->cmbird_zi_product_sync( $post_id );
 		}
 
 		// do not forget to add query args to URL because we will show notices later
@@ -194,7 +194,7 @@ function zi_customer_unmap_hook( $order_id ) {
 		$order_id = $_POST['order_id'];
 	}
 
-	$order       = wc_get_order( $order_id );
+	$order = wc_get_order( $order_id );
 	$customer_id = $order->get_user_id();
 
 	if ( $customer_id ) {
@@ -274,10 +274,10 @@ function cmbird_item_id_field() {
 	);
 	woocommerce_wp_text_input(
 		array(
-			'id'          => 'eo_item_id',
-			'label'       => __( 'Exact Item ID' ),
-			'class'       => 'readonly',
-			'desc_tip'    => true,
+			'id' => 'eo_item_id',
+			'label' => __( 'Exact Item ID' ),
+			'class' => 'readonly',
+			'desc_tip' => true,
 			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
 		)
 	);
@@ -305,11 +305,11 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
 	);
 	woocommerce_wp_text_input(
 		array(
-			'id'          => 'eo_item_id[' . $loop . ']',
-			'class'       => 'readonly',
-			'label'       => __( 'Exact Item ID' ),
-			'value'       => get_post_meta( $variation->ID, 'eo_item_id', true ),
-			'desc_tip'    => true,
+			'id' => 'eo_item_id[' . $loop . ']',
+			'class' => 'readonly',
+			'label' => __( 'Exact Item ID' ),
+			'value' => get_post_meta( $variation->ID, 'eo_item_id', true ),
+			'desc_tip' => true,
 			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
 		)
 	);
@@ -361,9 +361,9 @@ function zi_add_zoho_orders_content( $column, $order_id ) {
 	switch ( $column ) {
 		case 'zoho_sync':
 			// Get custom order meta data.
-			$order       = wc_get_order( $order_id );
+			$order = wc_get_order( $order_id );
 			$zi_order_id = $order->get_meta( 'zi_salesorder_id', true, 'edit' );
-			$url         = $zi_visit_url . 'app#/salesorders/' . $zi_order_id;
+			$url = $zi_visit_url . 'app#/salesorders/' . $zi_order_id;
 			if ( $zi_order_id ) {
 				echo '<span class="dashicons dashicons-yes-alt" style="color:green;"></span><a href="' . esc_url( $url ) . '" target="_blank"> <span class="dashicons dashicons-external" style="color:green;"></span> </a>';
 			} else {
@@ -385,7 +385,7 @@ function zi_add_zoho_column_content( $column ) {
 	$post_type = get_post_type( $post );
 
 	if ( 'zoho_sync' === $column && 'product' === $post_type ) {
-		$product_id    = $post->ID;
+		$product_id = $post->ID;
 		$zi_product_id = get_post_meta( $product_id, 'zi_item_id' );
 		if ( $zi_product_id ) {
 			echo '<span class="dashicons dashicons-yes-alt" style="color:green;"></span>';
@@ -435,14 +435,14 @@ function zi_sync_column_filterable() {
 		// Count synced products
 		$synced_count = new WP_Query(
 			array(
-				'post_type'  => 'product',
+				'post_type' => 'product',
 				'meta_query' => array(
 					array(
-						'key'     => 'zi_item_id',
+						'key' => 'zi_item_id',
 						'compare' => 'EXISTS',
 					),
 				),
-				'fields'     => 'ids',
+				'fields' => 'ids',
 			)
 		);
 		$synced_count = $synced_count->found_posts;
@@ -455,14 +455,14 @@ function zi_sync_column_filterable() {
 		// Count not synced products
 		$not_synced_count = new WP_Query(
 			array(
-				'post_type'  => 'product',
+				'post_type' => 'product',
 				'meta_query' => array(
 					array(
-						'key'     => 'zi_item_id',
+						'key' => 'zi_item_id',
 						'compare' => 'NOT EXISTS',
 					),
 				),
-				'fields'     => 'ids',
+				'fields' => 'ids',
 			)
 		);
 		$not_synced_count = $not_synced_count->found_posts;
@@ -492,19 +492,19 @@ function zi_sync_column_filter_query( $query ) {
 
 		if ( $value === 'synced' ) {
 			$meta_query[] = array(
-				'key'     => 'zi_item_id',
+				'key' => 'zi_item_id',
 				'compare' => 'EXISTS',
 			);
 		} elseif ( $value === 'not_synced' ) {
 			$meta_query[] = array(
 				'relation' => 'OR',
 				array(
-					'key'     => 'zi_item_id',
+					'key' => 'zi_item_id',
 					'compare' => 'NOT EXISTS',
 				),
 				array(
-					'key'     => 'zi_item_id',
-					'value'   => '',
+					'key' => 'zi_item_id',
+					'value' => '',
 					'compare' => '=',
 				),
 			);
@@ -526,7 +526,7 @@ add_filter( 'action_scheduler_retention_period', 'commercebird_action_scheduler_
 
 add_filter(
 	'action_scheduler_default_cleaner_statuses',
-	function ( $statuses ) {
+	function ($statuses) {
 		$statuses[] = ActionScheduler_Store::STATUS_FAILED;
 		return $statuses;
 	}

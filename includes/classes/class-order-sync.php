@@ -3,7 +3,7 @@
 /**
  * Class for handling Zoho Inventory order sync related functions.
  */
-class Sync_Order_Class {
+class Zi_Order_Sync {
 
 
 	/**
@@ -177,7 +177,7 @@ class Sync_Order_Class {
 						if ( $code == 0 || $code == '0' ) {
 							if ( empty( $json->contacts ) ) {
 								$contact_class_handle = new ContactClass();
-								$zi_customer_id = $contact_class_handle->contact_create_function( $userid );
+								$zi_customer_id = $contact_class_handle->cmbird_contact_create_function( $userid );
 							} else {
 								foreach ( $json->contacts[0] as $key => $value ) {
 									if ( $key == 'contact_id' ) {
@@ -186,12 +186,12 @@ class Sync_Order_Class {
 									}
 								}
 								$contact_class_handle = new ContactClass();
-								$zi_customer_id = $contact_class_handle->create_contact_person( $userid );
+								$zi_customer_id = $contact_class_handle->cmbird_create_contact_person( $userid );
 							}
 						}
 					} else {
 						$contact_class_handle = new ContactClass();
-						$zi_customer_id = $contact_class_handle->contact_create_function( $userid );
+						$zi_customer_id = $contact_class_handle->cmbird_contact_create_function( $userid );
 					}
 				} else {
 					// fwrite($fd,PHP_EOL.'Contacts : '.print_r($json->contacts,true));
@@ -227,10 +227,10 @@ class Sync_Order_Class {
 							update_user_meta( $userid, 'zi_contactperson_id_' . $key, $contactid );
 							if ( $contact_persons->is_primary_contact === true || $contact_persons->is_primary_contact === 1 ) {
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->contact_update_function( $userid, $order_id );
+								$contact_class_handle->cmbird_contact_update_function( $userid, $order_id );
 							} else {
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->update_contact_person( $userid, $order_id );
+								$contact_class_handle->cmbird_update_contact_person( $userid, $order_id );
 							}
 						}
 					}
@@ -240,13 +240,13 @@ class Sync_Order_Class {
 					if ( ( $contact_res->code == 0 || $contact_res->code == '0' ) && ! empty( $contact_res->contact ) ) {
 						foreach ( $contact_res as $contact_ ) {
 							if ( trim( $contact_->email ) == trim( $user_email ) ) {
-								// fwrite( $fd, PHP_EOL . 'Inside contact_update_function' );
+								// fwrite( $fd, PHP_EOL . 'Inside cmbird_contact_update_function' );
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->contact_update_function( $userid, $order_id );
+								$contact_class_handle->cmbird_contact_update_function( $userid, $order_id );
 							} else {
-								// fwrite( $fd, PHP_EOL . 'Inside create_contact_person' );
+								// fwrite( $fd, PHP_EOL . 'Inside cmbird_create_contact_person' );
 								$contact_class_handle = new ContactClass();
-								$contact_class_handle->create_contact_person( $userid );
+								$contact_class_handle->cmbird_create_contact_person( $userid );
 							}
 						}
 					}
@@ -266,6 +266,10 @@ class Sync_Order_Class {
 		// $fd = fopen( __DIR__ . '/backend_order.txt', 'a+' );
 
 		if ( ! $order_id ) {
+			// verify nonce
+			if ( ! wp_verify_nonce( $_POST['nonce'], 'zoho_admin_order_sync' ) ) {
+				wp_send_json_error( 'Nonce verification failed' );
+			}
 			$order_id = $_POST['arg_order_data'];
 		}
 
@@ -340,7 +344,7 @@ class Sync_Order_Class {
 					$zi_customer_id = $this->zi_sync_customer_checkout( $order_id );
 				} else {
 					$contact_class_handle = new ContactClass();
-					$contact_class_handle->contact_update_function( $userid, $order_id );
+					$contact_class_handle->cmbird_contact_update_function( $userid, $order_id );
 				}
 				// fwrite($fd,PHP_EOL.'$zi_customer_id : '.$zi_customer_id);
 				$index = 0;
@@ -357,7 +361,7 @@ class Sync_Order_Class {
 					}
 					if ( empty( $item_id ) ) {
 						$product_handler = new ProductClass();
-						$product_response = $product_handler->zi_product_sync( $proid );
+						$product_response = $product_handler->cmbird_zi_product_sync( $proid );
 						// fwrite($fd,PHP_EOL.'Product sync: '.print_r($product_response, true));
 					}
 					// Skip bundled order items
@@ -784,4 +788,4 @@ class Sync_Order_Class {
 		return $fees;
 	}
 }
-$sync_order_class = new Sync_Order_Class();
+$zi_order_sync = new Zi_Order_Sync();

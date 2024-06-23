@@ -37,7 +37,7 @@ function cmbird_zoho_admin_metabox() {
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return;
 	}
-	$screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
+	$screen = wc_get_container()->get( CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
 		? 'woocommerce_page_wc-orders'
 		: 'shop_order';
 
@@ -59,8 +59,8 @@ function cmbird_admin_metabox_callback( $post_or_order_object ) {
 	}
 
 	global $wcam_lib;
-	$order    = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : wc_get_order( $post_or_order_object->get_id() );
-	$userid   = $order->get_user_id();
+	$order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : wc_get_order( $post_or_order_object->get_id() );
+	$userid = $order->get_user_id();
 	$order_id = $order->get_id();
 	if ( $wcam_lib->get_api_key_status() ) {
 		$nonce_order = wp_create_nonce( 'zoho_admin_order_sync' );
@@ -99,7 +99,7 @@ function cmbird_zi_sync_all_orders_to_zoho_handler( $redirect, $action, $object_
 	if ( 'sync_order_to_zoho' === $action ) {
 
 		foreach ( $object_ids as $post_id ) {
-			$order_sync = new Sync_Order_Class();
+			$order_sync = new Zi_Order_Sync();
 			$order_sync->zi_order_sync( $post_id );
 		}
 
@@ -140,14 +140,14 @@ function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id,
 	}
 
 	$eo_account_id = '';
-	$customer_id   = (int) $payload['customer_id'];
+	$customer_id = (int) $payload['customer_id'];
 
 	// All guest users will have the customer_id field set to 0
 	if ( $customer_id > 0 ) {
 		$eo_account_id = (string) get_user_meta( $customer_id, 'eo_account_id', true );
 		if ( ! empty( $eo_account_id ) ) {
 			$payload['meta_data'][] = array(
-				'key'   => 'eo_account_id',
+				'key' => 'eo_account_id',
 				'value' => $eo_account_id,
 			);
 		}
@@ -155,7 +155,7 @@ function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id,
 	// Loop through line items in and add the eo_item_id to the line item
 	foreach ( $payload['line_items'] as &$item ) {
 		// Get the product ID associated with the line item
-		$product_id   = $item['product_id'];
+		$product_id = $item['product_id'];
 		$variation_id = $item['variation_id'];
 		// Get the product meta value based on the product ID and meta key
 		if ( $variation_id ) {
@@ -166,7 +166,7 @@ function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id,
 		// Add the product meta to the line item
 		if ( ! empty( $eo_item_id ) ) {
 			$item['meta'][] = array(
-				'key'   => 'eo_item_id',
+				'key' => 'eo_item_id',
 				'value' => $eo_item_id,
 			);
 		}

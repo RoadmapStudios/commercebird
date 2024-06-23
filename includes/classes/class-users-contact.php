@@ -25,11 +25,11 @@ class ContactClass {
 		$this->config = $config;
 	}
 
-	public function contact_create_function( $userid ) {
+	public function cmbird_contact_create_function( $userid ) {
 		if ( empty( $userid ) ) {
 			return '';
 		}
-		// $fd         = fopen( __DIR__ . '/contact_create_function.txt', 'w+' );
+		// $fd         = fopen( __DIR__ . '/cmbird_contact_create_function.txt', 'w+' );
 		$user_order = wc_get_customer_last_order( $userid );
 
 		if ( $user_order ) {
@@ -196,7 +196,7 @@ class ContactClass {
 		return $zi_customer_id;
 	}
 
-	public function contact_update_function( $userid, $order_id = '' ) {
+	public function cmbird_contact_update_function( $userid, $order_id = '' ) {
 		//start logging
 		// $fd=fopen(__DIR__.'/contact-update-sync.txt','w+');
 
@@ -346,8 +346,8 @@ class ContactClass {
 		return $errmsg;
 	}
 
-	public function create_contact_person( $userid ) {
-		// $fd=fopen(__DIR__.'/create_contact_person.txt','w+');
+	public function cmbird_create_contact_person( $userid ) {
+		// $fd=fopen(__DIR__.'/cmbird_create_contact_person.txt','w+');
 
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
 		$fname = get_user_meta( $userid, 'first_name', true );
@@ -381,7 +381,7 @@ class ContactClass {
 		}
 	}
 
-	public function update_contact_person( $userid, $contact_person_id ) {
+	public function cmbird_update_contact_person( $userid, $contact_person_id ) {
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
 		$fname = get_user_meta( $userid, 'first_name', true );
 		$lname = get_user_meta( $userid, 'last_name', true );
@@ -407,8 +407,8 @@ class ContactClass {
 		return $errmsg;
 	}
 
-	public function get_zoho_contacts() {
-		// $fd = fopen( __DIR__ . '/get_zoho_contacts.txt', 'a+' );
+	public function cmbird_get_zoho_contacts() {
+		// $fd = fopen( __DIR__ . '/cmbird_get_zoho_contacts.txt', 'a+' );
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
@@ -502,7 +502,7 @@ class ContactClass {
 	 * @param $user_id int User ID of the customer.
 	 * @param $credit_limit int Credit limit of the customer.
 	 */
-	protected function update_customer_store_credit_balance( $user_id, $credit_limit ) {
+	protected function cmbird_update_customer_store_credit_balance( $user_id, $credit_limit ) {
 		if ( ! empty( $user_id ) ) {
 			$endpoint = '/wc-store-credits/v1/entries‌';
 			$store_credit_balance = get_user_meta( $user_id, 'acfw_store_credit_balance', true );
