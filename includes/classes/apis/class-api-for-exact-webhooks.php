@@ -44,54 +44,52 @@ class Exact extends WP_REST_Controller {
 		// code starts here
 		switch ( $data['type'] ) {
 			case 'SalesInvoice':
-				// process Invoice webhook. e.g. $data['data']['Description'] will give you the Invoice ID
-				// match the Invoice Description with the Order ID in the database and update the order status
-				// e.g. $order = wc_get_order( $order_id ); $order->update_status( 'completed' );
-				$order_id = $data['data']['Description'];
+				// process Invoice webhook. e.g. $data['Description'] will give you the Invoice ID
+				$order_id = $data['Description'];
 				$order = wc_get_order( $order_id );
 				if ( $order ) {
-					// update the status if $data['data']['paymentReference'] is not null
-					if ( ! empty( $data['data']['paymentReference'] ) ) {
+					// update the status if $data['paymentReference'] is not null
+					if ( ! empty( $data['paymentReference'] ) ) {
 						$order->update_status( 'completed' );
 						$order->add_order_note( 'Order has been paid via Exact Online' );
 					}
 				}
 				break;
 			case 'Item':
-				// process Item webhook. Find the product based on the $data['data']['Code'] which is the sku or post_id
-				// update the product stock based on the $data['data']['Stock'] value
-				// find the product_id based on the sku or post_id
-				$product_id = wc_get_product_id_by_sku( $data['data']['Code'] );
+				// process Item webhook. Find the product based on the $data['Code'] which is the sku or post_id
+				$product_id = wc_get_product_id_by_sku( $data['Code'] );
 				if ( ! $product_id ) {
-					$product_id = $data['data']['Code'];
+					$product_id = $data['Code'];
 				}
 				$product = wc_get_product( $product_id );
 				if ( $product ) {
-					$product->set_stock_quantity( $data['data']['Stock'] );
+					$product->set_stock_quantity( $data['Stock'] );
 					// update the product price if needed
-					$product->set_price( $data['data']['Price'] );
+					$product->set_price( $data['Price'] );
 					$product->save();
 				} else {
-					// if product not found, create a new product if the $data['data']['Webshop'] is set to true
-					if ( ! $data['data']['IsWebshopItem'] ) {
+					// if product not found, create a new product if the $data['Webshop'] is set to true
+					if ( ! $data['IsWebshopItem'] ) {
 						break;
 					}
 					$product = new WC_Product();
-					$product->set_name( $data['data']['Description'] );
-					$product->set_sku( $data['data']['Code'] );
-					$product->set_stock_quantity( $data['data']['Stock'] );
-					$product->set_price( $data['data']['Price'] );
-					$product->set_regular_price( $data['data']['Price'] );
-					$product->set_manage_stock( true );
-					$product->set_stock_status( 'instock' );
+					$product->set_name( $data['Description'] );
+					$product->set_sku( $data['Code'] );
+					$product->set_price( $data['Price'] );
+					$product->set_regular_price( $data['Price'] );
+					if ( $data['Stock'] > 0 ) {
+						$product->set_manage_stock( true );
+						$product->set_stock_quantity( $data['Stock'] );
+						$product->set_stock_status( 'instock' );
+					}
 					$product->set_status( 'publish' );
 					$product->save();
 				}
 				break;
-			case 'StockPositions':
+			case 'StockPosition':
 				// process StockPositions webhook
-				// get the "ItemId" from $data['data']['ItemId'] and find the product based on product meta key "eo_item_id"
-				$item_id = $data['data']['ItemId'];
+				// get the "ItemId" from $data['ItemId'] and find the product based on product meta key "eo_item_id"
+				$item_id = $data['ItemId'];
 				// find the product id based on meta key "eo_item_id" which has the value of $item_id using WP query
 				$args = array(
 					'post_type' => 'product',
@@ -108,7 +106,7 @@ class Exact extends WP_REST_Controller {
 						$query->the_post();
 						$product_id = get_the_ID();
 						$product = wc_get_product( $product_id );
-						$product->set_stock_quantity( $data['data']['FreeStock'] );
+						$product->set_stock_quantity( $data['FreeStock'] );
 						$product->save();
 					}
 				}
