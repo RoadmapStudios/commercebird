@@ -66,6 +66,7 @@ use RMS\API\CreateOrderWebhook;
 use RMS\API\CreateSFOrderWebhook;
 use RMS\API\ShippingWebhook;
 use RMS\API\Zoho;
+use RMS\API\Exact;
 
 /*
 |--------------------------------------------------------------------------
@@ -129,6 +130,7 @@ add_action(
 	'rest_api_init',
 	function () {
 		new Zoho();
+		new Exact();
 		new ProductWebhook();
 		new ShippingWebhook();
 		new CreateOrderWebhook();
