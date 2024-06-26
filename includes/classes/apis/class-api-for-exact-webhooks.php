@@ -5,6 +5,10 @@ namespace RMS\API;
 use WP_REST_Response;
 use WP_REST_Server;
 use WP_REST_Controller;
+use WP_REST_Request;
+use ReflectionClass;
+use WP_Query;
+use WC_Product;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit();
 
@@ -21,29 +25,26 @@ class Exact extends WP_REST_Controller {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => array( $this, 'process_webhook' ),
-				'permission_callback' => array( $this, 'permission_check' ),
+				'permission_callback' => function () {
+					return current_user_can( 'manage_woocommerce' );
+				},
 			)
 		);
 	}
 
-	/**
-	 * Check if a given request has access to get items.
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|bool
-	 */
-	public function permission_check( $request ) {
-		return current_user_can( 'manage_woocommerce' );
-	}
+	public function process_webhook( WP_REST_Request $request ) {
+		// Access the protected body property using reflection
+		$reflection = new ReflectionClass( $request );
+		$property = $reflection->getProperty( 'body' );
+		$property->setAccessible( true );
+		$body = $property->getValue( $request );
+		// Decode the JSON body
+		$data = json_decode( $body, true );
 
-	public function process_webhook( $request ) {
-		$data = $request->get_json_params();
-
-		// TODO: process the webhook data
 		// use php switch case to handle different webhook types. e.g. Invoice, Item and StockPositions.
 		// code starts here
 		switch ( $data['type'] ) {
-			case 'SalesInvoice':
+			case 'SalesInvoices':
 				// process Invoice webhook. e.g. $data['Description'] will give you the Invoice ID
 				$order_id = $data['Description'];
 				$order = wc_get_order( $order_id );
@@ -51,11 +52,11 @@ class Exact extends WP_REST_Controller {
 					// update the status if $data['paymentReference'] is not null
 					if ( ! empty( $data['paymentReference'] ) ) {
 						$order->update_status( 'completed' );
-						$order->add_order_note( 'Order has been paid via Exact Online' );
+						$order->add_order_note( 'Payment processed in Exact Online' );
 					}
 				}
 				break;
-			case 'Item':
+			case 'Items':
 				// process Item webhook. Find the product based on the $data['Code'] which is the sku or post_id
 				$product_id = wc_get_product_id_by_sku( $data['Code'] );
 				if ( ! $product_id ) {
@@ -65,7 +66,10 @@ class Exact extends WP_REST_Controller {
 				if ( $product ) {
 					$product->set_stock_quantity( $data['Stock'] );
 					// update the product price if needed
-					$product->set_price( $data['Price'] );
+					$product->set_price( $data['StandardSalesPrice'] );
+					$product->set_regular_price( $data['StandardSalesPrice'] );
+					// add meta data cost_price
+					$product->update_meta_data( 'cost_price', $data['CostPriceStandard'] );
 					$product->save();
 				} else {
 					// if product not found, create a new product if the $data['Webshop'] is set to true
@@ -75,18 +79,18 @@ class Exact extends WP_REST_Controller {
 					$product = new WC_Product();
 					$product->set_name( $data['Description'] );
 					$product->set_sku( $data['Code'] );
-					$product->set_price( $data['Price'] );
-					$product->set_regular_price( $data['Price'] );
+					$product->set_price( $data['StandardSalesPrice'] );
+					$product->set_regular_price( $data['StandardSalesPrice'] );
 					if ( $data['Stock'] > 0 ) {
 						$product->set_manage_stock( true );
 						$product->set_stock_quantity( $data['Stock'] );
 						$product->set_stock_status( 'instock' );
 					}
-					$product->set_status( 'publish' );
+					$product->set_status( 'draft' );
 					$product->save();
 				}
 				break;
-			case 'StockPosition':
+			case 'StockPositions':
 				// process StockPositions webhook
 				// get the "ItemId" from $data['ItemId'] and find the product based on product meta key "eo_item_id"
 				$item_id = $data['ItemId'];
@@ -116,8 +120,6 @@ class Exact extends WP_REST_Controller {
 				break;
 		}
 		// code ends here
-
 		return new WP_REST_Response( 'Webhook processed', 200 );
 	}
-
 }
