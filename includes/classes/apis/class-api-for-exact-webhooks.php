@@ -50,7 +50,7 @@ class Exact extends WP_REST_Controller {
 				$order = wc_get_order( $order_id );
 				if ( $order ) {
 					// update the status if $data['paymentReference'] is not null
-					if ( ! empty( $data['paymentReference'] ) ) {
+					if ( 'Paid' === $data['StarterSalesInvoiceStatusDescription'] ) {
 						$order->update_status( 'completed' );
 						$order->add_order_note( 'Payment processed in Exact Online' );
 					}
