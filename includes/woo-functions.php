@@ -332,6 +332,10 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
  * @return string[] $new_columns
  */
 function zi_sync_column_orders_overview( $columns ) {
+	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	if ( empty( $zoho_inventory_access_token ) ) {
+		return $columns;
+	}
 
 	$new_columns = array();
 
@@ -357,6 +361,9 @@ add_filter( 'manage_woocommerce_page_wc-orders_columns', 'zi_sync_column_orders_
  */
 function zi_add_zoho_orders_content( $column, $order_id ) {
 	$zi_url = get_option( 'zoho_inventory_url' );
+	if ( empty( $zi_url ) ) {
+		return;
+	}
 	$zi_visit_url = str_replace( 'www.zohoapis', 'inventory.zoho', $zi_url );
 	switch ( $column ) {
 		case 'zoho_sync':
