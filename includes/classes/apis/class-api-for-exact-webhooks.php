@@ -44,18 +44,6 @@ class Exact extends WP_REST_Controller {
 		// use php switch case to handle different webhook types. e.g. Invoice, Item and StockPositions.
 		// code starts here
 		switch ( $data['type'] ) {
-			case 'SalesInvoices':
-				// process Invoice webhook. e.g. $data['Description'] will give you the Invoice ID
-				$order_id = $data['Description'];
-				$order = wc_get_order( $order_id );
-				if ( $order ) {
-					// update the status if $data['paymentReference'] is not null
-					if ( 'Paid' === $data['StarterSalesInvoiceStatusDescription'] ) {
-						$order->update_status( 'completed' );
-						$order->add_order_note( 'Payment processed in Exact Online' );
-					}
-				}
-				break;
 			case 'Items':
 				// process Item webhook. Find the product based on the $data['Code'] which is the sku or post_id
 				$product_id = wc_get_product_id_by_sku( $data['Code'] );
