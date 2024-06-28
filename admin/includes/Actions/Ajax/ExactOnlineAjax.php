@@ -28,7 +28,6 @@ final class ExactOnlineAjax {
 			'importCustomers',
 		),
 		'webhooks' => array(
-			'enable_SalesInvoices',
 			'enable_StockPosition',
 			'enable_Item',
 		),
@@ -40,6 +39,7 @@ final class ExactOnlineAjax {
 		'get_exact_online_connect' => 'connect_load',
 		'save_exact_online_cost_center' => 'cost_center_save',
 		'save_exact_online_cost_unit' => 'cost_unit_save',
+		'save_exact_online_payment_status' => 'get_payment_status',
 		'import_exact_online_product' => 'product_import',
 		'map_exact_online_product' => 'product_map',
 		'map_exact_online_customer' => 'customer_map',
@@ -56,6 +56,11 @@ final class ExactOnlineAjax {
 		'cost_unit' => 'commercebird-exact-online-cost-unit',
 	);
 
+	/**
+	 * Sync orders from Exact Online.
+	 *
+	 * @return void
+	 */
 	public function sync_order(): void {
 		$this->verify( array( 'sync' ) );
 		if ( $this->data['sync'] ) {
@@ -69,6 +74,39 @@ final class ExactOnlineAjax {
 		$this->response = array(
 			'success' => true,
 			'message' => __( 'Synced', 'commercebird' ),
+		);
+		$this->serve();
+	}
+
+	/**
+	 * Get Payment status from Exact Online. This is used to update the payment status of the order.
+	 *
+	 * @return void
+	 */
+	public function get_payment_status(): void {
+		$this->verify();
+
+		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-14 day' ) );
+		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( 'now' ) );
+		$exclude_statuses = array( 'completed', 'processing', 'refunded', 'cancelled', 'failed', 'on-hold', 'pending', 'concept' );
+		$orders = wc_get_orders(
+			array(
+				'status' => array_diff( wc_get_order_statuses(), $exclude_statuses ),
+				'limit' => -1,
+				'date_created' => $start_date . '...' . $end_date,
+			)
+		);
+		foreach ( $orders as $order ) {
+			$response = ( new CommerceBird() )->payment_status( $order->get_id() );
+			// if response is Paid then update the order status to completed
+			if ( 'Paid' === $response['payment_status'] ) {
+				$order->update_status( 'completed' );
+				$order->add_order_note( __( 'Payment processed in Exact Online', 'commercebird' ) );
+			}
+		}
+		$this->response = array(
+			'success' => true,
+			'data' => $response,
 		);
 		$this->serve();
 	}

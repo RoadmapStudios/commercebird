@@ -199,6 +199,7 @@ class ExactOnlineSync {
 					break;
 				}
 				$order->update_meta_data( 'eo_order_id', $data['OrderID'] );
+				$order->update_meta_data( 'eo_order_number', $data['OrderNumber'] );
 				$order->save();
 				break;
 			default:

@@ -17,6 +17,7 @@ final class CommerceBird {
 	const ITEM = 'customs/exact/bulk-items';
 	const CUSTOMER = 'customs/exact/bulk-customers';
 	const ORDER = 'customs/exact/bulk-orders';
+	const PAYMENT_STATUS = 'customs/exact/invoice-payment-status';
 	const WEBHOOKS = 'customs/exact/webhooks';
 	const API = 'https://api.commercebird.com';
 	const ZCRMFIELDS = 'customs/zoho/fields';
@@ -100,6 +101,18 @@ final class CommerceBird {
 
 	public function cost_units() {
 		return $this->request( self::COST_UNITS );
+	}
+
+	/**
+	 * Get payment status
+	 *
+	 * @param string $woo_order_id
+	 *
+	 * @return array|WP_Error array ( payment_status )
+	 */
+	public function payment_status( string $woo_order_id ) {
+		$response = $this->request( self::PAYMENT_STATUS, 'POST', array( 'woo_order_id' => $woo_order_id ), array() );
+		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
 	/**
