@@ -39,7 +39,7 @@ final class ExactOnlineAjax {
 		'get_exact_online_connect' => 'connect_load',
 		'save_exact_online_cost_center' => 'cost_center_save',
 		'save_exact_online_cost_unit' => 'cost_unit_save',
-		'save_exact_online_payment_status' => 'get_payment_status',
+		'save_exact_online_payment_status' => 'get_payment_save',
 		'import_exact_online_product' => 'product_import',
 		'map_exact_online_product' => 'product_map',
 		'map_exact_online_customer' => 'customer_map',
@@ -78,33 +78,54 @@ final class ExactOnlineAjax {
 		$this->serve();
 	}
 
+	public function get_payment_save(): void {
+		$this->verify();
+		$this->get_payment_status();
+	}
+
 	/**
 	 * Get Payment status from Exact Online. This is used to update the payment status of the order.
 	 *
 	 * @return void
 	 */
 	public function get_payment_status(): void {
-		$this->verify();
-		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-14 day' ) );
+		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-14 days' ) );
 		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( 'now' ) );
-		$exclude_statuses = array( 'completed', 'processing', 'refunded', 'cancelled', 'failed', 'on-hold', 'pending', 'concept' );
+		$exclude_statuses = array( 'wc-completed', 'wc-processing', 'wc-refunded', 'wc-cancelled', 'wc-failed', 'wc-on-hold', 'wc-pending', 'wc-checkout-draft' );
+		$all_statuses = array_keys( wc_get_order_statuses() );
+		// Calculate included statuses by removing excluded ones
+		$included_statuses = array_diff( $all_statuses, $exclude_statuses );
+		// Get all orders with the included statuses
 		$orders = wc_get_orders(
 			array(
-				'status' => array_diff( wc_get_order_statuses(), $exclude_statuses ),
+				'status' => $included_statuses,
 				'limit' => -1,
 				'date_created' => $start_date . '...' . $end_date,
 			)
 		);
+		if ( empty( $orders ) ) {
+			$this->response = array(
+				'success' => false,
+				'message' => __( 'No Invoice orders found', 'commercebird' ),
+			);
+			$this->serve();
+		}
 		foreach ( $orders as $order ) {
 			$response = ( new CommerceBird() )->payment_status( $order->get_id() );
 			// if response is Paid then update the order status to completed
-			if ( 'Paid' === $response['payment_status'] ) {
+			if ( $response['Payment_Status'] && 'Paid' === $response['Payment_Status'] ) {
 				$order->update_status( 'completed' );
 				$order->add_order_note( __( 'Payment processed in Exact Online', 'commercebird' ) );
+				$order->save();
 			}
+		}
+		// Schedule the event to run daily
+		if ( ! wp_next_scheduled( 'commmercebird_exact_online_get_payment_statuses' ) ) {
+			wp_schedule_event( strtotime( 'tomorrow' ), 'daily', 'commmercebird_exact_online_get_payment_statuses' );
 		}
 		$this->response = array(
 			'success' => true,
+			'message' => __( 'Payment status updated', 'commercebird' ),
 		);
 		$this->serve();
 	}

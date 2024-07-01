@@ -18,7 +18,7 @@ class Plugin {
 	}
 
 	public static function activate() {
-		$interval = get_option( 'zi_cron_interval', 'daily' );
+		$interval = get_option( 'zi_cron_interval' );
 		$access_token = get_option( 'zoho_inventory_access_token' );
 		if ( 'none' !== $interval && ! empty( $access_token ) ) {
 			if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
@@ -37,6 +37,10 @@ class Plugin {
 
 	public static function deactivate() {
 		wp_clear_scheduled_hook( 'zi_execute_import_sync' );
+		wp_clear_scheduled_hook( 'commmercebird_exact_online_get_payment_statuses' );
+		wp_clear_scheduled_hook( 'commmercebird_exact_online_sync_orders' );
+		wp_clear_scheduled_hook( 'zoho_sync_category_cron' );
+		wp_clear_scheduled_hook( 'zoho_contact_sync' );
 		update_option( 'woocommerce_enable_guest_checkout', 'yes' );
 	}
 

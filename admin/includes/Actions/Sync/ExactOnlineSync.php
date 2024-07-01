@@ -4,6 +4,8 @@ namespace RMS\Admin\Actions\Sync;
 
 defined( 'RMS_PLUGIN_NAME' ) || exit;
 
+use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
+
 class ExactOnlineSync {
 
 
@@ -226,5 +228,11 @@ class ExactOnlineSync {
 		wp_reset_postdata();
 
 		return $product_id;
+	}
+
+	public static function get_payment_status_via_cron() {
+		// execute get_payment_status of ExactOnlineAjax class
+		$ajax = new ExactOnlineAjax();
+		$ajax->get_payment_status();
 	}
 }
