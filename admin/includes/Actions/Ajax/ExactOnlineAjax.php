@@ -89,8 +89,8 @@ final class ExactOnlineAjax {
 	 * @return void
 	 */
 	public function get_payment_status(): void {
-		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-14 days' ) );
-		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( 'now' ) );
+		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-60 days' ) );
+		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-5 days' ) );
 		$exclude_statuses = array( 'wc-completed', 'wc-processing', 'wc-refunded', 'wc-cancelled', 'wc-failed', 'wc-on-hold', 'wc-pending', 'wc-checkout-draft' );
 		$all_statuses = array_keys( wc_get_order_statuses() );
 		// Calculate included statuses by removing excluded ones
@@ -112,8 +112,12 @@ final class ExactOnlineAjax {
 		}
 		foreach ( $orders as $order ) {
 			$response = ( new CommerceBird() )->payment_status( $order->get_id() );
+			// check response contains "Payment_Status" key
+			if ( ! isset( $response['Payment_Status'] ) ) {
+				continue;
+			}
 			// if response is Paid then update the order status to completed
-			if ( $response['Payment_Status'] && 'Paid' === $response['Payment_Status'] ) {
+			if ( 'Paid' === $response['Payment_Status'] ) {
 				$order->update_status( 'completed' );
 				$order->add_order_note( __( 'Payment processed in Exact Online', 'commercebird' ) );
 				$order->save();

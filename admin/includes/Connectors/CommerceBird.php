@@ -107,6 +107,7 @@ final class CommerceBird {
 	 * @return array|WP_Error array ( payment_status )
 	 */
 	public function payment_status( string $order_id ) {
+		sleep( 1 ); // sleep for 1 second to respect the API Limit of Exact Online.
 		$response = $this->request( self::PAYMENT_STATUS, 'GET', array(), array( 'order_id' => $order_id ) );
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
