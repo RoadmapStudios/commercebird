@@ -52,6 +52,18 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
     }
     loader.clearLoading(actionKey.cost_unit.save);
   };
+  const getPaymentStatus = async () => {
+    if (loader.isLoading(actionKey.payment_status.save)) return;
+    loader.setLoading(actionKey.payment_status.save);
+    let response = await fetchData(
+      actionKey.payment_status.save,
+      localKey.payment_status
+    );
+    if (response) {
+      notify.success(response.message);
+    }
+    loader.clearLoading(actionKey.payment_status.save);
+  }
   /*
    * -----------------------------------------------------------------------------------------------------------------
    *  Tab Settings
@@ -78,7 +90,6 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
       case "webhooks":
         response = await loader.loadData(localKey.webhooks, actionKey.webhooks.get);
         if (response) {
-          webhook_settings.enable_SalesInvoices = response.enable_SalesInvoices;
           webhook_settings.enable_StockPosition = response.enable_StockPosition;
           webhook_settings.enable_Item = response.enable_Item;
         }
@@ -149,7 +160,6 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    * -----------------------------------------------------------------------------------------------------------------
    */
   const webhook_settings = reactive(<ExactWebhookSettings>{
-    enable_SalesInvoices: false,
     enable_StockPosition: false,
     enable_Item: false
   })
@@ -241,6 +251,7 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
     connection,
     getCenters,
     getUnits,
+    getPaymentStatus,
     importProducts,
     mapProducts,
     dateRange,

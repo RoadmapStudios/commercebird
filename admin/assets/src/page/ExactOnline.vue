@@ -25,12 +25,12 @@ const tabs = {
   product: { title: "Products", component: Product, icon: ShoppingBagIcon },
   order: { title: "Orders", component: Order, icon: TruckIcon },
   customers: { title: "Customers", component: Customer, icon: UsersIcon },
+  webhooks: { title: "Webhooks", component: Webhooks, icon: LinkIcon },
   cost_center_unit: {
-    title: "Cost Centers/Units",
+    title: "Other",
     component: Cost,
     icon: CurrencyDollarIcon,
   },
-  webhooks: { title: "Webhooks", component: Webhooks, icon: LinkIcon },
 };
 
 onBeforeMount(() => {

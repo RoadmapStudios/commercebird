@@ -18,6 +18,9 @@ const loaderKey = backendAction.exactOnline;
     <BaseButton :loading="loader.isLoading(loaderKey.cost_unit.save)" @click="store.getUnits()">
       Get Cost Units
     </BaseButton>
+    <BaseButton :loading="loader.isLoading(loaderKey.payment_status.save)" @click="store.getPaymentStatus()">
+      Get Payment Status of Invoices
+    </BaseButton>
   </div>
 </template>
 

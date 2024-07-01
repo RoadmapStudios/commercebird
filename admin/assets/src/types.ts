@@ -91,7 +91,6 @@ export type PriceSettings = {
     wp_user_role: string;
 }
 export type ExactWebhookSettings = {
-    enable_SalesInvoices: boolean;
     enable_StockPosition: boolean;
     enable_Item: boolean;
 }
@@ -107,6 +106,7 @@ export type StoreKey = {
         connect: string;
         cost_center: string;
         cost_unit: string;
+        payment_status: string;
         customer: string;
         product: string;
         order: string;
@@ -156,6 +156,7 @@ export type BackendAction = {
         order: { map: string, export: string, sync: string };
         cost_center: { get: string; save: string; reset: string; };
         cost_unit: { get: string; save: string; reset: string; };
+        payment_status: { get: string; save: string; reset: string; };
         webhooks: { get: string; save: string; reset: string; };
     };
 

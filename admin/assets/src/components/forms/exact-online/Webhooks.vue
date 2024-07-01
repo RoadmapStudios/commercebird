@@ -6,9 +6,6 @@
       @submit="store.handleSubmit(action.save)"
     >
       <div>
-        <InputGroup label="SalesInvoices Webhook" type="toggle">
-          <Toggle v-model="store.webhook_settings.enable_SalesInvoices" />
-        </InputGroup>
         <InputGroup label="StockPosition Webhook" type="toggle">
           <Toggle v-model="store.webhook_settings.enable_StockPosition" />
         </InputGroup>

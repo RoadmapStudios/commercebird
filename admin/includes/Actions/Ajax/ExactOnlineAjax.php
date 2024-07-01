@@ -85,7 +85,6 @@ final class ExactOnlineAjax {
 	 */
 	public function get_payment_status(): void {
 		$this->verify();
-
 		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-14 day' ) );
 		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( 'now' ) );
 		$exclude_statuses = array( 'completed', 'processing', 'refunded', 'cancelled', 'failed', 'on-hold', 'pending', 'concept' );
@@ -106,7 +105,6 @@ final class ExactOnlineAjax {
 		}
 		$this->response = array(
 			'success' => true,
-			'data' => $response,
 		);
 		$this->serve();
 	}

@@ -29,6 +29,7 @@ export const storeKey: StoreKey = {
         customer: 'exactOnline_customer',
         cost_center: 'exactOnline_cost_center',
         cost_unit: 'exactOnline_cost_unit',
+        payment_status: 'exactOnline_payment_status',
         webhooks: 'exactOnline_webhooks'
     },
     zohoCrm: {
@@ -74,6 +75,11 @@ export const backendAction: BackendAction = {
             get: 'get_exact_online_cost_unit',
             save: 'save_exact_online_cost_unit',
             reset: 'reset_exact_online_cost_unit'
+        },
+        payment_status: {
+            get: 'get_exact_online_payment_status',
+            save: 'save_exact_online_payment_status',
+            reset: 'reset_exact_online_payment_status'
         },
         webhooks: {
             get: 'get_exact_online_webhooks',
