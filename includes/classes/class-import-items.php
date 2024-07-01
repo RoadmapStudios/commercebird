@@ -1041,13 +1041,16 @@ class import_product_class {
 				// Stock Imported code
 				if ( ! $zi_disable_stock_sync && $stock_quantity ) {
 					$variation->set_manage_stock( true );
-					$variation->set_stock_quantity( $stock_quantity );
-					$variation->set_stock_status( 'instock' );
-				} elseif ( $stock_quantity <= 0 ) {
-					$variation->set_manage_stock( true );
-					$variation->set_stock_quantity( $stock_quantity );
-					$stock_status = $variation->backorders_allowed() ? 'onbackorder' : 'outofstock';
-					$variation->set_stock_status( $stock_status );
+					if ( $stock_quantity > 0 ) {
+						$variation->set_manage_stock( true );
+						$variation->set_stock_quantity( $stock_quantity );
+						$variation->set_stock_status( 'instock' );
+					} elseif ( $stock_quantity <= 0 ) {
+						$variation->set_manage_stock( true );
+						$variation->set_stock_quantity( $stock_quantity );
+						$stock_status = $variation->backorders_allowed() ? 'onbackorder' : 'outofstock';
+						$variation->set_stock_status( $stock_status );
+					}
 				}
 				// enable or disable based on status from Zoho
 				$status = ( 'active' === $item->status ) ? 'publish' : 'draft';

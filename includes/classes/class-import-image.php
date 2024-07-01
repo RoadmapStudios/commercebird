@@ -37,13 +37,13 @@ class ImageClass {
 	 * @param [string] $item_id - Item id for image details.
 	 * @param [string] $item_name - Item name.
 	 * @param [string] $post_id - Post id of image.
-	 * @param [string] $item_image - Image name.
+	 * @param [string] $image_name - Image name.
 	 * @return void
 	 */
-	public function cmbird_zi_get_image( $item_id, $item_name, $post_id, $item_image ) {
+	public function cmbird_zi_get_image( $item_id, $item_name, $post_id, $image_name ) {
 		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+' );
 
-		$image_exists_in_library = $this->compare_image_with_media_library( $item_name, $item_image );
+		$image_exists_in_library = $this->compare_image_with_media_library( $item_name, $image_name );
 		if ( $image_exists_in_library ) {
 			return;
 		}
