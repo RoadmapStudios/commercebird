@@ -46,9 +46,7 @@ final class CommerceBird {
 	 * @throws WP_Error Invalid customer if empty
 	 */
 	public function get_zcrm_fields( $module ) {
-
 		$response = $this->request( self::ZCRMFIELDS, 'GET', array( 'module' => $module ) );
-
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
@@ -61,9 +59,7 @@ final class CommerceBird {
 	 * @throws WP_Error Invalid customer if empty
 	 */
 	public function customer() {
-
 		$response = $this->request( self::CUSTOMER );
-
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 	/**

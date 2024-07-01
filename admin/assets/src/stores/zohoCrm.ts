@@ -40,8 +40,8 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                   connection.token = response?.token;
                 break;
             case "field":
-                selectedFieldTab.value = "Sales_Orders";  
-                get_fields('shop_order');              
+                selectedFieldTab.value = "Sales_Orders";
+                get_fields('shop_order');
                 get_zcrm_fields();
                 get_zcrm_custom_fields();
                 break;
@@ -83,8 +83,8 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     * @description Function to get woocommerce fields
    */
     const get_woo_fields = async () => {
-        const key = keys.fields;          
-        const instore = storage.get(key);        
+        const key = keys.fields;
+        const instore = storage.get(key);
         if (instore) {
             customFields.value = instore;
         }
@@ -95,10 +95,10 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             customFields.value = await fetchData(
                 action,
                 key,
-    
+
             );
             loader.clearLoading(action);
-        }                  
+        }
     }
 
      /**
@@ -110,14 +110,14 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         get_woo_fields();
        }
        const acfFields=await get_acf_fields(postType);
-       customFields.value={...customFields.value,...acfFields};              
+       customFields.value={...customFields.value,...acfFields};
     }
 
      async function get_zcrm_custom_fields(){
-        let response;  
+        let response;
         fields.value =[];
         const moduleName=selectedFieldTab.value;
-        const key =`${moduleName.toLowerCase()}_custom_fields`; 
+        const key =`${moduleName.toLowerCase()}_custom_fields`;
         const instore = storage.get(key);
         if (instore){
             response = instore;
@@ -126,7 +126,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             response = await fetchData(actions.field.get, key,{module:moduleName});
 
         }
-                
+
                 if (response) {
                     let parsed;
                     if (typeof response.form === 'string') {
@@ -137,7 +137,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
 
                     Object.entries(parsed).forEach(([key, value]) => {
                         const existingObject = fields.value.some(field => field.key === key && field.value === value);
-                        
+
                         if (!existingObject) {
                             fields.value.push({ key, value });
                         }
@@ -149,11 +149,11 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
 
                 }
     }
-   
+
    /**
     * @param moduleName Module for refreshing fields
     * @description Function to refresh zoho fields
-    */ 
+    */
     async function refresh_zoho(moduleName:string){
         const storeKey =`${moduleName.toLowerCase()}_fields`;
         storage.remove(storeKey);
@@ -184,7 +184,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     }
 
 
- 
+
     /**
      * @description Function to get zoho fields from wordpress database
      */
@@ -204,10 +204,10 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
              response = await fetchData(
                 action,
                 key  ,
-                {module:moduleName}  
+                {module:moduleName}
             );
         }
-       
+
            if(Array.isArray(response.fields)&&response.fields.length>0){
             let obj: { [key: string]: string } = {};
             response.fields.forEach((field:any)=>{
@@ -220,10 +220,10 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             zcrm_fields.value = {};
         }
         loader.clearLoading(action);
-       
+
     }
 
-    
+
     /*
      * -----------------------------------------------------------------------------------------------------------------
      *  Form Submit
@@ -250,7 +250,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             case actions.field.save:
                 const fieldData = extractOptions(fields.value, 'key', 'value')
                 const moduleName=selectedFieldTab.value;
-                const key =`${moduleName.toLowerCase()}_custom_fields`; 
+                const key =`${moduleName.toLowerCase()}_custom_fields`;
                 data = {
                     form: JSON.stringify(fieldData),
                     module: moduleName
@@ -293,7 +293,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
                 break;
             case actions.field.reset:
                 const moduleName=selectedFieldTab.value;
-                const key =`${moduleName.toLowerCase()}_custom_fields`; 
+                const key =`${moduleName.toLowerCase()}_custom_fields`;
                 response = await resetData(action, key, {module:moduleName});
                 storage.remove(key);
                 break;
