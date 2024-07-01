@@ -152,6 +152,15 @@ function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id,
 			);
 		}
 	}
+	// add eo_order_id to the meta_data array
+	$order_object = wc_get_order( $resource_id );
+	$eo_order_id = $order_object->get_meta('eo_order_id', true );
+	if ( ! empty( $eo_order_id ) ) {
+		$payload['meta_data'][] = array(
+			'key' => 'eo_order_id',
+			'value' => $eo_order_id,
+		);
+	}
 	// Loop through line items in and add the eo_item_id to the line item
 	foreach ( $payload['line_items'] as &$item ) {
 		// Get the product ID associated with the line item
@@ -188,10 +197,6 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 	$webhook_name_to_exclude = 'CommerceBird Orders';
 	if ( $webhook->get_name() === $webhook_name_to_exclude ) {
 		$order = wc_get_order( $arg );
-		// check if order contains meta eo_order_id
-		if ( $order->get_meta( 'eo_order_id' ) ) {
-			$should_deliver = false;
-		}
 		// check if order status is failed, pending, on-hold or cancelled
 		$order_status = $order->get_status();
 		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
