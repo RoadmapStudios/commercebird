@@ -28,7 +28,7 @@ final class AcfAjax {
 
 		'get_acf_fields' => 'get_acf_fields',
 	);
-	
+
 	public function __construct() {
 		$this->load_actions();
 	}

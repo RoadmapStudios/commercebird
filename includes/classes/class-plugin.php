@@ -151,8 +151,9 @@ class Plugin {
 			ZohoCRMAjax::instance();
 			ExactOnlineAjax::instance();
 			AcfAjax::instance();
-			Cors::instance();
+
 		}
+		Cors::instance();
 		// CM_Webhook_Modify::instance();
 		new CommerceBird_WC_API();
 	}
