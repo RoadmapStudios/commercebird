@@ -56,7 +56,7 @@ class ImageClass {
 
 		$execute_curl_call_handle = new ExecutecallClass();
 		$image_url = $execute_curl_call_handle->execute_curl_call_image_get( $url );
-		if ( is_wp_error( $image_url ) ) {
+		if ( empty( $image_url ) ) {
 			return;
 		}
 		// fwrite($fd, PHP_EOL . 'Sync init');
