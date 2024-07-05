@@ -1,15 +1,16 @@
 <template>
   <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
-    <div class="pt-4 pb-2 flex justify-between items-center   tracking-tight border-b">
+    <div class="flex items-center justify-between pt-4 pb-2 tracking-tight border-b">
       <h1 class="text-xl font-bold">Orders Custom Fields</h1>
       <BaseButton @click="store.addField()">Add Item</BaseButton>
     </div>
     <div v-for="(field, index) in store.fields" :key="index" class="grid items-end gap-4 sm:grid-cols-5">
       <InputGroup label="WooCommerce Field" type="repeater">
-        <SelectInput v-model="field.key" :options="store.customFields"/>
+        <SelectInput v-model="field.key" :options="store.customFields" />
+        <TextInput v-model="field.key" placeholder="Or type custom field" />
       </InputGroup>
       <InputGroup label="Zoho Field Label" type="repeater">
-        <TextInput v-model="field.value"/>
+        <TextInput v-model="field.value" />
       </InputGroup>
       <div class="pb-[11px]">
         <BaseButton @click="store.removeField(index)">Remove</BaseButton>
