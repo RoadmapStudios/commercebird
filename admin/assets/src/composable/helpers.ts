@@ -15,8 +15,7 @@ export const api_token = window.commercebird_admin.api_token;
 export const taxEnabled = window.commercebird_admin.wc_tax_enabled === "1";
 export const roles = window.commercebird_admin.roles;
 export const b2b_enabled = window.commercebird_admin.b2b_enabled === "1";
-export const fileinfo_enabled =
-  window.commercebird_admin.fileinfo_enabled === "1";
+export const fileinfo_enabled = window.commercebird_admin.fileinfo_enabled === "1";
 export const redirect_uri = window.commercebird_admin.redirect_uri;
 export const acf_enabled = window.commercebird_admin.acf_enabled === "1";
 export const cosw_enabled = window.commercebird_admin.cosw_enabled === "1";

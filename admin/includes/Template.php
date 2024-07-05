@@ -87,12 +87,22 @@ final class Template {
 				'b2b_enabled'      => class_exists( 'Addify_B2B_Plugin' ),
 				'fileinfo_enabled' => extension_loaded( 'fileinfo' ),
 				'acf_enabled'      => class_exists( 'ACF' ),
-				'cosw_enabled'     => in_array( 'custom-order-statuses-woocommerce/custom-order-statuses-for-woocommerce.php', $active_plugins, true ),
+				'cosw_enabled'     => self::is_wc_shipped_status_exists(),
 				'wcb2b_enabled'    => class_exists( 'WooCommerceB2B' ),
 				'wcb2b_groups'     => get_transient( 'wc_b2b_groups' ),
 				'site_url'         => site_url(),
 				'eo_sync'          => get_option( 'commmercebird_exact_online_sync_orders' ),
 			),
 		);
+	}
+
+	/**
+	 * Check if the status "shipped" exists in WooCommerce statuses.
+	 *
+	 * @return bool
+	 */
+	public static function is_wc_shipped_status_exists(): bool {
+		$shipped_status = wc_get_order_statuses();
+		return isset( $shipped_status['wc-shipped'] );
 	}
 }

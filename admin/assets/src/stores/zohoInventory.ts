@@ -561,7 +561,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     order_settings.warehouse_id = response.warehouse_id;
                     order_settings.enable_warehousestock = response.enable_warehousestock;
                 }
-
                 break;
             case "contact":
                 response = await loader.loadData(keys.contact, actions.contact.get);

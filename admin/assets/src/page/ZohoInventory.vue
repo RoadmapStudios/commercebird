@@ -79,7 +79,7 @@ watchEffect(() => {
         <span class="font-medium">"fileinfo"</span> to import Product Images
     from Zoho Inventory. This can be activated via your hosting cPanel or
     please contact your hosting for this activation.' />
-    <RequiredNotice v-if="store.selectedTab === 'order' && !cosw_enabled" name="Custom Order Status for WooCommerce"
+    <RequiredNotice v-if="store.selectedTab === 'webhooks' && !cosw_enabled" name="Custom Order Status for WooCommerce"
       slug="custom-order-statuses-woocommerce" type="plugin" />
     <RequiredNotice v-if="!store.isConnected" message="Please connect to Zoho Inventory." />
     <TabComponent v-model="store.selectedTab" :tabs="tabs" />
