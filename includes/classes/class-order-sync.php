@@ -26,8 +26,10 @@ class Zi_Order_Sync {
 	 * Sync order when it's created via the checkout.
 	 */
 	public function zi_sync_frontend_order( $order_id ) {
-		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-
+		// return if the order is not coming via thank you page
+		if ( ! is_wc_endpoint_url( 'order-received' ) ) {
+			return;
+		}
 		// Check if the transient flag is set
 		if ( get_transient( 'your_thankyou_callback_executed_' . $order_id ) ) {
 			return;
@@ -39,7 +41,7 @@ class Zi_Order_Sync {
 
 		// Use WC Action Scheduler to sync the order to Zoho Inventory
 		$existing_schedule = as_has_scheduled_action( 'sync_zi_order', array( $order_id ) );
-		if ( ! $existing_schedule && ! empty( $zoho_inventory_access_token ) ) {
+		if ( ! $existing_schedule ) {
 			as_schedule_single_action( time(), 'sync_zi_order', array( $order_id ) );
 			// Set the transient flag to prevent multiple executions
 			set_transient( 'your_thankyou_callback_executed_' . $order_id, true, 60 );
