@@ -62,11 +62,11 @@ class ImageClass {
 		// fwrite($fd, PHP_EOL . 'Sync init');
 		$temp_file = download_url( $image_url );
 		// Get the MIME type of the downloaded image
-		$file_info = wp_getimagesize( $temp_file );
+		$file_info = wp_check_filetype( $temp_file );
 		// fwrite( $fd, PHP_EOL . 'File Info: ' . print_r( $file_info, true ) );
 
-		if ( $file_info && isset( $file_info['mime'] ) ) {
-			$file_type = $file_info['mime'];
+		if ( $file_info && isset( $file_info['type'] ) ) {
+			$file_type = $file_info['type'];
 		} else {
 			return;
 		}
