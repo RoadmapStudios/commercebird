@@ -1,3 +1,9 @@
+Version 2.1.26 - July 7 2024
+* New: ability to type woo field name for custom orders fields mapping
+* Fix: categories shown twice on cron tab
+* Fix: prevent sync of order multiple times in same minute
+* Fix: php error for getting image mime type
+
 Version 2.1.25 - July 2 2024
 * New: webhook sync Items and Stock change for Exact Online
 * Fix: manage stock disabling overwritten by cron

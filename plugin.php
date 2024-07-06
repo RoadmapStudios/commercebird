@@ -4,7 +4,7 @@
  * Plugin URI:  https://commercebird.com
  * Author:      CommerceBird
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho CRM & Exact Online and more.
- * Version: 2.1.25
+ * Version: 2.1.26
  * Requires PHP: 7.4
  * Requires Plugins: WooCommerce
  * Requires at least: 6.5
@@ -29,7 +29,7 @@ if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
 	define( 'RMS_PLUGIN_NAME', 'CommerceBird' );
 }
 if ( ! defined( 'RMS_VERSION' ) ) {
-	define( 'RMS_VERSION', '2.1.25' );
+	define( 'RMS_VERSION', '2.1.26' );
 }
 if ( ! defined( 'RMS_DIR_PATH' ) ) {
 	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
