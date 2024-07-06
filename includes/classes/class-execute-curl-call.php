@@ -153,6 +153,48 @@ class ExecutecallClass {
 	}
 
 	/**
+	 * Delete Call to Zoho
+	 * @param string $url
+	 * @return mixed
+	 */
+	public function execute_curl_call_delete( $url ) {
+		$handlefunction = new Classfunctions();
+
+		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
+		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
+		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+
+		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
+
+		if ( $zoho_inventory_timestamp < $current_time ) {
+
+			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
+			$zoho_inventory_access_token = $respo_at_js['access_token'];
+			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
+			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+		}
+
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $zoho_inventory_access_token,
+			),
+			'method' => 'DELETE',
+		);
+		$response = wp_remote_request( $url, $args );
+		// Check if the request was successful
+		if ( ! is_wp_error( $response ) ) {
+			// If successful, get the body of the response
+			$body = wp_remote_retrieve_body( $response );
+			// Decode JSON response
+			return json_decode( $body );
+		} else {
+			// If there was an error, handle it
+			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
+			return 'Error: ' . $error_message;
+		}
+	}
+
+	/**
 	 *
 	 * Get Call Zoho Image
 	 * @param mixed $url - URL of the image.
