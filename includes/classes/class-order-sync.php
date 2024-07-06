@@ -276,6 +276,13 @@ class Zi_Order_Sync {
 		}
 
 		$order = wc_get_order( $order_id );
+		// prevent multiple order syncs in a minute
+		$current_time = time();
+		$last_time = $order->get_meta( 'zi_last_order_sync_time', true );
+		if ( ! empty( $last_time ) && $current_time - $last_time < 60 ) {
+			return;
+		}
+
 		$orders_date = $order->get_date_created()->format( 'Y-m-d' );
 		$i = 1;
 		$zi_sales_order_id = $order->get_meta( 'zi_salesorder_id' );
@@ -555,6 +562,7 @@ class Zi_Order_Sync {
 
 				$order->add_order_note( $notes );
 				$order->update_meta_data( 'zi_salesorder_id', $response_msg['zi_salesorder_id'] );
+				$order->update_meta_data( 'zi_last_order_sync_time', $current_time );
 				$order->save();
 			}
 			return;
@@ -610,7 +618,6 @@ class Zi_Order_Sync {
 	/**
 	 * Sync order from Woo to Zoho.
 	 *
-	 * @param int $order_id Order ID.
 	 * @param string $pdt1 JSON string
 	 * @return string Error message
 	 */
@@ -641,10 +648,10 @@ class Zi_Order_Sync {
 		$code = $json->code;
 		// fwrite($fd, PHP_EOL . 'Code : ' . $code);
 
-		if ( $code == '0' || $code == 0 ) {
+		if ( '0' === $code || 0 === $code ) {
 			foreach ( $json->salesorder as $key => $value ) {
 
-				if ( $key == 'salesorder_id' ) {
+				if ( 'salesorder_id' === $key ) {
 					$response['zi_salesorder_id'] = $value;
 					// $order->add_meta_data('zi_salesorder_id', $value, true);
 				}
@@ -733,7 +740,6 @@ class Zi_Order_Sync {
 				}
 			}
 		}
-
 		// fclose( $fd ); //end of logging
 		return $response;
 	}
