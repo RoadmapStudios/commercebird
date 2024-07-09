@@ -246,9 +246,10 @@ class import_product_class {
 						if ( $pdt_id ) {
 							update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
 						}
-					} catch (Exception $e) {
+					} catch ( Exception $e ) {
 						// fwrite( $fd, PHP_EOL . 'Error : ' . $e->getMessage() );
-						continue;
+						throw new Exception( esc_html( $e->getMessage() ) );
+						// continue;
 					}
 				}
 
