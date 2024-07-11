@@ -106,6 +106,7 @@ export type StoreKey = {
         connect: string;
         cost_center: string;
         cost_unit: string;
+        gl_account: string;
         payment_status: string;
         customer: string;
         product: string;
@@ -156,6 +157,7 @@ export type BackendAction = {
         order: { map: string, export: string, sync: string };
         cost_center: { get: string; save: string; reset: string; };
         cost_unit: { get: string; save: string; reset: string; };
+        gl_account: { get: string; save: string; reset: string; };
         payment_status: { get: string; save: string; reset: string; };
         webhooks: { get: string; save: string; reset: string; };
     };

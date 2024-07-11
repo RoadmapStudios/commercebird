@@ -28,6 +28,18 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
    *  Cost Center and Units Settings
    * -----------------------------------------------------------------------------------------------------------------
    */
+  const getGLAccounts = async () => {
+    if (loader.isLoading(actionKey.gl_account.save)) return;
+    loader.setLoading(actionKey.gl_account.save);
+    let response = await fetchData(
+      actionKey.gl_account.save,
+      localKey.gl_account
+    );
+    if (response) {
+      notify.success(response.message);
+    }
+    loader.clearLoading(actionKey.gl_account.save);
+  }
   const getCenters = async () => {
     if (loader.isLoading(actionKey.cost_center.save)) return;
     loader.setLoading(actionKey.cost_center.save);
@@ -249,6 +261,7 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
     notSubscribed,
     isConnected,
     connection,
+    getGLAccounts,
     getCenters,
     getUnits,
     getPaymentStatus,

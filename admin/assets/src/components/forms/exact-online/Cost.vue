@@ -12,6 +12,9 @@ const loaderKey = backendAction.exactOnline;
 
 <template>
   <div class="flex gap-4 pt-4">
+    <BaseButton :loading="loader.isLoading(loaderKey.gl_account.save)" @click="store.getGLAccounts()">
+      Get GL Accounts
+    </BaseButton>
     <BaseButton :loading="loader.isLoading(loaderKey.cost_center.save)" @click="store.getCenters()">
       Get Cost Centers
     </BaseButton>

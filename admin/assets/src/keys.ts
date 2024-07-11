@@ -66,6 +66,11 @@ export const backendAction: BackendAction = {
             export: 'export_exact_online_order',
             sync: 'save_sync_order_via_cron'
         },
+        gl_account: {
+            get: 'get_exact_online_gl_account',
+            save: 'save_exact_online_gl_account',
+            reset: 'reset_exact_online_gl_account'
+        },
         cost_center: {
             get: 'get_exact_online_cost_center',
             save: 'save_exact_online_cost_center',
