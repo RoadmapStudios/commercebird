@@ -39,6 +39,7 @@ final class ExactOnlineAjax {
 		'get_exact_online_connect' => 'connect_load',
 		'save_exact_online_cost_center' => 'cost_center_save',
 		'save_exact_online_cost_unit' => 'cost_unit_save',
+		'save_exact_online_gl_account' => 'gl_account_save',
 		'save_exact_online_payment_status' => 'get_payment_save',
 		'import_exact_online_product' => 'product_import',
 		'map_exact_online_product' => 'product_map',
@@ -288,6 +289,10 @@ final class ExactOnlineAjax {
 		return get_option( self::OPTIONS['cost_unit'], array() );
 	}
 
+	public function gl_account_get() {
+		return get_option( self::OPTIONS['gl_accounts'], array() );
+	}
+
 	public function get_token() {
 		return get_option( self::OPTIONS['connect']['token'], '' );
 	}
@@ -324,6 +329,24 @@ final class ExactOnlineAjax {
 			);
 			update_option( self::OPTIONS['cost_unit'], $units );
 			$this->response['message'] = __( 'Cost units saved', 'commercebird' );
+		}
+		$this->serve();
+	}
+
+	public function gl_account_save() {
+		$this->verify();
+		$response = ( new CommerceBird() )->gl_accounts();
+		if ( empty( $response ) ) {
+			$this->errors['message'] = __( 'GL accounts not found', 'commercebird' );
+		} else {
+			$accounts = array_map(
+				function ($item) {
+					return "{$item['Code']}-{$item['Description']}";
+				},
+				$response['data']
+			);
+			update_option( self::OPTIONS['gl_accounts'], $accounts );
+			$this->response['message'] = __( 'GL accounts saved', 'commercebird' );
 		}
 		$this->serve();
 	}

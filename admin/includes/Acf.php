@@ -13,6 +13,15 @@ final class Acf {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 		add_filter( 'acf/load_field/name=costunit', array( $this, 'cost_units' ), 20 );
 		add_filter( 'acf/load_field/name=costcenter', array( $this, 'cost_centers' ), 20 );
+		add_filter( 'acf/load_field/name=glaccount', array( $this, 'gl_accounts' ), 20 );
+	}
+
+	/**
+	 * GL Account custom field customization.
+	 */
+	public function gl_accounts( $field ): array {
+		$gl_accounts = ExactOnlineAjax::instance()->gl_account_get();
+		return $this->extract_choice( $gl_accounts, $field );
 	}
 
 	/**

@@ -14,6 +14,7 @@ final class CommerceBird {
 
 	const COST_CENTERS = 'customs/exact/cost-centers';
 	const COST_UNITS = 'customs/exact/cost-units';
+	const GL_ACCOUNTS = 'customs/exact/gl-accounts';
 	const ITEM = 'customs/exact/bulk-items';
 	const CUSTOMER = 'customs/exact/bulk-customers';
 	const ORDER = 'customs/exact/bulk-orders';
@@ -24,6 +25,10 @@ final class CommerceBird {
 
 	public function cost_centers() {
 		return $this->request( self::COST_CENTERS );
+	}
+
+	public function gl_accounts() {
+		return $this->request( self::GL_ACCOUNTS );
 	}
 
 	/**
