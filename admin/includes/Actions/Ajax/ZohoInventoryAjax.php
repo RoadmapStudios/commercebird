@@ -567,6 +567,9 @@ final class ZohoInventoryAjax {
 			),
 		);
 		delete_option( 'zoho_item_category' );
+		// delete all options that contain 'zoho_id_for_term_id_'
+		global $wpdb;
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE 'zoho_id_for_term_id_%'" );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}

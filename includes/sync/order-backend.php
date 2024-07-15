@@ -140,38 +140,38 @@ function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id,
 	}
 
 	$eo_account_id = '';
-	$customer_id = (int) $payload['customer_id'];
+	$customer_id   = (int) $payload['customer_id'];
 
 	// All guest users will have the customer_id field set to 0
 	if ( $customer_id > 0 ) {
 		$eo_account_id = (string) get_user_meta( $customer_id, 'eo_account_id', true );
 		if ( ! empty( $eo_account_id ) ) {
 			$payload['meta_data'][] = array(
-				'key' => 'eo_account_id',
+				'key'   => 'eo_account_id',
 				'value' => $eo_account_id,
 			);
 		}
 	}
 	// add eo_order_id to the meta_data array
 	$order_object = wc_get_order( $resource_id );
-	$eo_order_id = $order_object->get_meta('eo_order_id', true );
+	$eo_order_id  = $order_object->get_meta('eo_order_id', true );
 	if ( ! empty( $eo_order_id ) ) {
 		$payload['meta_data'][] = array(
-			'key' => 'eo_order_id',
+			'key'   => 'eo_order_id',
 			'value' => $eo_order_id,
 		);
 	}
 	$eo_gl_account = $order_object->get_meta('eo_gl_account', true );
 	if ( ! empty( $eo_gl_account ) ) {
 		$payload['meta_data'][] = array(
-			'key' => 'eo_gl_account',
+			'key'   => 'eo_gl_account',
 			'value' => $eo_gl_account,
 		);
 	}
 	// Loop through line items in and add the eo_item_id to the line item
 	foreach ( $payload['line_items'] as &$item ) {
 		// Get the product ID associated with the line item
-		$product_id = $item['product_id'];
+		$product_id   = $item['product_id'];
 		$variation_id = $item['variation_id'];
 		// Get the product meta value based on the product ID and meta key
 		if ( $variation_id ) {
@@ -182,7 +182,7 @@ function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id,
 		// Add the product meta to the line item
 		if ( ! empty( $eo_item_id ) ) {
 			$item['meta'][] = array(
-				'key' => 'eo_item_id',
+				'key'   => 'eo_item_id',
 				'value' => $eo_item_id,
 			);
 		}
