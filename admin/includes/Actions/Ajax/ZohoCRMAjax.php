@@ -171,7 +171,7 @@ final class ZohoCRMAjax {
 				delete_option( $zi_option );
 			}
 			$this->response = array( 'message' => 'Reset successfully!' );
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -239,14 +239,34 @@ final class ZohoCRMAjax {
 	 * @return void
 	 */
 	public function zcrm_get_custom_fields(): void {
+
 		$module = isset( $_GET['module'] ) ? $_GET['module'] : '';
+
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
+
 			$this->verify();
-			$option_name = 'zcrm_' . strtolower( $module ) . '_custom_fields';
-			$this->response['form'] = get_option( $option_name, array() );
+			$zoho_crm_url = get_option( 'zoho_crm_url' );
+			$url = $zoho_crm_url . "crm/v6/$module/fields";
+			$execute_curl_call_handle = new ExecutecallClass();
+			$json = $execute_curl_call_handle->execute_curl_call_get( $url );
+			$fd = fopen( __DIR__ . '/logs.txt', 'a+' );
+			fwrite( $fd, print_r( $json, true ) );
+			fclose( $fd );
+			if ( is_wp_error( $json ) ) {
+				$this->errors = array( 'message' => $json->get_error_message() );
+			} elseif ( empty( $json ) ) {
+				$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
+			} else {
+				$this->response = $json->org;
+			}
 			$this->serve();
+
+			// $this->verify();
+			// $option_name = 'zcrm_' . strtolower( $module ) . '_custom_fields';
+			// $this->response['form'] = get_option( $option_name, array() );
+			// $this->serve();
 		}
 	}
 
