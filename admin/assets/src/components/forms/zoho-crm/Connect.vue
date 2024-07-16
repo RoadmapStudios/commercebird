@@ -28,11 +28,31 @@ const handleClick = () => {
         }
     });
 }
+
+const accountDomains = {
+    com: "zoho.com",
+    eu: "zoho.eu",
+    in: "zoho.in",
+    jp: "zoho.jp",
+    "com.au": "zoho.com.au",
+    "com.cn": "zoho.com.cn",
+};
+
 </script>
 
 <template>
     <div>
         <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
+
+            <InputGroup flexed label="Account Domain">
+                <SelectInput v-model="store.connection.account_domain" :options="accountDomains" />
+                <BaseLink v-if="store.connection.account_domain"
+                    :href="`https://api-console.zoho.${store.connection.account_domain}/`" rel="noopener noreferrer"
+                    target="_blank">
+                    Access zoho console
+                </BaseLink>
+            </InputGroup>
+
             <InputGroup flexed label="CommerceBird Token">
                 <div class="flex flex-1">
                     <TextInput v-model="store.connection.token" />
@@ -53,7 +73,16 @@ const handleClick = () => {
                     Access App Console
                 </BaseLink>
             </InputGroup>
+            <InputGroup label="Client ID">
+                <TextInput v-model="store.connection.client_id" />
+            </InputGroup>
+            <InputGroup label="Client Secret">
+                <TextInput v-model="store.connection.client_secret" />
+            </InputGroup>
+            <CopyableInput :value="store.connection.redirect_uri" />
+
         </BaseForm>
+
     </div>
 </template>
 
