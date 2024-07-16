@@ -22,6 +22,11 @@ class ExecutecallClass {
 				'RTOKEN' => get_option( 'zoho_inventory_refresh_token' ),
 				'EXPIRESTIME' => get_option( 'zoho_inventory_timestamp' ),
 			),
+			'ExecutecallZCRM' => array(
+				'ATOKEN' => get_option( 'zoho_crm_access_token' ),
+				'RTOKEN' => get_option( 'zoho_crm_refresh_token' ),
+				'EXPIRESTIME' => get_option( 'zoho_crm_timestamp' ),
+			),
 		);
 	}
 
@@ -31,15 +36,24 @@ class ExecutecallClass {
 		usleep( 500000 );
 		$handlefunction = new Classfunctions();
 
-		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
-		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		// if $url contains 'inventory' use zoho_inventory_access_token, refresh token and timestamp
+		if ( strpos( $url, 'inventory' ) !== false ) {
+			$app_name = 'zoho_inventory';
+			$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		} else {
+			$app_name = 'zoho_crm';
+			$zoho_inventory_access_token = $this->config['ExecutecallZCRM']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZCRM']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZCRM']['EXPIRESTIME'];
+		}
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, $app_name );
 			if ( empty( $respo_at_js ) || ! array_key_exists( 'access_token', $respo_at_js ) ) {
 				return new WP_Error( 403, 'Access denied!' );
 			}
@@ -75,15 +89,24 @@ class ExecutecallClass {
 	public function execute_curl_call_post( $url, $data ) {
 		$handlefunction = new Classfunctions();
 
-		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
-		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		// if $url contains 'inventory' use zoho_inventory_access_token, refresh token and timestamp
+		if ( strpos( $url, 'inventory' ) !== false ) {
+			$app_name = 'zoho_inventory';
+			$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		} else {
+			$app_name = 'zoho_crm';
+			$zoho_inventory_access_token = $this->config['ExecutecallZCRM']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZCRM']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZCRM']['EXPIRESTIME'];
+		}
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, $app_name );
 
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
@@ -117,15 +140,24 @@ class ExecutecallClass {
 
 		$handlefunction = new Classfunctions();
 
-		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
-		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		// if $url contains 'inventory' use zoho_inventory_access_token, refresh token and timestamp
+		if ( strpos( $url, 'inventory' ) !== false ) {
+			$app_name = 'zoho_inventory';
+			$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		} else {
+			$app_name = 'zoho_crm';
+			$zoho_inventory_access_token = $this->config['ExecutecallZCRM']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZCRM']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZCRM']['EXPIRESTIME'];
+		}
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, $app_name );
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
 			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
@@ -160,15 +192,24 @@ class ExecutecallClass {
 	public function execute_curl_call_delete( $url ) {
 		$handlefunction = new Classfunctions();
 
-		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
-		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
-		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		// if $url contains 'inventory' use zoho_inventory_access_token, refresh token and timestamp
+		if ( strpos( $url, 'inventory' ) !== false ) {
+			$app_name = 'zoho_inventory';
+			$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
+		} else {
+			$app_name = 'zoho_crm';
+			$zoho_inventory_access_token = $this->config['ExecutecallZCRM']['ATOKEN'];
+			$zoho_inventory_refresh_token = $this->config['ExecutecallZCRM']['RTOKEN'];
+			$zoho_inventory_timestamp = $this->config['ExecutecallZCRM']['EXPIRESTIME'];
+		}
 
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, $app_name );
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
 			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
@@ -213,7 +254,7 @@ class ExecutecallClass {
 
 		if ( $zoho_inventory_timestamp < $current_time ) {
 
-			$respo_at_js = $handlefunction->get_zi_refresh_token( $zoho_inventory_refresh_token );
+			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, 'zoho_inventory' );
 
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
