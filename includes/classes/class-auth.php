@@ -28,7 +28,7 @@ class Classfunctions {
 				'REDIRECTURL' => get_option( 'authorization_redirect_uri' ),
 				'APIURL' => get_option( 'zoho_crm_url' ),
 				'DOMAINNAME' => get_option( 'zoho_crm_domain' ),
-				'SCOPE' => 'ZohoCRM.FullAccess.all',
+				'SCOPE' => 'ZohoCRM.users.ALL,ZohoCRM.bulk.ALL,ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.org.ALL,profile.userphoto.READ,ZohoFiles.files.CREATE',
 				//'STATE' => wp_create_nonce('redirect_url'),
 				'AUTHURL' => 'https://accounts.zoho.' . get_option( 'zoho_crm_domain' ) . '/oauth/v2/token',
 			),

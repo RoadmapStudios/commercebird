@@ -29,15 +29,24 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             const key = storeKey.homepage.subscription;
             notSubscribed.value = storage.get(key) && storage.get(key).length;
         };
+        isConnected.value = storage.get(storeKey.zohoCrm.connected);
+        if (tab !== "connect") {
+            if (!isConnected.value) {
+                selectedTab.value = "connect";
+                return false;
+            }
+        }
 
         checkSubscription();
         switch (tab) {
             case "connect":
-                response = await loader.loadData(
-                    keys.connect,
-                    actions.connect.get
-                );
-                connection.token = response?.token;
+                response = await loader.loadData(keys.connect, actions.connect.get);
+                if (response) {
+                    connection.client_id = response.client_id;
+                    connection.client_secret = response.client_secret;
+                    connection.redirect_uri = redirect_uri;
+                    connection.account_domain = response.account_domain;
+                }
                 break;
             case "field":
                 selectedFieldTab.value = "Sales_Orders";
@@ -66,7 +75,13 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         redirect_uri: redirect_uri,
     });
 
-
+    const isConnectionValid = async () => {
+        const connected = actions.connection;
+        if (loader.isLoading(connected)) return;
+        loader.setLoading(connected);
+        isConnected.value = await fetchData(connected, keys.connected);
+        loader.clearLoading(connected);
+    };
     /*
     * -----------------------------------------------------------------------------------------------------------------
     *  Custom Fields Settings
@@ -272,6 +287,11 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         if (response) {
             notify.success(response.message);
             switch (action) {
+                case actions.connect.save:
+                    setTimeout(() => {
+                        window.location.href = response.redirect;
+                    }, 1000);
+                    break;
                 case actions.field.save:
                     if (fields.value.length === 0) {
                         fields.value.push({ key: "", value: "" });
@@ -310,8 +330,10 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
             notify.success(response.message);
             switch (action) {
                 case actions.connect.reset:
-                    connection.token = "";
-                    connection.site = site_url;
+                    connection.client_id = "";
+                    connection.client_secret = "";
+                    connection.redirect_uri = redirect_uri;
+                    connection.account_domain = "";
                     break;
                 case actions.field.reset:
                     fields.value = [];
@@ -342,6 +364,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
         removeField,
         handleSubmit,
         handleReset,
+        isConnectionValid
     };
 });
 

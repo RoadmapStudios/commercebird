@@ -47,8 +47,10 @@ final class ZohoCRMAjax {
 	);
 	private const ACTIONS = array(
 		'save_sync_order_via_cron' => 'sync_order',
+		'get_zcrm_connect' => 'connection_get',
 		'save_zcrm_connect' => 'connection_set',
-		'get_zcrm_connect' => 'connect_load',
+		'reset_zcrm_connect' => 'connection_reset',
+		'is_zcrm_connected' => 'connection_done',
 		'import_zcrm_product' => 'product_import',
 		'map_zcrm_product' => 'product_map',
 		'map_zcrm_customer' => 'customer_map',
@@ -59,7 +61,7 @@ final class ZohoCRMAjax {
 		'zcrm_save_custom_fields' => 'zcrm_save_custom_fields',
 		'zcrm_reset_custom_fields' => 'zcrm_reset_custom_fields',
 		'zcrm_fields' => 'get_zcrm_fields',
-		'handle_code' => 'handle_code',
+		'zcrm_handle_code' => 'handle_code',
 	);
 	private const OPTIONS = array(
 		'connect' => array(
@@ -75,7 +77,7 @@ final class ZohoCRMAjax {
 	}
 
 	/**
-	 * Sets the connection for the Zoho Inventory API.
+	 * Sets the connection for the Zoho crm API.
 	 */
 	public function connection_set(): void {
 		$this->verify(
@@ -93,7 +95,13 @@ final class ZohoCRMAjax {
 			update_option( 'zoho_crm_cs', $this->data['client_secret'] );
 			update_option( 'zoho_crm_url', $crm_url );
 			update_option( 'authorization_redirect_uri', $this->data['redirect_uri'] );
-			$redirect = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoCRM.modules.ALL&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
+			$redirect = esc_url_raw( 'https://accounts.zoho.'
+				. $this->data['account_domain']
+				. '/oauth/v2/auth?response_type=code&client_id='
+				. $this->data['client_id'] . '&scope=ZohoCRM.users.ALL,ZohoCRM.bulk.ALL,ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.org.ALL,profile.userphoto.READ,ZohoFiles.files.CREATE&redirect_uri='
+				. $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state='
+				. wp_create_nonce( Template::NAME )
+			);
 			$this->response = array(
 				'redirect' => $redirect,
 				'message' => 'We are redirecting you to zoho. please wait...',
@@ -102,6 +110,21 @@ final class ZohoCRMAjax {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
+		$this->serve();
+	}
+
+	/**
+	 * Retrieves the connection details.
+	 *
+	 * @return void
+	 */
+	public function connection_get(): void {
+		$this->verify();
+		$this->response['account_domain'] = get_option( 'zoho_crm_domain' );
+		$this->response['client_id'] = get_option( 'zoho_crm_cid' );
+		$this->response['client_secret'] = get_option( 'zoho_crm_cs' );
+		$this->response['crm_url'] = get_option( 'zoho_crm_url' );
+		$this->response['redirect_uri'] = get_option( 'authorization_redirect_uri' );
 		$this->serve();
 	}
 
@@ -131,9 +154,32 @@ final class ZohoCRMAjax {
 		$this->serve();
 	}
 
+	/**
+	 * Resets the connection by deleting specific options from the database.
+	 */
+	public function connection_reset(): void {
+		$this->verify();
+		try {
+			$options = array(
+				'zoho_crm_domain',
+				'zoho_crm_cid',
+				'zoho_crm_cs',
+				'zoho_crm_url',
+				'zoho_crm_access_token',
+			);
+			foreach ( $options as $zi_option ) {
+				delete_option( $zi_option );
+			}
+			$this->response = array( 'message' => 'Reset successfully!' );
+		} catch ( Throwable $throwable ) {
+			$this->errors = array( 'message' => $throwable->getMessage() );
+		}
+
+		$this->serve();
+	}
 
 
-	public function connect_load() {
+	public function connection_done() {
 		$this->verify();
 		$zoho_crm_url = get_option( 'zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/org';
@@ -144,7 +190,7 @@ final class ZohoCRMAjax {
 		} elseif ( empty( $json ) ) {
 			$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
 		} else {
-			$this->response = $json->organizations;
+			$this->response = $json->org;
 		}
 		$this->serve();
 	}

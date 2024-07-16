@@ -30,9 +30,11 @@ export const storeKey: StoreKey = {
         cost_center: 'exactOnline_cost_center',
         cost_unit: 'exactOnline_cost_unit',
         payment_status: 'exactOnline_payment_status',
-        webhooks: 'exactOnline_webhooks'
+        webhooks: 'exactOnline_webhooks',
+        gl_account: 'exactOnline_gl_account',
     },
     zohoCrm: {
+        connected: 'zcrm_connected',
         connect: 'zcrm_connect',
         order: 'zcrm_order',
         fields: 'zoho_custom_fields',
@@ -165,7 +167,7 @@ export const backendAction: BackendAction = {
             save: 'zcrm_save_custom_fields',
             reset: 'zcrm_reset_custom_fields'
         },
-        connection: 'is_connected',
+        connection: 'is_zcrm_connected',
         custom_fields: 'get_all_custom_fields',
         refresh_zcrm_fields: 'refresh_zcrm_fields',
         zcrm_fields: 'zcrm_fields',
