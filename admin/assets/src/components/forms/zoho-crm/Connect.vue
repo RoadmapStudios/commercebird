@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import TextInput from "@/components/ui/inputs/TextInput.vue";
+import SelectInput from "@/components/ui/inputs/SelectInput.vue";
+import CopyableInput from "@/components/ui/inputs/CopyableInput.vue";
 import InputGroup from "@/components/ui/inputs/InputGroup.vue";
 import BaseLink from "@/components/ui/BaseLink.vue";
 import BaseForm from "@/components/ui/BaseForm.vue";
@@ -52,27 +54,6 @@ const accountDomains = {
                     Access zoho console
                 </BaseLink>
             </InputGroup>
-
-            <InputGroup flexed label="CommerceBird Token">
-                <div class="flex flex-1">
-                    <TextInput v-model="store.connection.token" />
-                    <button
-                        class="w-[2.875rem] h-[2.875rem] flex-shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold border border-transparent disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-0 dark:focus:ring-gray-600"
-                        type="button" @click="showHint = !showHint">
-                        <QuestionMarkCircleIcon @click="handleClick" />
-                    </button>
-                </div>
-                <BaseLink href="/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks"
-                    rel="noopener noreferrer" target="_blank">
-                    Copy Token from here
-                </BaseLink>
-            </InputGroup>
-            <InputGroup flexed label="Active Site URL">
-                <TextInput v-model="store.connection.site" disabled />
-                <BaseLink href="https://app.commercebird.com/integrations" rel="noopener noreferrer" target="_blank">
-                    Access App Console
-                </BaseLink>
-            </InputGroup>
             <InputGroup label="Client ID">
                 <TextInput v-model="store.connection.client_id" />
             </InputGroup>
@@ -80,7 +61,6 @@ const accountDomains = {
                 <TextInput v-model="store.connection.client_secret" />
             </InputGroup>
             <CopyableInput :value="store.connection.redirect_uri" />
-
         </BaseForm>
 
     </div>

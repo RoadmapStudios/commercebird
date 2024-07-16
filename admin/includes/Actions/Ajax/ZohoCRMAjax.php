@@ -4,6 +4,7 @@ namespace RMS\Admin\Actions\Ajax;
 
 use Classfunctions;
 use ExecutecallClass;
+use RMS\Admin\Template;
 use RMS\Admin\Connectors\CommerceBird;
 use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\OptionStatus;
@@ -97,7 +98,7 @@ final class ZohoCRMAjax {
 				'redirect' => $redirect,
 				'message' => 'We are redirecting you to zoho. please wait...',
 			);
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
@@ -123,7 +124,7 @@ final class ZohoCRMAjax {
 				} else {
 					$this->errors = (array) $access_token;
 				}
-			} catch ( Throwable $throwable ) {
+			} catch (Throwable $throwable) {
 				$this->errors = array( 'message' => $throwable->getMessage() );
 			}
 		}
