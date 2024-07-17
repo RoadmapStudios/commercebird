@@ -55,6 +55,7 @@ final class ExactOnlineAjax {
 		),
 		'cost_center' => 'commercebird-exact-online-cost-center',
 		'cost_unit' => 'commercebird-exact-online-cost-unit',
+		'gl_accounts' => 'commercebird-exact-online-gl-accounts',
 	);
 
 	/**
