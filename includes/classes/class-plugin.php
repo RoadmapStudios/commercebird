@@ -10,6 +10,7 @@ use RMS\Admin\Actions\Ajax\ZohoCRMAjax;
 use RMS\Admin\Actions\Ajax\AcfAjax;
 use RMS\Admin\Cors;
 use RMS\Admin\Template;
+use RMS\Admin\Acf;
 
 class Plugin {
 
@@ -149,10 +150,11 @@ class Plugin {
 			Template::instance();
 			ZohoInventoryAjax::instance();
 			ZohoCRMAjax::instance();
-			ExactOnlineAjax::instance();
 			AcfAjax::instance();
 			Cors::instance();
+			Acf::instance();
 		}
+		ExactOnlineAjax::instance();
 		// CM_Webhook_Modify::instance();
 		new CommerceBird_WC_API();
 	}

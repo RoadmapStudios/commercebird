@@ -191,7 +191,7 @@ final class ExactOnlineAjax {
 
 	public function export_order( $start_date, $end_date ) {
 		// Define the order statuses to exclude
-		$exclude_statuses = array( 'wc-failed', 'wc-pending', 'wc-on-hold', 'wc-cancelled', 'wc-refunded' );
+		$exclude_statuses = array( 'wc-failed', 'wc-pending', 'wc-on-hold', 'wc-cancelled' );
 		$posts_per_page = 50;
 
 		$paged = 1;
