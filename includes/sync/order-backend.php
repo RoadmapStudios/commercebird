@@ -135,7 +135,38 @@ function cmbird_sync_order_to_zoho_notices() {
 add_filter( 'woocommerce_webhook_payload', 'cmbird_modify_order_webhook_payload', 10, 4 );
 function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id, $id ) {
 	$webhook = wc_get_webhook( $id );
-	if ( $webhook && $webhook->get_name() !== 'CommerceBird Orders' ) {
+
+	// if webhook name contains 'CommerceBird Customers' using strpos, then add the customer_id to the payload
+	$customers_webhook_name = 'CommerceBird Customers';
+	$webhook_name = $webhook->get_name();
+	if ( $webhook && strpos( $webhook_name, $customers_webhook_name ) !== false ) {
+		// include eo_gl_account and eo_account_id in the payload
+		$customer_id = (int) $payload['id'];
+		$eo_gl_account = get_user_meta( $customer_id, 'eo_gl_account', true );
+		$eo_account_id = get_user_meta( $customer_id, 'eo_account_id', true );
+		$eo_contact_id = get_user_meta( $customer_id, 'eo_contact_id', true );
+		if ( ! empty( $eo_gl_account ) ) {
+			$payload['meta_data'][] = array(
+				'key' => 'eo_gl_account',
+				'value' => $eo_gl_account,
+			);
+		}
+		if ( ! empty( $eo_account_id ) ) {
+			$payload['meta_data'][] = array(
+				'key' => 'eo_account_id',
+				'value' => $eo_account_id,
+			);
+		}
+		if ( ! empty( $eo_contact_id ) ) {
+			$payload['meta_data'][] = array(
+				'key' => 'eo_contact_id',
+				'value' => $eo_contact_id,
+			);
+		}
+		return $payload;
+	}
+
+	if ( $webhook && $webhook_name !== 'CommerceBird Orders' ) {
 		return $payload;
 	}
 
