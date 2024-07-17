@@ -222,3 +222,21 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 
 	return $should_deliver; // Continue with normal webhook delivery
 }
+
+/**
+ * Update Customer Meta Data when Order is updated
+ * @param $order_id
+ *
+ */
+function cmbird_update_customer_meta( $order_id ) {
+	$order = wc_get_order( $order_id );
+	$customer_id = $order->get_user_id();
+	$eo_gl_account = get_user_meta( $customer_id, 'eo_gl_account', true );
+	if ( empty( $eo_gl_account ) ) {
+		$eo_gl_account = $order->get_meta( 'glaccount', true );
+		if ( ! empty( $eo_gl_account ) ) {
+			update_user_meta( $customer_id, 'eo_gl_account', $eo_gl_account );
+		}
+	}
+}
+add_action( 'woocommerce_update_order', 'cmbird_update_customer_meta' );
