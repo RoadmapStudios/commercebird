@@ -306,7 +306,7 @@ final class ExactOnlineAjax {
 		} else {
 			$centers = array_map(
 				function ($item) {
-					return "{$item['Code']}-{$item['Description']}";
+					return "{$item['Code']} : {$item['Description']}";
 				},
 				$response['data']
 			);
@@ -324,7 +324,7 @@ final class ExactOnlineAjax {
 		} else {
 			$units = array_map(
 				function ($item) {
-					return "{$item['Code']}-{$item['Description']}";
+					return "{$item['Code']} : {$item['Description']}";
 				},
 				$response['data']
 			);
@@ -342,7 +342,7 @@ final class ExactOnlineAjax {
 		} else {
 			$accounts = array_map(
 				function ($item) {
-					return "{$item['Code']}-{$item['Description']}";
+					return "{$item['ID']} : {$item['Description']}";
 				},
 				$response['data']
 			);
