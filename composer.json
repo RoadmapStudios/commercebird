@@ -21,8 +21,7 @@
   "require": {
     "php": ">=7.4",
     "ext-curl": "*",
-    "ext-json": "*",
-    "zohocrm/php-sdk-6.0": "4.0.0"
+    "ext-json": "*"
   },
   "require-dev": {
     "filp/whoops": ">=2.15.4",
