@@ -255,7 +255,6 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 function cmbird_update_customer_meta( $order_id ) {
 	$order = wc_get_order( $order_id );
 	$customer_id = $order->get_user_id();
-	$eo_gl_account = get_user_meta( $customer_id, 'eo_gl_account', true );
 	$eo_gl_account = $order->get_meta( 'glaccount', true );
 	if ( ! empty( $eo_gl_account ) ) {
 		// get the value of the glaccount meta, which is everything before : in the value
