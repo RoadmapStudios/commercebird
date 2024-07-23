@@ -61,6 +61,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use CommerceBird\Plugin;
 use RMS\Admin\Actions\Sync\ExactOnlineSync;
+use RMS\Admin\Actions\Sync\ZohoCRMSync;
 use RMS\API\ProductWebhook;
 use RMS\API\CreateOrderWebhook;
 use RMS\API\CreateSFOrderWebhook;
@@ -115,6 +116,8 @@ add_action( 'sync_zi_import_contacts', array( $contact_class, 'cmbird_get_zoho_c
 // Exact Online Hooks
 add_action( 'sync_eo', array( ExactOnlineSync::class, 'sync' ), 10, 3 );
 add_action( 'commmercebird_exact_online_get_payment_statuses', array( ExactOnlineSync::class, 'get_payment_status_via_cron' ) );
+// Zoho CRM Hooks
+add_action( 'init', array( ZohoCRMSync::class, 'refresh_token' ) );
 
 // Load License Key library
 if ( class_exists( 'commercebird_AM_Client' ) ) {

@@ -191,6 +191,10 @@ final class ZohoCRMAjax {
 			$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
 		} else {
 			$this->response = $json->org;
+			// schedule a wp cron to refresh the token after one hour from now.
+			if ( ! wp_next_scheduled( 'zcrm_refresh_token' ) ) {
+				wp_schedule_event( time() + 3600, 'hourly', 'zcrm_refresh_token' );
+			}
 		}
 		$this->serve();
 	}

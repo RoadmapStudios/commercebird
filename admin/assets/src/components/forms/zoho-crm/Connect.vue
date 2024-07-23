@@ -1,5 +1,10 @@
 <template>
     <div>
+        <div v-if="isConnected && isConnected[0]">
+    <p>Type: {{ isConnected && isConnected[0]?.type }}</p>
+      <p>Company Name: {{ isConnected[0]?.company_name }}</p>
+      <p>Primary Email: {{ isConnected[0]?.primary_email }}</p>
+    </div>
         <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
             <InputGroup flexed label="Account Domain">
                 <SelectInput v-model="store.connection.account_domain" :options="accountDomains" />
@@ -17,7 +22,6 @@
             </InputGroup>
             <CopyableInput :value="store.connection.redirect_uri" />
         </BaseForm>
-
     </div>
 </template>
 <script lang="ts" setup>
@@ -31,7 +35,7 @@ import { backendAction, storeKey } from "@/keys";
 import {redirect_uri} from "@/composable/helpers";
 import { useZohoCrmStore } from "@/stores/zohoCrm";
 import { useLoadingStore } from "@/stores/loading";
-import { onBeforeMount } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 
 const accountDomains = {
     com: "com",
@@ -44,8 +48,10 @@ const accountDomains = {
 
 const store = useZohoCrmStore();
 const loader = useLoadingStore();
-const source = store.connection.redirect_uri;
 const action = backendAction.zohoCrm.connect;
+
+const isConnected = computed(() => store.isConnected);
+
 onBeforeMount(async () => {
   const response = await loader.loadData(
       storeKey.zohoCrm.connected,
@@ -57,6 +63,7 @@ onBeforeMount(async () => {
     store.connection.redirect_uri = redirect_uri;
     store.connection.account_domain = response.account_domain;
   }
+  await store.isConnectionValid();
 });
 
 </script>
