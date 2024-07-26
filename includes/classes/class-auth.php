@@ -103,7 +103,6 @@ class Classfunctions {
 			'client_secret' => $client_sec,
 		);
 		$url = 'zoho_inventory' === $app_name ? $this->config['ServiceZI']['AUTHURL'] : $this->config['ServiceZCRM']['AUTHURL'];
-
 		// Set up the request arguments
 		$args = array(
 			'headers' => $headers,
@@ -111,8 +110,7 @@ class Classfunctions {
 			'method' => 'POST',
 		);
 		// Make the request using wp_remote_post()
-		$response = wp_remote_post( $url, $args );
-
+		$response = wp_remote_post( $url, $args );;
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
 			// If successful, get the body of the response
@@ -123,7 +121,7 @@ class Classfunctions {
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			return 'Error: ' . $error_message;
+			throw new Exception( 'Error: ' . esc_html( $error_message ) );
 		}
 	}
 }
