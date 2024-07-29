@@ -59,7 +59,11 @@ final class Acf {
 					'ACF',
 					array(
 						'get_callback' => function ( $object ) {
-							return get_fields( $object['id'] );
+							if ( function_exists( 'get_fields' ) ) {
+								return get_fields( $object['id'] );
+							} else {
+								return null;
+							}
 						},
 						'schema' => null,
 					)

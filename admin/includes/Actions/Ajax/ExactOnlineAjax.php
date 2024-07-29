@@ -91,7 +91,7 @@ final class ExactOnlineAjax {
 	 * @return void
 	 */
 	public function get_payment_status(): void {
-		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-60 days' ) );
+		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-90 days' ) );
 		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-5 days' ) );
 		$exclude_statuses = array( 'wc-completed', 'wc-processing', 'wc-refunded', 'wc-cancelled', 'wc-failed', 'wc-on-hold', 'wc-pending', 'wc-checkout-draft' );
 		$all_statuses = array_keys( wc_get_order_statuses() );
