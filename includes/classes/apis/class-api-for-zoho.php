@@ -210,7 +210,7 @@ class Zoho extends WP_REST_Controller {
 		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
-			$response['purchase_order'] = $json->purchase_order;
+			$response['purchase_order'] = $json->purchaseorder;
 			$response['url'] = $get_url;
 			$rest_response->set_data( $response );
 			$rest_response->set_status( 200 );
