@@ -4,8 +4,8 @@ namespace RMS\Admin\Actions\Ajax;
 
 use Classfunctions;
 use ExecutecallClass;
+use RMS\Admin\Actions\Sync\ZohoCRMSync;
 use RMS\Admin\Template;
-use RMS\Admin\Connectors\CommerceBird;
 use RMS\Admin\Traits\AjaxRequest;
 use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
@@ -191,6 +191,10 @@ final class ZohoCRMAjax {
 			$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
 		} else {
 			$this->response = $json->org;
+			// schedule a wp cron to refresh the token after one hour from now.
+			if ( ! wp_next_scheduled( 'zcrm_refresh_token' ) ) {
+				wp_schedule_event( time() + 3600, 'hourly', 'zcrm_refresh_token' );
+			}
 		}
 		$this->serve();
 	}
@@ -205,7 +209,7 @@ final class ZohoCRMAjax {
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
-			$fields = ( new CommerceBird() )->get_zcrm_fields( $module );
+			$fields = ( new ZohoCRMSync() )->get_custom_fields( $module );
 			if ( is_wp_error( $fields ) ) {
 				$this->errors['message'] = $fields->get_error_message();
 			} else {
@@ -236,37 +240,19 @@ final class ZohoCRMAjax {
 	/**
 	 * Retrieves the fields and serves the response.
 	 *
-	 * @return void
+	 * @return object
 	 */
 	public function zcrm_get_custom_fields(): void {
 
-		$module = isset( $_GET['module'] ) ? $_GET['module'] : '';
+		$module = $_GET['module'] ?? '';
 
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
-
 			$this->verify();
-			$zoho_crm_url = get_option( 'zoho_crm_url' );
-			$url = $zoho_crm_url . "crm/v6/$module/fields";
-			$execute_curl_call_handle = new ExecutecallClass();
-			$json = $execute_curl_call_handle->execute_curl_call_get( $url );
-			$fd = fopen( __DIR__ . '/logs.txt', 'a+' );
-			fwrite( $fd, print_r( $json, true ) );
-			fclose( $fd );
-			if ( is_wp_error( $json ) ) {
-				$this->errors = array( 'message' => $json->get_error_message() );
-			} elseif ( empty( $json ) ) {
-				$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
-			} else {
-				$this->response = $json->org;
-			}
+			$option_name = 'zcrm_' . strtolower( $module ) . '_custom_fields';
+			$this->response['form'] = get_option( $option_name, array() );
 			$this->serve();
-
-			// $this->verify();
-			// $option_name = 'zcrm_' . strtolower( $module ) . '_custom_fields';
-			// $this->response['form'] = get_option( $option_name, array() );
-			// $this->serve();
 		}
 	}
 

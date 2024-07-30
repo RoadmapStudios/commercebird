@@ -91,7 +91,7 @@ final class ExactOnlineAjax {
 	 * @return void
 	 */
 	public function get_payment_status(): void {
-		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-60 days' ) );
+		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-90 days' ) );
 		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-5 days' ) );
 		$exclude_statuses = array( 'wc-completed', 'wc-processing', 'wc-refunded', 'wc-cancelled', 'wc-failed', 'wc-on-hold', 'wc-pending', 'wc-checkout-draft' );
 		$all_statuses = array_keys( wc_get_order_statuses() );
@@ -113,16 +113,25 @@ final class ExactOnlineAjax {
 			$this->serve();
 		}
 		foreach ( $orders as $order ) {
-			$response = ( new CommerceBird() )->payment_status( $order->get_id() );
+			$object = array();
+			$order_id = $order->get_id();
+			$object['OrderID'] = $order_id;
+			$customer_id = $order->get_customer_id();
+			// get the eo_account_id from the user meta
+			$object['AccountID'] = get_user_meta( $customer_id, 'eo_account_id', true );
+			$response = ( new CommerceBird() )->payment_status( $object );
 			// check response contains "Payment_Status" key
 			if ( ! isset( $response['Payment_Status'] ) ) {
 				continue;
 			}
 			// if response is Paid then update the order status to completed
 			if ( 'Paid' === $response['Payment_Status'] ) {
-				$order->update_status( 'completed' );
+				// set order as paid
+				$order->payment_complete();
 				$order->add_order_note( __( 'Payment processed in Exact Online', 'commercebird' ) );
 				$order->save();
+			} else {
+				$order->update_status( 'on-hold', __( 'Payment not processed in Exact Online', 'commercebird' ) );
 			}
 		}
 		// Schedule the event to run daily
@@ -305,8 +314,8 @@ final class ExactOnlineAjax {
 			$this->errors['message'] = __( 'Cost centers not found', 'commercebird' );
 		} else {
 			$centers = array_map(
-				function ($item) {
-					return "{$item['Code']} : {$item['Description']}";
+				function ( $item ) {
+					return "{$item['Code']}-{$item['Description']}";
 				},
 				$response['data']
 			);
@@ -323,8 +332,8 @@ final class ExactOnlineAjax {
 			$this->errors['message'] = __( 'Cost units not found', 'commercebird' );
 		} else {
 			$units = array_map(
-				function ($item) {
-					return "{$item['Code']} : {$item['Description']}";
+				function ( $item ) {
+					return "{$item['Code']}-{$item['Description']}";
 				},
 				$response['data']
 			);
@@ -341,7 +350,7 @@ final class ExactOnlineAjax {
 			$this->errors['message'] = __( 'GL accounts not found', 'commercebird' );
 		} else {
 			$accounts = array_map(
-				function ($item) {
+				function ( $item ) {
 					return "{$item['ID']} : {$item['Description']}";
 				},
 				$response['data']

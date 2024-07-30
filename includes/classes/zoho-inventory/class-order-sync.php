@@ -390,7 +390,7 @@ class Zi_Order_Sync {
 					// adding warehouse_id in line items array
 					$warehouse_id = get_option( 'zoho_warehouse_id_status' );
 					if ( $warehouse_id > 0 ) {
-						$warehouse_id = '"warehouse_id": "' . $warehouse_id . '"';
+						$warehouse_id = ',"warehouse_id": "' . $warehouse_id . '"';
 					} else {
 						$warehouse_id = '';
 					}
@@ -423,9 +423,9 @@ class Zi_Order_Sync {
 						$item_price = round( $item_price, 2 );
 					}
 					if ( $enable_incl_tax === 'yes' ) {
-						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price . '",' . $warehouse_id . '}';
+						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price . '"' . $warehouse_id . '}';
 					} else {
-						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price1 . '",' . $warehouse_id . '}';
+						$pdt_items[] = '{"item_id": "' . $item_id . '","description": "' . $product_desc . '","quantity": "' . $qty . '",' . $taxid . '' . $discount_per_item . '"rate": "' . $item_price1 . '"' . $warehouse_id . '}';
 					}
 					++$index;
 				}

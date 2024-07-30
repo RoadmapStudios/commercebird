@@ -46,23 +46,30 @@ final class Acf {
 	}
 
 	public function register_routes() {
-		$exclude_type  = [ 'acf-field-group', 'acf-field' ];
+		$exclude_type = [ 'acf-field-group', 'acf-field' ];
 		$include_types = [ 'page' ];
-		$post_types    = array_diff( get_post_types( [ '_builtin' => false ] ), $exclude_type );
-		$post_types    = array_merge( $post_types, $include_types );
+		$post_types = array_diff( get_post_types( [ '_builtin' => false ] ), $exclude_type );
+		$post_types = array_merge( $post_types, $include_types );
 
-		array_walk( $post_types, function ( $post_type ) {
-			register_rest_field(
-				$post_type,
-				'ACF',
-				[
-					'get_callback' => function ( $object ) {
-						return get_fields( $object['id'] );
-					},
-					'schema'       => null,
-				]
-			);
-		} );
+		array_walk(
+			$post_types,
+			function ( $post_type ) {
+				register_rest_field(
+					$post_type,
+					'ACF',
+					array(
+						'get_callback' => function ( $object ) {
+							if ( function_exists( 'get_fields' ) ) {
+								return get_fields( $object['id'] );
+							} else {
+								return null;
+							}
+						},
+						'schema' => null,
+					)
+				);
+			}
+		);
 	}
 
 	/**

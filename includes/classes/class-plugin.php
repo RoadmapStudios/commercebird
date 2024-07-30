@@ -109,7 +109,6 @@ class Plugin {
 				delete_user_meta( $user->ID, $user_key );
 			}
 		}
-
 		// deleting mapped categories
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'options';
@@ -118,6 +117,8 @@ class Plugin {
 			$option_name = $row->option_name;
 			$wpdb->delete( $table_name, array( 'option_name' => $option_name ), array( '%s' ) );
 		}
+		// clear scheduled zcrm_refresh_token
+		wp_clear_scheduled_hook( 'zcrm_refresh_token' );
 	}
 
 	public static function init() {
