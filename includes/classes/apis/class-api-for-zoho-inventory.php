@@ -53,6 +53,15 @@ class Zoho extends WP_REST_Controller {
 		);
 		register_rest_route(
 			$this->prefix,
+			'/' . $this->rest_base . '/vendors/',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'get_zi_vendors' ),
+				'permission_callback' => array( $this, 'permission_check' ),
+			)
+		);
+		register_rest_route(
+			$this->prefix,
 			'/' . $this->rest_base . '/purchase-detail/',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
@@ -205,7 +214,6 @@ class Zoho extends WP_REST_Controller {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . 'inventory/v1/purchaseorders/' . $purchaseorder_id . '?organization_id=' . $zoho_inventory_oid;
-
 		$execute_curl_call_handle = new ExecutecallClass();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
@@ -218,7 +226,29 @@ class Zoho extends WP_REST_Controller {
 			$rest_response->set_data( 'connection is not yet setup' );
 			$rest_response->set_status( 400 );
 		}
+		return rest_ensure_response( $rest_response );
+	}
 
+	public function get_zi_vendors( $request ): WP_REST_RESPONSE {
+		$rest_response = new WP_REST_Response();
+		$rest_response->set_data( $this->empty_response );
+		$rest_response->set_status( 400 );
+		// connection
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$get_url = $zoho_inventory_url . 'inventory/v1/users/' . $purchaseorder_id . '?user_role=vendor&organization_id=' . $zoho_inventory_oid;
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
+		$code = $json->code;
+		if ( 0 === (int) $code ) {
+			$response['users'] = $json;
+			$response['url'] = $get_url;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 200 );
+		} else {
+			$rest_response->set_data( 'connection is not yet setup' );
+			$rest_response->set_status( 400 );
+		}
 		return rest_ensure_response( $rest_response );
 	}
 }
