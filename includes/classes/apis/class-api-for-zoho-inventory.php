@@ -213,7 +213,7 @@ class Zoho extends WP_REST_Controller {
 		// connection
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$get_url = $zoho_inventory_url . 'inventory/v1/purchaseorders/' . $purchaseorder_id . '?organization_id=' . $zoho_inventory_oid;
+		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders/$purchaseorder_id?organization_id=$zoho_inventory_oid";
 		$execute_curl_call_handle = new ExecutecallClass();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
@@ -229,19 +229,15 @@ class Zoho extends WP_REST_Controller {
 		return rest_ensure_response( $rest_response );
 	}
 
-	public function get_zi_vendors( $request ): WP_REST_RESPONSE {
+	public function handle_get_api_request( $get_url, $data_key, $response_key ): WP_REST_RESPONSE {
 		$rest_response = new WP_REST_Response();
 		$rest_response->set_data( $this->empty_response );
 		$rest_response->set_status( 400 );
-		// connection
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$get_url = $zoho_inventory_url . 'inventory/v1/users/' . $purchaseorder_id . '?user_role=vendor&organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new ExecutecallClass();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
-			$response['users'] = $json;
+			$response[ $response_key ] = $json->$data_key;
 			$response['url'] = $get_url;
 			$rest_response->set_data( $response );
 			$rest_response->set_status( 200 );
@@ -251,4 +247,19 @@ class Zoho extends WP_REST_Controller {
 		}
 		return rest_ensure_response( $rest_response );
 	}
+
+	public function get_zi_vendors( $request ): WP_REST_RESPONSE {
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$get_url = $zoho_inventory_url . "inventory/v1/contacts?contact_type=vendor&organization_id=$zoho_inventory_oid";
+		return $this->handle_get_api_request( $get_url, 'contacts', 'users' );
+	}
+
+	public function get_zi_warehouses( $request ): WP_REST_RESPONSE {
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$get_url = $zoho_inventory_url . "inventory/v1/settings/warehouses?contact_type=vendor&organization_id=$zoho_inventory_oid";
+		return $this->handle_get_api_request( $get_url, 'warehouses', 'warehouses' );
+	}
+
 }
