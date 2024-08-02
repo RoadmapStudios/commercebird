@@ -16,6 +16,7 @@ class Plugin {
 
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'init' ) );
+		add_filter( 'cron_schedules', array( $this, 'cmbird_custom_cron_intervals' ) );
 	}
 
 	public static function activate() {
@@ -158,5 +159,27 @@ class Plugin {
 		Acf::instance();
 		// CM_Webhook_Modify::instance();
 		new CommerceBird_WC_API();
+	}
+
+	/**
+	 * Add custom cron intervals
+	 * @param array $schedules
+	 * @return array
+	 */
+	public function cmbird_custom_cron_intervals( $schedules ) {
+		// add weekly and monthly intervals if it not exists.
+		if ( ! isset( $schedules['weekly'] ) ) {
+			$schedules['weekly'] = array(
+				'interval' => 604800,
+				'display' => __( 'Once Weekly' ),
+			);
+		}
+		if ( ! isset( $schedules['monthly'] ) ) {
+			$schedules['monthly'] = array(
+				'interval' => 2635200,
+				'display' => __( 'Once Monthly' ),
+			);
+		}
+		return $schedules;
 	}
 }
