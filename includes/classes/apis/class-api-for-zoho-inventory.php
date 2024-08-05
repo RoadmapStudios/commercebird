@@ -78,6 +78,15 @@ class Zoho extends WP_REST_Controller {
 				'permission_callback' => array( $this, 'permission_check' ),
 			)
 		);
+		register_rest_route(
+			$this->prefix,
+			'/' . $this->rest_base . '/create-po/',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => array( $this, 'create_zi_purchase_order' ),
+				'permission_callback' => array( $this, 'permission_check' ),
+			)
+		);
 	}
 
 	/**
@@ -143,20 +152,6 @@ class Zoho extends WP_REST_Controller {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/invoices/?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'invoices', 'invoices' );
-		// $execute_curl_call_handle = new ExecutecallClass();
-		// $json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
-		// $code = $json->code;
-		// if ( 0 === (int) $code ) {
-		// 	$response['invoices'] = $json->invoices;
-		// 	$rest_response->set_data( $response );
-		// 	$rest_response->set_status( 200 );
-
-		// } else {
-		// 	$rest_response->set_data( 'connection is not yet setup' );
-		// 	$rest_response->set_status( 400 );
-		// }
-
-		// return rest_ensure_response( $rest_response );
 	}
 
 	public function get_zi_invoice_detail( $request ): WP_REST_RESPONSE {
@@ -176,46 +171,13 @@ class Zoho extends WP_REST_Controller {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/invoices/$invoice_id?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'invoice', 'invoice' );
-
-		// $execute_curl_call_handle = new ExecutecallClass();
-		// $json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
-		// $code = $json->code;
-		// if ( 0 === (int) $code ) {
-		// 	$response['invoice'] = $json->invoice;
-		// 	$rest_response->set_data( $response );
-		// 	$rest_response->set_status( 200 );
-
-		// } else {
-		// 	$rest_response->set_data( 'connection is not yet setup' );
-		// 	$rest_response->set_status( 400 );
-		// }
-
-		// return rest_ensure_response( $rest_response );
 	}
 
 	public function get_zi_purchase_orders(): WP_REST_Response {
-		// $rest_response = new WP_REST_Response();
-		// $rest_response->set_data( $this->empty_response );
-		// $rest_response->set_status( 400 );
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders/?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'purchaseorders', 'purchaseorders' );
-		// $execute_curl_call_handle = new ExecutecallClass();
-		// $json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
-		// $code = $json->code;
-		// if ( 0 === (int) $code ) {
-		// 	$response['purchaseorders'] = $json->purchaseorders;
-		// 	$rest_response->set_data( $response );
-		// 	$rest_response->set_status( 200 );
-
-		// } else {
-		// 	$rest_response->set_data( 'connection is not yet setup' );
-		// 	$rest_response->set_status( 400 );
-		// }
-
-		// return rest_ensure_response( $rest_response );
-
 	}
 
 	public function get_zi_purchase_detail( $request ): WP_REST_RESPONSE {
@@ -234,18 +196,6 @@ class Zoho extends WP_REST_Controller {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders/$purchaseorder_id?organization_id=$zoho_inventory_oid";
-		// $execute_curl_call_handle = new ExecutecallClass();
-		// $json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
-		// $code = $json->code;
-		// if ( 0 === (int) $code ) {
-		// 	$response['purchase_order'] = $json->purchaseorder;
-		// 	$response['url'] = $get_url;
-		// 	$rest_response->set_data( $response );
-		// 	$rest_response->set_status( 200 );
-		// } else {
-		// 	$rest_response->set_data( 'connection is not yet setup' );
-		// 	$rest_response->set_status( 400 );
-		// }
 		return $this->handle_get_api_request( $get_url, 'purchaseorder', 'purchase_order' );
 	}
 
@@ -261,6 +211,38 @@ class Zoho extends WP_REST_Controller {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/settings/warehouses?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'warehouses', 'warehouses' );
+	}
+
+	public function create_zi_purchase_order( $request ): WP_REST_RESPONSE {
+		$rest_response = new WP_REST_Response();
+		$rest_response->set_data( $this->empty_response );
+		$rest_response->set_status( 400 );
+
+		// Get invoice id from the request
+		$purchaseorder = $request['purchaseorder'];
+
+		if ( empty( $purchaseorder ) ) {
+			$rest_response->set_data( 'purchaseorder is required' );
+			$rest_response->set_status( 400 );
+			return rest_ensure_response( $rest_response );
+		}
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders?organization_id=$zoho_inventory_oid";
+
+		$execute_curl_call_handle = new ExecutecallClass();
+		$json = $execute_curl_call_handle->execute_curl_call_post( $get_url, $purchaseorder );
+		$code = $json->code;
+		if ( 0 === (int) $code ) {
+			$response['data'] = $json->$json;
+			$response['url'] = $get_url;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 200 );
+		} else {
+			$response['data'] = $json->$json;
+			$rest_response->set_data( 'connection is not yet setup' );
+			$rest_response->set_status( 400 );
+		}
 	}
 
 }
