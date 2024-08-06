@@ -2,6 +2,7 @@
 
 namespace RMS\API;
 
+use Exception;
 use ExecutecallClass;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -228,21 +229,24 @@ class Zoho extends WP_REST_Controller {
 		}
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders?organization_id=$zoho_inventory_oid";
+		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders?organization_id=$zoho_inventory_oid&ignore_auto_number_generation=false";
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->execute_curl_call_post( $get_url, $purchaseorder );
+		$json = $execute_curl_call_handle->execute_curl_call_post( $get_url, array(
+			'JSONString' => json_encode( $purchaseorder )
+		) );
 		$code = $json->code;
+		$response['url'] = $get_url;
 		if ( 0 === (int) $code ) {
-			$response['data'] = $json->$json;
-			$response['url'] = $get_url;
+			$response['data'] = $json->purchaseorder;
 			$rest_response->set_data( $response );
 			$rest_response->set_status( 200 );
 		} else {
-			$response['data'] = $json->$json;
-			$rest_response->set_data( 'connection is not yet setup' );
+			$response['data'] = $json;
+			$rest_response->set_data( $response );
 			$rest_response->set_status( 400 );
 		}
+		return rest_ensure_response( $rest_response );
 	}
 
 }
