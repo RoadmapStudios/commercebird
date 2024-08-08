@@ -5,6 +5,7 @@ namespace RMS\Admin\Actions\Sync;
 defined( 'RMS_PLUGIN_NAME' ) || exit;
 
 use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
+use RMS\Admin\Connectors\CommerceBird;
 
 class ExactOnlineSync {
 
@@ -234,5 +235,46 @@ class ExactOnlineSync {
 		// execute get_payment_status of ExactOnlineAjax class
 		$ajax = new ExactOnlineAjax();
 		$ajax->get_payment_status();
+	}
+
+	/**
+	 * Process the payment status of the order via Exact Online.
+	 * @param array $
+	 * @return void
+	 */
+	public static function sync_payment_status() {
+		$args = func_get_args();
+		$order_id = $args[0];
+		if ( empty( $order_id ) ) {
+			return;
+		}
+		$order = wc_get_order( $order_id );
+		$object = array();
+		$order_id = $order->get_id();
+		$object['OrderID'] = $order_id;
+		$customer_id = $order->get_customer_id();
+		// get the eo_account_id from the user meta
+		$object['AccountID'] = get_user_meta( $customer_id, 'eo_account_id', true );
+		$response = ( new CommerceBird() )->payment_status( $object );
+		// check response contains "Payment_Status" key
+		if ( ! isset( $response['Payment_Status'] ) ) {
+			return;
+		}
+		// if response is Paid then update the order status to completed
+		if ( 'Paid' === $response['Payment_Status'] ) {
+			// set order as paid
+			if ( $order->get_status() === 'completed' ) {
+				return;
+			}
+			$order->payment_complete();
+			$order->update_status( 'completed', __( 'Payment processed in Exact Online', 'commercebird' ) );
+			$order->save();
+		} elseif ( 'Unpaid' === $response['Payment_Status'] ) {
+			if ( $order->get_status() === 'on-hold' ) {
+				return;
+			}
+			$order->update_status( 'on-hold', __( 'Payment not processed in Exact Online', 'commercebird' ) );
+			$order->save();
+		}
 	}
 }

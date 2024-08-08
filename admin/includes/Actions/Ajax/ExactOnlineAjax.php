@@ -91,52 +91,86 @@ final class ExactOnlineAjax {
 	 * @return void
 	 */
 	public function get_payment_status(): void {
-		$start_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-90 days' ) );
-		$end_date = gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-5 days' ) );
-		$exclude_statuses = array( 'wc-completed', 'wc-processing', 'wc-refunded', 'wc-cancelled', 'wc-failed', 'wc-on-hold', 'wc-pending', 'wc-checkout-draft' );
-		$all_statuses = array_keys( wc_get_order_statuses() );
-		// Calculate included statuses by removing excluded ones
-		$included_statuses = array_diff( $all_statuses, $exclude_statuses );
-		// Get all orders with the included statuses
-		$orders = wc_get_orders(
-			array(
-				'status' => $included_statuses,
-				'limit' => -1,
-				'date_created' => $start_date . '...' . $end_date,
+		global $wpdb;
+
+		// $fd = fopen( __DIR__ . '/get_payment_status.log', 'a+' );
+
+		$start_date = gmdate( 'Y-m-d H:i:s', strtotime( '-230 days' ) );
+		$end_date = gmdate( 'Y-m-d H:i:s', strtotime( '-5 days' ) );
+		$exclude_statuses = array( 'wc-completed', 'wc-sf-order' );
+		$included_status = 'wc-completed';
+
+		// Prepare the query
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID
+				FROM {$wpdb->posts}
+    			WHERE post_type = 'shop_order'
+    			AND post_status = 'wc-sf-order'
+    			AND post_date_gmt >= %s
+    			AND post_date_gmt <= %s
+    			AND ID IN (
+        			SELECT post_id
+        			FROM {$wpdb->postmeta}
+        			WHERE meta_key = '_customer_user'
+        			AND meta_value > 0
+        			AND post_id NOT IN (
+            			SELECT post_id
+            			FROM {$wpdb->postmeta}
+            			WHERE meta_key = '_payment_method'
+        			)
+				)",
+				$start_date,
+				$end_date
 			)
 		);
-		if ( empty( $orders ) ) {
-			$this->response = array(
-				'success' => false,
-				'message' => __( 'No Invoice orders found', 'commercebird' ),
-			);
-			$this->serve();
-		}
-		foreach ( $orders as $order ) {
-			$object = array();
-			$order_id = $order->get_id();
-			$object['OrderID'] = $order_id;
-			$customer_id = $order->get_customer_id();
-			// get the eo_account_id from the user meta
-			$object['AccountID'] = get_user_meta( $customer_id, 'eo_account_id', true );
-			$response = ( new CommerceBird() )->payment_status( $object );
-			// check response contains "Payment_Status" key
-			if ( ! isset( $response['Payment_Status'] ) ) {
+
+		// Calculate included statuses by removing excluded ones
+		// $included_statuses = array_diff( $all_statuses, $exclude_statuses );
+		// Get all orders with the included statuses
+		// $orders = wc_get_orders(
+		// 	array(
+		// 		'status' => $included_statuses,
+		// 		'limit' => -1,
+		// 		'date_created' => $start_date . '...' . $end_date,
+		// 	)
+		// );
+		// if ( empty( $orders ) ) {
+		// 	$this->response = array(
+		// 		'success' => false,
+		// 		'message' => __( 'No Invoice orders found', 'commercebird' ),
+		// 	);
+		// 	$this->serve();
+		// }
+		// Filter out orders without a payment method
+		// $filtered_orders = array_filter(
+		// 	$orders,
+		// 	function ( $order ) {
+		// 		return $order->get_customer_id() && empty( $order->get_payment_method() );
+		// 	}
+		// );
+		foreach ( $results as $order ) {
+			// $order_id = $order->get_id();
+			$order_id = $order->ID;
+			// send each order_id to wc action scheduler to process if not scheduled
+			if ( ! as_has_scheduled_action( 'sync_payment_status', array( $order_id ) ) ) {
+				as_schedule_single_action(
+					time(),
+					'sync_payment_status',
+					array(
+						$order_id,
+					)
+				);
+			} else {
 				continue;
 			}
-			// if response is Paid then update the order status to completed
-			if ( 'Paid' === $response['Payment_Status'] ) {
-				// set order as paid
-				$order->payment_complete();
-				$order->add_order_note( __( 'Payment processed in Exact Online', 'commercebird' ) );
-				$order->save();
-			} else {
-				$order->update_status( 'on-hold', __( 'Payment not processed in Exact Online', 'commercebird' ) );
-			}
 		}
-		// Schedule the event to run daily
+		// fclose( $fd );
+
+		// Schedule the event to run weekly starting next week
 		if ( ! wp_next_scheduled( 'commmercebird_exact_online_get_payment_statuses' ) ) {
-			wp_schedule_event( strtotime( 'tomorrow' ), 'daily', 'commmercebird_exact_online_get_payment_statuses' );
+			$seven_days_in_future = time() + 7 * DAY_IN_SECONDS;
+			wp_schedule_event( $seven_days_in_future, 'weekly', 'commmercebird_exact_online_get_payment_statuses' );
 		}
 		$this->response = array(
 			'success' => true,
@@ -314,7 +348,7 @@ final class ExactOnlineAjax {
 			$this->errors['message'] = __( 'Cost centers not found', 'commercebird' );
 		} else {
 			$centers = array_map(
-				function ( $item ) {
+				function ($item) {
 					return "{$item['Code']}-{$item['Description']}";
 				},
 				$response['data']
@@ -332,7 +366,7 @@ final class ExactOnlineAjax {
 			$this->errors['message'] = __( 'Cost units not found', 'commercebird' );
 		} else {
 			$units = array_map(
-				function ( $item ) {
+				function ($item) {
 					return "{$item['Code']}-{$item['Description']}";
 				},
 				$response['data']
@@ -350,7 +384,7 @@ final class ExactOnlineAjax {
 			$this->errors['message'] = __( 'GL accounts not found', 'commercebird' );
 		} else {
 			$accounts = array_map(
-				function ( $item ) {
+				function ($item) {
 					return "{$item['ID']} : {$item['Description']}";
 				},
 				$response['data']

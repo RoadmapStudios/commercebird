@@ -228,18 +228,10 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 	$webhook_name_to_exclude = 'CommerceBird Orders';
 	if ( $webhook->get_name() === $webhook_name_to_exclude ) {
 		$order = wc_get_order( $arg );
-		// check if order contains meta eo_order_id
-		if ( $order->get_meta( 'eo_order_id' ) ) {
-			$should_deliver = false;
-		}
 		// check if order status is failed, pending, on-hold or cancelled
 		$order_status = $order->get_status();
 		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
 			$should_deliver = false;
-		}
-		// if status is refunded then return true
-		if ( $order_status === 'refunded' ) {
-			$should_deliver = true;
 		}
 		$webhook_status = $webhook->get_status();
 		// also return false if webhoook status is disabled or paused
