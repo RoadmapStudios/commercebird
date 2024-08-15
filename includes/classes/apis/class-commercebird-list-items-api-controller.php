@@ -1,8 +1,7 @@
 <?php
 class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Controller {
 
-	protected $namespace  = 'wc/v2';
-	protected $namespace2 = 'wc/v3';
+	protected $namespace  = 'wc/v3';
 	protected $rest_base  = 'list_items';
 
 	public $post_fields = array( 'post_name', 'post_title', 'post_content' );
@@ -21,7 +20,7 @@ class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Contro
 			)
 		);
 		register_rest_route(
-			$this->namespace2,
+			$this->namespace,
 			'/' . $this->rest_base . '(?:/(?P<type>))?',
 			array(
 				array(

@@ -1,8 +1,7 @@
 <?php
 class WC_REST_CommerceBird_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 
-	protected $namespace = 'wc/v2';
-	protected $namespace2 = 'wc/v3';
+	protected $namespace = 'wc/v3';
 	protected $rest_base = 'metadata';
 
 	public $post_fields = array( 'post_name', 'post_title', 'post_content' );

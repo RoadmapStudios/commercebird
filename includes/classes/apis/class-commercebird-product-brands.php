@@ -1,8 +1,7 @@
 <?php
 class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Controller {
 
-	protected $namespace      = 'wc/v2';
-	protected $namespace2     = 'wc/v3';
+	protected $namespace      = 'wc/v3';
 	protected $rest_base      = 'product_brands';
 	protected $empty_response = array(
 		'status'  => 'error',

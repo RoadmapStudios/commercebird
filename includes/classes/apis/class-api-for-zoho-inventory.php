@@ -2,7 +2,6 @@
 
 namespace RMS\API;
 
-use Exception;
 use ExecutecallClass;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -232,9 +231,12 @@ class Zoho extends WP_REST_Controller {
 		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders?organization_id=$zoho_inventory_oid&ignore_auto_number_generation=false";
 
 		$execute_curl_call_handle = new ExecutecallClass();
-		$json = $execute_curl_call_handle->execute_curl_call_post( $get_url, array(
-			'JSONString' => json_encode( $purchaseorder )
-		) );
+		$json = $execute_curl_call_handle->execute_curl_call_post(
+			$get_url,
+			array(
+				'JSONString' => json_encode( $purchaseorder ),
+			)
+		);
 		$code = $json->code;
 		$response['url'] = $get_url;
 		if ( 0 === (int) $code ) {
@@ -248,5 +250,4 @@ class Zoho extends WP_REST_Controller {
 		}
 		return rest_ensure_response( $rest_response );
 	}
-
 }
