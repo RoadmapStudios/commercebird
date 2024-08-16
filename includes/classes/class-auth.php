@@ -110,7 +110,7 @@ class Classfunctions {
 			'method' => 'POST',
 		);
 		// Make the request using wp_remote_post()
-		$response = wp_remote_post( $url, $args );;
+		$response = wp_remote_post( $url, $args );
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
 			// If successful, get the body of the response

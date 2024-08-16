@@ -194,6 +194,10 @@ final class ZohoCRMAjax {
 			// schedule a wp cron to refresh the token after one hour from now.
 			if ( ! wp_next_scheduled( 'zcrm_refresh_token' ) ) {
 				wp_schedule_event( time() + 3600, 'hourly', 'zcrm_refresh_token' );
+			} else {
+				// unschedule first and reschedule.
+				wp_unschedule_event( wp_next_scheduled( 'zcrm_refresh_token' ), 'zcrm_refresh_token' );
+				wp_schedule_event( time() + 3600, 'hourly', 'zcrm_refresh_token' );
 			}
 		}
 		$this->serve();
