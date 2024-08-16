@@ -92,6 +92,7 @@ class Classfunctions {
 
 	//get refresh token in ServiceZI
 	public function get_zoho_refresh_token( $refresh_token, $app_name ) {
+		$fd = fopen( __DIR__ . '/get_zoho_refresh_token.txt', 'w+' );
 		$headers = array( 'Content-Type: application/x-www-form-urlencoded' );
 
 		$client_id = 'zoho_inventory' === $app_name ? $this->config['ServiceZI']['CLIENTID'] : $this->config['ServiceZCRM']['CLIENTSECRET'];
@@ -109,19 +110,24 @@ class Classfunctions {
 			'body' => $params,
 			'method' => 'POST',
 		);
+		fwrite( $fd, 'url: ' . $url . PHP_EOL );
+		fwrite( $fd, 'args: ' . print_r( $args, true ) . PHP_EOL );
 		// Make the request using wp_remote_post()
 		$response = wp_remote_post( $url, $args );
+		fwrite( $fd, 'response: ' . print_r( $response, true ) . PHP_EOL );
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
 			// If successful, get the body of the response
 			$body = wp_remote_retrieve_body( $response );
-
+			fwrite( $fd, 'body: ' . $body . PHP_EOL );
+			fclose( $fd );
 			// Decode JSON response
 			return json_decode( $body, true );
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			throw new Exception( 'Error: ' . esc_html( $error_message ) );
+			echo 'Error: ' . esc_html( $error_message );
+			// echo the exception
 		}
 	}
 }
