@@ -11,7 +11,6 @@ use RMS\Admin\Actions\Ajax\AcfAjax;
 use RMS\Admin\Cors;
 use RMS\Admin\Template;
 use RMS\Admin\Acf;
-use CommerceBird\CommerceBird_WC_API;
 
 class Plugin {
 
@@ -159,7 +158,6 @@ class Plugin {
 		ExactOnlineAjax::instance();
 		Acf::instance();
 		// CM_Webhook_Modify::instance();
-		new CommerceBird_WC_API();
 	}
 
 	/**
