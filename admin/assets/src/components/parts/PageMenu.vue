@@ -1,10 +1,4 @@
 <script lang="ts" setup>
-import {
-  Bars3Icon,
-  BellAlertIcon,
-  TagIcon,
-  XMarkIcon,
-} from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { useLoadingStore } from "@/stores/loading";
@@ -19,11 +13,13 @@ import { useExactOnlineStore } from "@/stores/exactOnline";
 import { backendAction } from "@/keys";
 import { useStorage } from "@/composable/storage";
 import Swal from "sweetalert2";
+import { useZohoCrmStore } from "@/stores/zohoCrm";
 
 const showMobileMenu = ref(false);
 const loader = useLoadingStore();
 const homepage = useHomepageStore();
 const zoho = useZohoInventoryStore();
+const zohoCrm = useZohoCrmStore();
 const exact = useExactOnlineStore();
 const router = useRouter();
 
@@ -130,6 +126,22 @@ const checkIfActiveIntegration = (integrationName: any) => {
               @click.prevent="checkIfActiveIntegration('ZohoCRM')"
             >
               Zoho CRM
+              <span v-if="zohoCrm.isConnected" class="relative flex w-3 h-3">
+                <span
+                  class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-lime-400 animate-ping"
+                ></span>
+                <span
+                  class="relative inline-flex w-3 h-3 bg-green-500 rounded-full"
+                ></span>
+              </span>
+              <span v-else class="relative flex w-3 h-3">
+                <span
+                  class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-rose-400 animate-ping"
+                ></span>
+                <span
+                  class="relative inline-flex w-3 h-3 bg-red-500 rounded-full"
+                ></span>
+              </span>
             </router-link>
             <router-link
               :class="{
@@ -283,6 +295,22 @@ const checkIfActiveIntegration = (integrationName: any) => {
           @click.prevent="checkIfActiveIntegration('ZohoCRM')"
         >
           Zoho CRM
+          <span v-if="zohoCrm.isConnected" class="relative flex w-3 h-3">
+              <span
+                class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-lime-400 animate-ping"
+              ></span>
+              <span
+                class="relative inline-flex w-3 h-3 bg-green-500 rounded-full"
+              ></span>
+            </span>
+            <span v-else class="relative flex w-3 h-3">
+              <span
+                class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-rose-400 animate-ping"
+              ></span>
+              <span
+                class="relative inline-flex w-3 h-3 bg-red-500 rounded-full"
+              ></span>
+            </span>
         </router-link>
 
         <router-link

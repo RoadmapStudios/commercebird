@@ -39,13 +39,18 @@ export type Message = {
 }
 
 export type ConnectionSettings = {
-    organization_id: string;
+    organization_id?: string;
     client_id: string;
     client_secret: string;
     redirect_uri: string;
     account_domain: string;
 }
 
+export type ZohoCRMOrg = {
+    type: string;
+    company_name: string;
+    primary_email: string;
+}
 
 export type TaxSettings = {
     selectedTaxRates: any[];

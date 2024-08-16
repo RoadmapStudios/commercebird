@@ -5,44 +5,34 @@ import { useLoadingStore } from "@/stores/loading";
 import {
   extractOptions,
   notify,
-  site_url,
   redirect_uri,
 } from "@/composable/helpers";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { useStorage } from "@/composable/storage";
 import { get_acf_fields } from "@/composable/common";
+import type { ConnectionSettings } from "@/types";
+
 const actions = backendAction.zohoCrm;
 const keys = storeKey.zohoCrm;
-
-interface ZohoConnectionResponse {
-  type: string;
-  company_name: string;
-  primary_email: string;
-  // add other properties here as needed
-}
 
 export const useZohoCrmStore = defineStore("zohoCrm", () => {
   const loader = useLoadingStore();
   const storage = useStorage();
   const notSubscribed = ref(false);
-  const isConnected = ref<ZohoConnectionResponse[] | null>(null);
+  const isConnected = ref(false);
 
   /*
    * -----------------------------------------------------------------------------------------------------------------
    *  Connection Settings
    * -----------------------------------------------------------------------------------------------------------------
    */
-  const connection = reactive({
-    token: "",
+  const connectionSettingsInvalid = ref(false);
+  const connection: ConnectionSettings = reactive({
     account_domain: "",
     client_id: "",
     client_secret: "",
-    site: site_url,
     redirect_uri: redirect_uri,
-    type: "",
-    company_name: "",
-    primary_email: "",
   });
 
   const isConnectionValid = async () => {
@@ -62,43 +52,6 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
   const selectedTab = ref("");
   const selectedFieldTab = ref("");
   const selectTab = (tab: string) => (selectedTab.value = tab);
-  const tabWatcher = async (tab: string) => {
-    let response;
-    const notSubscribed = ref(false);
-    const checkSubscription = () => {
-      const key = storeKey.homepage.subscription;
-      notSubscribed.value = storage.get(key) && storage.get(key).length;
-    };
-    isConnected.value = storage.get(storeKey.zohoCrm.connected);
-    if (tab !== "connect") {
-      if (!isConnected.value) {
-        selectedTab.value = "connect";
-        return false;
-      }
-    }
-
-    checkSubscription();
-    switch (tab) {
-      case "connect":
-        response = await loader.loadData(keys.connect, actions.connect.get);
-        if (response) {
-          connection.client_id = response.client_id;
-          connection.client_secret = response.client_secret;
-          connection.redirect_uri = redirect_uri;
-          connection.account_domain = response.account_domain;
-        }
-        break;
-      case "field":
-        selectedFieldTab.value = "Sales_Orders";
-        get_fields("shop_order");
-        get_zcrm_fields();
-        get_zcrm_custom_fields();
-        break;
-      default:
-        break;
-    }
-  };
-  watch(selectedTab, tabWatcher);
 
   /*
    * -----------------------------------------------------------------------------------------------------------------
@@ -340,6 +293,40 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     }
     loader.clearLoading(action);
   };
+
+  const tabWatcher = async (tab: string) => {
+    let response;
+    notSubscribed.value = storage.get(storeKey.homepage.subscription) && storage.get(storeKey.homepage.subscription).length;
+    isConnected.value = storage.get(storeKey.zohoCrm.connected);
+
+    if (tab !== "connect") {
+      if (!isConnected.value) {
+        selectedTab.value = "connect";
+        return false;
+      }
+    }
+
+    switch (tab) {
+      case "connect":
+        response = await loader.loadData(keys.connect, actions.connect.get);
+        if (response) {
+          connection.client_id = response.client_id;
+          connection.client_secret = response.client_secret;
+          connection.redirect_uri = redirect_uri;
+          connection.account_domain = response.account_domain;
+        }
+        break;
+      case "field":
+        selectedFieldTab.value = "Sales_Orders";
+        get_fields("shop_order");
+        get_zcrm_fields();
+        get_zcrm_custom_fields();
+        break;
+      default:
+        break;
+    }
+  };
+  watch(selectedTab, tabWatcher);
   return {
     selectTab,
     selectedTab,
@@ -347,6 +334,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     notSubscribed,
     isConnected,
     connection,
+    connectionSettingsInvalid,
     customFields,
     zcrm_fields,
     fields,
@@ -364,5 +352,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useZohoCrmStore, import.meta.hot));
+  import.meta.hot.accept(
+    acceptHMRUpdate(useZohoCrmStore, import.meta.hot)
+  );
 }

@@ -492,7 +492,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         notSubscribed.value = storage.get(storeKey.homepage.subscription) && storage.get(storeKey.homepage.subscription).length;
         isConnected.value = storage.get(storeKey.zohoInventory.connected);
 
-
         if (tab !== "connect") {
             if (!isConnected.value) {
                 selectedTab.value = "connect";

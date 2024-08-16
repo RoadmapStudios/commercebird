@@ -1,11 +1,9 @@
 <template>
     <div>
-        <div v-if="isConnected && isConnected[0]">
-    <p>Type: {{ isConnected && isConnected[0]?.type }}</p>
-      <p>Company Name: {{ isConnected[0]?.company_name }}</p>
-      <p>Primary Email: {{ isConnected[0]?.primary_email }}</p>
-    </div>
         <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
+            <div v-if="store.isConnected">
+                <Alert v-for="(hint, index) in hints" :key="index" :message="hint" target="_blank"/>
+            </div>
             <InputGroup flexed label="Account Domain">
                 <SelectInput v-model="store.connection.account_domain" :options="accountDomains" />
                 <BaseLink v-if="store.connection.account_domain"
@@ -25,6 +23,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+import { ExclamationCircleIcon } from "@heroicons/vue/24/outline";
 import TextInput from "@/components/ui/inputs/TextInput.vue";
 import SelectInput from "@/components/ui/inputs/SelectInput.vue";
 import CopyableInput from "@/components/ui/inputs/CopyableInput.vue";
@@ -50,7 +49,16 @@ const store = useZohoCrmStore();
 const loader = useLoadingStore();
 const action = backendAction.zohoCrm.connect;
 
-const isConnected = computed(() => store.isConnected);
+const hints = ref({
+    pluginDoc: {
+        icon: ExclamationCircleIcon,
+        message:
+            "Please read the documentation first before you use this plugin and make sure to enable automatic updates for this plugin!",
+        link: "https://support.commercebird.com/portal/en/kb/zoho-crm-woocommerce",
+        linkText: "Visit Here",
+    },
+});
+
 
 onBeforeMount(async () => {
   const response = await loader.loadData(

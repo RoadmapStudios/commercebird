@@ -95,7 +95,8 @@ final class ZohoCRMAjax {
 			update_option( 'zoho_crm_cs', $this->data['client_secret'] );
 			update_option( 'zoho_crm_url', $crm_url );
 			update_option( 'authorization_redirect_uri', $this->data['redirect_uri'] );
-			$redirect = esc_url_raw( 'https://accounts.zoho.'
+			$redirect = esc_url_raw(
+				'https://accounts.zoho.'
 				. $this->data['account_domain']
 				. '/oauth/v2/auth?response_type=code&client_id='
 				. $this->data['client_id'] . '&scope=ZohoCRM.users.ALL,ZohoCRM.bulk.ALL,ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.org.ALL,profile.userphoto.READ,ZohoFiles.files.CREATE&redirect_uri='
@@ -106,7 +107,7 @@ final class ZohoCRMAjax {
 				'redirect' => $redirect,
 				'message' => 'We are redirecting you to zoho. please wait...',
 			);
-		} catch (Throwable $throwable) {
+		} catch ( Throwable $throwable ) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 
