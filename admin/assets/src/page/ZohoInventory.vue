@@ -11,7 +11,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import Tax from "@/components/forms/zoho/Tax.vue";
 import Product from "@/components/forms/zoho/Product.vue";
-import Cron from "@/components/forms/zoho/Cron.vue";
+import Categories from "@/components/forms/zoho/Categories.vue";
 import Orders from "@/components/forms/zoho/Order.vue";
 import Price from "@/components/forms/zoho/Price.vue";
 import Field from "@/components/forms/zoho/Field.vue";
@@ -41,7 +41,7 @@ const tabs: Record<string, Tab> = {
   connect: { title: "Connect", component: Connect, icon: LinkIcon },
   tax: { title: "Tax", component: Tax, icon: CurrencyDollarIcon },
   product: { title: "Product", component: Product, icon: ArchiveBoxIcon },
-  cron: { title: "Cron", component: Cron, icon: ClockIcon },
+  cron: { title: "Categories", component: Categories, icon: ClockIcon },
   order: { title: "Orders", component: Orders, icon: TruckIcon },
   contact: { title: "Contacts", component: Contact, icon: UserGroupIcon },
   price: { title: "Price List", component: Price, icon: SwatchIcon },

@@ -587,9 +587,9 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$categories = get_zoho_item_categories();
 		if ( gettype( $categories ) === 'array' ) {
-			$filtered = wp_list_pluck( $categories, 'name', 'category_id' );
-			unset( $filtered[ -1 ] );
-			$this->response = $filtered;
+			// $filtered = wp_list_pluck( $categories, 'name', 'category_id' ); 
+			// unset( $filtered[ -1 ] );
+			$this->response = $categories;
 		}
 		$this->serve();
 	}
@@ -844,7 +844,7 @@ final class ZohoInventoryAjax {
 				} else {
 					$this->errors = (array) $access_token;
 				}
-			} catch ( Throwable $throwable ) {
+			} catch (Throwable $throwable) {
 				$this->errors = array( 'message' => $throwable->getMessage() );
 			}
 		}
