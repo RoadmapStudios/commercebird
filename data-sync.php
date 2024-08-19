@@ -469,6 +469,7 @@ add_action( 'zoho_sync_category_cron', 'ajax_category_sync_call' );
 add_action( 'wp_ajax_zoho_ajax_call_category', 'ajax_category_sync_call' );
 function ajax_category_sync_call() {
 	// $fd = fopen( __DIR__ . '/ajax_category_sync_call.txt', 'a+' );
+
 	$response = array(); // Response array.
 	$zoho_categories = get_zoho_item_categories();
 	// fwrite( $fd, PHP_EOL . 'categories: ' . print_r( $zoho_categories, true ) );
@@ -517,6 +518,7 @@ function ajax_category_sync_call() {
 	$categories_terms = get_terms(
 		array(
 			'taxonomy' => 'product_cat',
+			'child_of' => false,
 		)
 	);
 	$log_head = '---Exporting Category to zoho---';
@@ -531,7 +533,9 @@ function ajax_category_sync_call() {
 
 			$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $term->term_id );
 			if ( empty( $zoho_cat_id ) ) {
+				// fwrite( $fd, PHP_EOL . 'Category Name : ' . $term->name );
 				$add_response = create_woo_cat_to_zoho( $term->name, $term->term_id );
+				// fwrite( $fd, PHP_EOL . 'Response : ' . print_r( $add_response, true ) );
 				$response[] = $add_response;
 			} else {
 				$response[] = zi_response_message( $zoho_cat_id, 'Category name : "' . $term->name . '" already synced with zoho', $term->term_id );
@@ -540,7 +544,11 @@ function ajax_category_sync_call() {
 	} else {
 		$response[] = zi_response_message( '-', 'Categories not available to export', '-' );
 	}
-	return wp_json_encode( $response );
+	$encoded_response = wp_json_encode( $response );
+	// fwrite( $fd, PHP_EOL . 'Final Response : ' . print_r( $encoded_response, true ) );
+	// fclose( $fd );
+
+	return $encoded_response;
 	// exit();
 }
 
@@ -639,14 +647,14 @@ function get_zoho_item_categories() {
 			}
 
 			// remove the duplicated categories from Zoho by doing a check on the active item
-			// if ( ! $category->has_active_items ) {
-			// 	// if category is not in category_count array, then do DELETE call to Zoho API to delete the category
-			// 	if ( 1 !== $category_count[ $category->name ] ) {
-			// 		$delete_url = $zoho_inventory_url . 'inventory/v1/categories/' . $category->category_id . '/?organization_id=' . $zoho_inventory_oid;
-			// 		$delete_response = $execute_curl_call_handle->execute_curl_call_delete( $delete_url );
-			// 		// fwrite( $fd, PHP_EOL . 'Category Deleted : ' . print_r( $delete_response, true ) );
-			// 	}
-			// }
+			if ( ! $category->has_active_items ) {
+				// if category is not in category_count array, then do DELETE call to Zoho API to delete the category
+				if ( 1 !== $category_count[ $category->name ] ) {
+					$delete_url = $zoho_inventory_url . 'inventory/v1/categories/' . $category->category_id . '/?organization_id=' . $zoho_inventory_oid;
+					$delete_response = $execute_curl_call_handle->execute_curl_call_delete( $delete_url );
+					// fwrite( $fd, PHP_EOL . 'Category Deleted : ' . print_r( $delete_response, true ) );
+				}
+			}
 
 			$category_name = $category->name;
 			if ( 1 === $category_count[ $category_name ] || $category->has_active_items ) {
