@@ -177,7 +177,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     }
 
     const selected_categories: Ref<string[]> = ref([]);
-    const zoho_categories = ref({});
+    const zoho_categories: any = ref({});
     const toggleSelectAll = (event: any) => {
         if (event.target.id === 'toggle-all') {
             if (event.target.checked) {
@@ -197,7 +197,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
             .filter(cat => cat.parent_category_id === parentId)
             .forEach((cat: any) => {
                 const indent = '<span class="ml-1 mr-1">-</span>'.repeat(depth);
-                result[cat.category_id] = `${indent}${cat.name}`;
+                result[cat.category_id] = { label: `${indent}${cat.name}`, selected: false };
                 const children = buildIndentedCategoryMap(categories, cat.category_id, depth + 1);
                 result = { ...result, ...children };
             });
