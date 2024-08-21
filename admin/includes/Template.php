@@ -28,10 +28,10 @@ final class Template {
 			self::NAME,
 			function () {
 				wp_enqueue_style( self::NAME );
-				wp_enqueue_style( self::NAME . '-notify', 'https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css', array(), RMS_VERSION );
+				wp_enqueue_style( self::NAME . '-notify', RMS_DIR_URL . 'admin/css/notyf.min.css', array(), RMS_VERSION );
 				wp_enqueue_script( self::NAME );
 				add_filter( 'script_loader_tag', array( $this, 'add_module' ), 10, 3 );
-				printf( '<div id="%s">Loading...</div>', self::NAME );
+				printf( '<div id="%s">Loading...</div>', esc_attr( self::NAME ) );
 			},
 			$svg,
 			29
