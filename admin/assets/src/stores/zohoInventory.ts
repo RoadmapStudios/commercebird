@@ -190,32 +190,14 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
 
     };
 
-    // const buildHierarchy = (categories: any[], parentId: string) => {
-    //     const result: any[] = [];
-    //     categories.forEach(category => {
-    //         if (category.parent_category_id === parentId) {
-    //             const children = buildHierarchy(categories, category.category_id);
-    //             const node: any = {
-    //                 category_id: category.category_id,
-    //                 name: '-'.repeat(category.depth) + category.name
-    //             };
-    //             if (children.length) {
-    //                 node.childrens = children;
-    //             }
-    //             result.push(node);
-    //         }
-    //     });
-    //     return result;
-    // }
-
     const buildIndentedCategoryMap = (categories: any[], parentId: string, depth = 0) => {
         let result: any = {};
 
         categories
             .filter(cat => cat.parent_category_id === parentId)
             .forEach((cat: any) => {
-                const indent = '-'.repeat(depth);
-                result[cat.category_id] = `${indent}${depth > 0 ? '-' : ''}${cat.name}`;
+                const indent = '<span class="ml-1 mr-1">-</span>'.repeat(depth);
+                result[cat.category_id] = `${indent}${cat.name}`;
                 const children = buildIndentedCategoryMap(categories, cat.category_id, depth + 1);
                 result = { ...result, ...children };
             });
@@ -223,61 +205,17 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         return result;
     }
 
-    // const flattenCategories=(category, parentId = "ID")=> {
-    //     let result = {};
-
-    //     // Add the current category to the result
-    //     result[parentId] = category.name;
-
-    //     // If there are children, process them recursively
-    //     if (category.childrens && category.childrens.length > 0) {
-    //         category.childrens.forEach(child => {
-    //             const childId = `${child.category_id}`;
-    //             const flattenedChildren = flattenCategories(child, childId);
-    //             result = { ...result, ...flattenedChildren };
-    //         });
-    //     }
-
-    //     return result;
-    // }
-
-    // const flattenedCategories = flattenCategories(data);
-
     const get_zoho_categories = async () => {
         const action = actions.zoho_categories;
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
         zoho_categories.value = await fetchData(action, keys.zoho_categories);
-        // const groupedCategories: any = {};
         const zohoCategories = zoho_categories.value;
         if (zohoCategories && Array.isArray(zohoCategories)) {
             const indentedCategories = buildIndentedCategoryMap(zohoCategories, "-1");
             console.log("indentedCategories:", indentedCategories);
             zoho_categories.value = indentedCategories;
-            // zohoCategories.forEach((category: any) => {
-            //     if (category.parent_category_id === "-1") {
-            //         groupedCategories[category.category_id] = {
-            //             name: category.name,
-            //             childrens: buildHierarchy(zohoCategories, category.category_id)
-            //         };
-            //     }
-            // });
-
         }
-
-        // if (zohoCategories && Array.isArray(zohoCategories)) {
-        //     zohoCategories.forEach((cat: any) => {
-        //         groupedCategories[cat.category_id] = {
-        //             name: '-'.repeat(cat.depth) + cat.name,
-        //         };
-        //     });
-        // }
-
-        // zoho_categories.value = groupedCategories;
-        // console.log("groupedCategories:", groupedCategories);
-        // const indentedCategories = buildIndentedCategoryMap(zohoCategories, "-1");
-
-
         loader.clearLoading(action);
     };
 

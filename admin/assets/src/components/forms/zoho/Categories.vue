@@ -59,12 +59,18 @@ const loader = useLoadingStore();
           </div>
         </InputGroup>
       </div>
-      <div class="grid grid-cols-2 gap-4 my-4">
-        <div v-for="(category, index) in store.zoho_categories" :key="index" class="inline-flex justify-between mr-4">
-          <label class="mr-4">{{ category }}</label>
-          <input v-model="store.selected_categories" :value="index" type="checkbox" />
+
+      <div class="grid h-64 grid-cols-1 gap-4 overflow-hidden">
+        <div class="overflow-y-scroll scrollbar-hide">
+          <div class="grid grid-cols-1 gap-4 my-4">
+            <div v-for="(category, index) in store.zoho_categories" :key="index" class="inline-flex mr-4">
+              <input v-model="store.selected_categories" :value="index" type="checkbox" class="ml-1" />
+              <label class="ml-4 mr-4" v-html="category"></label>
+            </div>
+          </div>
         </div>
       </div>
+
     </BaseForm>
   </div>
 </template>
