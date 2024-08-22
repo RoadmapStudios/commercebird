@@ -6,8 +6,6 @@
  * @package  Inventory
  */
 require_once ABSPATH . 'wp-admin/includes/file.php';
-WP_Filesystem();
-
 class ExecutecallClass {
 	/**
 	 * @var array|array[]
@@ -266,9 +264,10 @@ class ExecutecallClass {
 	 * @param mixed $url - URL of the image.
 	 * @return string
 	 */
-	public function execute_curl_call_image_get( $url ) {
+	public function execute_curl_call_image_get( $url, $image_name ) {
 		// $fd = fopen( __DIR__ . '/execute_curl_call_image_get.txt', 'w' );
 		global $wp_filesystem;
+		WP_Filesystem();
 
 		$handlefunction = new Classfunctions();
 		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
@@ -306,7 +305,7 @@ class ExecutecallClass {
 			$url_upload_path = $upload['baseurl'] . '/zoho_image/';
 
 			// Generate a unique image name
-			$img = 'image_' . wp_rand();
+			$img = wp_rand() . '_' . $image_name;
 			$upload_dir = $absolute_upload_path . '/' . $img;
 
 			// remove the file if it exists
@@ -321,8 +320,11 @@ class ExecutecallClass {
 			// Save the image file
 			try {
 				$wp_filesystem->put_contents( $upload_dir, $body );
-			} catch (Exception $e) {
+			} catch ( Exception $e ) {
 				wp_delete_file( $upload_dir );
+				// If there was an error, handle it
+				$error_message = $e->getMessage();
+				echo esc_html( "Error image import: $error_message" );
 				return '';
 			}
 			// Use trailingslashit to make sure the URL ends with a single slash
@@ -330,8 +332,8 @@ class ExecutecallClass {
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			// return an instance of WP error class with the error message
-			return new WP_Error( 'image_upload_error', $error_message );
+			echo esc_html( "Error image import: $error_message" );
+			return '';
 		}
 	}
 }

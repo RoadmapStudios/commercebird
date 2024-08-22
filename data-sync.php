@@ -112,6 +112,7 @@ function zoho_ajax_call_item_from_zoho_func() {
 	$last_synced_category_index = get_option( 'last_synced_category_index', 0 );
 
 	if ( $zoho_item_category ) {
+		// convert serialized string to array
 		$categories = unserialize( $zoho_item_category );
 		$categories = array_slice( $categories, $last_synced_category_index );
 	} else {
@@ -190,7 +191,6 @@ function zoho_ajax_call_item() {
 		if ( count( $product_ids ) === 10 ) {
 			// Pass the array of product IDs to the scheduler function
 			as_schedule_single_action( time(), 'sync_zi_product_cron', array( $product_ids ) );
-
 			// Clear the array for the next batch of product IDs
 			$product_ids = array();
 		}

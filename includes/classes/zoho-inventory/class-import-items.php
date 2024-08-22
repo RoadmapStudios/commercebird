@@ -299,7 +299,7 @@ class import_product_class {
 					$zi_disable_image_sync = get_option( 'zoho_disable_image_sync_status' );
 					if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
 						$image_class = new ImageClass();
-						$image_class->cmbird_zi_get_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name );
+						$image_class->cmbird_zi_get_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name, $arr->image_document_id );
 					}
 
 					$item_ids[] = $arr->item_id;
@@ -710,10 +710,8 @@ class import_product_class {
 				// Featured Image of variation
 				if ( ! empty( $item->image_name ) ) {
 					$image_class = new ImageClass();
-					$image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name );
+					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
 					if ( ! has_post_thumbnail( $group_id ) ) {
-						$variation_product = wc_get_product( $variation_id );
-						$variation_image_id = $variation_product->get_image_id();
 						if ( $variation_image_id ) {
 							set_post_thumbnail( $group_id, $variation_image_id );
 						}
@@ -1003,7 +1001,7 @@ class import_product_class {
 		$stock_quantity = $stock < 0 ? 0 : $stock;
 		// fwrite($fd, PHP_EOL . 'Before group item sync : ' . $group_id);
 		if ( ! empty( $group_id ) ) {
-			// fwrite($fd, PHP_EOL . 'Inside item sync : ' . $item_name);
+			// fwrite($fd, PHP_EOL . 'Inside item sync : ' . $item->name);
 			// Brand
 			if ( isset( $item->brand ) && ! empty( $group_id ) ) {
 				if ( taxonomy_exists( 'product_brands' ) ) {
@@ -1051,6 +1049,16 @@ class import_product_class {
 						$variation->set_stock_quantity( $stock_quantity );
 						$stock_status = $variation->backorders_allowed() ? 'onbackorder' : 'outofstock';
 						$variation->set_stock_status( $stock_status );
+					}
+				}
+				// Featured Image of variation
+				if ( ! empty( $item->image_document_id ) ) {
+					$image_class = new ImageClass();
+					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
+					if ( ! has_post_thumbnail( $group_id ) ) {
+						if ( $variation_image_id ) {
+							set_post_thumbnail( $group_id, $variation_image_id );
+						}
 					}
 				}
 				// enable or disable based on status from Zoho
@@ -1155,12 +1163,10 @@ class import_product_class {
 					}
 				}
 				// Featured Image of variation
-				if ( ! empty( $item->featured_image ) ) {
+				if ( ! empty( $item->image_document_id ) ) {
 					$image_class = new ImageClass();
-					$image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name );
+					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
 					if ( ! has_post_thumbnail( $group_id ) ) {
-						$variation_product = wc_get_product( $variation_id );
-						$variation_image_id = $variation_product->get_image_id();
 						if ( $variation_image_id ) {
 							set_post_thumbnail( $group_id, $variation_image_id );
 						}
@@ -1554,7 +1560,7 @@ class import_product_class {
 					if ( $key === 'image_document_id' ) {
 						if ( ! empty( $com_prod_id ) && ! empty( $value ) ) {
 							$image_class = new ImageClass();
-							$image_class->cmbird_zi_get_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name );
+							$image_class->cmbird_zi_get_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name, $comp_item->image_document_id );
 						}
 					}
 					if ( $key === 'category_name' ) {
