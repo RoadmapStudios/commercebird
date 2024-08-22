@@ -40,8 +40,8 @@ export interface Tab {
 const tabs: Record<string, Tab> = {
   connect: { title: "Connect", component: Connect, icon: LinkIcon },
   tax: { title: "Tax", component: Tax, icon: CurrencyDollarIcon },
-  product: { title: "Product", component: Product, icon: ArchiveBoxIcon },
   cron: { title: "Categories", component: Categories, icon: ClockIcon },
+  product: { title: "Product", component: Product, icon: ArchiveBoxIcon },
   order: { title: "Orders", component: Orders, icon: TruckIcon },
   contact: { title: "Contacts", component: Contact, icon: UserGroupIcon },
   price: { title: "Price List", component: Price, icon: SwatchIcon },
