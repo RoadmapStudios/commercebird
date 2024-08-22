@@ -1,3 +1,10 @@
+Version 2.2.0 - August 22 2024
+* New: support for Zoho Inventory Purchase Orders via CommerceBird app
+* New: support for GLAccounts on customer level for Exact Online
+* Tweak: renamed Cron tab name to Categories for Zoho Inventory
+* Fix: categories selection was not saving new categories
+* Fix: image import class refactored - reduced code with 70%
+
 Version 2.1.26 - July 7 2024
 * New: ability to type woo field name for custom orders fields mapping
 * Fix: categories shown twice on cron tab
