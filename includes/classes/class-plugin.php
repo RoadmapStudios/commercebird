@@ -128,10 +128,7 @@ class Plugin {
 			$php_current_version = phpversion();
 
 			if ( version_compare( $php_min_version, $php_current_version, '>' ) ) {
-				deactivate_plugins( 'commercebird/plugin.php' );
-
 				$error_message = sprintf( 'Your server is running PHP version %s but the commercebird plugin requires at least PHP %s. Please update your PHP version.', $php_current_version, $php_min_version, );
-
 				wp_die(
 					esc_html( $error_message ),
 					'Plugin Activation Error',
