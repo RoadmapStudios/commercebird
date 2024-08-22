@@ -303,3 +303,5 @@ export type Changelog = {
         "wp:attachment": { href: string }[]
     };
 }
+
+export type ZohoCategory = { label: string, id: string, selected: boolean };

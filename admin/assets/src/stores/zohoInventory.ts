@@ -8,6 +8,7 @@ import type {
     ProductSettings,
     TaxSettings,
     WcTax,
+    ZohoCategory,
     ZohoTax
 } from '@/types'
 import { acceptHMRUpdate, defineStore } from "pinia";
@@ -176,14 +177,49 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         daily: 'Once a day'
     }
 
-    const selected_categories: Ref<string[]> = ref([]);
-    const zoho_categories: any = ref({});
+    // const selected_categories: Ref<string[]> = ref([]);
+    const zoho_categories: Ref<ZohoCategory[]> = ref([]);
     const toggleSelectAll = (event: any) => {
         if (event.target.id === 'toggle-all') {
             if (event.target.checked) {
-                selected_categories.value = Object.keys(zoho_categories.value);
+                // zoho_categories
+                zoho_categories.value.forEach((category: ZohoCategory) => {
+                    // return { ...category, selected: true };
+                    category.selected = true;
+                });
+                // console.log("selected_categories.value:", zoho_categories.value);
+                // const data = Object.keys(zoho_categories.value).reduce((acc: any = {}, key: string) => {
+                //     console.log("acc:", acc);
+
+                //     if (typeof acc === 'string') {
+                //         acc = {
+                //             [key]: {
+                //                 ...zoho_categories.value[key], selected: true
+                //             }
+                //         };
+                //     } else
+                //         acc[key] = { ...zoho_categories.value[key], selected: true };
+                //     return acc;
+                // })
+                // zoho_categories.value = Object.keys(zoho_categories.value)
+                // selected_categories.value = Object.keys(zoho_categories.value);
             } else {
-                selected_categories.value = [];
+                zoho_categories.value.forEach((category: ZohoCategory) => {
+                    // return { ...category, selected: true };
+                    category.selected = false;
+                });
+                // zoho_categories.value = Object.keys(zoho_categories.value).reduce((acc: any = {}, key: string) => {
+                //     if (typeof acc === 'string')
+                //         acc = {
+                //             [key]: {
+                //                 ...zoho_categories.value[key], selected: false
+                //             }
+                //         };
+                //     else
+                //         acc[key] = { ...zoho_categories.value[key], selected: false };
+                //     return acc;
+                // })
+                // selected_categories.value = [];
             }
         }
 
@@ -191,15 +227,15 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     };
 
     const buildIndentedCategoryMap = (categories: any[], parentId: string, depth = 0) => {
-        let result: any = {};
+        let result: ZohoCategory[] = [];
 
         categories
             .filter(cat => cat.parent_category_id === parentId)
             .forEach((cat: any) => {
                 const indent = '<span class="ml-1 mr-1">-</span>'.repeat(depth);
-                result[cat.category_id] = { label: `${indent}${cat.name}`, selected: false };
+                result.push({ id: cat.category_id, label: `${indent}${cat.name}`, selected: false });
                 const children = buildIndentedCategoryMap(categories, cat.category_id, depth + 1);
-                result = { ...result, ...children };
+                result = [...result, ...children];
             });
 
         return result;
@@ -209,8 +245,10 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         const action = actions.zoho_categories;
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
-        zoho_categories.value = await fetchData(action, keys.zoho_categories);
-        const zohoCategories = zoho_categories.value;
+        const zohoCategories = await fetchData(action, keys.zoho_categories);
+        // const zohoCategories = zoho_categories.value;
+        console.log("zohoCategories:", zohoCategories);
+
         if (zohoCategories && Array.isArray(zohoCategories)) {
             const indentedCategories = buildIndentedCategoryMap(zohoCategories, "-1");
             console.log("indentedCategories:", indentedCategories);
@@ -350,9 +388,10 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 store = keys.product
                 break;
             case actions.cron.save:
+                const selectedCategories = zoho_categories.value.filter(cat => cat.selected).map(cat => cat.id);
                 data = {
                     form: JSON.stringify(cron_settings),
-                    categories: JSON.stringify(selected_categories.value)
+                    categories: JSON.stringify(selectedCategories)
                 };
                 store = keys.cron
                 break;
@@ -478,7 +517,10 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     cron_settings.disable_name_sync = false;
                     cron_settings.disable_price_sync = false;
                     cron_settings.zi_cron_interval = 'none'
-                    selected_categories.value = [];
+                    // set selected categories to false
+                    zoho_categories.value.forEach((cat: ZohoCategory) => {
+                        cat.selected = false;
+                    });
                     break;
                 case actions.order.reset:
                     order_settings.disable_sync = false
@@ -550,7 +592,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 }
                 break;
             case "cron":
-                get_zoho_categories();
+                await get_zoho_categories();
                 response = await loader.loadData(keys.cron, actions.cron.get);
                 if (response) {
                     let parsed = response.form
@@ -561,13 +603,21 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     if (typeof parsedCategories === 'string') {
                         parsedCategories = JSON.parse(parsedCategories)
                     }
+                    // Get category IDs and set them as selected in zoho_categories
+                    console.log("parsedCategories:", parsedCategories);
+
+                    console.log("zoho_categories.value:", zoho_categories.value);
+                    zoho_categories.value.forEach((zohoCat: ZohoCategory) => {
+                        if (parsedCategories.includes(zohoCat.id)) {
+                            zohoCat.selected = true;
+                        }
+                    });
 
                     cron_settings.disable_name_sync = parsed.disable_name_sync;
                     cron_settings.disable_price_sync = parsed.disable_price_sync;
                     cron_settings.disable_image_sync = parsed.disable_image_sync;
                     cron_settings.disable_description_sync = parsed.disable_description_sync;
                     cron_settings.zi_cron_interval = parsed.zi_cron_interval
-                    selected_categories.value = parsedCategories;
                 }
                 break;
             case "order":
@@ -608,7 +658,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                         }
                         console.log(parsed, response.wcb2b);
 
-                        Object.entries(parsed).forEach(([key, value]) => {
+                        Object.entries(parsed).forEach(([key, value]: any) => {
                             const existingObject = wcb2b_groups.value.some(field => field.key === value.key && field.value === value.value);
                             if (!existingObject) {
                                 wcb2b_groups.value.push(value);
@@ -635,7 +685,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                         parsed = response.form
                     }
 
-                    Object.entries(parsed).forEach(([key, value]) => {
+                    Object.entries(parsed).forEach(([key, value]: any) => {
                         const existingObject = fields.value.some(field => field.key === key && field.value === value);
                         if (!existingObject) {
                             fields.value.push({ key, value });
@@ -670,7 +720,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         syncResponse,
         cron_settings,
         intervals,
-        selected_categories,
+        // selected_categories,
         zoho_categories,
         toggleSelectAll,
         order_settings,

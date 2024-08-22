@@ -64,7 +64,6 @@ const loader = useLoadingStore();
         <div class="overflow-y-scroll scrollbar-hide">
           <div class="grid grid-cols-1 gap-4 my-4">
             <div v-for="(category, index) in store.zoho_categories" :key="index" class="inline-flex mr-4">
-              {{ store.zoho_categories[index].selected }}
               <input v-if="category" v-model="category.selected" :value="index" type="checkbox" class="ml-1" />
               <label class="ml-4 mr-4" v-html="category.label"></label>
             </div>
