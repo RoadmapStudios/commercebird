@@ -182,58 +182,22 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const toggleSelectAll = (event: any) => {
         if (event.target.id === 'toggle-all') {
             if (event.target.checked) {
-                // zoho_categories
-                zoho_categories.value.forEach((category: ZohoCategory) => {
-                    // return { ...category, selected: true };
-                    category.selected = true;
-                });
-                // console.log("selected_categories.value:", zoho_categories.value);
-                // const data = Object.keys(zoho_categories.value).reduce((acc: any = {}, key: string) => {
-                //     console.log("acc:", acc);
-
-                //     if (typeof acc === 'string') {
-                //         acc = {
-                //             [key]: {
-                //                 ...zoho_categories.value[key], selected: true
-                //             }
-                //         };
-                //     } else
-                //         acc[key] = { ...zoho_categories.value[key], selected: true };
-                //     return acc;
-                // })
-                // zoho_categories.value = Object.keys(zoho_categories.value)
-                // selected_categories.value = Object.keys(zoho_categories.value);
+                zoho_categories.value.forEach((category: ZohoCategory) => category.selected = true);
             } else {
-                zoho_categories.value.forEach((category: ZohoCategory) => {
-                    // return { ...category, selected: true };
-                    category.selected = false;
-                });
-                // zoho_categories.value = Object.keys(zoho_categories.value).reduce((acc: any = {}, key: string) => {
-                //     if (typeof acc === 'string')
-                //         acc = {
-                //             [key]: {
-                //                 ...zoho_categories.value[key], selected: false
-                //             }
-                //         };
-                //     else
-                //         acc[key] = { ...zoho_categories.value[key], selected: false };
-                //     return acc;
-                // })
-                // selected_categories.value = [];
+                zoho_categories.value.forEach((category: ZohoCategory) => category.selected = false);
             }
         }
-
-
     };
 
+    /**
+     * @description Function to build an indented category map for zoho categories, So children are indented bellow their parent.
+     */
     const buildIndentedCategoryMap = (categories: any[], parentId: string, depth = 0) => {
         let result: ZohoCategory[] = [];
-
         categories
             .filter(cat => cat.parent_category_id === parentId)
             .forEach((cat: any) => {
-                const indent = '<span class="ml-1 mr-1">-</span>'.repeat(depth);
-                result.push({ id: cat.category_id, label: `${indent}${cat.name}`, selected: false });
+                result.push({ id: cat.category_id, label: `${'<span class="ml-1 mr-1">-</span>'.repeat(depth)}${cat.name}`, selected: false });
                 const children = buildIndentedCategoryMap(categories, cat.category_id, depth + 1);
                 result = [...result, ...children];
             });
@@ -246,12 +210,8 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
         const zohoCategories = await fetchData(action, keys.zoho_categories);
-        // const zohoCategories = zoho_categories.value;
-        console.log("zohoCategories:", zohoCategories);
-
         if (zohoCategories && Array.isArray(zohoCategories)) {
             const indentedCategories = buildIndentedCategoryMap(zohoCategories, "-1");
-            console.log("indentedCategories:", indentedCategories);
             zoho_categories.value = indentedCategories;
         }
         loader.clearLoading(action);
@@ -599,25 +559,23 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                     if (typeof response.form === 'string') {
                         parsed = JSON.parse(response.form)
                     }
-                    let parsedCategories = response.categories
-                    if (typeof parsedCategories === 'string') {
-                        parsedCategories = JSON.parse(parsedCategories)
-                    }
-                    // Get category IDs and set them as selected in zoho_categories
-                    console.log("parsedCategories:", parsedCategories);
-
-                    console.log("zoho_categories.value:", zoho_categories.value);
-                    zoho_categories.value.forEach((zohoCat: ZohoCategory) => {
-                        if (parsedCategories.includes(zohoCat.id)) {
-                            zohoCat.selected = true;
-                        }
-                    });
-
+                    // Other cron settings
                     cron_settings.disable_name_sync = parsed.disable_name_sync;
                     cron_settings.disable_price_sync = parsed.disable_price_sync;
                     cron_settings.disable_image_sync = parsed.disable_image_sync;
                     cron_settings.disable_description_sync = parsed.disable_description_sync;
                     cron_settings.zi_cron_interval = parsed.zi_cron_interval
+                    // Get zoho categories and map them if they are selected
+                    let parsedCategories = response.categories
+                    if (typeof parsedCategories === 'string') {
+                        parsedCategories = JSON.parse(parsedCategories)
+                    }
+                    // Get category IDs and set them as selected in zoho_categories
+                    zoho_categories.value.forEach((zohoCat: ZohoCategory) => {
+                        if (parsedCategories.includes(zohoCat.id)) {
+                            zohoCat.selected = true;
+                        }
+                    });
                 }
                 break;
             case "order":
