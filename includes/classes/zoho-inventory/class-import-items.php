@@ -581,7 +581,7 @@ class import_product_class {
 				// reset this array
 				$attribute_arr = array();
 				$variation_id = '';
-				$status = $item->status === 'active' ? 'publish' : 'private';
+				$status = $item->status === 'active' ? 'publish' : 'draft';
 
 				$zi_item_id = $item->item_id;
 				$variation_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'zi_item_id' AND meta_value = %s LIMIT 1", $zi_item_id ) );

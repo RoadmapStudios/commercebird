@@ -47,7 +47,7 @@ if ( ! defined( 'RMS_DOCUMENTATION_URL' ) ) {
 	define( 'RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb' );
 }
 if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
-	define( 'RMS_PLUGIN_URL', 'https://commercebird.com/product/commercebird/' );
+	define( 'RMS_PLUGIN_URL', 'https://commercebird.com/' );
 }
 
 require_once RMS_DIR_PATH . 'includes/woo-functions.php';
@@ -92,7 +92,7 @@ Plugin::init();
 add_action(
 	'before_woocommerce_init',
 	function () {
-		if ( class_exists( FeaturesUtil::class) ) {
+		if ( class_exists( FeaturesUtil::class ) ) {
 			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 		}
 	}
