@@ -233,6 +233,12 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
 			$should_deliver = false;
 		}
+		// check if order contains meta data for eo_order_id
+		$eo_order_id = $order->get_meta( 'eo_order_id', true );
+		if ( ! empty( $eo_order_id ) && 'refunded' !== $order_status ) {
+			$should_deliver = false;
+		}
+		// check if order status is processing and webhook status is disabled or paused
 		$webhook_status = $webhook->get_status();
 		// also return false if webhoook status is disabled or paused
 		if ( $webhook_status === 'disabled' || $webhook_status === 'paused' ) {

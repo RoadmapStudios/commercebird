@@ -91,67 +91,32 @@ final class ExactOnlineAjax {
 	 * @return void
 	 */
 	public function get_payment_status(): void {
-		global $wpdb;
-
 		// $fd = fopen( __DIR__ . '/get_payment_status.log', 'a+' );
 
-		$start_date = gmdate( 'Y-m-d H:i:s', strtotime( '-230 days' ) );
+		$start_date = gmdate( 'Y-m-d H:i:s', strtotime( '-200 days' ) );
 		$end_date = gmdate( 'Y-m-d H:i:s', strtotime( '-5 days' ) );
-		$exclude_statuses = array( 'wc-completed', 'wc-sf-order' );
-		$included_status = 'wc-completed';
-
-		// Prepare the query
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID
-				FROM {$wpdb->posts}
-    			WHERE post_type = 'shop_order'
-    			AND post_status = 'wc-sf-order'
-    			AND post_date_gmt >= %s
-    			AND post_date_gmt <= %s
-    			AND ID IN (
-        			SELECT post_id
-        			FROM {$wpdb->postmeta}
-        			WHERE meta_key = '_customer_user'
-        			AND meta_value > 0
-        			AND post_id NOT IN (
-            			SELECT post_id
-            			FROM {$wpdb->postmeta}
-            			WHERE meta_key = '_payment_method'
-        			)
-				)",
-				$start_date,
-				$end_date
-			)
-		);
+		// $exclude_statuses = array( 'wc-sf-order' );
+		// $included_status = 'wc-completed';
 
 		// Calculate included statuses by removing excluded ones
-		// $included_statuses = array_diff( $all_statuses, $exclude_statuses );
+		// $included_statuses = array_diff( wc_get_order_statuses(), $exclude_statuses );
 		// Get all orders with the included statuses
-		// $orders = wc_get_orders(
-		// 	array(
-		// 		'status' => $included_statuses,
-		// 		'limit' => -1,
-		// 		'date_created' => $start_date . '...' . $end_date,
-		// 	)
-		// );
-		// if ( empty( $orders ) ) {
-		// 	$this->response = array(
-		// 		'success' => false,
-		// 		'message' => __( 'No Invoice orders found', 'commercebird' ),
-		// 	);
-		// 	$this->serve();
-		// }
-		// Filter out orders without a payment method
-		// $filtered_orders = array_filter(
-		// 	$orders,
-		// 	function ( $order ) {
-		// 		return $order->get_customer_id() && empty( $order->get_payment_method() );
-		// 	}
-		// );
-		foreach ( $results as $order ) {
-			// $order_id = $order->get_id();
-			$order_id = $order->ID;
+		$orders = wc_get_orders(
+			array(
+				'status' => 'wc-sf-order',
+				'limit' => -1,
+				'date_created' => $start_date . '...' . $end_date,
+				'return' => 'ids',
+			)
+		);
+		if ( empty( $orders ) ) {
+			$this->response = array(
+				'success' => false,
+				'message' => __( 'No Invoice orders found', 'commercebird' ),
+			);
+			$this->serve();
+		}
+		foreach ( $orders as $order_id ) {
 			// send each order_id to wc action scheduler to process if not scheduled
 			if ( ! as_has_scheduled_action( 'sync_payment_status', array( $order_id ) ) ) {
 				as_schedule_single_action(
@@ -232,30 +197,40 @@ final class ExactOnlineAjax {
 		$this->serve();
 	}
 
-	public function export_order( $start_date, $end_date ) {
+	public function export_order( $start_date_raw, $end_date_raw ) {
+		// $fd = fopen( __DIR__ . '/export_order.log', 'a+' );
+
+		$start_date = gmdate( 'Y-m-d H:i:s', $start_date_raw );
+		$end_date = gmdate( 'Y-m-d H:i:s', $end_date_raw );
 		// Define the order statuses to exclude
 		$exclude_statuses = array( 'wc-failed', 'wc-pending', 'wc-on-hold', 'wc-cancelled' );
-		$posts_per_page = 50;
-
+		$posts_per_page = 20;
 		$paged = 1;
+
 		do {
 			// Query to get orders
 			$args = array(
 				'date_created' => $start_date . '...' . $end_date,
-				'status' => array_diff( wc_get_order_statuses(), $exclude_statuses ),
+				'status' => array_diff( array_keys( wc_get_order_statuses() ), $exclude_statuses ),
 				'limit' => $posts_per_page,
 				'paged' => $paged,
+				'orderby' => 'date',
+				'order' => 'ASC',
+				'return' => 'ids',
 			);
 			$orders = wc_get_orders( $args );
 
 			// Loop through orders and add customer note
-			foreach ( $orders as $order ) {
+			foreach ( $orders as $order_id ) {
+				$order = wc_get_order( $order_id );
 				$order->set_status( $order->get_status() );
 				$order->save();
 			}
 
+			// Increment the offset for the next batch
 			++$paged;
 		} while ( ! empty( $orders ) );
+		// fclose( $fd );
 	}
 
 	public function order_export() {
