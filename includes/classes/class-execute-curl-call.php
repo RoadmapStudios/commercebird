@@ -73,6 +73,15 @@ class ExecutecallClass {
 
 		$response = wp_remote_get( $url, $args );
 
+		// get the status code of the response
+		$status_code = wp_remote_retrieve_response_code( $response );
+		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
+		if ( 429 === $status_code ) {
+			update_option( 'zoho_rate_limit_exceeded', true );
+		} else {
+			update_option( 'zoho_rate_limit_exceeded', false );
+		}
+
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
@@ -130,6 +139,16 @@ class ExecutecallClass {
 			),
 		);
 		$response = wp_remote_post( $url, $args );
+
+		// get the status code of the response
+		$status_code = wp_remote_retrieve_response_code( $response );
+		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
+		if ( 429 === $status_code ) {
+			update_option( 'zoho_rate_limit_exceeded', true );
+		} else {
+			update_option( 'zoho_rate_limit_exceeded', false );
+		}
+
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
@@ -187,6 +206,16 @@ class ExecutecallClass {
 			'method' => 'PUT',
 		);
 		$response = wp_remote_request( $url, $args );
+
+		// get the status code of the response
+		$status_code = wp_remote_retrieve_response_code( $response );
+		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
+		if ( 429 === $status_code ) {
+			update_option( 'zoho_rate_limit_exceeded', true );
+		} else {
+			update_option( 'zoho_rate_limit_exceeded', false );
+		}
+
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
@@ -245,6 +274,16 @@ class ExecutecallClass {
 			'method' => 'DELETE',
 		);
 		$response = wp_remote_request( $url, $args );
+
+		// get the status code of the response
+		$status_code = wp_remote_retrieve_response_code( $response );
+		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
+		if ( 429 === $status_code ) {
+			update_option( 'zoho_rate_limit_exceeded', true );
+		} else {
+			update_option( 'zoho_rate_limit_exceeded', false );
+		}
+
 		// Check if the request was successful
 		if ( ! is_wp_error( $response ) ) {
 			// If successful, get the body of the response
