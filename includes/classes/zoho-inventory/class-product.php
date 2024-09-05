@@ -18,10 +18,41 @@ class ProductClass {
 	}
 
 	public function cmbird_zi_products_prepare_sync( $product_ids ) {
-
+		$rate_limit = get_option( 'zoho_rate_limit_exceeded' );
 		if ( is_array( $product_ids ) ) {
-			foreach ( $product_ids as $product_id ) {
-				$this->cmbird_zi_product_sync( $product_id );
+			// schedule the unsynced products for tomorrow via action scheduler
+			if ( $rate_limit ) {
+				$timestamp = strtotime( 'tomorrow' );
+				// set the zoho rate limit option exceeded to false tomorrow if not scheduled yet.
+				if ( ! wp_next_scheduled( 'commercebird_common' ) ) {
+					wp_schedule_single_event( $timestamp, 'commercebird_common' );
+				}
+				// Get all scheduled actions with the specific hook name
+				$action_ids = as_get_scheduled_actions(
+					array(
+						'hook' => 'sync_zi_product_cron',
+						'status' => ActionScheduler_Store::STATUS_PENDING,
+						'per_page' => -1,
+					)
+				);
+				// Loop through each action and reschedule it
+				if ( ! empty( $action_ids ) ) {
+					foreach ( $action_ids as $action_id ) {
+						// Fetch the action by ID
+						$action = as_get_scheduled_action( $action_id );
+						// If the action is valid and exists, reschedule it
+						if ( $action ) {
+							// Reschedule the action to run tomorrow
+							as_schedule_single_action( $timestamp, 'sync_zi_product_cron', $action->get_args(), 'ActionScheduler' );
+							// Cancel the old action to avoid duplicates
+							as_unschedule_action( 'sync_zi_product_cron', $action->get_args(), $action_id );
+						}
+					}
+				}
+			} else {
+				foreach ( $product_ids as $product_id ) {
+					$this->cmbird_zi_product_sync( $product_id );
+				}
 			}
 		}
 	}
