@@ -267,15 +267,15 @@ function cmbird_item_id_field() {
 			'id' => 'cost_price',
 			'class' => 'readonly',
 			'wrapper_class' => 'form-row',
-			'label' => 'Cost Price',
+			'label' => esc_html__( 'Cost Price', 'commercebird' ),
 			'data_type' => 'price',
-			'description' => __( 'You can edit this via the CommerceBird App' ),
+			'description' => esc_html__( 'You can edit this via the CommerceBird App' ),
 		)
 	);
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'eo_item_id',
-			'label' => __( 'Exact Item ID' ),
+			'label' => esc_html__( 'Exact Item ID', 'commercebird' ),
 			'class' => 'readonly',
 			'desc_tip' => true,
 			'description' => esc_html__( 'This is the Exact Item ID of this product. You cannot change this', 'commercebird' ),
@@ -284,10 +284,10 @@ function cmbird_item_id_field() {
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'zi_item_id',
-			'label' => __( 'Zoho Item ID' ),
+			'label' => esc_html__( 'Zoho Item ID', 'commercebird' ),
 			'class' => 'readonly',
 			'desc_tip' => true,
-			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
+			'description' => esc_html__( 'This is the Zoho Item ID of this product. You cannot change this', 'commercebird' ),
 		)
 	);
 }
@@ -298,29 +298,29 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
 			'class' => 'readonly',
 			'wrapper_class' => 'form-row',
 			'data_type' => 'price',
-			'label' => __( 'Cost Price' ),
+			'label' => esc_html__( 'Cost Price', 'commercebird' ),
 			'value' => get_post_meta( $variation->ID, 'cost_price', true ),
-			'description' => __( 'You can edit this via the CommerceBird App' ),
+			'description' => esc_html__( 'You can edit this via the CommerceBird App', 'commercebird' ),
 		)
 	);
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'eo_item_id[' . $loop . ']',
 			'class' => 'readonly',
-			'label' => __( 'Exact Item ID' ),
+			'label' => esc_html__( 'Exact Item ID', 'commercebird' ),
 			'value' => get_post_meta( $variation->ID, 'eo_item_id', true ),
 			'desc_tip' => true,
-			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
+			'description' => esc_html__( 'This is the Exact Item ID of this product. You cannot change this', 'commercebird' ),
 		)
 	);
 	woocommerce_wp_text_input(
 		array(
 			'id' => 'zi_item_id[' . $loop . ']',
 			'class' => 'readonly',
-			'label' => __( 'Zoho Item ID' ),
+			'label' => esc_html__( 'Zoho Item ID', 'commercebird' ),
 			'value' => get_post_meta( $variation->ID, 'zi_item_id', true ),
 			'desc_tip' => true,
-			'description' => __( 'This is the Zoho Item ID of this product. You cannot change this' ),
+			'description' => esc_html__( 'This is the Zoho Item ID of this product. You cannot change this', 'commercebird' ),
 		)
 	);
 }
