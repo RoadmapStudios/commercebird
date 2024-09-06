@@ -278,7 +278,7 @@ function cmbird_item_id_field() {
 			'label' => __( 'Exact Item ID' ),
 			'class' => 'readonly',
 			'desc_tip' => true,
-			'description' => __( 'This is the Exact Item ID of this product. You cannot change this' ),
+			'description' => esc_html__( 'This is the Exact Item ID of this product. You cannot change this', 'commercebird' ),
 		)
 	);
 	woocommerce_wp_text_input(

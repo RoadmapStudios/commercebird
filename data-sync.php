@@ -177,13 +177,9 @@ function zoho_ajax_call_item() {
 			$meta_key
 		)
 	);
-
 	// Create an array to hold the product IDs
 	$product_ids = array();
-
 	// fwrite($fd, PHP_EOL . '------------- $post_ids : ' . print_r($post_ids, true));
-	// Initial delay multiplier
-	$delay_multiplier = 1;
 	// Adding all items in the queue
 	foreach ( $post_ids as $post_id ) {
 		// Add post ID to the array
@@ -191,18 +187,16 @@ function zoho_ajax_call_item() {
 		// Check if the array contains 10 product IDs (batch size)
 		if ( count( $product_ids ) === 10 ) {
 			// Schedule the action with a delay increasing exponentially for each batch
-			as_schedule_single_action( time() + ( 60 * $delay_multiplier ), 'sync_zi_product_cron', array( $product_ids ) );
+			as_schedule_single_action( time(), 'sync_zi_product_cron', array( $product_ids ) );
 			// Clear the array for the next batch of product IDs
 			$product_ids = array();
-			// Increment the delay for the next batch (1 minute per batch)
-			++$delay_multiplier;
 		}
 	}
 
 	// Handle any remaining product IDs if the count is less than 10 in the last batch
 	if ( count( $product_ids ) > 0 ) {
 		// Pass the remaining product IDs to the scheduler function
-		as_schedule_single_action( time() + ( 60 * $delay_multiplier ), 'sync_zi_product_cron', array( $product_ids ) );
+		as_schedule_single_action( time(), 'sync_zi_product_cron', array( $product_ids ) );
 	}
 
 	// fclose($fd);

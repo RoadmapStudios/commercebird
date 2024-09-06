@@ -178,13 +178,13 @@ class ProductClass {
 				$code = $json->code;
 				// fwrite($fd,PHP_EOL.'JSON Response : '.print_r($json,true));
 				// Check if the the given sku has product at zoho inventory.
-				if ( $code === '1001' || $code === 1001 ) {
+				if ( '1001' === $code || 1001 === $code ) {
 					// fwrite($fd,PHP_EOL.'Inside SKU Check');
 					$sku_check = str_replace( ' ', '+', $sku );
 					$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
 					$get_request = $execute_curl_call_handle->execute_curl_call_get( $url );
 
-					if ( $get_request->code === '0' || $get_request->code === 0 ) {
+					if ( '0' === $get_request->code || 0 === $get_request->code ) {
 						$item_id = '';
 						$matching_item = null;
 
@@ -202,7 +202,7 @@ class ProductClass {
 							$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $item_name_check . '&organization_id=' . $zoho_inventory_oid;
 							$get_request = $execute_curl_call_handle->execute_curl_call_get( $url );
 
-							if ( $get_request->code === '0' || $get_request->code === 0 ) {
+							if ( '0' === $get_request->code || 0 === $get_request->code ) {
 								foreach ( $get_request->items as $zoho_item ) {
 									if ( $zoho_item->name === $name ) {
 										// Name matched
@@ -221,24 +221,24 @@ class ProductClass {
 					}
 				}
 				// fwrite($fd,PHP_EOL.'After SKU Check : code '.$code);
-				if ( $code == '0' || $code == 0 ) {
+				if ( '0' === $code || 0 === $code ) {
 					foreach ( $json->item as $key => $value ) {
-						if ( $key == 'item_id' ) {
+						if ( $key === 'item_id' ) {
 							$item_id = $value;
 						}
 						if ( $key == 'purchase_account_id' ) {
 							$purchase_account_id = $value;
 						}
-						if ( $key == 'account_id' ) {
+						if ( $key === 'account_id' ) {
 							$account_id = $value;
 						}
-						if ( $key == 'account_name' ) {
+						if ( $key === 'account_name' ) {
 							$account_name = $value;
 						}
-						if ( $key == 'inventory_account_id' ) {
+						if ( $key === 'inventory_account_id' ) {
 							$inventory_account_id = $value;
 						}
-						if ( $key == 'category_id' && ! empty( $value ) ) {
+						if ( $key === 'category_id' && ! empty( $value ) ) {
 							update_post_meta( $post_id, 'zi_category_id', $value );
 						}
 					}
