@@ -4,6 +4,9 @@
  *
  * @package  WooZo Inventory
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class ImportPricelistClass {
 	use RMS\Admin\Traits\LogWriter;

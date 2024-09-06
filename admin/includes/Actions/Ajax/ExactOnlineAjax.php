@@ -8,8 +8,9 @@ use RMS\Admin\Traits\LogWriter;
 use RMS\Admin\Traits\OptionStatus;
 use RMS\Admin\Traits\Singleton;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit;
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 final class ExactOnlineAjax {
 	use Singleton;
 	use LogWriter;

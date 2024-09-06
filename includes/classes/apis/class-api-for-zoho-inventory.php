@@ -2,6 +2,10 @@
 
 namespace RMS\API;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use ExecutecallClass;
 use WP_REST_Response;
 use WP_REST_Server;

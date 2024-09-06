@@ -2,6 +2,10 @@
 
 namespace RMS\API;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WP_REST_Response;
 use WP_REST_Server;
 use WP_REST_Controller;
@@ -9,8 +13,6 @@ use WP_REST_Request;
 use ReflectionClass;
 use WP_Query;
 use WC_Product;
-
-defined( 'RMS_PLUGIN_NAME' ) || exit();
 
 class Exact extends WP_REST_Controller {
 

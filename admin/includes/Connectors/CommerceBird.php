@@ -7,7 +7,9 @@ use RMS\Admin\Actions\Ajax\ZohoCRMAjax;
 use RMS\Admin\Traits\LogWriter;
 use WP_Error;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 final class CommerceBird {
 	use LogWriter;

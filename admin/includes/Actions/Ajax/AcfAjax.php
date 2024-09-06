@@ -8,8 +8,9 @@ use RMS\Admin\Traits\Singleton;
 use RMS\Admin\Traits\LogWriter;
 
 
-defined( 'RMS_PLUGIN_NAME' ) || exit;
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Initializes the Zoho CRM class.
  * @since 1.0.0

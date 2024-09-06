@@ -4,6 +4,9 @@
  *
  * @package  zoho_inventory_api
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 

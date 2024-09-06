@@ -7,7 +7,9 @@ use RMS\API\CreateOrderWebhook;
 use RMS\API\ProductWebhook;
 use RMS\API\ShippingWebhook;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit();
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 final class Template {
 	use Singleton;

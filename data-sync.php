@@ -10,6 +10,10 @@
  * @link     https://commercebird.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Zoho Api Error Email
  *

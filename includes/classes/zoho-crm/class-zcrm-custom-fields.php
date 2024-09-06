@@ -2,6 +2,10 @@
 
 namespace CommerceBird;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use ExecutecallClass;
 
 class ZCRM_Custom_Fields {

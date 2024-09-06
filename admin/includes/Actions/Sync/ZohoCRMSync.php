@@ -2,7 +2,9 @@
 
 namespace RMS\Admin\Actions\Sync;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use ExecutecallClass;
 use Classfunctions;

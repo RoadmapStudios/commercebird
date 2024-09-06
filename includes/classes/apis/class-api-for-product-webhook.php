@@ -2,6 +2,10 @@
 
 namespace RMS\API;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use ImageClass;
 use import_product_class;
 use ProductClass;
@@ -12,8 +16,6 @@ use WP_REST_Response;
 use WP_REST_Server;
 use wpdb;
 use ZI_CommonClass;
-
-defined( 'RMS_PLUGIN_NAME' ) || exit();
 
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 

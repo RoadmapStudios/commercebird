@@ -4,7 +4,9 @@
  *
  * @package  WooZo Inventory
  */
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 class ProductClass {
 	private $config;
 

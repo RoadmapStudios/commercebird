@@ -15,8 +15,9 @@ use WC_Tax;
 use WpOrg\Requests\Exception;
 use function gettype;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit;
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 final class ZohoInventoryAjax {
 
 	use Singleton;

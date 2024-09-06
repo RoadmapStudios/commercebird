@@ -2,6 +2,10 @@
 
 namespace RMS\API;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use RMS\Admin\Traits\LogWriter;
 use WP_REST_Response;
 use WC_Coupon;

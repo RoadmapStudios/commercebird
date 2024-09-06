@@ -2,7 +2,9 @@
 
 namespace CommerceBird;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Extending the WC API with our custom endpoints.

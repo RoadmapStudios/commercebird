@@ -3,6 +3,10 @@
 /**
  * Class for handling Zoho Inventory order sync related functions.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Zi_Order_Sync {
 
 

@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Controller {
 
 	protected $namespace = 'wc/v3';

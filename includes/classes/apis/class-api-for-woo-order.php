@@ -2,10 +2,12 @@
 
 namespace RMS\API;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use RMS\Admin\Traits\LogWriter;
 use WP_REST_Response;
-
-defined( 'RMS_PLUGIN_NAME' ) || exit();
 
 class CreateOrderWebhook {
 

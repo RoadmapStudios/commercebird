@@ -8,8 +8,9 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit();
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 trait Api {
 

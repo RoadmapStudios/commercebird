@@ -5,7 +5,7 @@ namespace RMS\Admin;
 use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
 use RMS\Admin\Traits\Singleton;
 
-if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 

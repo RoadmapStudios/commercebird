@@ -3,6 +3,9 @@
 /**
  * Common class function.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! class_exists( 'ZI_CommonClass' ) ) {
 	class ZI_CommonClass {

@@ -3,6 +3,9 @@
 /**
  * Taxonomy: Brands for Products.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 function cmbird_register_custom_product_taxonomies() {
 

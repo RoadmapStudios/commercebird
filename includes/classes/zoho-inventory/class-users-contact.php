@@ -8,6 +8,10 @@
  * @author   Roadmap Studios
  * @link     https://commercebird.com
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class ContactClass {
 
 	private array $config;

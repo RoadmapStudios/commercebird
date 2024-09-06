@@ -2,6 +2,10 @@
 
 namespace CommerceBird;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
