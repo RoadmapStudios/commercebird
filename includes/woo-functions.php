@@ -98,14 +98,14 @@ function cmbird_zi_product_sync_class( $product_id ) {
  * @param: $bulk_array
  * @return: $bulk_array
  */
-add_filter( 'bulk_actions-edit-product', 'zi_sync_all_items_to_zoho' );
-function zi_sync_all_items_to_zoho( $bulk_array ) {
+add_filter( 'bulk_actions-edit-product', 'cmbird_zi_sync_all_items_to_zoho' );
+function cmbird_zi_sync_all_items_to_zoho( $bulk_array ) {
 	$bulk_array['sync_item_to_zoho'] = 'Sync to Zoho';
 	return $bulk_array;
 }
 
-add_filter( 'handle_bulk_actions-edit-product', 'zi_sync_all_items_to_zoho_handler', 10, 3 );
-function zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_ids ) {
+add_filter( 'handle_bulk_actions-edit-product', 'cmbird_zi_sync_all_items_to_zoho_handler', 10, 3 );
+function cmbird_zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_ids ) {
 	// let's remove query args first
 	$redirect = remove_query_arg( 'sync_item_to_zoho_done', $redirect );
 
@@ -126,8 +126,8 @@ function zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_ids ) {
 }
 
 // output the message of bulk action
-add_action( 'admin_notices', 'sync_item_to_zoho_notices' );
-function sync_item_to_zoho_notices() {
+add_action( 'admin_notices', 'cmbird_sync_item_to_zoho_notices' );
+function cmbird_sync_item_to_zoho_notices() {
 	// verify nonce
 	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-edit-products' ) ) {
 		return;
@@ -143,8 +143,8 @@ function sync_item_to_zoho_notices() {
  * Function to be called by ajax hook when unmap button called.
  * This function remove zoho mapped id.
  */
-add_action( 'wp_ajax_zi_product_unmap_hook', 'zi_product_unmap_hook' );
-function zi_product_unmap_hook( $product_id ) {
+add_action( 'wp_ajax_zi_product_unmap_hook', 'cmbird_zi_product_unmap_hook' );
+function cmbird_zi_product_unmap_hook( $product_id ) {
 	// verify Nonce
 	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zi_product_unmap_hook' ) ) {
 		wp_send_json_error( 'Nonce verification failed' );
@@ -184,8 +184,8 @@ function zi_product_unmap_hook( $product_id ) {
  * Function to be called by ajax hook when unmap button called.
  * This function remove zoho mapped id.
  */
-add_action( 'wp_ajax_zi_customer_unmap_hook', 'zi_customer_unmap_hook' );
-function zi_customer_unmap_hook( $order_id ) {
+add_action( 'wp_ajax_zi_customer_unmap_hook', 'cmbird_zi_customer_unmap_hook' );
+function cmbird_zi_customer_unmap_hook( $order_id ) {
 	// verify Nonce
 	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zi_customer_unmap_hook' ) ) {
 		wp_send_json_error( 'Nonce verification failed' );
@@ -218,7 +218,7 @@ function zi_customer_unmap_hook( $order_id ) {
 /**
  * Add WordPress Meta box to show sync response
  */
-function zoho_product_metabox() {
+function cmbird_product_metabox() {
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( ! $zoho_inventory_access_token ) {
 		return;
@@ -226,13 +226,13 @@ function zoho_product_metabox() {
 	add_meta_box(
 		'zoho-product-sync',
 		__( 'Zoho Inventory' ),
-		'zoho_product_metabox_callback',
+		'cmbird_product_metabox_callback',
 		'product',
 		'side',
 		'high'
 	);
 }
-function zoho_product_metabox_callback( $post ) {
+function cmbird_product_metabox_callback( $post ) {
 	$response = get_post_meta( $post->ID, 'zi_product_errmsg' );
 	echo 'API Response: ' . esc_html( implode( $response ) ) . '<br>';
 	// Generate nonce
@@ -252,7 +252,7 @@ function zoho_product_metabox_callback( $post ) {
 		echo '<p class="howto"><strong>Zoho Category: </strong>' . esc_html( $zi_category_id ) . '</p>';
 	}
 }
-add_action( 'add_meta_boxes', 'zoho_product_metabox' );
+add_action( 'add_meta_boxes', 'cmbird_product_metabox' );
 
 
 /**
@@ -331,7 +331,7 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
  * @param string[] $columns
  * @return string[] $new_columns
  */
-function zi_sync_column_orders_overview( $columns ) {
+function cmbird_zi_sync_column_orders_overview( $columns ) {
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return $columns;
@@ -342,12 +342,12 @@ function zi_sync_column_orders_overview( $columns ) {
 		$new_columns[ $column_name ] = $column_info;
 
 		if ( 'order_total' === $column_name ) {
-			$new_columns['zoho_sync'] = __( 'Zoho Sync', 'my-textdomain' );
+			$new_columns['zoho_sync'] = __( 'Zoho Sync', 'commercebird' );
 		}
 	}
 	return $new_columns;
 }
-add_filter( 'manage_woocommerce_page_wc-orders_columns', 'zi_sync_column_orders_overview', 20 );
+add_filter( 'manage_woocommerce_page_wc-orders_columns', 'cmbird_zi_sync_column_orders_overview', 20 );
 
 /**
  * Adding Sync Status for Orders Column
@@ -356,7 +356,7 @@ add_filter( 'manage_woocommerce_page_wc-orders_columns', 'zi_sync_column_orders_
  * @param int    $order_id $order id.
  * @return void
  */
-function zi_add_zoho_orders_content( $column, $order_id ) {
+function cmbird_zi_add_zoho_orders_content( $column, $order_id ) {
 	$zi_url = get_option( 'zoho_inventory_url' );
 	$zi_visit_url = str_replace( 'www.zohoapis', 'inventory.zoho', $zi_url );
 	switch ( $column ) {
@@ -374,14 +374,14 @@ function zi_add_zoho_orders_content( $column, $order_id ) {
 			break;
 	}
 }
-add_action( 'manage_woocommerce_page_wc-orders_custom_column', 'zi_add_zoho_orders_content', 20, 2 );
+add_action( 'manage_woocommerce_page_wc-orders_custom_column', 'cmbird_zi_add_zoho_orders_content', 20, 2 );
 
 /**
  * Adds 'Zoho Sync' column content.
  *
  * @param string[] $column name of column being displayed
  */
-function zi_add_zoho_column_content( $column ) {
+function cmbird_zi_add_zoho_column_content( $column ) {
 	global $post;
 	$post_type = get_post_type( $post );
 
@@ -395,7 +395,7 @@ function zi_add_zoho_column_content( $column ) {
 		}
 	}
 }
-add_action( 'manage_product_posts_custom_column', 'zi_add_zoho_column_content' );
+add_action( 'manage_product_posts_custom_column', 'cmbird_zi_add_zoho_column_content' );
 
 /**
  * Adds 'Zoho Sync' column header to 'Products' page.
@@ -403,7 +403,7 @@ add_action( 'manage_product_posts_custom_column', 'zi_add_zoho_column_content' )
  * @param string[] $columns
  * @return string[] $new_columns
  */
-function zi_sync_column_products_overview( $columns ) {
+function cmbird_zi_sync_column_products_overview( $columns ) {
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return $columns;
@@ -421,12 +421,12 @@ function zi_sync_column_products_overview( $columns ) {
 
 	return $new_columns;
 }
-add_filter( 'manage_edit-product_columns', 'zi_sync_column_products_overview', 20 );
+add_filter( 'manage_edit-product_columns', 'cmbird_zi_sync_column_products_overview', 20 );
 
 /**
  * Make 'Zoho Sync' column filterable.
  */
-function zi_sync_column_filterable() {
+function cmbird_zi_sync_column_filterable() {
 	global $typenow;
 
 	if ( 'product' === $typenow ) {
@@ -479,14 +479,14 @@ function zi_sync_column_filterable() {
 		echo '</select>';
 	}
 }
-add_action( 'restrict_manage_posts', 'zi_sync_column_filterable' );
+add_action( 'restrict_manage_posts', 'cmbird_zi_sync_column_filterable' );
 
 /**
  * Modify the product query based on the filter.
  *
  * @param WP_Query $query The query object.
  */
-function zi_sync_column_filter_query( $query ) {
+function cmbird_zi_sync_column_filter_query( $query ) {
 	global $typenow, $pagenow;
 
 	if ( $typenow === 'product' && $pagenow === 'edit.php' && isset( $_GET['zoho_sync_filter'] ) && $_GET['zoho_sync_filter'] !== '' ) {
@@ -517,7 +517,7 @@ function zi_sync_column_filter_query( $query ) {
 		$query->set( 'meta_query', $meta_query );
 	}
 }
-add_action( 'pre_get_posts', 'zi_sync_column_filter_query' );
+add_action( 'pre_get_posts', 'cmbird_zi_sync_column_filter_query' );
 
 /**
  * Change Action Scheduler default purge to 1 week
@@ -530,7 +530,7 @@ add_filter( 'action_scheduler_retention_period', 'cmbird_action_scheduler_purge'
 
 add_filter(
 	'action_scheduler_default_cleaner_statuses',
-	function ($statuses) {
+	function ( $statuses ) {
 		$statuses[] = ActionScheduler_Store::STATUS_FAILED;
 		return $statuses;
 	}
