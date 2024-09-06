@@ -4,7 +4,9 @@ namespace RMS\Admin\Traits;
 
 use RMS\Admin\Template;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 trait AjaxRequest {
 

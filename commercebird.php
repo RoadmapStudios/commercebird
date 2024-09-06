@@ -27,36 +27,25 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', '' ) || die( 'No script kiddies please!' );
 }
-if ( ! defined( 'RMS_PLUGIN_NAME' ) ) {
-	define( 'RMS_PLUGIN_NAME', 'CommerceBird' );
+
+if ( ! defined( 'CMBIRD_VERSION' ) ) {
+	define( 'CMBIRD_VERSION', '2.2.0' );
 }
-if ( ! defined( 'RMS_VERSION' ) ) {
-	define( 'RMS_VERSION', '2.2.0' );
+if ( ! defined( 'CMBIRD_PATH' ) ) {
+	define( 'CMBIRD_PATH', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'RMS_DIR_PATH' ) ) {
-	define( 'RMS_DIR_PATH', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'CMBIRD_URL' ) ) {
+	define( 'CMBIRD_URL', plugin_dir_url( __FILE__ ) );
 }
-if ( ! defined( 'RMS_DIR_URL' ) ) {
-	define( 'RMS_DIR_URL', plugin_dir_url( __FILE__ ) );
-}
-if ( ! defined( 'RMS_BASENAME' ) ) {
-	define( 'RMS_BASENAME', plugin_basename( __FILE__ ) );
-}
-if ( ! defined( 'RMS_MENU_SLUG' ) ) {
-	define( 'RMS_MENU_SLUG', 'commercebird-app' );
-}
-if ( ! defined( 'RMS_DOCUMENTATION_URL' ) ) {
-	define( 'RMS_DOCUMENTATION_URL', 'https://support.commercebird.com/portal/en/kb' );
-}
-if ( ! defined( 'RMS_PLUGIN_URL' ) ) {
-	define( 'RMS_PLUGIN_URL', 'https://commercebird.com/' );
+if ( ! defined( 'CMBIRD_MENU_SLUG' ) ) {
+	define( 'CMBIRD_MENU_SLUG', 'commercebird-app' );
 }
 
-require_once RMS_DIR_PATH . 'includes/woo-functions.php';
-require_once RMS_DIR_PATH . 'includes/sync/order-backend.php';
-require_once RMS_DIR_PATH . 'includes/taxonomies/taxonomy-product_brands.php';
-require_once RMS_DIR_PATH . 'data-sync.php';
-require_once RMS_DIR_PATH . 'includes/wc-am-client.php';
+require_once CMBIRD_PATH . 'includes/woo-functions.php';
+require_once CMBIRD_PATH . 'includes/sync/order-backend.php';
+require_once CMBIRD_PATH . 'includes/taxonomies/taxonomy-product_brands.php';
+require_once CMBIRD_PATH . 'data-sync.php';
+require_once CMBIRD_PATH . 'includes/wc-am-client.php';
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -94,7 +83,7 @@ Plugin::init();
 add_action(
 	'before_woocommerce_init',
 	function () {
-		if ( class_exists( FeaturesUtil::class ) ) {
+		if ( class_exists( FeaturesUtil::class) ) {
 			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 		}
 	}
@@ -133,7 +122,7 @@ if ( class_exists( 'commercebird_AM_Client' ) ) {
 		'page_title' => 'API key Activation',
 		'menu_title' => 'License Activation',
 	);
-	$wcam_lib = new commercebird_AM_Client( __FILE__, '', RMS_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
+	$wcam_lib = new commercebird_AM_Client( __FILE__, '', CMBIRD_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
 }
 // add classes to REST API
 add_action(
@@ -152,7 +141,7 @@ add_action(
 
 add_action(
 	'save_post',
-	function ( $post_id, $post ) {
+	function ($post_id, $post) {
 		if ( $post->post_type === 'wcb2b_group' ) {
 			delete_transient( 'wc_b2b_groups' );
 		}
@@ -172,7 +161,7 @@ add_action( 'upgrader_process_complete', 'cmbird_update_plugin_tasks', 10, 2 );
 function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
 	$this_plugin = plugin_basename( __FILE__ );
 
-	if ( '2.1.18' >= RMS_VERSION ) {
+	if ( '2.1.18' >= CMBIRD_VERSION ) {
 		return;
 	}
 

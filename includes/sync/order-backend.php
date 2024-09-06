@@ -25,8 +25,8 @@ function cmbird_load_script() {
 	if ( is_admin() ) {
 		$screen = get_current_screen();
 		if ( $screen->id === 'product' || $screen->id === 'shop_order' || $screen->id === 'woocommerce_page_wc-orders' ) {
-			wp_enqueue_script( 'zoho-admin-order-ajax-script', RMS_DIR_URL . 'admin/js/zoho_admin_order_ajax.js', array( 'jquery' ), RMS_VERSION, true );
-			wp_register_script( 'sweatAlert', RMS_DIR_URL . 'admin/js/sweetalert.min.js', array( 'jquery' ), RMS_VERSION, true );
+			wp_enqueue_script( 'zoho-admin-order-ajax-script', CMBIRD_URL . 'admin/js/zoho_admin_order_ajax.js', array( 'jquery' ), CMBIRD_VERSION, true );
+			wp_register_script( 'sweatAlert', CMBIRD_URL . 'admin/js/sweetalert.min.js', array( 'jquery' ), CMBIRD_VERSION, true );
 			wp_enqueue_script( 'sweatAlert' );
 		}
 	}

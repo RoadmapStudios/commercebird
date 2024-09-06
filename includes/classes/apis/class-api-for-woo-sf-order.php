@@ -10,8 +10,6 @@ use RMS\Admin\Traits\LogWriter;
 use WP_REST_Response;
 use WC_Coupon;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit();
-
 class CreateSFOrderWebhook {
 
 	use Api;

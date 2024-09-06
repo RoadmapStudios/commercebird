@@ -22,7 +22,7 @@ final class Template {
 	}
 
 	public function menu(): void {
-		$svg = RMS_DIR_URL . 'admin/commercebird-icon.svg';
+		$svg = CMBIRD_URL . 'admin/commercebird-icon.svg';
 		add_menu_page(
 			__( 'CommerceBird', 'commercebird' ),
 			__( 'CommerceBird', 'commercebird' ),
@@ -30,7 +30,7 @@ final class Template {
 			self::NAME,
 			function () {
 				wp_enqueue_style( self::NAME );
-				wp_enqueue_style( self::NAME . '-notify', RMS_DIR_URL . 'admin/css/notyf.min.css', array(), RMS_VERSION );
+				wp_enqueue_style( self::NAME . '-notify', CMBIRD_URL . 'admin/css/notyf.min.css', array(), CMBIRD_VERSION );
 				wp_enqueue_script( self::NAME );
 				add_filter( 'script_loader_tag', array( $this, 'add_module' ), 10, 3 );
 				printf( '<div id="%s">Loading...</div>', esc_attr( self::NAME ) );
@@ -64,36 +64,36 @@ final class Template {
 	public function scripts(): void {
 		global $wp_roles;
 		// comment on production
-		wp_register_style( self::NAME, 'http://localhost:5000/src/main.css', array(), RMS_VERSION );
-		wp_register_script( self::NAME, 'http://localhost:5000/src/main.js', array(), RMS_VERSION, true );
+		wp_register_style( self::NAME, 'http://localhost:5000/src/main.css', array(), CMBIRD_VERSION );
+		wp_register_script( self::NAME, 'http://localhost:5000/src/main.js', array(), CMBIRD_VERSION, true );
 		// comment on production
-		wp_register_style( self::NAME, RMS_DIR_URL . 'admin/assets/dist/index.css', array(), RMS_VERSION );
-		wp_register_script( self::NAME, RMS_DIR_URL . 'admin/assets/dist/index.js', array(), RMS_VERSION, true );
+		wp_register_style( self::NAME, CMBIRD_URL . 'admin/assets/dist/index.css', array(), CMBIRD_VERSION );
+		wp_register_script( self::NAME, CMBIRD_URL . 'admin/assets/dist/index.js', array(), CMBIRD_VERSION, true );
 		wp_add_inline_style( self::NAME, '#wpcontent, .auto-fold #wpcontent{padding-left: 0px} #wpcontent .notice, #wpcontent #message{display: none} input[type=checkbox]:checked::before{content:unset}' );
 		$active_plugins = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
 		wp_localize_script(
 			self::NAME,
 			'commercebird_admin',
 			array(
-				'security_token'   => wp_create_nonce( self::NAME ),
-				'api_token'        => get_option( 'zi_webhook_password', false ),
-				'webhooks'         => array(
-					'Items'           => ProductWebhook::endpoint(),
-					'Order Create'    => CreateOrderWebhook::endpoint(),
+				'security_token' => wp_create_nonce( self::NAME ),
+				'api_token' => get_option( 'zi_webhook_password', false ),
+				'webhooks' => array(
+					'Items' => ProductWebhook::endpoint(),
+					'Order Create' => CreateOrderWebhook::endpoint(),
 					'Shipping Status' => ShippingWebhook::endpoint(),
 				),
-				'redirect_uri'     => admin_url( 'admin.php?page=commercebird-app' ),
-				'url'              => admin_url( 'admin-ajax.php' ),
-				'wc_tax_enabled'   => is_plugin_active( 'woocommerce/woocommerce.php' ) ? wc_tax_enabled() : false,
-				'roles'            => $wp_roles->get_names(),
-				'b2b_enabled'      => class_exists( 'Addify_B2B_Plugin' ),
+				'redirect_uri' => admin_url( 'admin.php?page=commercebird-app' ),
+				'url' => admin_url( 'admin-ajax.php' ),
+				'wc_tax_enabled' => is_plugin_active( 'woocommerce/woocommerce.php' ) ? wc_tax_enabled() : false,
+				'roles' => $wp_roles->get_names(),
+				'b2b_enabled' => class_exists( 'Addify_B2B_Plugin' ),
 				'fileinfo_enabled' => extension_loaded( 'fileinfo' ),
-				'acf_enabled'      => class_exists( 'ACF' ),
-				'cosw_enabled'     => self::is_wc_shipped_status_exists(),
-				'wcb2b_enabled'    => class_exists( 'WooCommerceB2B' ),
-				'wcb2b_groups'     => get_transient( 'wc_b2b_groups' ),
-				'site_url'         => site_url(),
-				'eo_sync'          => get_option( 'commmercebird_exact_online_sync_orders' ),
+				'acf_enabled' => class_exists( 'ACF' ),
+				'cosw_enabled' => self::is_wc_shipped_status_exists(),
+				'wcb2b_enabled' => class_exists( 'WooCommerceB2B' ),
+				'wcb2b_groups' => get_transient( 'wc_b2b_groups' ),
+				'site_url' => site_url(),
+				'eo_sync' => get_option( 'commmercebird_exact_online_sync_orders' ),
 			),
 		);
 	}

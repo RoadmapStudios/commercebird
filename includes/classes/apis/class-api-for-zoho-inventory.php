@@ -11,8 +11,6 @@ use WP_REST_Response;
 use WP_REST_Server;
 use WP_REST_Controller;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit();
-
 class Zoho extends WP_REST_Controller {
 
 	protected $prefix = 'wc/v3';

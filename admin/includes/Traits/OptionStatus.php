@@ -2,8 +2,9 @@
 
 namespace RMS\Admin\Traits;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit();
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 trait OptionStatus {
 
 	/**

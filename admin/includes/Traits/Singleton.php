@@ -4,7 +4,9 @@ namespace RMS\Admin\Traits;
 
 use Exception;
 
-defined( 'RMS_PLUGIN_NAME' ) || exit();
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 trait Singleton {
 	/**

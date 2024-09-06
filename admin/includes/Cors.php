@@ -94,7 +94,7 @@ final class Cors {
 		$htaccess_file = get_home_path() . '.htaccess';
 
 		if ( got_mod_rewrite() ) {
-			insert_with_markers( $htaccess_file, RMS_MENU_SLUG, $lines );
+			insert_with_markers( $htaccess_file, CMBIRD_MENU_SLUG, $lines );
 		}
 	}
 
