@@ -1,9 +1,9 @@
 <?php
 
-namespace RMS\Admin;
+namespace CommerceBird\Admin;
 
-use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
-use RMS\Admin\Traits\Singleton;
+use CommerceBird\Admin\Actions\Ajax\ExactOnlineAjax;
+use CommerceBird\Admin\Traits\Singleton;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -53,12 +53,12 @@ final class Acf {
 
 		array_walk(
 			$post_types,
-			function ( $post_type ) {
+			function ($post_type) {
 				register_rest_field(
 					$post_type,
 					'ACF',
 					array(
-						'get_callback' => function ( $object ) {
+						'get_callback' => function ($object) {
 							if ( function_exists( 'get_fields' ) ) {
 								return get_fields( $object['id'] );
 							} else {

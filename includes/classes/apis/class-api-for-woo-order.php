@@ -1,12 +1,12 @@
 <?php
 
-namespace RMS\API;
+namespace CommerceBird\API;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use RMS\Admin\Traits\LogWriter;
+use CommerceBird\Admin\Traits\LogWriter;
 use WP_REST_Response;
 
 class CreateOrderWebhook {
@@ -22,8 +22,8 @@ class CreateOrderWebhook {
 			self::$namespace,
 			self::$endpoint,
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'handle' ),
+				'methods' => 'POST',
+				'callback' => array( $this, 'handle' ),
 				'permission_callback' => array( $this, 'permission_check' ),
 			)
 		);
@@ -36,20 +36,20 @@ class CreateOrderWebhook {
 	 */
 	public function format_address( $address ): array {
 		if ( array_key_exists( 'attention', $address ) ) {
-			$names      = explode( ' ', $address['attention'] );
+			$names = explode( ' ', $address['attention'] );
 			$first_name = $names[0] ?? '';
-			$last_name  = $names[1] ?? '';
+			$last_name = $names[1] ?? '';
 		}
 		return array(
 			'first_name' => $first_name ?? '',
-			'last_name'  => $last_name ?? '',
-			'address_1'  => $address['address'] ?? '',
-			'address_2'  => $address['street2'] ?? '',
-			'city'       => $address['city'] ?? '',
-			'state'      => $address['state_code'] ?? '',
-			'postcode'   => $address['zip'] ?? '',
-			'country'    => $address['country_code'] ?? '',
-			'phone'      => $address['phone'] ?? '',
+			'last_name' => $last_name ?? '',
+			'address_1' => $address['address'] ?? '',
+			'address_2' => $address['street2'] ?? '',
+			'city' => $address['city'] ?? '',
+			'state' => $address['state_code'] ?? '',
+			'postcode' => $address['zip'] ?? '',
+			'country' => $address['country_code'] ?? '',
+			'phone' => $address['phone'] ?? '',
 		);
 	}
 
@@ -80,16 +80,16 @@ class CreateOrderWebhook {
 			'notes',
 		);
 
-		$order_data       = array_intersect_key( $order_data['salesorder'], array_flip( $allowed_keys ) );
-		$billing_address  = $this->format_address( $order_data['billing_address'] );
+		$order_data = array_intersect_key( $order_data['salesorder'], array_flip( $allowed_keys ) );
+		$billing_address = $this->format_address( $order_data['billing_address'] );
 		$shipping_address = $this->format_address( $order_data['shipping_address'] );
 		if ( isset( $order_data['contact_person_details'][0]['email'] ) ) {
 			$customer_data = $order_data['contact_person_details'][0];
 			$customer_mail = $customer_data['email'];
-			$customer      = get_user_by( 'email', $customer_mail );
+			$customer = get_user_by( 'email', $customer_mail );
 			if ( empty( $customer ) ) {
 				$customer_id = wc_create_new_customer( $customer_mail );
-				$customer    = get_user_by( 'id', $customer_id );
+				$customer = get_user_by( 'id', $customer_id );
 			}
 		}
 
@@ -114,7 +114,7 @@ class CreateOrderWebhook {
 		$shipping = new \WC_Order_Item_Shipping();
 		$shipping->set_method_title( $order_data['delivery_method'] );
 		$shipping->set_total( $order_data['shipping_charges']['item_total'] );
-		$id             = $this->get_order_id( $order_data['salesorder_id'] );
+		$id = $this->get_order_id( $order_data['salesorder_id'] );
 		$existing_order = wc_get_order( $id );
 		if ( ! empty( $existing_order ) ) {
 			$existing_order->set_address( $shipping_address, 'shipping' );
@@ -141,13 +141,13 @@ class CreateOrderWebhook {
 			wc_delete_shop_order_transients( $existing_order );
 			$response->set_data(
 				array(
-					'id'    => $existing_order->get_id(),
+					'id' => $existing_order->get_id(),
 					'items' => array_map(
-						function ( $item ) {
+						function ($item) {
 							return array(
 								'product_id' => $item->get_product_id(),
-								'quantity'   => $item->get_quantity(),
-								'price'      => $item->get_total(),
+								'quantity' => $item->get_quantity(),
+								'price' => $item->get_total(),
 							);
 						},
 						$existing_order->get_items()
@@ -185,13 +185,13 @@ class CreateOrderWebhook {
 			$order->save();
 			$response->set_data(
 				array(
-					'id'    => $order->get_id(),
+					'id' => $order->get_id(),
 					'items' => array_map(
-						function ( $item ) {
+						function ($item) {
 							return array(
 								'product_id' => $item->get_product_id(),
-								'quantity'   => $item->get_quantity(),
-								'price'      => $item->get_total(),
+								'quantity' => $item->get_quantity(),
+								'price' => $item->get_total(),
 							);
 						},
 						$order->get_items()
@@ -216,7 +216,7 @@ class CreateOrderWebhook {
 
 
 	private function get_items( $line_items ): array {
-		$meta_ids    = array_column( $line_items, 'sku' );
+		$meta_ids = array_column( $line_items, 'sku' );
 		$product_ids = array();
 		foreach ( $line_items as $item ) {
 			$product_id = wc_get_product_id_by_sku( $item['sku'] );
@@ -236,8 +236,8 @@ class CreateOrderWebhook {
 		$args = array(
 			'meta_query' => array(
 				array(
-					'key'     => 'zi_salesorder_id',
-					'value'   => $zi_id,
+					'key' => 'zi_salesorder_id',
+					'value' => $zi_id,
 					'compare' => '=',
 				),
 			),

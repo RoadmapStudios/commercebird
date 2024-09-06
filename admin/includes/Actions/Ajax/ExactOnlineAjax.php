@@ -1,12 +1,12 @@
 <?php
 
-namespace RMS\Admin\Actions\Ajax;
+namespace CommerceBird\Admin\Actions\Ajax;
 
-use RMS\Admin\Connectors\CommerceBird;
-use RMS\Admin\Traits\AjaxRequest;
-use RMS\Admin\Traits\LogWriter;
-use RMS\Admin\Traits\OptionStatus;
-use RMS\Admin\Traits\Singleton;
+use CommerceBird\Admin\Connectors\CommerceBird;
+use CommerceBird\Admin\Traits\AjaxRequest;
+use CommerceBird\Admin\Traits\LogWriter;
+use CommerceBird\Admin\Traits\OptionStatus;
+use CommerceBird\Admin\Traits\Singleton;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

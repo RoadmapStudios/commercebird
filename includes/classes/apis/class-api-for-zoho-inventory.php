@@ -1,6 +1,6 @@
 <?php
 
-namespace RMS\API;
+namespace CommerceBird\API;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

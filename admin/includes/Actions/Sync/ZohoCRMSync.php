@@ -1,6 +1,6 @@
 <?php
 
-namespace RMS\Admin\Actions\Sync;
+namespace CommerceBird\Admin\Actions\Sync;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

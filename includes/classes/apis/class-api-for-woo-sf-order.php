@@ -1,12 +1,12 @@
 <?php
 
-namespace RMS\API;
+namespace CommerceBird\API;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use RMS\Admin\Traits\LogWriter;
+use CommerceBird\Admin\Traits\LogWriter;
 use WP_REST_Response;
 use WC_Coupon;
 

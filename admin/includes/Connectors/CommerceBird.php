@@ -1,10 +1,10 @@
 <?php
 
-namespace RMS\Admin\Connectors;
+namespace CommerceBird\Admin\Connectors;
 
-use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
-use RMS\Admin\Actions\Ajax\ZohoCRMAjax;
-use RMS\Admin\Traits\LogWriter;
+use CommerceBird\Admin\Actions\Ajax\ExactOnlineAjax;
+use CommerceBird\Admin\Actions\Ajax\ZohoCRMAjax;
+use CommerceBird\Admin\Traits\LogWriter;
 use WP_Error;
 
 if ( ! defined( 'ABSPATH' ) ) {

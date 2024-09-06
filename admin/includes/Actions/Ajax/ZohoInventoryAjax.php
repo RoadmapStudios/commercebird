@@ -1,15 +1,15 @@
 <?php
 
-namespace RMS\Admin\Actions\Ajax;
+namespace CommerceBird\Admin\Actions\Ajax;
 
 use Classfunctions;
 use ExecutecallClass;
 use ImportPricelistClass;
-use RMS\Admin\Template;
-use RMS\Admin\Traits\AjaxRequest;
-use RMS\Admin\Traits\OptionStatus;
-use RMS\Admin\Traits\Singleton;
-use RMS\Admin\Traits\LogWriter;
+use CommerceBird\Admin\Template;
+use CommerceBird\Admin\Traits\AjaxRequest;
+use CommerceBird\Admin\Traits\OptionStatus;
+use CommerceBird\Admin\Traits\Singleton;
+use CommerceBird\Admin\Traits\LogWriter;
 use Throwable;
 use WC_Tax;
 use WpOrg\Requests\Exception;

@@ -1,6 +1,6 @@
 <?php
 
-namespace RMS\Admin;
+namespace CommerceBird\Admin;
 
 /*
 |--------------------------------------------------------------------------
@@ -8,7 +8,7 @@ namespace RMS\Admin;
 |--------------------------------------------------------------------------
  */
 
-use RMS\Admin\Traits\Singleton;
+use CommerceBird\Admin\Traits\Singleton;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

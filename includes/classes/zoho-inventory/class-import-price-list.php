@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class ImportPricelistClass {
-	use RMS\Admin\Traits\LogWriter;
+	use CommerceBird\Admin\Traits\LogWriter;
 
 	private array $config;
 

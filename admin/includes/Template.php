@@ -1,11 +1,11 @@
 <?php
 
-namespace RMS\Admin;
+namespace CommerceBird\Admin;
 
-use RMS\Admin\Traits\Singleton;
-use RMS\API\CreateOrderWebhook;
-use RMS\API\ProductWebhook;
-use RMS\API\ShippingWebhook;
+use CommerceBird\Admin\Traits\Singleton;
+use CommerceBird\API\CreateOrderWebhook;
+use CommerceBird\API\ProductWebhook;
+use CommerceBird\API\ShippingWebhook;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

@@ -1,8 +1,8 @@
 <?php
 
-namespace RMS\Admin\Traits;
+namespace CommerceBird\Admin\Traits;
 
-use RMS\Admin\Template;
+use CommerceBird\Admin\Template;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -47,11 +47,11 @@ trait AjaxRequest {
 		$this->response = array(
 			'success' => true,
 		);
-		$this->errors   = array();
-		$this->request  = array_map( 'sanitize_text_field', $_REQUEST );
-		$contents       = file_get_contents( 'php://input' );
-		$contents       = sanitize_text_field( $contents );
-		$decode         = json_decode( $contents, true );
+		$this->errors = array();
+		$this->request = array_map( 'sanitize_text_field', $_REQUEST );
+		$contents = file_get_contents( 'php://input' );
+		$contents = sanitize_text_field( $contents );
+		$decode = json_decode( $contents, true );
 		if ( ! empty( $decode ) ) {
 			$data = $this->extract_data( $decode, $keys );
 			if ( ! empty( $data ) ) {

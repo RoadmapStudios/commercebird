@@ -8,13 +8,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
-use RMS\Admin\Actions\Ajax\ZohoInventoryAjax;
-use RMS\Admin\Actions\Ajax\ZohoCRMAjax;
-use RMS\Admin\Actions\Ajax\AcfAjax;
-use RMS\Admin\Cors;
-use RMS\Admin\Template;
-use RMS\Admin\Acf;
+use CommerceBird\Admin\Actions\Ajax\ExactOnlineAjax;
+use CommerceBird\Admin\Actions\Ajax\ZohoInventoryAjax;
+use CommerceBird\Admin\Actions\Ajax\ZohoCRMAjax;
+use CommerceBird\Admin\Actions\Ajax\AcfAjax;
+use CommerceBird\Admin\Cors;
+use CommerceBird\Admin\Template;
+use CommerceBird\Admin\Acf;
 
 class Plugin {
 

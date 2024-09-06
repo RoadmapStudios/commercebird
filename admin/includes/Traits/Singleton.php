@@ -1,6 +1,6 @@
 <?php
 
-namespace RMS\Admin\Traits;
+namespace CommerceBird\Admin\Traits;
 
 use Exception;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace RMS\API;
+namespace CommerceBird\API;
 
 use Exception;
-use RMS\Admin\Actions\Ajax\ZohoInventoryAjax;
+use CommerceBird\Admin\Actions\Ajax\ZohoInventoryAjax;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -48,7 +48,7 @@ trait Api {
 					$subscription_plan,
 					array(
 						'status' => 403,
-						'data'   => strpos( 'Premium', $subscription_plan ),
+						'data' => strpos( 'Premium', $subscription_plan ),
 					)
 				);
 			}
@@ -69,7 +69,7 @@ trait Api {
 		if ( ! empty( $data ) ) {
 			try {
 				$response = $this->process( $data );
-			} catch ( Exception $exception ) {
+			} catch (Exception $exception) {
 				$response->set_data( $exception->getMessage() );
 				$response->set_status( 500 );
 			}

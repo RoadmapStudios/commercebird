@@ -1,15 +1,15 @@
 <?php
 
-namespace RMS\Admin\Actions\Ajax;
+namespace CommerceBird\Admin\Actions\Ajax;
 
 use Classfunctions;
 use ExecutecallClass;
-use RMS\Admin\Actions\Sync\ZohoCRMSync;
-use RMS\Admin\Template;
-use RMS\Admin\Traits\AjaxRequest;
-use RMS\Admin\Traits\OptionStatus;
-use RMS\Admin\Traits\Singleton;
-use RMS\Admin\Traits\LogWriter;
+use CommerceBird\Admin\Actions\Sync\ZohoCRMSync;
+use CommerceBird\Admin\Template;
+use CommerceBird\Admin\Traits\AjaxRequest;
+use CommerceBird\Admin\Traits\OptionStatus;
+use CommerceBird\Admin\Traits\Singleton;
+use CommerceBird\Admin\Traits\LogWriter;
 use Throwable;
 
 
@@ -108,7 +108,7 @@ final class ZohoCRMAjax {
 				'redirect' => $redirect,
 				'message' => 'We are redirecting you to zoho. please wait...',
 			);
-		} catch ( Throwable $throwable ) {
+		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}
 

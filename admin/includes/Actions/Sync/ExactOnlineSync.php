@@ -1,13 +1,13 @@
 <?php
 
-namespace RMS\Admin\Actions\Sync;
+namespace CommerceBird\Admin\Actions\Sync;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use RMS\Admin\Actions\Ajax\ExactOnlineAjax;
-use RMS\Admin\Connectors\CommerceBird;
+use CommerceBird\Admin\Actions\Ajax\ExactOnlineAjax;
+use CommerceBird\Admin\Connectors\CommerceBird;
 
 class ExactOnlineSync {
 

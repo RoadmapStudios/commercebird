@@ -52,14 +52,14 @@ require __DIR__ . '/vendor/autoload.php';
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use CommerceBird\CommerceBird_WC_API;
 use CommerceBird\Plugin;
-use RMS\Admin\Actions\Sync\ExactOnlineSync;
-use RMS\Admin\Actions\Sync\ZohoCRMSync;
-use RMS\API\ProductWebhook;
-use RMS\API\CreateOrderWebhook;
-use RMS\API\CreateSFOrderWebhook;
-use RMS\API\ShippingWebhook;
-use RMS\API\Zoho;
-use RMS\API\Exact;
+use CommerceBird\Admin\Actions\Sync\ExactOnlineSync;
+use CommerceBird\Admin\Actions\Sync\ZohoCRMSync;
+use CommerceBird\API\ProductWebhook;
+use CommerceBird\API\CreateOrderWebhook;
+use CommerceBird\API\CreateSFOrderWebhook;
+use CommerceBird\API\ShippingWebhook;
+use CommerceBird\API\Zoho;
+use CommerceBird\API\Exact;
 
 /*
 |--------------------------------------------------------------------------
