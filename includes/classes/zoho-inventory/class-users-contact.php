@@ -460,7 +460,7 @@ class ContactClass {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
 						} else {
-							echo $user_id->get_error_message();
+							echo esc_html( $user_id->get_error_message() );
 						}
 					} elseif ( email_exists( $email ) ) {
 						/* Update Wp User if already exist */
@@ -478,7 +478,7 @@ class ContactClass {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
 						} else {
-							echo $user_data->get_error_message();
+							echo esc_html( $user_data->get_error_message() );
 						}
 					}
 				} else {

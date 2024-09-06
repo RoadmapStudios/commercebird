@@ -176,7 +176,6 @@ final class ZohoInventoryAjax {
 	public function subscription_get(): void {
 		$this->verify();
 		$this->response = $this->get_subscription_data();
-
 		$this->serve();
 	}
 
@@ -587,7 +586,7 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$categories = get_zoho_item_categories();
 		if ( gettype( $categories ) === 'array' ) {
-			// $filtered = wp_list_pluck( $categories, 'name', 'category_id' ); 
+			// $filtered = wp_list_pluck( $categories, 'name', 'category_id' );
 			// unset( $filtered[ -1 ] );
 			$this->response = $categories;
 		}

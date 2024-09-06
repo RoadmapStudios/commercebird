@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use ZohoInventoryAjax;
 
 
 /**
@@ -57,12 +58,12 @@ function cmbird_admin_metabox_callback( $post_or_order_object ) {
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return;
 	}
-
-	global $wcam_lib;
+	$subscription = new ZohoInventoryAjax();
+	$data = $subscription->get_subscription_data();
 	$order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : wc_get_order( $post_or_order_object->get_id() );
 	$userid = $order->get_user_id();
 	$order_id = $order->get_id();
-	if ( $wcam_lib->get_api_key_status() ) {
+	if ( strpos( $data['fee_lines'], 'ZohoInventory' ) ) {
 		$nonce_order = wp_create_nonce( 'zoho_admin_order_sync' );
 		echo '<a href="javascript:void(0)" style="width:100%; text-align: center;"
 		class="button save_order button-primary" onclick="zoho_admin_order_ajax(' . esc_attr( $order_id ) . ', \'' . esc_attr( $nonce_order ) . '\')">Sync Order</a>';
@@ -73,7 +74,7 @@ function cmbird_admin_metabox_callback( $post_or_order_object ) {
 			class="button customer_unmap" onclick="zoho_admin_customer_unmap(' . esc_attr( $order_id ) . ', \'' . esc_attr( $nonce ) . '\')">Unmap Customer</a>';
 		}
 	} else {
-		echo '<p style="color:red;">Please activate the license to sync this order</p>';
+		echo '<p style="color:red;">Please activate the Zoho Inventory Integration</p>';
 	}
 }
 
