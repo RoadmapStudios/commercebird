@@ -15,8 +15,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
-use ZohoInventoryAjax;
-
 
 /**
  * Loading admin order sync script.
