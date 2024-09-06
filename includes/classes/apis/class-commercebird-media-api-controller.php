@@ -1,8 +1,8 @@
 <?php
 class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller {
 
-	protected $namespace  = 'wc/v3';
-	protected $rest_base  = 'media';
+	protected $namespace = 'wc/v3';
+	protected $rest_base = 'media';
 	protected $upload_dir;
 	protected $media_controller;
 
@@ -12,7 +12,7 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 				throw new Exception( 'WP API not installed.' );
 			}
 			$this->media_controller = new WP_REST_Attachments_Controller( 'attachment' );
-		} catch ( Exception $e ) {
+		} catch (Exception $e) {
 			wp_die( esc_html( $e->getMessage() ) );
 		}
 
@@ -21,14 +21,14 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 			'/' . $this->rest_base,
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'list_images' ),
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'list_images' ),
 					'permission_callback' => array( $this->media_controller, 'get_items_permissions_check' ),
 				),
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'upload_image' ),
-					'args'                => $this->get_params_upload(),
+					'methods' => WP_REST_Server::CREATABLE,
+					'callback' => array( $this, 'upload_image' ),
+					'args' => $this->get_params_upload(),
 					'permission_callback' => array( $this->media_controller, 'create_item_permissions_check' ),
 				),
 			)
@@ -38,20 +38,20 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 			'/' . $this->rest_base . '/(?P<id>\d+)',
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_item' ),
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'get_item' ),
 					'permission_callback' => array( $this->media_controller, 'get_item_permissions_check' ),
 				),
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_image' ),
-					'args'                => $this->media_controller->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
+					'methods' => WP_REST_Server::EDITABLE,
+					'callback' => array( $this, 'update_image' ),
+					'args' => $this->media_controller->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 					'permission_callback' => array( $this->media_controller, 'update_item_permissions_check' ),
 				),
 				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_image' ),
-					'args'                => $this->get_params_delete(),
+					'methods' => WP_REST_Server::DELETABLE,
+					'callback' => array( $this, 'delete_image' ),
+					'args' => $this->get_params_delete(),
 					'permission_callback' => array( $this->media_controller, 'delete_item_permissions_check' ),
 				),
 			)
@@ -62,14 +62,14 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 			'/' . $this->rest_base,
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'list_images' ),
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'list_images' ),
 					'permission_callback' => array( $this->media_controller, 'get_items_permissions_check' ),
 				),
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'upload_image' ),
-					'args'                => $this->get_params_upload(),
+					'methods' => WP_REST_Server::CREATABLE,
+					'callback' => array( $this, 'upload_image' ),
+					'args' => $this->get_params_upload(),
 					'permission_callback' => array( $this->media_controller, 'create_item_permissions_check' ),
 				),
 			)
@@ -79,20 +79,20 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 			'/' . $this->rest_base . '/(?P<id>\d+)',
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_item' ),
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'get_item' ),
 					'permission_callback' => array( $this->media_controller, 'get_item_permissions_check' ),
 				),
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_image' ),
-					'args'                => $this->media_controller->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
+					'methods' => WP_REST_Server::EDITABLE,
+					'callback' => array( $this, 'update_image' ),
+					'args' => $this->media_controller->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
 					'permission_callback' => array( $this->media_controller, 'update_item_permissions_check' ),
 				),
 				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_image' ),
-					'args'                => $this->get_params_delete(),
+					'methods' => WP_REST_Server::DELETABLE,
+					'callback' => array( $this, 'delete_image' ),
+					'args' => $this->get_params_delete(),
 					'permission_callback' => array( $this->media_controller, 'delete_item_permissions_check' ),
 				),
 			)
@@ -102,18 +102,18 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 	public function get_params_upload() {
 		$params = array(
 			'media_attachment' => array(
-				'required'    => true,
-				'description' => __( 'Image encoded as base64.', 'image-from-base64' ),
-				'type'        => 'string',
+				'required' => true,
+				'description' => __( 'Image encoded as base64.', 'commercebird' ),
+				'type' => 'string',
 			),
-			'title'            => array(
-				'required'    => true,
-				'description' => __( 'The title for the object.', 'image-from-base64' ),
-				'type'        => 'json',
+			'title' => array(
+				'required' => true,
+				'description' => __( 'The title for the object.', 'commercebird' ),
+				'type' => 'json',
 			),
-			'media_path'       => array(
-				'description' => __( 'Path to directory where file will be uploaded.', 'image-from-base64' ),
-				'type'        => 'string',
+			'media_path' => array(
+				'description' => __( 'Path to directory where file will be uploaded.', 'commercebird' ),
+				'type' => 'string',
 			),
 		);
 		return $params;
@@ -122,8 +122,8 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 	public function get_params_delete() {
 		return array(
 			'force' => array(
-				'type'        => 'boolean',
-				'default'     => false,
+				'type' => 'boolean',
+				'default' => false,
 				'description' => __( 'Whether to bypass trash and force deletion.' ),
 			),
 		);
@@ -144,7 +144,7 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 			// fwrite($fd,PHP_EOL.'$filename : '.$filename);
 			$img = $request['media_attachment'];
 			// fwrite($fd,PHP_EOL.'Function Before Incode : '.$img);
-			$img     = preg_replace( '/^.*base64,/', '', $img );
+			$img = preg_replace( '/^.*base64,/', '', $img );
 			$decoded = base64_decode( $img );
 			// $url  = $file['url'];
 			// $type = $file['type'];
@@ -162,8 +162,8 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 			// fwrite($fd,PHP_EOL.'Upload response : '.print_r($result,true));
 			$response = rest_ensure_response( $result );
 			// fwrite($fd,PHP_EOL.'$response After upload: ',print_r($response,true));
-		} catch ( Exception $e ) {
-			$response['result']  = 'error';
+		} catch (Exception $e) {
+			$response['result'] = 'error';
 			$response['message'] = $e->getMessage();
 		}
 
@@ -178,10 +178,10 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 	public function list_images( $request ) {
 		$response = array();
 		try {
-			$result   = $this->media_controller->get_items( $request );
+			$result = $this->media_controller->get_items( $request );
 			$response = rest_ensure_response( $result );
-		} catch ( Exception $e ) {
-			$response['result']  = 'error';
+		} catch (Exception $e) {
+			$response['result'] = 'error';
 			$response['message'] = $e->getMessage();
 		}
 		return $response;
@@ -190,10 +190,10 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 	public function get_item( $request ) {
 		$response = array();
 		try {
-			$result   = $this->media_controller->get_item( $request );
+			$result = $this->media_controller->get_item( $request );
 			$response = rest_ensure_response( $result );
-		} catch ( Exception $e ) {
-			$response['result']  = 'error';
+		} catch (Exception $e) {
+			$response['result'] = 'error';
 			$response['message'] = $e->getMessage();
 		}
 		return $response;
@@ -202,10 +202,10 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 	public function delete_image( $request ) {
 		$response = array();
 		try {
-			$result   = $this->media_controller->delete_item( $request );
+			$result = $this->media_controller->delete_item( $request );
 			$response = rest_ensure_response( $result );
-		} catch ( Exception $e ) {
-			$response['result']  = 'error';
+		} catch (Exception $e) {
+			$response['result'] = 'error';
 			$response['message'] = $e->getMessage();
 		}
 		return $response;
@@ -214,10 +214,10 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 	public function update_image( $request ) {
 		$response = array();
 		try {
-			$result   = $this->media_controller->update_item( $request );
+			$result = $this->media_controller->update_item( $request );
 			$response = rest_ensure_response( $result );
-		} catch ( Exception $e ) {
-			$response['result']  = 'error';
+		} catch (Exception $e) {
+			$response['result'] = 'error';
 			$response['message'] = $e->getMessage();
 		}
 		return $response;
@@ -226,8 +226,8 @@ class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller 
 	public function change_wp_upload_dir( $dirs ) {
 		if ( ! empty( $this->upload_dir ) ) {
 			$dirs['subdir'] = $this->upload_dir;
-			$dirs['path']   = $dirs['basedir'] . $this->upload_dir;
-			$dirs['url']    = $dirs['baseurl'] . $this->upload_dir;
+			$dirs['path'] = $dirs['basedir'] . $this->upload_dir;
+			$dirs['url'] = $dirs['baseurl'] . $this->upload_dir;
 		}
 
 		return $dirs;

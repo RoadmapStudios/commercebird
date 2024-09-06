@@ -96,37 +96,37 @@ class WC_REST_CommerceBird_Metadata_API_Controller extends WC_REST_CRUD_Controll
 		$params = array(
 			'products' => array(
 				'required' => true,
-				'description' => __( 'Array of products to change.', 'commercebird_metadata' ),
+				'description' => __( 'Array of products to change.', 'commercebird' ),
 				'type' => 'array',
 				'items' => array(
-					'description' => __( 'Post object', 'commercebird_metadata' ),
+					'description' => __( 'Post object', 'commercebird' ),
 					'type' => 'object',
 					'properties' => array(
 						'id' => array(
 							'required' => true,
-							'description' => __( 'Post ID.', 'commercebird_metadata' ),
+							'description' => __( 'Post ID.', 'commercebird' ),
 							'type' => 'integer',
 						),
 						'data' => array(
 							'required' => true,
-							'description' => __( 'Array of meta and taxonomy fields to change.', 'commercebird_metadata' ),
+							'description' => __( 'Array of meta and taxonomy fields to change.', 'commercebird' ),
 							'type' => 'array',
 							'items' => array(
-								'description' => __( 'Array of meta and taxonomy fields to change.', 'commercebird_metadata' ),
+								'description' => __( 'Array of meta and taxonomy fields to change.', 'commercebird' ),
 								'type' => 'object',
 								'properties' => array(
 									'key' => array(
-										'description' => __( 'Field or taxonomy name.', 'commercebird_metadata' ),
+										'description' => __( 'Field or taxonomy name.', 'commercebird' ),
 										'type' => 'string',
 										'sanitize_callback' => 'sanitize_text_field',
 									),
 									'value' => array(
-										'description' => __( 'Value.', 'commercebird_metadata' ),
+										'description' => __( 'Value.', 'commercebird' ),
 										'default' => '',
 										'sanitize_callback' => 'sanitize_text_field',
 									),
 									'type' => array(
-										'description' => __( 'Key type. Possible values are "meta" and "taxonomy".', 'commercebird_metadata' ),
+										'description' => __( 'Key type. Possible values are "meta" and "taxonomy".', 'commercebird' ),
 										'type' => 'string',
 										'enum' => array( 'post', 'meta', 'taxonomy' ),
 									),

@@ -21,9 +21,9 @@ class CMreviewReminder {
 		//Detect WooCommerce plugin
 		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
 			//Load the plugin's translated strings
-			// load_plugin_textdomain('cmbird', false, dirname(RMS_BASENAME) . '/languages');
+			// load_plugin_textdomain('commercebird', false, dirname(RMS_BASENAME) . '/languages');
 
-			$error = '<strong>' . sprintf( __( '%1$s %2$s requires WooCommerce Plugin to be installed and activated.', 'cmbird' ), RMS_PLUGIN_NAME, RMS_VERSION ) . '</strong> ' . sprintf( __( 'Please <a href="%1$s" target="_blank">install WooCommerce Plugin</a>.', 'cmbird' ), 'https://wordpress.org/plugins/woocommerce/' );
+			$error = '<strong>' . sprintf( __( '%1$s %2$s requires WooCommerce Plugin to be installed and activated.', 'commercebird' ), RMS_PLUGIN_NAME, RMS_VERSION ) . '</strong> ' . sprintf( __( 'Please <a href="%1$s" target="_blank">install WooCommerce Plugin</a>.', 'commercebird' ), 'https://wordpress.org/plugins/woocommerce/' );
 
 			update_option( 'rms-zi-admin-error', $error );
 		}
@@ -51,7 +51,7 @@ class CMreviewReminder {
 
 		//Admin page
 		$page = filter_input( INPUT_GET, 'page' );
-		if ( ! empty( $page ) && $page == RMS_MENU_SLUG ) {
+		if ( ! empty( $page ) && $page === RMS_MENU_SLUG ) {
 			add_filter( 'admin_footer_text', array( CMReviewReminder::class, 'adminFooter' ) );
 		}
 	}
@@ -62,7 +62,7 @@ class CMreviewReminder {
 	 */
 	public static function init() {
 		//Load the plugin's translated strings
-		// load_plugin_textdomain('cmbird', false, dirname(RMS_BASENAME) . '/languages');
+		// load_plugin_textdomain('commercebird', false, dirname(RMS_BASENAME) . '/languages');
 	}
 
 	/**
@@ -173,8 +173,8 @@ class CMreviewReminder {
 			unset( $links[2] );
 
 			$custom_links = array(
-				'documentation' => '<a href="' . RMS_DOCUMENTATION_URL . '" target="_blank">' . __( 'Documentation', 'cmbird' ) . '</a>',
-				'visit-plugin-site' => '<a href="' . RMS_PLUGIN_URL . '" target="_blank">' . __( 'Visit plugin site', 'cmbird' ) . '</a>',
+				'documentation' => '<a href="' . RMS_DOCUMENTATION_URL . '" target="_blank">' . __( 'Documentation', 'commercebird' ) . '</a>',
+				'visit-plugin-site' => '<a href="' . RMS_PLUGIN_URL . '" target="_blank">' . __( 'Visit plugin site', 'commercebird' ) . '</a>',
 			);
 
 			$links = array_merge( $links, $custom_links );
@@ -188,7 +188,7 @@ class CMreviewReminder {
 	 * @return array
 	 */
 	public static function actionLinks( $links ) {
-		$custom_links = array_merge( array( 'settings' => '<a href="' . admin_url( 'admin.php?page=' . RMS_MENU_SLUG ) . '">' . __( 'Settings', 'cmbird' ) . '</a>' ), $links );
+		$custom_links = array_merge( array( 'settings' => '<a href="' . admin_url( 'admin.php?page=' . RMS_MENU_SLUG ) . '">' . __( 'Settings', 'commercebird' ) . '</a>' ), $links );
 
 		return $custom_links;
 	}
@@ -200,9 +200,9 @@ class CMreviewReminder {
 	public static function adminFooter() {
 		?>
 		<p><a href="https://commercebird.com/product/commercebird/" class="arg-review-link" target="_blank">
-				<?php printf( __( 'If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'cmbird' ), RMS_PLUGIN_NAME ); ?>
+				<?php printf( __( 'If you like <strong> %s </strong> please leave us a &#9733;&#9733;&#9733;&#9733;&#9733; rating.', 'commercebird' ), esc_html( RMS_PLUGIN_NAME ) ); ?>
 			</a>
-			<?php _e( 'Thank you.', 'cmbird' ); ?>
+			<?php _e( 'Thank you.', 'commercebird' ); ?>
 		</p>
 		<?php
 	}

@@ -1,8 +1,8 @@
 <?php
 class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Controller {
 
-	protected $namespace  = 'wc/v3';
-	protected $rest_base  = 'list_items';
+	protected $namespace = 'wc/v3';
+	protected $rest_base = 'list_items';
 
 	public $post_fields = array( 'post_name', 'post_title', 'post_content' );
 
@@ -12,9 +12,9 @@ class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Contro
 			'/' . $this->rest_base . '(?:/(?P<type>))?',
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'list_items' ),
-					'args'                => $this->get_params(),
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'list_items' ),
+					'args' => $this->get_params(),
 					'permission_callback' => '__return_true',
 				),
 			)
@@ -24,9 +24,9 @@ class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Contro
 			'/' . $this->rest_base . '(?:/(?P<type>))?',
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'list_items' ),
-					'args'                => $this->get_params(),
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'list_items' ),
+					'args' => $this->get_params(),
 					'permission_callback' => '__return_true',
 				),
 			)
@@ -35,68 +35,68 @@ class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Contro
 
 	public function get_params() {
 		$params = array(
-			'type'           => array(
-				'required'          => true,
-				'description'       => __( 'Type of item to list ("users", "posts", "products", etc)', 'commercebird_list_items' ),
-				'type'              => 'string',
-				'sanitize_callback' => function ( $param ) {
+			'type' => array(
+				'required' => true,
+				'description' => __( 'Type of item to list ("users", "posts", "products", etc)', 'commercebird' ),
+				'type' => 'string',
+				'sanitize_callback' => function ($param) {
 					return strtolower( $param );
 				},
 			),
-			'orderby'        => array(
-				'required'          => false,
-				'description'       => __( 'Parameter to sort items by (default "modified")', 'commercebird_list_items' ),
-				'type'              => 'string',
-				'default'           => 'modified',
-				'sanitize_callback' => function ( $param ) {
+			'orderby' => array(
+				'required' => false,
+				'description' => __( 'Parameter to sort items by (default "modified")', 'commercebird' ),
+				'type' => 'string',
+				'default' => 'modified',
+				'sanitize_callback' => function ($param) {
 					return strtolower( $param );
 				},
 			),
-			'order'          => array(
-				'required'          => false,
-				'description'       => __( 'ASC or DESC (default "DESC")', 'commercebird_list_items' ),
-				'type'              => 'string',
-				'default'           => 'desc',
-				'validate_callback' => function ( $param ) {
+			'order' => array(
+				'required' => false,
+				'description' => __( 'ASC or DESC (default "DESC")', 'commercebird' ),
+				'type' => 'string',
+				'default' => 'desc',
+				'validate_callback' => function ($param) {
 					return in_array( strtolower( $param ), array( 'asc', 'desc' ), true );
 				},
-				'sanitize_callback' => function ( $param ) {
+				'sanitize_callback' => function ($param) {
 					return strtolower( $param );
 				},
 			),
-			'after_date'     => array(
-				'required'    => false,
-				'description' => __( 'last_modified after this date', 'commercebird_list_items' ),
-				'type'        => 'string',
-				'format'      => 'date-time',
+			'after_date' => array(
+				'required' => false,
+				'description' => __( 'last_modified after this date', 'commercebird' ),
+				'type' => 'string',
+				'format' => 'date-time',
 			),
-			'before_date'    => array(
-				'required'    => false,
-				'description' => __( 'last_modified before that date', 'commercebird_list_items' ),
-				'type'        => 'string',
-				'format'      => 'date-time',
+			'before_date' => array(
+				'required' => false,
+				'description' => __( 'last_modified before that date', 'commercebird' ),
+				'type' => 'string',
+				'format' => 'date-time',
 			),
 			'items_per_page' => array(
-				'required'    => false,
-				'description' => __( 'The maximum returned number of results (needed in pagination)', 'commercebird_list_items' ),
-				'type'        => 'number',
-				'default'     => '100',
+				'required' => false,
+				'description' => __( 'The maximum returned number of results (needed in pagination)', 'commercebird' ),
+				'type' => 'number',
+				'default' => '100',
 			),
-			'offset'         => array(
-				'required'    => false,
-				'description' => __( 'Offset the returned results (needed in pagination)', 'commercebird_list_items' ),
-				'type'        => 'number',
+			'offset' => array(
+				'required' => false,
+				'description' => __( 'Offset the returned results (needed in pagination)', 'commercebird' ),
+				'type' => 'number',
 			),
-			'paged'          => array(
-				'required'    => false,
-				'description' => __( 'When used with number, defines the page of results to return. Default 1.', 'commercebird_list_items' ),
-				'type'        => 'number',
+			'paged' => array(
+				'required' => false,
+				'description' => __( 'When used with number, defines the page of results to return. Default 1.', 'commercebird' ),
+				'type' => 'number',
 			),
-			'post_status'    => array(
-				'required'    => false,
-				'description' => __( 'Status of posts to retrieve', 'commercebird_list_items' ),
-				'type'        => 'string',
-				'default'     => 'any',
+			'post_status' => array(
+				'required' => false,
+				'description' => __( 'Status of posts to retrieve', 'commercebird' ),
+				'type' => 'string',
+				'default' => 'any',
 			),
 		);
 		return $params;
@@ -116,7 +116,7 @@ class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Contro
 				$args['date_query'] = array();
 				if ( ! empty( $request['after_date'] ) ) {
 					$args['date_query']['column'] = 'post_modified';
-					$args['date_query']['after']  = $request['after_date'];
+					$args['date_query']['after'] = $request['after_date'];
 				}
 				if ( ! empty( $request['before_date'] ) ) {
 					$args['date_query']['column'] = 'post_modified';
@@ -151,7 +151,7 @@ class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Contro
 			} else {
 				$args['post_type'] = $request['type'];
 
-				$query   = new WP_Query( $args );
+				$query = new WP_Query( $args );
 				$results = $query->posts;
 
 				foreach ( $results as $item ) {
@@ -163,11 +163,11 @@ class WC_REST_List_Items_API_CommerceBird_Controller extends WC_REST_CRUD_Contro
 			}
 			$response = array(
 				'result' => 'success',
-				'ids'    => $ids,
+				'ids' => $ids,
 			);
-		} catch ( Exception $e ) {
+		} catch (Exception $e) {
 			$response = array(
-				'result'  => 'error',
+				'result' => 'error',
 				'message' => $e->getMessage(),
 			);
 		}
