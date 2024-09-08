@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return void
  */
-function error_log_api_email( $subject, $message ) {
+function cmbird_error_log_api_email( $subject, $message ) {
 	// $domain = get_site_url();
 
 	$to = get_bloginfo( 'admin_email' );
@@ -43,9 +43,8 @@ function error_log_api_email( $subject, $message ) {
  * Function to be called at variable item sync from zoho to woo ajax call.
  */
 
-add_action( 'wp_ajax_zoho_ajax_call_variable_item_from_zoho', 'zoho_ajax_call_variable_item_from_zoho' );
-add_action( 'wp_ajax_nopriv_zoho_ajax_call_variable_item_from_zoho', 'zoho_ajax_call_variable_item_from_zoho' );
-function zoho_ajax_call_variable_item_from_zoho() {
+add_action( 'wp_ajax_zoho_ajax_call_variable_item_from_zoho', 'cmbird_ajax_call_variable_item_from_zoho' );
+function cmbird_ajax_call_variable_item_from_zoho() {
 	// Clear Orphan data.
 	$zi_common_class = new ZI_CommonClass();
 	$zi_common_class->clear_orphan_data();
@@ -103,15 +102,14 @@ function zoho_ajax_call_variable_item_from_zoho() {
 
 
 // Attach the function to the cron event
-add_action( 'zi_execute_import_sync', 'zoho_ajax_call_item_from_zoho_func' );
+add_action( 'zi_execute_import_sync', 'cmbird_ajax_call_item_from_zoho_func' );
 
 /**
  * Function to be called at simple item sync from zoho to woo ajax call.
  */
 
-add_action( 'wp_ajax_zoho_ajax_call_item_from_zoho', 'zoho_ajax_call_item_from_zoho_func' );
-add_action( 'wp_ajax_nopriv_zoho_ajax_call_item_from_zoho', 'zoho_ajax_call_item_from_zoho_func' );
-function zoho_ajax_call_item_from_zoho_func() {
+add_action( 'wp_ajax_zoho_ajax_call_item_from_zoho', 'cmbird_ajax_call_item_from_zoho_func' );
+function cmbird_ajax_call_item_from_zoho_func() {
 	$zoho_item_category = get_option( 'zoho_item_category' );
 	$last_synced_category_index = get_option( 'last_synced_category_index', 0 );
 
@@ -158,10 +156,9 @@ function zoho_ajax_call_item_from_zoho_func() {
 /**
  * Zoho Inventory Function sync items from WooCommerce to Zoho in Background
  */
-add_action( 'wp_ajax_zoho_ajax_call_item', 'zoho_ajax_call_item' );
-add_action( 'wp_ajax_nopriv_zoho_ajax_call_item', 'zoho_ajax_call_item' );
-function zoho_ajax_call_item() {
-	// $fd = fopen(__DIR__ . '/zoho_ajax_call_item.txt', 'a+');
+add_action( 'wp_ajax_zoho_ajax_call_item', 'cmbird_ajax_call_item' );
+function cmbird_ajax_call_item() {
+	// $fd = fopen(__DIR__ . '/cmbird_ajax_call_item.txt', 'a+');
 
 	global $wpdb;
 
@@ -213,10 +210,9 @@ function zoho_ajax_call_item() {
  * Sync contacts from zoho to woocommerce.
  * @return void
  */
-add_action( 'zoho_contact_sync', 'zoho_contacts_import' );
-add_action( 'wp_ajax_import_zoho_contacts', 'zoho_contacts_import' );
-add_action( 'wp_ajax_nopriv_import_zoho_contacts', 'zoho_contacts_import' );
-function zoho_contacts_import( $page = '' ) {
+add_action( 'zoho_contact_sync', 'cmbird_zoho_contacts_import' );
+add_action( 'wp_ajax_import_zoho_contacts', 'cmbird_zoho_contacts_import' );
+function cmbird_zoho_contacts_import( $page = '' ) {
 	if ( empty( $page ) ) {
 		$page = 1;
 	}
@@ -245,9 +241,8 @@ function zoho_contacts_import( $page = '' ) {
  *
  * @return void
  */
-add_action( 'wp_ajax_zoho_ajax_call_composite_item_from_zoho', 'zi_sync_composite_item_from_zoho' );
-add_action( 'wp_ajax_nopriv_zoho_ajax_call_composite_item_from_zoho', 'zi_sync_composite_item_from_zoho' );
-function zi_sync_composite_item_from_zoho() {
+add_action( 'wp_ajax_zoho_ajax_call_composite_item_from_zoho', 'cmbird_sync_composite_item_from_zoho' );
+function cmbird_sync_composite_item_from_zoho() {
 
 	$opt_category = get_option( 'zoho_item_category' );
 	if ( $opt_category ) {
@@ -262,7 +257,7 @@ function zi_sync_composite_item_from_zoho() {
 		$response = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id, 'sync' );
 		$item_add_resp = array_merge( $item_add_resp, $response );
 	}
-	send_log_message_to_admin( $item_add_resp, 'Log Message for manual sync', 'Composite item sync from zoho' );
+	cmbird_send_log_message_to_admin( $item_add_resp, 'Log Message for manual sync', 'Composite item sync from zoho' );
 	wp_send_json_success( $item_add_resp );
 	wp_die();
 }
@@ -272,7 +267,7 @@ function zi_sync_composite_item_from_zoho() {
  *
  * @return void
  */
-function send_log_message_to_admin( $sync_logs, $subject, $message ) {
+function cmbird_send_log_message_to_admin( $sync_logs, $subject, $message ) {
 	$table_root = "<h3>$message</h3>";
 	$table_root .= '<table><thead><tr><th>Action</th><th> Log message</th></tr></thead><tbody>';
 
@@ -280,13 +275,12 @@ function send_log_message_to_admin( $sync_logs, $subject, $message ) {
 		$table_root .= "<tr><td>$logs->resp_id</td><td>$logs->message</td></tr>";
 	}
 	$table_root .= '</tbody></table>';
-	error_log_api_email( $subject, $table_root );
+	cmbird_error_log_api_email( $subject, $table_root );
 }
 
 // ZohoInventory api call hook to sync composite products from WooCommerce to Zoho.
-add_action( 'wp_ajax_zoho_ajax_call_composite_item', 'zi_sync_composite_item_to_zoho' );
-add_action( 'wp_ajax_nopriv_zoho_ajax_call_composite_item', 'zi_sync_composite_item_to_zoho' );
-function zi_sync_composite_item_to_zoho() {
+add_action( 'wp_ajax_zoho_ajax_call_composite_item', 'cmbird_sync_composite_item_to_zoho' );
+function cmbird_sync_composite_item_to_zoho() {
 
 	$irgs = array(
 		'post_type' => array( 'product' ),
@@ -340,7 +334,7 @@ function zi_sync_composite_item_to_zoho() {
  *
  * @return object
  */
-function zi_response_message( $index_col, $message, $woo_id = '' ) {
+function cmbird_zi_response_message( $index_col, $message, $woo_id = '' ) {
 	return (object) array(
 		'resp_id' => $index_col,
 		'message' => $message,
@@ -354,13 +348,13 @@ function zi_response_message( $index_col, $message, $woo_id = '' ) {
  * @return void
  */
 
-add_action( 'wp_ajax_zoho_ajax_call_subcategory', 'ajax_subcategory_sync_call' );
-function ajax_subcategory_sync_call() {
+add_action( 'wp_ajax_zoho_ajax_call_subcategory', 'cmbird_zi_subcategory_sync_call' );
+function cmbird_zi_subcategory_sync_call() {
 	// $fd = fopen( __DIR__ . '/ajax_subcategory_sync_call.txt', 'a+' );
 	$response = array(); // Response array.
-	$zoho_subcategories = get_zoho_item_categories();
+	$zoho_subcategories = cmbird_get_zoho_item_categories();
 	// Import category from zoho to woocommerce.
-	$response[] = zi_response_message( '-', '-', '--- Importing Sub Category from zoho ---' );
+	$response[] = cmbird_zi_response_message( '-', '-', '--- Importing Sub Category from zoho ---' );
 	//echo '<pre>'; print_r($zoho_categories);
 	foreach ( $zoho_subcategories as $subcategory ) {
 		if ( $subcategory['parent_category_id'] > 0 ) {
@@ -381,7 +375,7 @@ function ajax_subcategory_sync_call() {
 					);
 					// Check if there is error in creating child category add message.
 					if ( is_wp_error( $child_term ) ) {
-						$response[] = zi_response_message( $subcategory['category_id'], $child_term->get_error_message(), '-' );
+						$response[] = cmbird_zi_response_message( $subcategory['category_id'], $child_term->get_error_message(), '-' );
 					} else {
 						$term_id = $child_term['term_id'];
 					}
@@ -402,7 +396,7 @@ function ajax_subcategory_sync_call() {
 					update_option( 'zoho_id_for_term_id_' . $term_id, $subcategory['category_id'] );
 
 				}
-				$response[] = zi_response_message( $subcategory['category_id'], $subcategory['name'], $term_id );
+				$response[] = cmbird_zi_response_message( $subcategory['category_id'], $subcategory['name'], $term_id );
 			}
 		}
 	}
@@ -416,7 +410,7 @@ function ajax_subcategory_sync_call() {
 		)
 	);
 	$log_head = '---Exporting Sub Category to zoho---';
-	$response[] = zi_response_message( '-', '-', $log_head );
+	$response[] = cmbird_zi_response_message( '-', '-', $log_head );
 	$c = 0;
 	if ( $categories_terms && count( $categories_terms ) > 0 ) {
 
@@ -434,10 +428,10 @@ function ajax_subcategory_sync_call() {
 					if ( empty( $zoho_cat_id ) ) {
 						$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $parent_id );
 						$pid = $zoho_cat_id;
-						$add_response = create_woo_cat_to_zoho( $term->name, $term->term_id, $pid );
+						$add_response = cmbird_zi_category_export( $term->name, $term->term_id, $pid );
 						$response[] = $add_response;
 					} else {
-						$response[] = zi_response_message( $zoho_cat_id, 'Sub Category name : "' . $term->name . '" already synced with zoho', $term->term_id );
+						$response[] = cmbird_zi_response_message( $zoho_cat_id, 'Sub Category name : "' . $term->name . '" already synced with zoho', $term->term_id );
 					}
 					++$c;
 				}
@@ -448,7 +442,7 @@ function ajax_subcategory_sync_call() {
 	// fclose( $fd );
 
 	if ( 0 === $c ) {
-		$response[] = zi_response_message( '-', 'Sub Categories not available to export', '-' );
+		$response[] = cmbird_zi_response_message( '-', 'Sub Categories not available to export', '-' );
 	}
 	return wp_json_encode( $response );
 	// exit();
@@ -460,22 +454,22 @@ function ajax_subcategory_sync_call() {
 if ( ! wp_next_scheduled( 'zoho_sync_category_cron' ) ) {
 	wp_schedule_event( time(), '1day', 'zoho_sync_category_cron' );
 }
-add_action( 'zoho_sync_category_cron', 'ajax_category_sync_call' );
+add_action( 'zoho_sync_category_cron', 'cmbird_zi_category_sync_call' );
 /**
  * Sync zoho category to woocommerce.
  *
  * @return void
  */
 
-add_action( 'wp_ajax_zoho_ajax_call_category', 'ajax_category_sync_call' );
-function ajax_category_sync_call() {
-	// $fd = fopen( __DIR__ . '/ajax_category_sync_call.txt', 'a+' );
+add_action( 'wp_ajax_zoho_ajax_call_category', 'cmbird_zi_category_sync_call' );
+function cmbird_zi_category_sync_call() {
+	// $fd = fopen( __DIR__ . '/cmbird_zi_category_sync_call.txt', 'a+' );
 
 	$response = array(); // Response array.
-	$zoho_categories = get_zoho_item_categories();
+	$zoho_categories = cmbird_get_zoho_item_categories();
 	// fwrite( $fd, PHP_EOL . 'categories: ' . print_r( $zoho_categories, true ) );
 	// Import category from zoho to woocommerce.
-	$response[] = zi_response_message( '-', '-', '--- Importing Category from zoho ---' );
+	$response[] = cmbird_zi_response_message( '-', '-', '--- Importing Category from zoho ---' );
 
 	foreach ( $zoho_categories as $category ) {
 
@@ -501,7 +495,7 @@ function ajax_category_sync_call() {
 						)
 					);
 					if ( is_wp_error( $term ) ) {
-						$response[] = zi_response_message( $category['category_id'], $term->get_error_message(), '-' );
+						$response[] = cmbird_zi_response_message( $category['category_id'], $term->get_error_message(), '-' );
 					} else {
 						$term_id = $term['term_id'];
 					}
@@ -510,7 +504,7 @@ function ajax_category_sync_call() {
 					// Update zoho category id for term(category) of woocommerce.
 					update_option( 'zoho_id_for_term_id_' . $term_id, $category['category_id'] );
 				}
-				$response[] = zi_response_message( $category['category_id'], $category['name'], $term_id );
+				$response[] = cmbird_zi_response_message( $category['category_id'], $category['name'], $term_id );
 			}
 		}
 	}
@@ -523,7 +517,7 @@ function ajax_category_sync_call() {
 		)
 	);
 	$log_head = '---Exporting Category to zoho---';
-	$response[] = zi_response_message( '-', '-', $log_head );
+	$response[] = cmbird_zi_response_message( '-', '-', $log_head );
 	if ( $categories_terms && count( $categories_terms ) > 0 ) {
 
 		foreach ( $categories_terms as $term ) {
@@ -535,15 +529,15 @@ function ajax_category_sync_call() {
 			$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $term->term_id );
 			if ( empty( $zoho_cat_id ) ) {
 				// fwrite( $fd, PHP_EOL . 'Category Name : ' . $term->name );
-				$add_response = create_woo_cat_to_zoho( $term->name, $term->term_id );
+				$add_response = cmbird_zi_category_export( $term->name, $term->term_id );
 				// fwrite( $fd, PHP_EOL . 'Response : ' . print_r( $add_response, true ) );
 				$response[] = $add_response;
 			} else {
-				$response[] = zi_response_message( $zoho_cat_id, 'Category name : "' . $term->name . '" already synced with zoho', $term->term_id );
+				$response[] = cmbird_zi_response_message( $zoho_cat_id, 'Category name : "' . $term->name . '" already synced with zoho', $term->term_id );
 			}
 		}
 	} else {
-		$response[] = zi_response_message( '-', 'Categories not available to export', '-' );
+		$response[] = cmbird_zi_response_message( '-', 'Categories not available to export', '-' );
 	}
 	$encoded_response = wp_json_encode( $response );
 	// fwrite( $fd, PHP_EOL . 'Final Response : ' . print_r( $encoded_response, true ) );
@@ -554,11 +548,11 @@ function ajax_category_sync_call() {
 }
 
 /**
- * Create woocommerce category in zoho store.
+ * Create woocommerce category in zoho inventory.
  *
  * @return boolean - true if category created successfully.
  */
-function create_woo_cat_to_zoho( $cat_name, $term_id = '0', $pid = '' ) {
+function cmbird_zi_category_export( $cat_name, $term_id = '0', $pid = '' ) {
 
 	$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 	$zoho_inventory_url = get_option( 'zoho_inventory_url' );
@@ -590,15 +584,15 @@ function create_woo_cat_to_zoho( $cat_name, $term_id = '0', $pid = '' ) {
 	$response_msg = $json->message;
 
 	//echo '<pre>'; print_r($json);
-	$return = zi_response_message( $code, $response_msg, $term_id );
+	$return = cmbird_zi_response_message( $code, $response_msg, $term_id );
 	return wp_json_encode( $return );
 }
 
 /**
  * Function for getting zoho categories.
  */
-function get_zoho_item_categories() {
-	// $fd = fopen( __DIR__ . '/get_zoho_item_categories.txt', 'a+' );
+function cmbird_get_zoho_item_categories() {
+	// $fd = fopen( __DIR__ . '/cmbird_get_zoho_item_categories.txt', 'a+' );
 
 	$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 	$zoho_inventory_url = get_option( 'zoho_inventory_url' );

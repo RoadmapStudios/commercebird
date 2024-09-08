@@ -9,7 +9,8 @@
  * Requires Plugins: woocommerce
  * Requires at least: 6.5
  * Tested up to: 6.6.1
- * text-domain: commercebird
+ * Text Domain: commercebird
+ * Domain Path: /languages
  *
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html

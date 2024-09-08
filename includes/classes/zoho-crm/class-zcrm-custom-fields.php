@@ -13,7 +13,6 @@ class ZCRM_Custom_Fields {
 	/**
 	 * create API Get call to Zoho CRM to get all custom fields
 	 *
-	 * @TODO: This function is not used anywhere in the plugin. It should be used as example.
 	 * @param module $module - module name
 	 * @return array | \WP_Error
 	 */

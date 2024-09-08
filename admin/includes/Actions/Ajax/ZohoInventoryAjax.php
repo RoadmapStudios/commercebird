@@ -585,7 +585,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function zoho_categories_collect(): void {
 		$this->verify();
-		$categories = get_zoho_item_categories();
+		$categories = cmbird_get_zoho_item_categories();
 		if ( gettype( $categories ) === 'array' ) {
 			// $filtered = wp_list_pluck( $categories, 'name', 'category_id' );
 			// unset( $filtered[ -1 ] );
