@@ -13,6 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 2.0.0
  */
 class CommerceBird_WC_API {
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		add_action( 'rest_api_init', array( $this, 'register_routes' ), 15 );
+	}
+
 	public function register_routes() {
 		global $wp_version;
 		if ( version_compare( $wp_version, 6.0, '<' ) ) {

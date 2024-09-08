@@ -15,6 +15,7 @@ use CommerceBird\Admin\Actions\Ajax\AcfAjax;
 use CommerceBird\Admin\Cors;
 use CommerceBird\Admin\Template;
 use CommerceBird\Admin\Acf;
+use CommerceBird\CommerceBird_WC_API;
 
 class Plugin {
 
@@ -51,7 +52,6 @@ class Plugin {
 	}
 
 	public static function uninstall() {
-		// wp_clear_scheduled_hook( 'rms_cron_schedule_hook' );
 		$post_meta_keys = array(
 			'zi_item_id',
 			'zi_purchase_account_id',
@@ -158,6 +158,7 @@ class Plugin {
 		}
 		ExactOnlineAjax::instance();
 		Acf::instance();
+		new CommerceBird_WC_API();
 		// CM_Webhook_Modify::instance();
 	}
 

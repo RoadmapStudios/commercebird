@@ -51,7 +51,6 @@ require_once CMBIRD_PATH . 'includes/wc-am-client.php';
 require __DIR__ . '/vendor/autoload.php';
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
-use CommerceBird\CommerceBird_WC_API;
 use CommerceBird\Plugin;
 use CommerceBird\Admin\Actions\Sync\ExactOnlineSync;
 use CommerceBird\Admin\Actions\Sync\ZohoCRMSync;
@@ -135,8 +134,6 @@ add_action(
 		new ShippingWebhook();
 		new CreateOrderWebhook();
 		new CreateSFOrderWebhook();
-		$cm_api = new CommerceBird_WC_API();
-		$cm_api->register_routes();
 	}
 );
 

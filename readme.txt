@@ -49,6 +49,23 @@ A: Please visit https://support.commercebird.com to read the docs and open suppo
 
 
 == Changelog ==
+= 2.2.0 - August 22 2024 =
+* New: support for Zoho Inventory Purchase Orders via CommerceBird app
+* New: support for GLAccounts on customer level for Exact Online
+* Tweak: renamed Cron tab name to Categories for Zoho Inventory
+* Fix: categories selection was not saving new categories
+* Fix: image import class refactored - reduced code with 70%
+
+= 2.1.26 - July 7 2024 =
+* New: ability to type woo field name for custom orders fields mapping
+* Fix: categories shown twice on cron tab
+* Fix: prevent sync of order multiple times in same minute
+* Fix: php error for getting image mime type
+
+= 2.1.25 - July 2 2024 =
+* New: webhook sync Items and Stock change for Exact Online
+* Fix: manage stock disabling overwritten by cron
+
 = 2.1.24 - June 21 2024 =
 * Fix: product save was giving json output
 * Tweak: secured all ajax calls with wp nonce
