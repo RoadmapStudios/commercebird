@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use CMBIRD_Image_ZI;
 use CMBIRD_Products_ZI;
-use CMBIRD_Products_ZI;
+use CMBIRD_Products_ZI_Export;
 use WC_Data_Exception;
 use WC_Product_Variation;
 use WC_Product_Variable;
@@ -86,7 +86,7 @@ class ProductWebhook {
 		$item_price = $item['rate'];
 		$item_sku = $item['sku'];
 		$item_description = $item['description'];
-		$item_status = $item['status'] === 'active' ? 'publish' : 'private';
+		$item_status = $item['status'] === 'active' ? 'publish' : 'draft';
 		$item_brand = $item['brand'];
 		$custom_fields = $item['custom_fields'];
 		// Stock mode check
@@ -335,7 +335,7 @@ class ProductWebhook {
 					if ( $opt_category ) {
 						$opt_category = unserialize( $opt_category );
 						if ( in_array( $category_id, $opt_category, true ) ) {
-							$product_class = new CMBIRD_Products_ZI();
+							$product_class = new CMBIRD_Products_ZI_Export();
 							$pdt_id = $product_class->cmbird_zi_product_to_woocommerce( $item, $item_stock );
 						}
 					}

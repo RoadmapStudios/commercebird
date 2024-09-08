@@ -1473,7 +1473,7 @@ class CMBIRD_Products_ZI {
 					}
 					// Check if item is allowed to import or not.
 					if ( $allow_to_import ) {
-						$product_class = new CMBIRD_Products_ZI();
+						$product_class = new CMBIRD_Products_ZI_Export();
 						$item_array = json_decode( wp_json_encode( $comp_item ), true );
 						$com_prod_id = $product_class->cmbird_zi_product_to_woocommerce( $item_array, $stock, 'composite' );
 						update_post_meta( $com_prod_id, 'zi_item_id', $zoho_comp_item_id );
@@ -1684,4 +1684,4 @@ class CMBIRD_Products_ZI {
 		}
 	}
 }
-$CMBIRD_Products_ZI = new CMBIRD_Products_ZI();
+$cmbird_products_zi = new CMBIRD_Products_ZI();
