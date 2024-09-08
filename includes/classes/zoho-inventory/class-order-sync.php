@@ -373,7 +373,7 @@ class CMBIRD_Order_Sync_ZI {
 						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
-						$product_handler = new CMBIRD_Products_ZI();
+						$product_handler = new CMBIRD_Products_ZI_Export();
 						$product_response = $product_handler->cmbird_zi_product_sync( $proid );
 						// fwrite($fd,PHP_EOL.'Product sync: '.print_r($product_response, true));
 					}

@@ -7,8 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'ZI_CommonClass' ) ) {
-	class ZI_CommonClass {
+if ( ! class_exists( 'CMBIRD_Common_Functions' ) ) {
+	class CMBIRD_Common_Functions {
 
 
 		public function __construct() {
@@ -45,7 +45,7 @@ if ( ! class_exists( 'ZI_CommonClass' ) ) {
 
 			// Round the percentage to the determined number of decimal places
 			$rounded_percentage = round( $percentage, $decimal_places );
-			$tax_rates          = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates WHERE ROUND(tax_rate, %d) = %f", $decimal_places, $rounded_percentage ) );
+			$tax_rates = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates WHERE ROUND(tax_rate, %d) = %f", $decimal_places, $rounded_percentage ) );
 
 			// If tax rates are found
 			if ( $tax_rates ) {

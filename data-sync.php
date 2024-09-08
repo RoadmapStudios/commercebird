@@ -46,7 +46,7 @@ function cmbird_error_log_api_email( $subject, $message ) {
 add_action( 'wp_ajax_zoho_ajax_call_variable_item_from_zoho', 'cmbird_ajax_call_variable_item_from_zoho' );
 function cmbird_ajax_call_variable_item_from_zoho() {
 	// Clear Orphan data.
-	$zi_common_class = new ZI_CommonClass();
+	$zi_common_class = new CMBIRD_Common_Functions();
 	$zi_common_class->clear_orphan_data();
 
 	// get category to filter by category

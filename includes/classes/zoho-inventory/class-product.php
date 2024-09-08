@@ -7,7 +7,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-class CMBIRD_Products_ZI {
+class CMBIRD_Products_ZI_Export {
 	private $config;
 
 	public function __construct() {

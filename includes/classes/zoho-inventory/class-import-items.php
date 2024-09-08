@@ -134,7 +134,7 @@ class CMBIRD_Products_ZI {
 						}
 
 						if ( ! empty( $arr->tax_id ) ) {
-							$zi_common_class = new ZI_CommonClass();
+							$zi_common_class = new CMBIRD_Common_Functions();
 							$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $arr->tax_percentage );
 							$product->set_tax_status( 'taxable' );
 							$product->set_tax_class( $woo_tax_class );
@@ -1035,7 +1035,7 @@ class CMBIRD_Products_ZI {
 				$variation->set_regular_price( $item->rate );
 				// Set Tax Class
 				if ( $item->tax_id ) {
-					$zi_common_class = new ZI_CommonClass();
+					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item->tax_percentage );
 					$variation->set_tax_status( 'taxable' );
 					$variation->set_tax_class( $woo_tax_class );

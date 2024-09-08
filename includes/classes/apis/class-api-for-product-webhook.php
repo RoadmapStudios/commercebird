@@ -15,7 +15,7 @@ use WC_Product_Variable;
 use WP_REST_Response;
 use WP_REST_Server;
 use wpdb;
-use ZI_CommonClass;
+use CMBIRD_Common_Functions;
 
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 
@@ -199,7 +199,7 @@ class ProductWebhook {
 
 				// Map taxes while syncing product from zoho.
 				if ( $item['tax_id'] ) {
-					$zi_common_class = new ZI_CommonClass();
+					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$variation->set_tax_status( 'taxable' );
 					$variation->set_tax_class( $woo_tax_class );
@@ -250,7 +250,7 @@ class ProductWebhook {
 				}
 				// Map taxes while syncing product from zoho.
 				if ( $item['tax_id'] ) {
-					$zi_common_class = new ZI_CommonClass();
+					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$variation->set_tax_status( 'taxable' );
 					$variation->set_tax_class( $woo_tax_class );
@@ -458,7 +458,7 @@ class ProductWebhook {
 
 				// Map taxes while syncing product from zoho.
 				if ( $item['tax_id'] ) {
-					$zi_common_class = new ZI_CommonClass();
+					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$simple_product->set_tax_status( 'taxable' );
 					$simple_product->set_tax_class( $woo_tax_class );

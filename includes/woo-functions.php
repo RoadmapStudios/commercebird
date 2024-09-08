@@ -24,7 +24,7 @@ function cmbird_clear_product_cache( $object, $request, $is_creating ) {
 		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 		$cmbird_zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
 		if ( ! empty( $zoho_inventory_access_token ) && ! $cmbird_zi_product_sync ) {
-			$product_handler = new CMBIRD_Products_ZI();
+			$product_handler = new CMBIRD_Products_ZI_Export();
 			$product_handler->cmbird_zi_product_sync( $product_id );
 		}
 		wc_delete_product_transients( $product_id );
@@ -75,7 +75,7 @@ function cmbird_zi_product_sync_class( $product_id ) {
 	$cmbird_zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
 	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
 	if ( ! $cmbird_zi_product_sync && ! empty( $zoho_inventory_access_token ) ) {
-		$product_handler = new CMBIRD_Products_ZI();
+		$product_handler = new CMBIRD_Products_ZI_Export();
 		$product_handler->cmbird_zi_product_sync( $product_id );
 	}
 	// if its variable product but without variations, then sync it.
@@ -113,7 +113,7 @@ function cmbird_zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_i
 	if ( 'sync_item_to_zoho' === $action ) {
 
 		foreach ( $object_ids as $post_id ) {
-			$product_handler = new CMBIRD_Products_ZI();
+			$product_handler = new CMBIRD_Products_ZI_Export();
 			$product_handler->cmbird_zi_product_sync( $post_id );
 		}
 
