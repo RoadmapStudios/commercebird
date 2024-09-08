@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ExecutecallClass;
+use CMBIRD_API_Handler_Zoho;
 use WP_REST_Response;
 use WP_REST_Server;
 use WP_REST_Controller;
@@ -110,7 +110,7 @@ class Zoho extends WP_REST_Controller {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . 'inventory/v1/organizations/' . $zoho_inventory_oid . '?organization_id=' . $zoho_inventory_oid;
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
@@ -134,7 +134,7 @@ class Zoho extends WP_REST_Controller {
 		$rest_response = new WP_REST_Response();
 		$rest_response->set_data( $this->empty_response );
 		$rest_response->set_status( 400 );
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
@@ -232,7 +232,7 @@ class Zoho extends WP_REST_Controller {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders?organization_id=$zoho_inventory_oid&ignore_auto_number_generation=false";
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_post(
 			$get_url,
 			array(

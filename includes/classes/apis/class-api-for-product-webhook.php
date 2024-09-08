@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ImageClass;
-use import_product_class;
-use ProductClass;
+use CMBIRD_Image_ZI;
+use CMBIRD_Products_ZI;
+use CMBIRD_Products_ZI;
 use WC_Data_Exception;
 use WC_Product_Variation;
 use WC_Product_Variable;
@@ -155,7 +155,7 @@ class ProductWebhook {
 				}
 				// Update the custom fields if the custom fields are not empty
 				if ( ! empty( $custom_fields ) ) {
-					$import_class = new import_product_class();
+					$import_class = new CMBIRD_Products_ZI();
 					$import_class->sync_item_custom_fields( $custom_fields, $groupid );
 				}
 
@@ -189,7 +189,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
-					$image_class = new ImageClass();
+					$image_class = new CMBIRD_Image_ZI();
 					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image, $item['image_document_id'] );
 				}
 				// Disable or enable the variation based on the item_status
@@ -294,7 +294,7 @@ class ProductWebhook {
 				// featured image
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
-					$image_class = new ImageClass();
+					$image_class = new CMBIRD_Image_ZI();
 					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image, $item['image_document_id'] );
 				}
 
@@ -335,7 +335,7 @@ class ProductWebhook {
 					if ( $opt_category ) {
 						$opt_category = unserialize( $opt_category );
 						if ( in_array( $category_id, $opt_category, true ) ) {
-							$product_class = new ProductClass();
+							$product_class = new CMBIRD_Products_ZI();
 							$pdt_id = $product_class->cmbird_zi_product_to_woocommerce( $item, $item_stock );
 						}
 					}
@@ -411,7 +411,7 @@ class ProductWebhook {
 				// featured image
 				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
-					$image_class = new ImageClass();
+					$image_class = new CMBIRD_Image_ZI();
 					$image_class->cmbird_zi_get_image( $item_id, $item_name, $pdt_id, $item_image, $item['image_document_id'] );
 				}
 
@@ -437,7 +437,7 @@ class ProductWebhook {
 					if ( ! is_wp_error( $term_id ) && isset( $term->term_id ) ) {
 						$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
 						if ( $existing_terms && count( $existing_terms ) > 0 ) {
-							$import_class = new import_product_class();
+							$import_class = new CMBIRD_Products_ZI();
 							$is_term_exist = $import_class->zi_check_terms_exists( $existing_terms, $term_id );
 							if ( ! $is_term_exist ) {
 								$simple_product->update_meta_data( 'zi_category_id', $item['category_id'] );
@@ -452,7 +452,7 @@ class ProductWebhook {
 
 				// Update the custom fields if the custom fields are not empty
 				if ( ! empty( $custom_fields ) ) {
-					$import_class = new import_product_class();
+					$import_class = new CMBIRD_Products_ZI();
 					$import_class->sync_item_custom_fields( $custom_fields, $pdt_id );
 				}
 

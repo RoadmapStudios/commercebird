@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class ImportPricelistClass {
+class CMBIRD_Pricelist_ZI {
 	use CommerceBird\Admin\Traits\LogWriter;
 
 	private array $config;
@@ -56,7 +56,7 @@ class ImportPricelistClass {
 		}
 
 		$url = $this->config['ProductZI']['APIURL'] . 'inventory/v1/pricebooks?organization_id=' . $this->config['ProductZI']['OID'];
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 		if ( isset( $json->pricebooks ) ) {
@@ -100,7 +100,7 @@ class ImportPricelistClass {
 			return $in_cache;
 		}
 		$url = $this->config['ProductZI']['APIURL'] . 'inventory/v1/pricebooks/' . $pricebook_id . '?organization_id=' . $this->config['ProductZI']['OID'];
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_object( $json ) && property_exists( $json, 'pricebook' ) ) {
 			$json = json_decode( wp_json_encode( $json->pricebook ), true );

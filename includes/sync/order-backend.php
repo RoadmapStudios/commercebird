@@ -98,7 +98,7 @@ function cmbird_zi_sync_all_orders_to_zoho_handler( $redirect, $action, $object_
 	if ( 'sync_order_to_zoho' === $action ) {
 
 		foreach ( $object_ids as $post_id ) {
-			$order_sync = new Zi_Order_Sync();
+			$order_sync = new CMBIRD_Order_Sync_ZI();
 			$order_sync->zi_order_sync( $post_id );
 		}
 

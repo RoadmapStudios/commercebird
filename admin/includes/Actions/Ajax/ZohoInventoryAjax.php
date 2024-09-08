@@ -2,9 +2,9 @@
 
 namespace CommerceBird\Admin\Actions\Ajax;
 
-use Classfunctions;
-use ExecutecallClass;
-use ImportPricelistClass;
+use CMBIRD_Auth_Zoho;
+use CMBIRD_API_Handler_Zoho;
+use CMBIRD_Pricelist_ZI;
 use CommerceBird\Admin\Template;
 use CommerceBird\Admin\Traits\AjaxRequest;
 use CommerceBird\Admin\Traits\OptionStatus;
@@ -367,7 +367,7 @@ final class ZohoInventoryAjax {
 	public function price_set(): void {
 		$this->verify( self::FORMS['price'] );
 		try {
-			$import_pricelist = new ImportPricelistClass();
+			$import_pricelist = new CMBIRD_Pricelist_ZI();
 			$success = $import_pricelist->save_price_list( $this->data );
 			if ( class_exists( 'Addify_B2B_Plugin' ) ) {
 				update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
@@ -403,7 +403,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function zoho_prices_collect(): void {
 		$this->verify();
-		$price_list_class = new ImportPricelistClass();
+		$price_list_class = new CMBIRD_Pricelist_ZI();
 		$prices = $price_list_class->zi_get_all_pricelist();
 		$this->response = wp_list_pluck( $prices, 'name', 'pricebook_id' );
 		$this->serve();
@@ -497,7 +497,7 @@ final class ZohoInventoryAjax {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$url = $zoho_inventory_url . 'inventory/v1/settings/warehouses?organization_id=' . $zoho_inventory_oid;
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		$this->response = wp_list_pluck( $json->warehouses, 'warehouse_name', 'warehouse_id' );
 		$this->serve();
@@ -602,7 +602,7 @@ final class ZohoInventoryAjax {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$url = $zoho_inventory_url . 'inventory/v1/organizations/?organization_id=' . $zoho_inventory_oid;
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );
@@ -799,7 +799,7 @@ final class ZohoInventoryAjax {
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 		$url = $zoho_inventory_url . 'inventory/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
 		try {
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$json = (array) $execute_curl_call_handle->execute_curl_call_get( $url );
 			if ( array_key_exists( 'taxes', $json ) ) {
 				$this->response = $json['taxes'];
@@ -831,7 +831,7 @@ final class ZohoInventoryAjax {
 	public function handle_code(): void {
 		$this->verify();
 		if ( array_key_exists( 'code', $this->request ) ) {
-			$class_functions = new Classfunctions();
+			$class_functions = new CMBIRD_Auth_Zoho();
 			$code = $this->request['code'];
 			try {
 				$access_token = $class_functions->get_zoho_access_token( $code, 'zoho_inventory' );

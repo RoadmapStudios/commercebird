@@ -2,8 +2,8 @@
 
 namespace CommerceBird\Admin\Actions\Ajax;
 
-use Classfunctions;
-use ExecutecallClass;
+use CMBIRD_Auth_Zoho;
+use CMBIRD_API_Handler_Zoho;
 use CommerceBird\Admin\Actions\Sync\ZohoCRMSync;
 use CommerceBird\Admin\Template;
 use CommerceBird\Admin\Traits\AjaxRequest;
@@ -136,7 +136,7 @@ final class ZohoCRMAjax {
 	public function handle_code(): void {
 		$this->verify();
 		if ( array_key_exists( 'code', $this->request ) ) {
-			$class_functions = new Classfunctions();
+			$class_functions = new CMBIRD_Auth_Zoho();
 			$code = $this->request['code'];
 			try {
 				$access_token = $class_functions->get_zoho_access_token( $code, 'zoho_crm' );
@@ -185,7 +185,7 @@ final class ZohoCRMAjax {
 		$this->verify();
 		$zoho_crm_url = get_option( 'zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/org';
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );

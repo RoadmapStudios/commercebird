@@ -7,7 +7,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-class ProductClass {
+class CMBIRD_Products_ZI {
 	private $config;
 
 	public function __construct() {
@@ -171,7 +171,7 @@ class ProductClass {
 				);
 				$url = $zoho_inventory_url . 'inventory/v1/items';
 
-				$execute_curl_call_handle = new ExecutecallClass();
+				$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 				$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 				$errmsg = $json->message;
@@ -278,7 +278,7 @@ class ProductClass {
 			'organization_id' => $zoho_inventory_oid,
 		);
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 		// fwrite($fd,PHP_EOL.'Update response : '.print_r($json,true));
 		$code = $json->code;
@@ -439,7 +439,7 @@ class ProductClass {
 
 		// fwrite($fd, PHP_EOL . 'data_p : ' . print_r($data_p, true));
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 
 		if ( $zoho_item_id && ctype_digit( $zoho_item_id ) ) {
 
@@ -587,7 +587,7 @@ class ProductClass {
 
 		if ( ! empty( $zoho_group_id ) ) {
 			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/' . $zoho_group_id . '?organization_id=' . $zoho_inventory_oid;
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$json_p = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 			$code = $json_p->code;
 			$errmsg = $json_p->message;
@@ -595,7 +595,7 @@ class ProductClass {
 		} else {
 			$url = $zoho_inventory_url . 'inventory/v1/itemgroups?organization_id=' . $zoho_inventory_oid;
 
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 			$errmsg = $json->message;
@@ -757,7 +757,7 @@ class ProductClass {
 			$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 			$sku_check = str_replace( ' ', '+', $sku );
 			$url = $zoho_inventory_url . 'inventory/v1/items?search_text=' . $sku_check . '&organization_id=' . $zoho_inventory_oid;
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$get_request = $execute_curl_call_handle->execute_curl_call_get( $url );
 			$var_item_id = '';
 			$groupitem_id = '';
@@ -873,4 +873,4 @@ class ProductClass {
 		}
 	}
 }
-$productClass = new ProductClass();
+$CMBIRD_Products_ZI = new CMBIRD_Products_ZI();

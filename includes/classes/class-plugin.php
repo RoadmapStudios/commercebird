@@ -159,7 +159,7 @@ class Plugin {
 		ExactOnlineAjax::instance();
 		Acf::instance();
 		new CommerceBird_WC_API();
-		// CM_Webhook_Modify::instance();
+		// CMBIRD_Webhook_Modify::instance();
 	}
 
 	/**

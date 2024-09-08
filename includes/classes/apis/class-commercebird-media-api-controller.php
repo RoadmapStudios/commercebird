@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WC_REST_CommerceBird_Media_API_Controller extends WC_REST_CRUD_Controller {
+class CMBIRD_Media_API_Controller extends WC_REST_CRUD_Controller {
 
 	protected $namespace = 'wc/v3';
 	protected $rest_base = 'media';

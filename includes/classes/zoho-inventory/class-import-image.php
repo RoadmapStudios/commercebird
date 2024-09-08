@@ -19,7 +19,7 @@ require_once ABSPATH . 'wp-admin/includes/file.php';
  * @package  WooZo Inventory
  */
 
-class ImageClass {
+class CMBIRD_Image_ZI {
 
 	private $config;
 	public function __construct() {
@@ -67,7 +67,7 @@ class ImageClass {
 		$url = $zoho_inventory_url . 'inventory/v1/items/' . $item_id . '/image';
 		$url .= '?organization_id=' . $zoho_inventory_oid;
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$image_url = $execute_curl_call_handle->execute_curl_call_image_get( $url, $image_name );
 		if ( empty( $image_url ) ) {
 			return;

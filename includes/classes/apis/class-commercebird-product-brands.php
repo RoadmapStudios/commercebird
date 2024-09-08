@@ -4,12 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Controller {
+class CMBIRD_Product_Brands_API_Controller extends WC_REST_CRUD_Controller {
 
-	protected $namespace      = 'wc/v3';
-	protected $rest_base      = 'product_brands';
+	protected $namespace = 'wc/v3';
+	protected $rest_base = 'product_brands';
 	protected $empty_response = array(
-		'status'  => 'error',
+		'status' => 'error',
 		'message' => 'Invalid request',
 	);
 
@@ -19,10 +19,10 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			'/' . $this->rest_base,
 			array(
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_brand' ),
+					'methods' => WP_REST_Server::CREATABLE,
+					'callback' => array( $this, 'create_brand' ),
 					'permission_callback' => '__return_true',
-					'args'                => $this->get_params(),
+					'args' => $this->get_params(),
 				),
 			)
 		);
@@ -31,10 +31,10 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			'/' . $this->rest_base,
 			array(
 				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_brand' ),
+					'methods' => WP_REST_Server::EDITABLE,
+					'callback' => array( $this, 'update_brand' ),
 					'permission_callback' => '__return_true',
-					'args'                => $this->get_params(),
+					'args' => $this->get_params(),
 				),
 			)
 		);
@@ -43,8 +43,8 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			'/' . $this->rest_base . '/delete',
 			array(
 				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_brand' ),
+					'methods' => WP_REST_Server::DELETABLE,
+					'callback' => array( $this, 'delete_brand' ),
 					'permission_callback' => '__return_true',
 				),
 			)
@@ -57,40 +57,40 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 	 */
 	public function get_params() {
 		$params = array(
-			'id'          => array(
-				'type'              => 'integer',
+			'id' => array(
+				'type' => 'integer',
 				'sanitize_callback' => 'absint',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
-			'name'        => array(
-				'type'              => 'string',
-				'required'          => true,
+			'name' => array(
+				'type' => 'string',
+				'required' => true,
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
 			'description' => array(
-				'type'              => 'string',
+				'type' => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
-			'slug'        => array(
-				'type'              => 'string',
+			'slug' => array(
+				'type' => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
-			'parent'      => array(
-				'type'              => 'integer',
+			'parent' => array(
+				'type' => 'integer',
 				'sanitize_callback' => 'absint',
 				'validate_callback' => 'rest_validate_request_arg',
 			),
-			'logo'        => array(
-				'url'           => array(
-					'type'              => 'string',
+			'logo' => array(
+				'url' => array(
+					'type' => 'string',
 					'sanitize_callback' => 'sanitize_text_field',
 					'validate_callback' => 'rest_validate_request_arg',
 				),
 				'attachment_id' => array(
-					'type'              => 'integer',
+					'type' => 'integer',
 					'sanitize_callback' => 'absint',
 					'validate_callback' => 'rest_validate_request_arg',
 				),
@@ -107,7 +107,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 	 */
 	public function create_brand( WP_REST_Request $request ) {
 		$response = new WP_REST_Response();
-		$data     = $request->get_params();
+		$data = $request->get_params();
 		if ( empty( $data['name'] ) ) {
 			$response->set_data( $this->empty_response );
 			$response->set_status( 400 );
@@ -124,13 +124,13 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			return $response;
 		}
 		// return the entire term object.
-		$brand_object          = get_term_by( 'id', $brand['term_id'], 'product_brands' );
+		$brand_object = get_term_by( 'id', $brand['term_id'], 'product_brands' );
 		$adjusted_brand_object = array(
-			'id'          => $brand_object->term_id,
-			'name'        => $brand_object->name,
-			'slug'        => $brand_object->slug,
+			'id' => $brand_object->term_id,
+			'name' => $brand_object->name,
+			'slug' => $brand_object->slug,
 			'description' => $brand_object->description,
-			'parent'      => $brand_object->parent,
+			'parent' => $brand_object->parent,
 		);
 		$response->set_data( $adjusted_brand_object );
 		$response->set_status( 200 );
@@ -145,7 +145,7 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 	 */
 	public function update_brand( WP_REST_Request $request ) {
 		$response = new WP_REST_Response();
-		$data     = $request->get_params();
+		$data = $request->get_params();
 		if ( empty( $data['name'] ) ) {
 			$response->set_data( $this->empty_response );
 			$response->set_status( 400 );
@@ -161,13 +161,13 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 			$response->set_status( 500 );
 			return $response;
 		}
-		$brand_object          = get_term_by( 'id', $brand['term_id'], 'product_brands' );
+		$brand_object = get_term_by( 'id', $brand['term_id'], 'product_brands' );
 		$adjusted_brand_object = array(
-			'id'          => $brand_object->term_id,
-			'name'        => $brand_object->name,
-			'slug'        => $brand_object->slug,
+			'id' => $brand_object->term_id,
+			'name' => $brand_object->name,
+			'slug' => $brand_object->slug,
 			'description' => $brand_object->description,
-			'parent'      => $brand_object->parent,
+			'parent' => $brand_object->parent,
 		);
 		$response->set_data( $adjusted_brand_object );
 		$response->set_status( 200 );
@@ -182,8 +182,8 @@ class WC_REST_CommerceBird_Product_Brands_API_Controller extends WC_REST_CRUD_Co
 	 */
 	public function delete_brand( WP_REST_Request $request ) {
 		$response = new WP_REST_Response();
-		$data     = $request->get_params();
-		$term_id  = $data['id'];
+		$data = $request->get_params();
+		$term_id = $data['id'];
 		if ( empty( $data['id'] ) ) {
 			$response->set_data( $this->empty_response );
 			$response->set_status( 400 );

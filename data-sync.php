@@ -253,7 +253,7 @@ function cmbird_sync_composite_item_from_zoho() {
 
 	$item_add_resp = array();
 	foreach ( $opt_category as $category_id ) {
-		$product_class = new import_product_class();
+		$product_class = new CMBIRD_Products_ZI();
 		$response = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id, 'sync' );
 		$item_add_resp = array_merge( $item_add_resp, $response );
 	}
@@ -417,9 +417,9 @@ function cmbird_zi_subcategory_sync_call() {
 		foreach ( $categories_terms as $parent_term ) {
 			$parent_id = $parent_term->term_id;
 			$args = array(
-				'taxonomy'   => 'product_cat',
+				'taxonomy' => 'product_cat',
 				'hide_empty' => false,
-				'parent'     => $parent_id,
+				'parent' => $parent_id,
 			);
 			$subcategories_terms = get_terms( $args );
 			if ( $subcategories_terms && count( $subcategories_terms ) > 0 ) {
@@ -569,7 +569,7 @@ function cmbird_zi_category_export( $cat_name, $term_id = '0', $pid = '' ) {
 
 	$url = $zoho_inventory_url . 'inventory/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
-	$execute_curl_call_handle = new ExecutecallClass();
+	$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 	$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 	$code = $json->code;
@@ -599,7 +599,7 @@ function cmbird_get_zoho_item_categories() {
 
 	$url = $zoho_inventory_url . 'inventory/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
-	$execute_curl_call_handle = new ExecutecallClass();
+	$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 	$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 	$code = $json->code;
 	$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
@@ -607,7 +607,7 @@ function cmbird_get_zoho_item_categories() {
 
 	$url = $zoho_inventory_url . 'inventory/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
-	$execute_curl_call_handle = new ExecutecallClass();
+	$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 	$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 	$code = $json->code;
 	if ( '0' == $code || 0 == $code ) {

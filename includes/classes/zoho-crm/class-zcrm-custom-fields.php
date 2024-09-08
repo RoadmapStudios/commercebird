@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ExecutecallClass;
+use CMBIRD_API_Handler_Zoho;
 
 class ZCRM_Custom_Fields {
 
@@ -20,7 +20,7 @@ class ZCRM_Custom_Fields {
 		$fd = fopen( __DIR__ . '/get_custom_fields.txt', 'w+' );
 		$zoho_crm_url = get_option( 'zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/settings/fields?module=' . $module;
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {
 			return $json;
@@ -37,7 +37,7 @@ class ZCRM_Custom_Fields {
 					'displayLabel' => $field->display_label,
 					'customField' => (bool) $field->custom_field,
 					'dataType' => $field->data_type,
-                );
+				);
 			}
 
 			// Optionally log the parsed fields to the file for debugging

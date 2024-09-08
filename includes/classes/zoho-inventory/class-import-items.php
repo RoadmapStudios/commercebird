@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 
-class import_product_class {
+class CMBIRD_Products_ZI {
 
 	private $config;
 	public function __construct() {
@@ -32,7 +32,7 @@ class import_product_class {
 		// $fd = fopen( __DIR__ . '/zi_item_bulk_sync.txt', 'a+' );
 
 		global $wpdb;
-		$execute_curl_call = new ExecutecallClass();
+		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call->execute_curl_call_get( $url );
 		$code = $json->code;
 
@@ -188,7 +188,7 @@ class import_product_class {
 		$urlitem = $zoho_inventory_url . 'inventory/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
 		// fwrite( $fd, PHP_EOL . 'URL : ' . $urlitem );
 
-		$execute_curl_call = new ExecutecallClass();
+		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call->execute_curl_call_get( $urlitem );
 		$code = (int) property_exists( $json, 'code' ) ? $json->code : '0';
 
@@ -249,7 +249,7 @@ class import_product_class {
 						if ( $pdt_id ) {
 							update_post_meta( $pdt_id, 'zi_item_id', $arr->item_id );
 						}
-					} catch ( Exception $e ) {
+					} catch (Exception $e) {
 						// fwrite( $fd, PHP_EOL . 'Error : ' . $e->getMessage() );
 						throw new Exception( esc_html( $e->getMessage() ) );
 						// continue;
@@ -301,7 +301,7 @@ class import_product_class {
 					// Sync Featured Image if not disabled.
 					$zi_disable_image_sync = get_option( 'zoho_disable_image_sync_status' );
 					if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
-						$image_class = new ImageClass();
+						$image_class = new CMBIRD_Image_ZI();
 						$image_class->cmbird_zi_get_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name, $arr->image_document_id );
 					}
 
@@ -398,7 +398,7 @@ class import_product_class {
 			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&filter_by=Status.Active';
 			// fwrite($fd, PHP_EOL . '$url : ' . $url);
 
-			$execute_curl_call = new ExecutecallClass();
+			$execute_curl_call = new CMBIRD_API_Handler_Zoho();
 			$json = $execute_curl_call->execute_curl_call_get( $url );
 
 			$code = $json->code;
@@ -553,7 +553,7 @@ class import_product_class {
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 		$url = $zoho_inventory_url . 'inventory/v1/itemgroups/' . $zi_group_id . '?organization_id=' . $zoho_inventory_oid;
-		$execute_curl_call = new ExecutecallClass();
+		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call->execute_curl_call_get( $url );
 		$code = $json->code;
 
@@ -712,7 +712,7 @@ class import_product_class {
 
 				// Featured Image of variation
 				if ( ! empty( $item->image_name ) ) {
-					$image_class = new ImageClass();
+					$image_class = new CMBIRD_Image_ZI();
 					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
 					if ( ! has_post_thumbnail( $group_id ) ) {
 						if ( $variation_image_id ) {
@@ -1056,7 +1056,7 @@ class import_product_class {
 				}
 				// Featured Image of variation
 				if ( ! empty( $item->image_document_id ) ) {
-					$image_class = new ImageClass();
+					$image_class = new CMBIRD_Image_ZI();
 					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
 					if ( ! has_post_thumbnail( $group_id ) ) {
 						if ( $variation_image_id ) {
@@ -1167,7 +1167,7 @@ class import_product_class {
 				}
 				// Featured Image of variation
 				if ( ! empty( $item->image_document_id ) ) {
-					$image_class = new ImageClass();
+					$image_class = new CMBIRD_Image_ZI();
 					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
 					if ( ! has_post_thumbnail( $group_id ) ) {
 						if ( $variation_image_id ) {
@@ -1279,7 +1279,7 @@ class import_product_class {
 
 		$url = $zi_url . 'inventory/v1/compositeitems/' . $composite_zoho_id . '?organization_id=' . $zi_org_id;
 
-		$execute_curl_call = new ExecutecallClass();
+		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call->execute_curl_call_get( $url );
 		$code = $json->code;
 		// Flag to allow sync of parent composite item.
@@ -1401,7 +1401,7 @@ class import_product_class {
 
 		$url = $zi_url . 'inventory/v1/compositeitems/?organization_id=' . $zi_org_id . '&filter_by=Status.Active&category_id=' . $category . '&page=' . $page;
 
-		$execute_curl_call = new ExecutecallClass();
+		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call->execute_curl_call_get( $url );
 		$code = $json->code;
 		// $message = $json->message;
@@ -1473,7 +1473,7 @@ class import_product_class {
 					}
 					// Check if item is allowed to import or not.
 					if ( $allow_to_import ) {
-						$product_class = new ProductClass();
+						$product_class = new CMBIRD_Products_ZI();
 						$item_array = json_decode( wp_json_encode( $comp_item ), true );
 						$com_prod_id = $product_class->cmbird_zi_product_to_woocommerce( $item_array, $stock, 'composite' );
 						update_post_meta( $com_prod_id, 'zi_item_id', $zoho_comp_item_id );
@@ -1562,7 +1562,7 @@ class import_product_class {
 
 					if ( $key === 'image_document_id' ) {
 						if ( ! empty( $com_prod_id ) && ! empty( $value ) ) {
-							$image_class = new ImageClass();
+							$image_class = new CMBIRD_Image_ZI();
 							$image_class->cmbird_zi_get_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name, $comp_item->image_document_id );
 						}
 					}
@@ -1633,7 +1633,7 @@ class import_product_class {
 	public function zi_item_dimension_weight( $url, $product_id, $is_composite = false ) {
 		// $fd = fopen(__DIR__ . '/zi_item_dimension_weight.txt', 'a+');
 		// Check if item is for syncing purpose.
-		$execute_curl_call = new ExecutecallClass();
+		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call->execute_curl_call_get( $url );
 		$code = $json->code;
 		$message = $json->message;
@@ -1684,4 +1684,4 @@ class import_product_class {
 		}
 	}
 }
-$import_product_class = new import_product_class();
+$CMBIRD_Products_ZI = new CMBIRD_Products_ZI();

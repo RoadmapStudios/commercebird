@@ -3,7 +3,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-class Classfunctions {
+class CMBIRD_Auth_Zoho {
 
 	/**
 	 * @var array|array[]
@@ -129,4 +129,4 @@ class Classfunctions {
 	}
 }
 
-$handlefunction = new Classfunctions();
+$handlefunction = new CMBIRD_Auth_Zoho();

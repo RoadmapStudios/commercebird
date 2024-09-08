@@ -92,11 +92,11 @@ add_action(
 /**
  * Hooks for WC Action Scheduler to import or export products
  */
-$import_products = new import_product_class();
-$import_pricelist = new ImportPricelistClass();
-$product_class = new ProductClass();
-$order_class = new Zi_Order_Sync();
-$contact_class = new ContactClass();
+$import_products = new CMBIRD_Products_ZI();
+$import_pricelist = new CMBIRD_Pricelist_ZI();
+$product_class = new CMBIRD_Products_ZI();
+$order_class = new CMBIRD_Order_Sync_ZI();
+$contact_class = new CMBIRD_Contact_ZI();
 $import_pricelist->wc_b2b_groups();
 add_action( 'import_group_items_cron', array( $import_products, 'sync_groupitem_recursively' ), 10, 2 );
 add_action( 'import_simple_items_cron', array( $import_products, 'sync_item_recursively' ), 10, 2 );

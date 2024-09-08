@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Zi_Order_Sync {
+class CMBIRD_Order_Sync_ZI {
 
 
 	/**
@@ -35,7 +35,7 @@ class Zi_Order_Sync {
 			return;
 		}
 		// Check if the transient flag is set
-		if ( get_transient( 'your_thankyou_callback_executed_' . $order_id ) ) {
+		if ( get_transient( 'cmbird_thankyou_callback_executed_' . $order_id ) ) {
 			return;
 		}
 		// First sync the customer to Zoho Inventory
@@ -48,7 +48,7 @@ class Zi_Order_Sync {
 		if ( ! $existing_schedule ) {
 			as_schedule_single_action( time(), 'sync_zi_order', array( $order_id ) );
 			// Set the transient flag to prevent multiple executions
-			set_transient( 'your_thankyou_callback_executed_' . $order_id, true, 60 );
+			set_transient( 'cmbird_thankyou_callback_executed_' . $order_id, true, 60 );
 		}
 	}
 	/**
@@ -126,7 +126,7 @@ class Zi_Order_Sync {
 		$currency_id = intval( get_user_meta( $userid, 'zi_currency_id', true ) );
 		if ( empty( $currency_id ) ) {
 			$currency_code = $order->get_currency();
-			$multi_currency_handle = new MulticurrencyClass();
+			$multi_currency_handle = new CMBIRD_Multicurrency_Zoho();
 			$currency_id = $multi_currency_handle->zoho_currency_data( $currency_code, $userid );
 		}
 
@@ -135,7 +135,7 @@ class Zi_Order_Sync {
 			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
 
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$json = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 
 			// fwrite($fd,PHP_EOL.'customer_json: '.print_r($json, true));
@@ -163,7 +163,7 @@ class Zi_Order_Sync {
 			// fwrite($fd,PHP_EOL.'$user_mail : '.$user_email);
 			$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
 
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 			$code = $json->code;
@@ -176,13 +176,13 @@ class Zi_Order_Sync {
 						$company_name = str_replace( ' ', '%20', $user_company );
 						$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&search_text=' . $company_name;
 
-						$execute_curl_call_handle = new ExecutecallClass();
+						$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 						$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 						$code = $json->code;
 						if ( $code == 0 || $code == '0' ) {
 							if ( empty( $json->contacts ) ) {
-								$contact_class_handle = new ContactClass();
+								$contact_class_handle = new CMBIRD_Contact_ZI();
 								$zi_customer_id = $contact_class_handle->cmbird_contact_create_function( $userid );
 							} else {
 								foreach ( $json->contacts[0] as $key => $value ) {
@@ -191,12 +191,12 @@ class Zi_Order_Sync {
 										update_user_meta( $userid, 'zi_contact_id', $zi_customer_id );
 									}
 								}
-								$contact_class_handle = new ContactClass();
+								$contact_class_handle = new CMBIRD_Contact_ZI();
 								$zi_customer_id = $contact_class_handle->cmbird_create_contact_person( $userid );
 							}
 						}
 					} else {
-						$contact_class_handle = new ContactClass();
+						$contact_class_handle = new CMBIRD_Contact_ZI();
 						$zi_customer_id = $contact_class_handle->cmbird_contact_create_function( $userid );
 					}
 				} else {
@@ -217,7 +217,7 @@ class Zi_Order_Sync {
 			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
 			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
 
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$contactpersons_response = $execute_curl_call_handle->execute_curl_call_get( $get_url );
 
 			// fwrite( $fd, PHP_EOL . 'Contactpersons: ' . print_r($contactpersons_response, true) );
@@ -232,10 +232,10 @@ class Zi_Order_Sync {
 							$contactid = $contact_persons->contact_person_id;
 							update_user_meta( $userid, 'zi_contactperson_id_' . $key, $contactid );
 							if ( $contact_persons->is_primary_contact === true || $contact_persons->is_primary_contact === 1 ) {
-								$contact_class_handle = new ContactClass();
+								$contact_class_handle = new CMBIRD_Contact_ZI();
 								$contact_class_handle->cmbird_contact_update_function( $userid, $order_id );
 							} else {
-								$contact_class_handle = new ContactClass();
+								$contact_class_handle = new CMBIRD_Contact_ZI();
 								$contact_class_handle->cmbird_update_contact_person( $userid, $order_id );
 							}
 						}
@@ -247,11 +247,11 @@ class Zi_Order_Sync {
 						foreach ( $contact_res as $contact_ ) {
 							if ( trim( $contact_->email ) == trim( $user_email ) ) {
 								// fwrite( $fd, PHP_EOL . 'Inside cmbird_contact_update_function' );
-								$contact_class_handle = new ContactClass();
+								$contact_class_handle = new CMBIRD_Contact_ZI();
 								$contact_class_handle->cmbird_contact_update_function( $userid, $order_id );
 							} else {
 								// fwrite( $fd, PHP_EOL . 'Inside cmbird_create_contact_person' );
-								$contact_class_handle = new ContactClass();
+								$contact_class_handle = new CMBIRD_Contact_ZI();
 								$contact_class_handle->cmbird_create_contact_person( $userid );
 							}
 						}
@@ -356,7 +356,7 @@ class Zi_Order_Sync {
 				if ( empty( $zi_customer_id ) ) {
 					$zi_customer_id = $this->zi_sync_customer_checkout( $order_id );
 				} else {
-					$contact_class_handle = new ContactClass();
+					$contact_class_handle = new CMBIRD_Contact_ZI();
 					$contact_class_handle->cmbird_contact_update_function( $userid, $order_id );
 				}
 				// fwrite($fd,PHP_EOL.'$zi_customer_id : '.$zi_customer_id);
@@ -373,7 +373,7 @@ class Zi_Order_Sync {
 						$item_id = get_post_meta( $proid, 'zi_item_id', true );
 					}
 					if ( empty( $item_id ) ) {
-						$product_handler = new ProductClass();
+						$product_handler = new CMBIRD_Products_ZI();
 						$product_response = $product_handler->cmbird_zi_product_sync( $proid );
 						// fwrite($fd,PHP_EOL.'Product sync: '.print_r($product_response, true));
 					}
@@ -602,7 +602,7 @@ class Zi_Order_Sync {
 			$url = $zoho_inventory_url . 'inventory/v1/salesorders/' . $zi_sales_order_id . '/status/void?organization_id=' .
 				$zoho_inventory_oid;
 			$data = '';
-			$execute_curl_call_handle = new ExecutecallClass();
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 			$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 			$errmsg = $json->message;
@@ -644,7 +644,7 @@ class Zi_Order_Sync {
 		$ignore_auto_no = ( $enabled_auto_no ) ? 'false' : 'true';
 		$url = $zoho_inventory_url . 'inventory/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 		// fwrite( $fd, PHP_EOL . 'Data log : ' . print_r( $json, true ) );
@@ -693,7 +693,7 @@ class Zi_Order_Sync {
 
 		// fwrite($fd, PHP_EOL. print_r($data, true)); //logging response
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 
 		// $code = $json->code;
@@ -800,4 +800,4 @@ class Zi_Order_Sync {
 		return $fees;
 	}
 }
-$zi_order_sync = new Zi_Order_Sync();
+$CMBIRD_Order_Sync_ZI = new CMBIRD_Order_Sync_ZI();

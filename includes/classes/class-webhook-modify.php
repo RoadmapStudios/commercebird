@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class CM_Webhook_Modify {
+class CMBIRD_Webhook_Modify {
 
 	protected static ?self $instance = null;
 	/**
@@ -79,17 +79,11 @@ class CM_Webhook_Modify {
 		if ( ! $customer_id ) {
 			return $payload;
 		}
-		// get last order of customer
-		$order    = wc_get_customer_last_order( $customer_id );
-		$order_id = $order->get_id();
-		if ( get_transient( 'your_thankyou_callback_executed_' . $order_id ) ) {
-			return;
-		}
 
 		$endpoint = '/wc/v3/customers/' . $customer_id;
-		$request  = new \WP_REST_Request( 'GET', $endpoint );
+		$request = new \WP_REST_Request( 'GET', $endpoint );
 		$response = rest_do_request( $request );
-		$data     = $response->get_data();
+		$data = $response->get_data();
 
 		// Check if the request was successful
 		if ( is_wp_error( $response ) ) {
@@ -114,14 +108,14 @@ class CM_Webhook_Modify {
 	 */
 	public function cm_modify_order_webhook_payload( $payload ) {
 		$eo_account_id = '';
-		$customer_id   = (int) $payload['customer_id'];
+		$customer_id = (int) $payload['customer_id'];
 
 		// All guest users will have the customer_id field set to 0
 		if ( $customer_id > 0 ) {
 			$eo_account_id = (string) get_user_meta( $customer_id, 'eo_account_id', true );
 			if ( ! empty( $eo_account_id ) ) {
 				$payload['meta_data'][] = array(
-					'key'   => 'eo_account_id',
+					'key' => 'eo_account_id',
 					'value' => $eo_account_id,
 				);
 			}
@@ -129,7 +123,7 @@ class CM_Webhook_Modify {
 		// Loop through line items in and add the eo_item_id to the line item
 		foreach ( $payload['line_items'] as &$item ) {
 			// Get the product ID associated with the line item
-			$product_id   = $item['product_id'];
+			$product_id = $item['product_id'];
 			$variation_id = $item['variation_id'];
 			// Get the product meta value based on the product ID and meta key
 			if ( $variation_id ) {
@@ -140,7 +134,7 @@ class CM_Webhook_Modify {
 			// Add the product meta to the line item
 			if ( ! empty( $eo_item_id ) ) {
 				$item['meta'][] = array(
-					'key'   => 'eo_item_id',
+					'key' => 'eo_item_id',
 					'value' => $eo_item_id,
 				);
 			}
@@ -156,4 +150,4 @@ class CM_Webhook_Modify {
 	}
 }
 
-return new CM_Webhook_Modify();
+return new CMBIRD_Webhook_Modify();

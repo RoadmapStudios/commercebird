@@ -6,8 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ExecutecallClass;
-use Classfunctions;
+use CMBIRD_API_Handler_Zoho;
+use CMBIRD_Auth_Zoho;
 use WP_Error;
 
 class ZohoCRMSync {
@@ -20,7 +20,7 @@ class ZohoCRMSync {
 	public static function get_custom_fields( $module ) {
 		$zoho_crm_url = get_option( 'zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/settings/fields?module=' . $module;
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {
 			return $json;
@@ -58,7 +58,7 @@ class ZohoCRMSync {
 		$zoho_timestamp = get_option( 'zoho_crm_timestamp' );
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 		if ( $zoho_timestamp < $current_time ) {
-			$handlefunction = new Classfunctions();
+			$handlefunction = new CMBIRD_Auth_Zoho();
 			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_refresh_token, 'zoho_crm' );
 			if ( empty( $respo_at_js ) || ! array_key_exists( 'access_token', $respo_at_js ) ) {
 				return new WP_Error( 403, 'Access denied!' );

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class ContactClass {
+class CMBIRD_Contact_ZI {
 
 	private array $config;
 	public function __construct() {
@@ -123,7 +123,7 @@ class ContactClass {
 			$user_order = wc_get_customer_last_order( $userid );
 			if ( ! empty( $user_order ) ) {
 				$user_currency = $user_order->get_currency();
-				$multi_currency_handle = new MulticurrencyClass();
+				$multi_currency_handle = new CMBIRD_Multicurrency_Zoho();
 				$multi_currency_handle->zoho_currency_data( $user_currency, $userid );
 			}
 		}
@@ -159,7 +159,7 @@ class ContactClass {
 
 		$url = $zoho_inventory_url . 'inventory/v1/contacts';
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 		$code = $json->code;
@@ -308,7 +308,7 @@ class ContactClass {
 		// fwrite($fd,PHP_EOL.'data: '.print_r($data, true));
 		$url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id;
 		// fwrite($fd,PHP_EOL.'URL: '. $url);
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 		// fwrite($fd, PHP_EOL.'Response log : '.print_r($json, true));
 		$code = $json->code;
@@ -370,7 +370,7 @@ class ContactClass {
 
 		$url = $zoho_inventory_url . 'inventory/v1/contacts/contactpersons';
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_post( $url, $data );
 
 		// fwrite($fd, PHP_EOL.'JSON : '.print_r($json, true));
@@ -403,7 +403,7 @@ class ContactClass {
 
 		$url = $zoho_inventory_url . 'inventory/v1/contacts/contactpersons/' . $contact_person_id;
 
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 
 		$code = $json->code;
@@ -432,7 +432,7 @@ class ContactClass {
 
 		/* Get call url */
 		$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&filter_by=Status.Active&per_page=100&page=' . $page;
-		$execute_curl_call_handle = new ExecutecallClass();
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 
 		if ( isset( $json->contacts ) ) {

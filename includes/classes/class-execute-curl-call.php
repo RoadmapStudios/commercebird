@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once ABSPATH . 'wp-admin/includes/file.php';
-class ExecutecallClass {
+class CMBIRD_API_Handler_Zoho {
 	/**
 	 * @var array|array[]
 	 */
@@ -36,7 +36,7 @@ class ExecutecallClass {
 	public function execute_curl_call_get( $url ) {
 		// Sleep for .5 sec for each api calls
 		usleep( 500000 );
-		$handlefunction = new Classfunctions();
+		$handlefunction = new CMBIRD_Auth_Zoho();
 
 		// if $url contains 'inventory' use zoho_access_token, refresh token and timestamp
 		if ( strpos( $url, 'inventory' ) !== false ) {
@@ -103,7 +103,7 @@ class ExecutecallClass {
 	// Post Call Zoho
 
 	public function execute_curl_call_post( $url, $data ) {
-		$handlefunction = new Classfunctions();
+		$handlefunction = new CMBIRD_Auth_Zoho();
 
 		// if $url contains 'inventory' use zoho__access_token, refresh token and timestamp
 		if ( strpos( $url, 'inventory' ) !== false ) {
@@ -170,7 +170,7 @@ class ExecutecallClass {
 
 	public function execute_curl_call_put( $url, $data ) {
 
-		$handlefunction = new Classfunctions();
+		$handlefunction = new CMBIRD_Auth_Zoho();
 
 		// if $url contains 'inventory' use zoho_inventory_access_token, refresh token and timestamp
 		if ( strpos( $url, 'inventory' ) !== false ) {
@@ -239,7 +239,7 @@ class ExecutecallClass {
 	 * @return mixed
 	 */
 	public function execute_curl_call_delete( $url ) {
-		$handlefunction = new Classfunctions();
+		$handlefunction = new CMBIRD_Auth_Zoho();
 
 		// if $url contains 'inventory' use zoho_inventory_access_token, refresh token and timestamp
 		if ( strpos( $url, 'inventory' ) !== false ) {
@@ -312,7 +312,7 @@ class ExecutecallClass {
 		global $wp_filesystem;
 		WP_Filesystem();
 
-		$handlefunction = new Classfunctions();
+		$handlefunction = new CMBIRD_Auth_Zoho();
 		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
 		$zoho_inventory_timestamp = $this->config['ExecutecallZI']['EXPIRESTIME'];
@@ -363,7 +363,7 @@ class ExecutecallClass {
 			// Save the image file
 			try {
 				$wp_filesystem->put_contents( $upload_dir, $body );
-			} catch ( Exception $e ) {
+			} catch (Exception $e) {
 				wp_delete_file( $upload_dir );
 				// If there was an error, handle it
 				$error_message = $e->getMessage();
