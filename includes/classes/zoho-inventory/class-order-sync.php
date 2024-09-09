@@ -271,12 +271,12 @@ class CMBIRD_Order_Sync_ZI {
 	public function zi_order_sync( $order_id ) {
 		// $fd = fopen( __DIR__ . '/backend_order.txt', 'a+' );
 
-		if ( ! $order_id ) {
+		if ( ! $order_id && isset( $_POST['nonce'] ) ) {
 			// verify nonce
-			if ( ! wp_verify_nonce( $_POST['nonce'], 'zoho_admin_order_sync' ) ) {
+			if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'zoho_admin_order_sync' ) ) {
 				wp_send_json_error( 'Nonce verification failed' );
 			}
-			$order_id = $_POST['arg_order_data'];
+			$order_id = sanitize_text_field( wp_unslash( $_POST['arg_order_data'] ) );
 		}
 
 		$order = wc_get_order( $order_id );

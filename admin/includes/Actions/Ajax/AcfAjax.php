@@ -36,7 +36,7 @@ final class AcfAjax {
 
 
 	public function get_acf_fields(): void {
-		$post_type_value = isset( $_GET['post_type'] ) ? $_GET['post_type'] : '';
+		$post_type_value = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : '';
 		if ( 'users' === $post_type_value ) {
 			$post_type_value = 'all';
 			$group_type = 'user_role';

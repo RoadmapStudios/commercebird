@@ -63,7 +63,7 @@ function cmbird_zi_product_sync_class( $product_id ) {
 	}
 	if ( ! $product_id ) {
 		// Check nonce for security
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zoho_admin_product_sync' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'zoho_admin_product_sync' ) ) {
 			wp_send_json_error( 'Nonce verification failed' );
 		} else {
 			$product_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
@@ -129,7 +129,7 @@ function cmbird_zi_sync_all_items_to_zoho_handler( $redirect, $action, $object_i
 add_action( 'admin_notices', 'cmbird_sync_item_to_zoho_notices' );
 function cmbird_sync_item_to_zoho_notices() {
 	// verify nonce
-	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'bulk-edit-products' ) ) {
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'bulk-edit-products' ) ) {
 		return;
 	}
 	if ( ! empty( $_REQUEST['sync_item_to_zoho_done'] ) ) {
@@ -146,11 +146,11 @@ function cmbird_sync_item_to_zoho_notices() {
 add_action( 'wp_ajax_zi_product_unmap_hook', 'cmbird_zi_product_unmap_hook' );
 function cmbird_zi_product_unmap_hook( $product_id ) {
 	// verify Nonce
-	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zi_product_unmap_hook' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'zi_product_unmap_hook' ) ) {
 		wp_send_json_error( 'Nonce verification failed' );
 	}
 	if ( ! $product_id ) {
-		$product_id = $_POST['product_id'];
+		$product_id = sanitize_text_field( wp_unslash( $_POST['product_id'] ) );
 	}
 
 	if ( $product_id ) {
@@ -187,11 +187,11 @@ function cmbird_zi_product_unmap_hook( $product_id ) {
 add_action( 'wp_ajax_zi_customer_unmap_hook', 'cmbird_zi_customer_unmap_hook' );
 function cmbird_zi_customer_unmap_hook( $order_id ) {
 	// verify Nonce
-	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'zi_customer_unmap_hook' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'zi_customer_unmap_hook' ) ) {
 		wp_send_json_error( 'Nonce verification failed' );
 	}
-	if ( ! $order_id ) {
-		$order_id = $_POST['order_id'];
+	if ( ! $order_id && isset( $_POST['order_id'] ) ) {
+		$order_id = sanitize_text_field( wp_unslash( $_POST['order_id'] ) );
 	}
 
 	$order = wc_get_order( $order_id );
@@ -431,7 +431,7 @@ function cmbird_zi_sync_column_filterable() {
 
 	if ( 'product' === $typenow ) {
 		// code here
-		$value = isset( $_GET['zoho_sync_filter'] ) ? $_GET['zoho_sync_filter'] : '';
+		$value = isset( $_GET['zoho_sync_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['zoho_sync_filter'] ) ) : '';
 
 		echo '<select name="zoho_sync_filter">';
 		echo '<option value="">Zoho Sync Filter</option>';
@@ -490,7 +490,7 @@ function cmbird_zi_sync_column_filter_query( $query ) {
 	global $typenow, $pagenow;
 
 	if ( $typenow === 'product' && $pagenow === 'edit.php' && isset( $_GET['zoho_sync_filter'] ) && $_GET['zoho_sync_filter'] !== '' ) {
-		$value = $_GET['zoho_sync_filter'];
+		$value = sanitize_text_field( wp_unslash( $_GET['zoho_sync_filter'] ) );
 
 		$meta_query = array();
 

@@ -129,7 +129,7 @@ final class CommerceBird {
 		}
 
 		// if current site contains localhost, use https://dev.commercebird.com
-		$current_site_url = isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '';
+		$current_site_url = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_url( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 		$site_url = str_contains( $current_site_url, 'localhost' ) ? 'https://dev.commercebird.com' : site_url();
 
 		if ( 'POST' === $method ) {
