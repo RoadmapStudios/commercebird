@@ -12,6 +12,9 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "types": [
+      "vue-sweetalert2"
+    ]
   }
 }
