@@ -149,7 +149,7 @@ function cmbird_zi_product_unmap_hook( $product_id ) {
 	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'zi_product_unmap_hook' ) ) {
 		wp_send_json_error( 'Nonce verification failed' );
 	}
-	if ( ! $product_id ) {
+	if ( ! $product_id && isset( $_POST['product_id'] ) ) {
 		$product_id = sanitize_text_field( wp_unslash( $_POST['product_id'] ) );
 	}
 

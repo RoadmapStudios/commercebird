@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 2.1.23
+Stable tag: 2.2.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

@@ -250,8 +250,8 @@ final class ZohoCRMAjax {
 	 */
 	public function zcrm_get_custom_fields(): void {
 
-		$module = $_GET['module'] ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : '';
-
+		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : '';
+		
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {

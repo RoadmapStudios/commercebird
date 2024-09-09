@@ -271,7 +271,7 @@ class CMBIRD_Order_Sync_ZI {
 	public function zi_order_sync( $order_id ) {
 		// $fd = fopen( __DIR__ . '/backend_order.txt', 'a+' );
 
-		if ( ! $order_id && isset( $_POST['nonce'] ) ) {
+		if ( ! $order_id && isset( $_POST['nonce'] ) && isset( $_POST['arg_order_data'] ) ) {
 			// verify nonce
 			if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'zoho_admin_order_sync' ) ) {
 				wp_send_json_error( 'Nonce verification failed' );
