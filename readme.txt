@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,6 +53,12 @@ A: Please fork the repository first on https://github.com/RoadmapStudios/commerc
 
 
 == Changelog ==
+= 2.2.1 - September 9 2024 =
+* Fix: inactive products were saved as private instead of draft
+* Fix: product images upload via the app on app.commercebird.com.
+* Tweak: added support for Zoho Inventory API Rate Limits for items export
+* Improved security to meet WordPress Coding Standards 2024
+
 = 2.2.0 - August 22 2024 =
 * New: support for Zoho Inventory Purchase Orders via CommerceBird app
 * New: support for GLAccounts on customer level for Exact Online

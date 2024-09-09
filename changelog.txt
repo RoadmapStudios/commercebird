@@ -1,3 +1,9 @@
+Version 2.2.1 - September 9 2024
+* Fix: inactive products were saved as private instead of draft
+* Fix: product images upload via the app on app.commercebird.com.
+* Tweak: added support for Zoho Inventory API Rate Limits for items export
+* Improved security to meet WordPress Coding Standards 2024
+
 Version 2.2.0 - August 22 2024
 * New: support for Zoho Inventory Purchase Orders via CommerceBird app
 * New: support for GLAccounts on customer level for Exact Online
