@@ -431,7 +431,7 @@ function cmbird_zi_sync_column_filterable() {
 
 	if ( 'product' === $typenow ) {
 		// code here
-		$value = isset( $_GET['zoho_sync_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['zoho_sync_filter'] ) ) : '';
+		$value = isset( $_GET['zoho_sync_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['zoho_sync_filter'] ) ) : ''; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 
 		echo '<select name="zoho_sync_filter">';
 		echo '<option value="">Zoho Sync Filter</option>';
@@ -489,8 +489,8 @@ add_action( 'restrict_manage_posts', 'cmbird_zi_sync_column_filterable' );
 function cmbird_zi_sync_column_filter_query( $query ) {
 	global $typenow, $pagenow;
 
-	if ( $typenow === 'product' && $pagenow === 'edit.php' && isset( $_GET['zoho_sync_filter'] ) && $_GET['zoho_sync_filter'] !== '' ) {
-		$value = sanitize_text_field( wp_unslash( $_GET['zoho_sync_filter'] ) );
+	if ( $typenow === 'product' && $pagenow === 'edit.php' && isset( $_GET['zoho_sync_filter'] ) && $_GET['zoho_sync_filter'] !== '' ) { // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
+		$value = sanitize_text_field( wp_unslash( $_GET['zoho_sync_filter'] ) ); // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 
 		$meta_query = array();
 

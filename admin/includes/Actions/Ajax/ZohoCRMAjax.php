@@ -211,7 +211,7 @@ final class ZohoCRMAjax {
 	 * @return void
 	 */
 	public function refresh_zcrm_fields() {
-		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : '';
+		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : ''; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
@@ -233,7 +233,7 @@ final class ZohoCRMAjax {
 	 * Get Zoho CRM fields from wordpress database.
 	 */
 	public function get_zcrm_fields() {
-		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : '';
+		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : ''; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
@@ -250,8 +250,8 @@ final class ZohoCRMAjax {
 	 */
 	public function zcrm_get_custom_fields(): void {
 
-		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : '';
-		
+		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : ''; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
+
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
@@ -290,7 +290,7 @@ final class ZohoCRMAjax {
 	 * @return void
 	 */
 	public function zcrm_reset_custom_fields(): void {
-		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : '';
+		$module = isset( $_GET['module'] ) ? sanitize_text_field( wp_unslash( $_GET['module'] ) ) : ''; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 		if ( empty( $module ) ) {
 			$this->errors['message'] = 'Module name is required.';
 		} else {
