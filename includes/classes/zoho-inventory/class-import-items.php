@@ -46,8 +46,7 @@ class CMBIRD_Products_ZI {
 				if ( ( ! empty( $arr->item_id ) ) && ! ( $arr->is_combo_product ) ) {
 					// fwrite($fd, PHP_EOL . 'Item Id found : ' . $arr->item_id);
 
-					$tbl = $wpdb->prefix;
-					$product_res = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $arr->item_id ) );
+					$product_res = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $arr->item_id ) );
 
 					if ( $product_res && ! empty( $product_res->post_id ) ) {
 						$pdt_id = $product_res->post_id;

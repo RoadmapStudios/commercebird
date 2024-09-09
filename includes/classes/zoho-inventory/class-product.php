@@ -288,25 +288,6 @@ class CMBIRD_Products_ZI_Export {
 		return $errmsg;
 	}
 
-	/**
-	 * Create Add And Update Bundle producttype
-	 */
-	protected function cmbird_zi_get_bundle_item_meta_data( $bundle_item_id, $bundle_id, $meta_key = '' ) {
-		global $wpdb;
-		$table_meta = $wpdb->prefix . 'woocommerce_bundled_itemmeta';
-		$table_item = $wpdb->prefix . 'woocommerce_bundled_items';
-		if ( '' !== $meta_key ) {
-			$meta_key = "AND meta_key='$meta_key'";
-		}
-		$metadata = $wpdb->get_results( "SELECT meta_key, meta_value FROM $table_meta, $table_item WHERE $table_meta.bundled_item_id = $table_item.bundled_item_id AND product_id=$bundle_item_id AND bundle_id = $bundle_id $meta_key" );
-
-		if ( count( $metadata ) > 0 ) {
-			return $metadata;
-		} else {
-			false;
-		}
-	}
-
 	protected function cmbird_zi_bundle_product_data_zoho( $bundle_id ) {
 		// $fd = fopen(__DIR__ . '/cmbird_zi_bundle_product_data_zoho.txt', 'w+');
 
@@ -318,12 +299,11 @@ class CMBIRD_Products_ZI_Export {
 		foreach ( $bundle_childs as $child ) {
 			$parent_product = $child->product;
 			$child_id = $child->product_id;
-			$meta_value = $this->cmbird_zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'quantity_max' );
-
+			$meta_value = WC_PB_DB::get_bundled_item_meta( $child_id, 'quantity_max' );
 			$zi_child_ids = array(); // Array to store zi_child_ids
 
 			if ( $parent_product->is_type( 'variable' ) ) {
-				$meta_data = $this->cmbird_zi_get_bundle_item_meta_data( $child_id, $bundle_id, 'allowed_variations' );
+				$meta_data = WC_PB_DB::get_bundled_item_meta( $child_id, 'allowed_variations' );
 
 				foreach ( $meta_data as $meta ) {
 					if ( $meta->meta_key === 'allowed_variations' ) {
