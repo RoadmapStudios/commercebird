@@ -236,7 +236,7 @@ class Zoho extends WP_REST_Controller {
 		$json = $execute_curl_call_handle->execute_curl_call_post(
 			$get_url,
 			array(
-				'JSONString' => json_encode( $purchaseorder ),
+				'JSONString' => wp_json_encode( $purchaseorder ),
 			)
 		);
 		$code = $json->code;

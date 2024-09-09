@@ -17,7 +17,6 @@ class ZCRM_Custom_Fields {
 	 * @return array | \WP_Error
 	 */
 	public function get_custom_fields( $module ) {
-		$fd = fopen( __DIR__ . '/get_custom_fields.txt', 'w+' );
 		$zoho_crm_url = get_option( 'zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/settings/fields?module=' . $module;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
@@ -39,10 +38,6 @@ class ZCRM_Custom_Fields {
 					'dataType' => $field->data_type,
 				);
 			}
-
-			// Optionally log the parsed fields to the file for debugging
-			fwrite( $fd, print_r( $parsed_fields, true ) );
-			fclose( $fd );
 
 			return $parsed_fields;
 		}
