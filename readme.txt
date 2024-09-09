@@ -11,14 +11,15 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 == Description ==
 This plugin ensures you can take the most of the CommerceBird App such as uploading product images, using integrations like Zoho Inventory, Zoho CRM & Exact Online.
+Please note that this plugin requires a subscription on https://commercebird.com.
 
 == Frequently Asked Questions ==
 
 = Q: Do I need a paid plan to use this plugin? =
-A: No, you just need to create an account on https://app.commercebird.com to use this plugin.
+A: No, you just need to create an account on https://commercebird.com to use this plugin.
 
 = Q: Which product types does it support? =
-A: Simple, Variable, Bundles, Simple Subscription, Variable Subscription.
+A: Simple, Variable, Bundles, Simple Subscription & Variable Subscription.
 
 = Q: Can I create Purchase Orders? =
 A: Yes! you can also create purchase costs on the product edit page in the app.
@@ -28,6 +29,9 @@ A: Zoho CRM, Zoho Inventory and Exact Online. More will be added.
 
 == Q: Where can I see the documentation and contact support?
 A: Please visit https://support.commercebird.com to read the docs and open support ticket
+
+== Q: How can I contribute as a developer?
+A: Please fork the repository first on https://github.com/RoadmapStudios/commercebird and then create a PR.
 
 == Installation ==
 
