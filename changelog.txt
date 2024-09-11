@@ -1,3 +1,6 @@
+Version 2.2.2 - September 11 2024
+* Fix: fatal error on order edit page
+
 Version 2.2.1 - September 9 2024
 * Fix: inactive products were saved as private instead of draft
 * Fix: product images upload via the app on app.commercebird.com.
