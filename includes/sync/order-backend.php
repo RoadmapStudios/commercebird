@@ -59,6 +59,7 @@ function cmbird_admin_metabox_callback( $post_or_order_object ) {
 	}
 	$subscription = new ZohoInventoryAjax();
 	$data = $subscription->get_subscription_data();
+	$status = $data['status'];
 	// Flag to check if 'ZohoInventory' is found
 	$found = false;
 	// Loop through fee_lines and check for the 'name' key
@@ -73,7 +74,7 @@ function cmbird_admin_metabox_callback( $post_or_order_object ) {
 	$order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : wc_get_order( $post_or_order_object->get_id() );
 	$userid = $order->get_user_id();
 	$order_id = $order->get_id();
-	if ( $found ) {
+	if ( $found && 'active' === $status ) {
 		$nonce_order = wp_create_nonce( 'zoho_admin_order_sync' );
 		echo '<a href="javascript:void(0)" style="width:100%; text-align: center;"
 		class="button save_order button-primary" onclick="zoho_admin_order_ajax(' . esc_attr( $order_id ) . ', \'' . esc_attr( $nonce_order ) . '\')">Sync Order</a>';
