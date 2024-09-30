@@ -1,9 +1,9 @@
 <template>
   <Card :foot="true" title="CommerceBird App">
     <img
-        alt="CommerceBird App"
-        class="w-full px-0 h-fit"
-        src="https://app.commercebird.com/assets/images/wooventory-login-banner.png"
+      :src="bannerImage"
+      alt="CommerceBird App"
+      class="w-full px-0 h-fit"
     />
     <template #footer>
       <div class="flex items-center justify-between gap-4 px-2">
@@ -24,4 +24,5 @@
 import Card from "@/components/ui/Card.vue";
 import {ArrowTopRightOnSquareIcon} from "@heroicons/vue/24/solid";
 import BaseLink from "@/components/ui/BaseLink.vue";
+import { bannerImage } from "@/composable/helpers";
 </script>
