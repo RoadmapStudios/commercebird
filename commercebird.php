@@ -25,9 +25,9 @@
  * WC tested up to: 9.2.2
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', '' ) || die( 'No script kiddies please!' );
-}
+if ( ! defined( 'ABSPATH' ) )
+	exit; // Exit if accessed directly
+
 
 if ( ! defined( 'CMBIRD_VERSION' ) ) {
 	define( 'CMBIRD_VERSION', '2.2.2' );
@@ -60,6 +60,8 @@ use CommerceBird\API\CreateSFOrderWebhook;
 use CommerceBird\API\ShippingWebhook;
 use CommerceBird\API\Zoho;
 use CommerceBird\API\Exact;
+use WC_Purchase_Order;
+use WCP_WC_Admin_Manager;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +71,15 @@ use CommerceBird\API\Exact;
 register_activation_hook( __FILE__, array( Plugin::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Plugin::class, 'deactivate' ) );
 register_uninstall_hook( __FILE__, array( Plugin::class, 'uninstall' ) );
+
+/** Loading Purchase Order Class
+ * @since 1.0.0
+ */
+add_action( 'plugins_loaded', 'cmbird_wc_purchase_order_class' );
+add_action( 'init', array( WCP_WC_Admin_Manager::class, 'init' ), 11 );
+function cmbird_wc_purchase_order_class() {
+	new WC_Purchase_Order();
+}
 
 /*
 |--------------------------------------------------------------------------

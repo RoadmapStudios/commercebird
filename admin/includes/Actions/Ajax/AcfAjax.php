@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 /**
- * Initializes the Zoho CRM class.
+ * Initializes the ACF functions class.
  * @since 1.0.0
  * @return void
  */
