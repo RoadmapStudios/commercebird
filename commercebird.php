@@ -62,6 +62,7 @@ use CommerceBird\API\Zoho;
 use CommerceBird\API\Exact;
 use WC_Purchase_Order;
 use WCP_WC_Admin_Manager;
+use WC_REST_Shop_Purchase_Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,6 +146,8 @@ add_action(
 		new ShippingWebhook();
 		new CreateOrderWebhook();
 		new CreateSFOrderWebhook();
+		$po_controller = new WC_REST_Shop_Purchase_Controller();
+		$po_controller->register_routes();
 	}
 );
 
