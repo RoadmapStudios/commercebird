@@ -82,17 +82,99 @@ function cmbird_load_purchase_order_class( $order_classname, $order_type, $order
 }
 add_filter( 'woocommerce_order_class', 'cmbird_load_purchase_order_class', 10, 3 );
 
-function cmbird_custom_order_statuses( $order_statuses ) {
-	$new_order_statuses = array();
+/**
+ * Custom order statuses for Purchase Orders
+ * @param mixed $order_statuses
+ * @return array
+ * @since 1.0.0
+ */
+// Add custom order statuses for 'shop_purchase'
+function cmbird_register_custom_shop_purchase_statuses() {
+	register_post_status( 'wc-awaiting-approval', array(
+		'label' => _x( 'Awaiting Approval', 'Order status', 'commercebird' ),
+		'public' => true,
+		'exclude_from_search' => false,
+		'show_in_admin_all_list' => true,
+		'show_in_admin_status_list' => true,
+		'label_count' => _n_noop( 'Awaiting Approval <span class="count">(%s)</span>', 'Awaiting Approval <span class="count">(%s)</span>', 'commercebird' ),
+	) );
 
+	register_post_status( 'wc-approved', array(
+		'label' => _x( 'Approved', 'Order status', 'commercebird' ),
+		'public' => true,
+		'exclude_from_search' => false,
+		'show_in_admin_all_list' => true,
+		'show_in_admin_status_list' => true,
+		'label_count' => _n_noop( 'Approved <span class="count">(%s)</span>', 'Approved <span class="count">(%s)</span>', 'commercebird' ),
+	) );
+
+	register_post_status( 'wc-received', array(
+		'label' => _x( 'Received', 'Order status', 'commercebird' ),
+		'public' => true,
+		'exclude_from_search' => false,
+		'show_in_admin_all_list' => true,
+		'show_in_admin_status_list' => true,
+		'label_count' => _n_noop( 'Received <span class="count">(%s)</span>', 'Received <span class="count">(%s)</span>', 'commercebird' ),
+	) );
+}
+add_action( 'init', 'cmbird_register_custom_shop_purchase_statuses', 9 );
+function cmbird_custom_order_statuses( $order_statuses ) {
+	global $post;
+	if ( 'shop_purchase' === get_post_type( $post->ID ) ) {
+		$order_statuses['wc-awaiting-approval'] = _x( 'Awaiting Approval', 'Order status', 'commercebird' );
+		$order_statuses['wc-approved'] = _x( 'Approved', 'Order status', 'commercebird' );
+		$order_statuses['wc-received'] = _x( 'Received', 'Order status', 'commercebird' );
+	}
+	return $order_statuses;
+}
+add_filter( 'wc_order_statuses', 'cmbird_custom_order_statuses' );
+
+function cmbird_custom_shop_purchase_bulk_actions( $bulk_actions ) {
+	$bulk_actions['mark-awaiting-approval'] = __( 'Change status to awaiting approval', 'commercebird' );
+	$bulk_actions['mark-approved'] = __( 'Change status to approved', 'commercebird' );
+	$bulk_actions['mark-received'] = __( 'Change status to received', 'commercebird' );
+
+	return $bulk_actions;
+}
+add_filter( 'bulk_actions-edit-shop_purchase', 'cmbird_custom_shop_purchase_bulk_actions' );
+
+function cmbird_display_custom_shop_purchase_statuses_in_admin( $order_statuses ) {
+	$new_order_statuses = array();
+	// Loop through existing statuses and inject custom ones
 	foreach ( $order_statuses as $key => $status ) {
 		$new_order_statuses[ $key ] = $status;
 
-		if ( 'wc-processing' === $key ) {
-			$new_order_statuses['wc-purchase-processing'] = _x( 'Purchase Processing', 'Order status', 'commercebird' );
+		if ( 'wc-on-hold' === $key ) { // Add after a specific status, e.g., 'on-hold'
+			$new_order_statuses['wc-awaiting-approval'] = _x( 'Awaiting Approval', 'Order status', 'commercebird' );
+			$new_order_statuses['wc-approved'] = _x( 'Approved', 'Order status', 'commercebird' );
+			$new_order_statuses['wc-received'] = _x( 'Received', 'Order status', 'commercebird' );
 		}
 	}
-
 	return $new_order_statuses;
 }
-add_filter( 'wc_order_statuses', 'cmbird_custom_order_statuses' );
+add_filter( 'woocommerce_order_statuses', 'cmbird_display_custom_shop_purchase_statuses_in_admin' );
+
+function cmbird_handle_custom_status_transitions( $order_id, $old_status, $new_status ) {
+	if ( 'wc-awaiting-approval' === $new_status ) {
+		// Logic for when the order is awaiting approval
+	}
+
+	if ( 'wc-approved' === $new_status ) {
+		// Logic for when the order is approved
+	}
+
+	if ( 'wc-received' === $new_status ) {
+		// Increase the stock of the products in the order when the order is received
+		$order = wc_get_order( $order_id );
+		foreach ( $order->get_items() as $item_id => $item ) {
+			$product = $item->get_product();
+			if ( $product ) {
+				$stock_quantity = $product->get_stock_quantity();
+				$product->set_stock_quantity( $stock_quantity + $item->get_quantity() );
+				$product->save();
+			}
+		}
+	}
+}
+
+add_action( 'woocommerce_order_status_changed', 'cmbird_handle_custom_status_transitions', 10, 3 );
