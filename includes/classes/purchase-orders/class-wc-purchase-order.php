@@ -217,9 +217,96 @@ function cmbird_set_cost_price_for_admin_purchase_order( $post_id, $post, $updat
 
 			// Recalculate totals for the order after setting cost price
 			$order->calculate_totals();
+
+			// Set the store's address as the shipping address for purchase orders
+			$warehouse_address = get_option( 'woocommerce_wh_address', '' );
+			$warehouse_address_2 = get_option( 'woocommerce_wh_address_2', '' );
+			$warehouse_city = get_option( 'woocommerce_wh_city', '' );
+			$warehouse_state = get_option( 'woocommerce_wh_state', '' );
+			$warehouse_country = get_option( 'woocommerce_wh_country', '' );
+			$warehouse_zip = get_option( 'woocommerce_wh_postcode', '' );
+
+			// Update the shipping address with store details
+			$shipping_address = array(
+				'first_name' => 'Store',
+				'last_name' => 'Address',
+				'company' => get_option( 'blogname' ),
+				'address_1' => $warehouse_address,
+				'address_2' => $warehouse_address_2,
+				'city' => $warehouse_city,
+				'state' => $warehouse_state,
+				'postcode' => $warehouse_zip,
+				'country' => $warehouse_country,
+			);
+
+			// Set the new shipping address for the order
+			$order->set_address( $shipping_address, 'shipping' );
+
+			// save shipping address as customer shipping address.
+			$customer = $order->get_customer();
+			$customer->set_shipping_address( $shipping_address );
+			$customer->save();
 		}
 	}
 }
-
-// Hook into the 'save_post' action for 'shop_purchase' post type
 add_action( 'save_post_shop_purchase', 'cmbird_set_cost_price_for_admin_purchase_order', 10, 3 );
+
+// Add warehouse address in woocommerce settings
+add_filter( 'woocommerce_general_settings', 'cmbird_additional_store_addresses_admin', 9999 );
+
+function cmbird_additional_store_addresses_admin( $settings ) {
+
+	$new_settings = array(
+
+		array(
+			'title' => 'Warehouse Address',
+			'type' => 'title',
+			'id' => 'wh_address',
+		),
+
+		array(
+			'title' => __( 'Address line 1', 'commercebird' ),
+			'id' => 'woocommerce_wh_address',
+			'type' => 'text',
+		),
+
+		array(
+			'title' => __( 'Address line 2', 'commercebird' ),
+			'id' => 'woocommerce_wh_address_2',
+			'type' => 'text',
+		),
+
+		array(
+			'title' => __( 'City', 'commercebird' ),
+			'id' => 'woocommerce_wh_city',
+			'type' => 'text',
+		),
+
+		array(
+			'title' => __( 'State', 'commercebird' ),
+			'id' => 'woocommerce_wh_state',
+			'type' => 'text',
+		),
+
+		array(
+			'title' => __( 'Country', 'commercebird' ),
+			'id' => 'woocommerce_wh_country',
+			'type' => 'single_select_country',
+		),
+
+		array(
+			'title' => __( 'Postcode / ZIP', 'commercebird' ),
+			'id' => 'woocommerce_wh_postcode',
+			'type' => 'text',
+		),
+
+		array(
+			'type' => 'sectionend',
+			'id' => 'wh_address',
+		),
+
+	);
+
+	return array_merge( array_slice( $settings, 0, 7 ), $new_settings, array_slice( $settings, 7 ) );
+
+}
