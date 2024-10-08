@@ -97,6 +97,26 @@ function cmbird_register_shop_purchase_order_type() {
 		'show_in_admin_status_list' => true,
 		'label_count' => _n_noop( 'Received <span class="count">(%s)</span>', 'Received <span class="count">(%s)</span>', 'commercebird' ),
 	) );
+
+	// Create custom userrole called "vendors"
+	function cmbird_add_vendor_role() {
+		add_role( 'vendor', 'Vendor', array(
+			'read' => true,
+			'edit_shop_purchase' => true,
+			'delete_shop_purchase' => true,
+			'edit_shop_purchases' => true,
+			'edit_others_shop_purchases' => true,
+			'publish_shop_purchases' => true,
+			'read_private_shop_purchases' => true,
+			'edit_shop_purchase' => true,
+			'delete_shop_purchase' => true,
+			'read_shop_purchase' => true,
+			'edit_shop_purchases' => true,
+			'edit_others_shop_purchases' => true,
+			'publish_shop_purchases' => true,
+			'read_private_shop_purchases' => true,
+		) );
+	}
 }
 add_action( 'init', 'cmbird_register_shop_purchase_order_type' );
 
