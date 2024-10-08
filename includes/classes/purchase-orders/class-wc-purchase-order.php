@@ -98,16 +98,15 @@ function cmbird_register_shop_purchase_order_type() {
 		'label_count' => _n_noop( 'Received <span class="count">(%s)</span>', 'Received <span class="count">(%s)</span>', 'commercebird' ),
 	) );
 
-	// Function to create the "vendor" role
-	function cmbird_add_vendor_role() {
-		add_role(
-			'vendor',
-			__( 'Vendor', 'commercebird' ),
-			array(
-				'read' => true,
-			)
-		);
-	}
+	// Create the "vendor" role
+	add_role(
+		'vendor',
+		__( 'Vendor', 'commercebird' ),
+		array(
+			'read' => true,
+		)
+	);
+
 }
 add_action( 'init', 'cmbird_register_shop_purchase_order_type' );
 
@@ -135,7 +134,7 @@ function cmbird_custom_order_statuses( $order_statuses ) {
 	}
 
 	$new_order_statuses = array();
-   	foreach ( $order_statuses as $key => $status ) {
+	foreach ( $order_statuses as $key => $status ) {
 		$new_order_statuses[ $key ] = $status;
 		if ( 'wc-pending' === $key ) {
 			$new_order_statuses['wc-awaiting-approval'] = 'Awaiting Approval';
