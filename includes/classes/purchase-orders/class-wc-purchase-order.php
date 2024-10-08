@@ -190,3 +190,36 @@ function cmbird_handle_custom_status_transitions( $order_id, $old_status, $new_s
 	}
 }
 add_action( 'woocommerce_order_status_changed', 'cmbird_handle_custom_status_transitions', 10, 3 );
+
+// Set cost price in purchase orders when created or edited via Admin
+function cmbird_set_cost_price_for_admin_purchase_order( $post_id, $post, $update ) {
+	if ( 'shop_purchase' === wc_get_order_type( $post_id ) ) {
+
+		$order = wc_get_order( $post_id );
+
+		if ( $order && 'shop_purchase' === $order->get_type() ) {
+
+			foreach ( $order->get_items() as $item_id => $item ) {
+				$product = $item->get_product();
+
+				if ( $product ) {
+					// Get the cost price from product meta
+					$cost_price = get_post_meta( $product->get_id(), 'cost_price', true );
+
+					// If cost price is set, update the item price in the order
+					if ( $cost_price && is_numeric( $cost_price ) ) {
+						$item->set_subtotal( $cost_price * $item->get_quantity() );
+						$item->set_total( $cost_price * $item->get_quantity() );
+						$item->save();
+					}
+				}
+			}
+
+			// Recalculate totals for the order after setting cost price
+			$order->calculate_totals();
+		}
+	}
+}
+
+// Hook into the 'save_post' action for 'shop_purchase' post type
+add_action( 'save_post_shop_purchase', 'cmbird_set_cost_price_for_admin_purchase_order', 10, 3 );
