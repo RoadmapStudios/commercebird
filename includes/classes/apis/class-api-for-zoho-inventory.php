@@ -302,7 +302,7 @@ class Zoho extends WP_REST_Controller {
 		$json = $execute_curl_call_handle->execute_curl_call_put(
 			$update_url,
 			array(
-				'JSONString' => wp_json_encode( value: $vendor ),
+				'JSONString' => wp_json_encode( $vendor ),
 			)
 		);
 		$code = $json->code;
@@ -313,7 +313,7 @@ class Zoho extends WP_REST_Controller {
 		} else {
 			$response['data'] = $json;
 			$rest_response->set_data( $response );
-			$rest_response->set_status( 400 );
+			$rest_response->set_status( 200 );
 		}
 		return rest_ensure_response( $rest_response );
 	}
