@@ -86,15 +86,23 @@ class Zoho extends WP_REST_Controller {
 		// 	)
 		// );
 
-		// register_rest_route(
-		// 	$this->prefix,
-		// 	'/' . $this->rest_base . '/update-vendor/',
-		// 	array(
-		// 		'methods' => WP_REST_Server::CREATABLE,
-		// 		'callback' => array( $this, 'update_zi_vendor' ),
-		// 		'permission_callback' => array( $this, 'permission_check' ),
-		// 	)
-		// );
+		register_rest_route(
+			$this->prefix,
+			'/' . $this->rest_base . '/update-vendor/',
+			array(
+				'methods' => WP_REST_Server::CREATABLE, // or use 'PUT' or 'PATCH' if needed
+				'callback' => array( $this, 'update_zi_vendor_details' ),  // Update to correct function
+				'permission_callback' => array( $this, 'permission_check' ),
+				'args' => array(
+					'vendor_id' => array(
+						'required' => true,  // Vendor ID is required for the update
+						'description' => 'ID of the vendor to update',
+						'type' => 'string', // assuming the vendor_id is a string
+					),
+				),
+			)
+		);
+
 
 		register_rest_route(
 			$this->prefix,
@@ -235,6 +243,13 @@ class Zoho extends WP_REST_Controller {
 		return $this->handle_get_api_request( $get_url, 'purchaseorder', 'purchase_order' );
 	}
 
+	public function get_zi_vendors( $request ): WP_REST_RESPONSE {
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$get_url = $zoho_inventory_url . "inventory/v1/vendors?organization_id=$zoho_inventory_oid";
+		return $this->handle_get_api_request( $get_url, 'contacts', 'users' );
+	}
+
 	public function get_zi_vendor_details( $request ): WP_REST_RESPONSE {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
@@ -254,11 +269,53 @@ class Zoho extends WP_REST_Controller {
 		return $this->handle_get_api_request( $get_url, 'contact', 'vendor' );
 	}
 
-	public function get_zi_vendors( $request ): WP_REST_RESPONSE {
+	public function update_zi_vendor_details( $request ): WP_REST_Response {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$get_url = $zoho_inventory_url . "inventory/v1/vendors?organization_id=$zoho_inventory_oid";
-		return $this->handle_get_api_request( $get_url, 'contacts', 'users' );
+
+		$rest_response = new WP_REST_Response();
+		$rest_response->set_data( $this->empty_response );
+		$rest_response->set_status( 400 );
+
+		// Get Vendor ID from the request
+		$vendor_id = $request->get_param( 'vendor_id' );
+		if ( empty( $vendor_id ) ) {
+			$rest_response->set_data( 'Vendor ID is required' );
+			return rest_ensure_response( $rest_response );
+		}
+
+		// Get Vendor Details (payload) from the request
+		$vendor_data = $request->get_json_params();
+		if ( empty( $vendor_data ) ) {
+			$rest_response->set_data( 'Vendor data is required to update' );
+			return rest_ensure_response( $rest_response );
+		}
+
+		// Construct the Zoho Inventory URL for updating the vendor
+		$update_url = $zoho_inventory_url . "inventory/v1/contacts/$vendor_id?organization_id=$zoho_inventory_oid";
+
+		// Get Vendor from request.
+		$vendor = $request['vendor'];
+
+		// Send the PUT or PATCH request to Zoho API to update the vendor
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
+		$json = $execute_curl_call_handle->execute_curl_call_put(
+			$update_url,
+			array(
+				'JSONString' => wp_json_encode( value: $vendor ),
+			)
+		);
+		$code = $json->code;
+		if ( 0 === (int) $code ) {
+			$response['vendor'] = $json;//$json->purchaseorder;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 200 );
+		} else {
+			$response['data'] = $json;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 400 );
+		}
+		return rest_ensure_response( $rest_response );
 	}
 
 	public function get_zi_warehouses( $request ): WP_REST_RESPONSE {
