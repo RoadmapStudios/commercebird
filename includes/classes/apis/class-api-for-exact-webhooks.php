@@ -59,7 +59,7 @@ class Exact extends WP_REST_Controller {
 					$product->set_price( $data['StandardSalesPrice'] );
 					$product->set_regular_price( $data['StandardSalesPrice'] );
 					// add meta data cost_price
-					$product->update_meta_data( 'cost_price', $data['CostPriceStandard'] );
+					$product->update_meta_data( '_cost_price', $data['CostPriceStandard'] );
 					$product->save();
 				} else {
 					// if product not found, create a new product if the $data['Webshop'] is set to true

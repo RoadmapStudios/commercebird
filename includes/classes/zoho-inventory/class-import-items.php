@@ -91,7 +91,7 @@ class CMBIRD_Products_ZI {
 						$product->set_height( floatval( $details->height ) );
 
 						// Update Purchase Rate as Cost Price
-						$product->update_meta_data( 'cost_price', $arr->purchase_rate );
+						$product->update_meta_data( '_cost_price', $arr->purchase_rate );
 
 						// To check status of stock sync option.
 						$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
@@ -706,7 +706,7 @@ class CMBIRD_Products_ZI {
 
 				// update purchase price as meta data
 				if ( ! empty( $item->purchase_rate ) ) {
-					update_post_meta( $variation_id, 'cost_price', $item->purchase_rate );
+					update_post_meta( $variation_id, '_cost_price', $item->purchase_rate );
 				}
 
 				// Featured Image of variation
@@ -1023,7 +1023,7 @@ class CMBIRD_Products_ZI {
 				}
 				// update purchase price as meta data
 				if ( ! empty( $item->purchase_rate ) ) {
-					update_post_meta( $variation_id, 'cost_price', $item->purchase_rate );
+					update_post_meta( $variation_id, '_cost_price', $item->purchase_rate );
 				}
 				// Price - Imported
 				$zi_disable_price_sync = get_option( 'zoho_disable_price_sync_status' );
@@ -1146,7 +1146,7 @@ class CMBIRD_Products_ZI {
 
 				// update purchase price as meta data
 				if ( ! empty( $item->purchase_rate ) ) {
-					update_post_meta( $variation_id, 'cost_price', $item->purchase_rate );
+					update_post_meta( $variation_id, '_cost_price', $item->purchase_rate );
 				}
 				// Stock
 				if ( ! empty( $stock ) && ! $zi_disable_stock_sync ) {

@@ -204,7 +204,7 @@ function cmbird_set_cost_price_for_admin_purchase_order( $post_id, $post, $updat
 
 				if ( $product ) {
 					// Get the cost price from product meta
-					$cost_price = get_post_meta( $product->get_id(), 'cost_price', true );
+					$cost_price = get_post_meta( $product->get_id(), '_cost_price', true );
 
 					// If cost price is set, update the item price in the order
 					if ( $cost_price && is_numeric( $cost_price ) ) {

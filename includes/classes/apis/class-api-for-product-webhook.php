@@ -195,7 +195,7 @@ class ProductWebhook {
 				// Disable or enable the variation based on the item_status
 				$variation->set_status( $item_status );
 				// Update Purchase price
-				$variation->update_meta_data( 'cost_price', $item['purchase_rate'] );
+				$variation->update_meta_data( '_cost_price', $item['purchase_rate'] );
 
 				// Map taxes while syncing product from zoho.
 				if ( $item['tax_id'] ) {
@@ -366,7 +366,7 @@ class ProductWebhook {
 					$simple_product->set_price( $item_price );
 				}
 				// Update Purchase price
-				$simple_product->update_meta_data( 'cost_price', $item['purchase_rate'] );
+				$simple_product->update_meta_data( '_cost_price', $item['purchase_rate'] );
 				// description
 				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {

@@ -93,7 +93,7 @@ class ExactOnlineSync {
 							'value' => $data['ID'],
 						),
 						array(
-							'key' => 'cost_price',
+							'key' => '_cost_price',
 							'value' => $data['CostPriceStandard'],
 						),
 						array(
@@ -168,7 +168,7 @@ class ExactOnlineSync {
 				}
 				if ( ! empty( $wc_product_id ) ) {
 					update_post_meta( $wc_product_id, 'eo_item_id', $data['ID'] );
-					update_post_meta( $wc_product_id, 'cost_price', $data['CostPriceStandard'] );
+					update_post_meta( $wc_product_id, '_cost_price', $data['CostPriceStandard'] );
 					update_post_meta( $wc_product_id, 'eo_unit', $data['Unit'] );
 					$wc_product = wc_get_product( $wc_product_id );
 					$wc_product->set_regular_price( $data['StandardSalesPrice'] );
