@@ -51,6 +51,16 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 				'permission_callback' => 'cmbird_rest_api_permissions_check',
 			)
 		);
+		// register the route for deleting a purchase order
+		register_rest_route(
+			'wc/v3',
+			'/purchases/(?P<id>[\d]+)',
+			array(
+				'methods' => 'DELETE',
+				'callback' => 'cmbird_delete_purchase_order',
+				'permission_callback' => 'cmbird_rest_api_permissions_check',
+			)
+		);
 	}
 
 	/**
@@ -215,5 +225,34 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 		} else {
 			return new WP_REST_Response( array( 'message' => 'Error updating order' ), 400 );
 		}
+	}
+
+	/**
+	 * Delete a purchase order.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 * @since 1.0.0
+	 */
+	public function cmbird_delete_purchase_order( $request ) {
+		// Get request parameters (sent via the API)
+		$order_id = $request['id'];
+
+		// Get the order object
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return new WP_REST_Response( array( 'message' => 'Order not found' ), 404 );
+		}
+
+		// Delete the order if status is draft or pending
+		if ( in_array( $order->get_status(), array( 'draft', 'pending' ) ) ) {
+			$order->delete();
+		} else {
+			return new WP_REST_Response( array( 'message' => 'Order cannot be deleted' ), 400 );
+		}
+
+		// Return the deleted order as the API response
+		return new WP_REST_Response( array( 'message' => 'Order deleted' ), 200 );
 	}
 }
