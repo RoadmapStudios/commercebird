@@ -39,7 +39,7 @@ class CommerceBird_WC_API {
 		// register cost_price as meta field for products.
 		register_rest_field(
 			'product',
-			'cost_price',
+			'_cost_price',
 			array(
 				'get_callback' => array( $this, 'cmbird_get_product_field' ),
 				'update_callback' => array( $this, 'cmbird_update_product_field' ),

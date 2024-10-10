@@ -60,7 +60,7 @@ class Plugin {
 			'zi_inventory_account_id',
 			'zi_salesorder_id',
 			'zi_category_id',
-			'cost_price',
+			'_cost_price',
 		);
 		$user_meta_keys = array(
 			'zi_contact_id',

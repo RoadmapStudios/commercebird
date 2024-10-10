@@ -138,7 +138,7 @@ class CMBIRD_Products_ZI_Export {
 			//$zidata .= '"image_name" : "' . $image . '",';
 
 			// Get cost_price from meta data.
-			$cost_price = $product->get_meta( 'cost_price' );
+			$cost_price = $product->get_meta( '_cost_price' );
 			if ( ! empty( $cost_price ) && is_numeric( $cost_price ) ) {
 				$zidata .= '"purchase_rate" : "' . $cost_price . '",';
 			}
@@ -708,7 +708,7 @@ class CMBIRD_Products_ZI_Export {
 		$zidata .= '"rate" : "' . $rate . '",';
 		$zidata .= '"tax_id" : "' . $tax_id . '",';
 		// Get cost_price from meta data.
-		$cost_price = get_post_meta( $post_id, 'cost_price', true );
+		$cost_price = get_post_meta( $post_id, '_cost_price', true );
 		if ( ! empty( $cost_price ) && is_numeric( $cost_price ) ) {
 			$zidata .= '"purchase_rate" : "' . $cost_price . '",';
 		}
@@ -846,7 +846,7 @@ class CMBIRD_Products_ZI_Export {
 			}
 
 			return $product_id;
-		} catch ( Exception $e ) {
+		} catch (Exception $e) {
 			// Handle the exception, log it, or perform any necessary actions.
 			error_log( 'Error creating WooCommerce product: ' . $e->getMessage() );
 			return false;

@@ -92,11 +92,11 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 		foreach ( $items as $item ) {
 			$product_id = $item['product_id'];
 			$quantity = $item['quantity'];
-
+			// for subtotal use the cost_price meta field of the product
+			$cost_price = get_post_meta( $product_id, '_cost_price', true );
 			$product = wc_get_product( $product_id );
-
 			if ( $product ) {
-				$order->add_product( $product, $quantity );
+				$order->add_product( $product, $quantity, array( 'subtotal' => $cost_price ) );
 			}
 		}
 

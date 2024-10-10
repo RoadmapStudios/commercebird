@@ -80,7 +80,7 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 				$product_meta = array(
 					'zi_item_id' => $zi_item_id,
 					'eo_item_id' => $eo_item_id,
-					'cost_price' => get_post_meta( $post_id, 'cost_price', true ),
+					'_cost_price' => get_post_meta( $post_id, '_cost_price', true ),
 				);
 				$response['products'][] = array(
 					'id' => $post_id,

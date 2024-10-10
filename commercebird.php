@@ -186,6 +186,9 @@ function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
 					$new_zoho_inventory_url = str_replace( 'inventory.zoho', 'www.zohoapis', $zoho_inventory_url );
 					update_option( 'zoho_inventory_url', $new_zoho_inventory_url );
 				}
+				// change the post meta key name from "cost_price" to "_cost_price" using wpdb query
+				global $wpdb;
+				$wpdb->query( "UPDATE $wpdb->postmeta SET meta_key = '_cost_price' WHERE meta_key = 'cost_price'" );
 			}
 		}
 	}

@@ -264,7 +264,7 @@ add_action( 'woocommerce_variation_options_pricing', 'cmbird_item_id_variation_f
 function cmbird_item_id_field() {
 	woocommerce_wp_text_input(
 		array(
-			'id' => 'cost_price',
+			'id' => '_cost_price',
 			'class' => 'readonly',
 			'wrapper_class' => 'form-row',
 			'label' => esc_html__( 'Cost Price', 'commercebird' ),
@@ -299,7 +299,7 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
 			'wrapper_class' => 'form-row',
 			'data_type' => 'price',
 			'label' => esc_html__( 'Cost Price', 'commercebird' ),
-			'value' => get_post_meta( $variation->ID, 'cost_price', true ),
+			'value' => get_post_meta( $variation->ID, '_cost_price', true ),
 			'description' => esc_html__( 'You can edit this via the CommerceBird App', 'commercebird' ),
 		)
 	);
