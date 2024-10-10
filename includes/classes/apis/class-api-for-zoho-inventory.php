@@ -76,15 +76,15 @@ class Zoho extends WP_REST_Controller {
 			)
 		);
 
-		// register_rest_route(
-		// 	$this->prefix,
-		// 	'/' . $this->rest_base . '/create-vendor/',
-		// 	array(
-		// 		'methods' => WP_REST_Server::CREATABLE,
-		// 		'callback' => array( $this, 'create_zi_vendor' ),
-		// 		'permission_callback' => array( $this, 'permission_check' ),
-		// 	)
-		// );
+		register_rest_route(
+			$this->prefix,
+			'/' . $this->rest_base . '/create-vendor/',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => array( $this, 'create_zi_vendor' ),
+				'permission_callback' => array( $this, 'permission_check' ),
+			)
+		);
 
 		register_rest_route(
 			$this->prefix,
@@ -269,6 +269,50 @@ class Zoho extends WP_REST_Controller {
 		return $this->handle_get_api_request( $get_url, 'contact', 'vendor' );
 	}
 
+	public function create_zi_vendor( $request ) {
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+
+		$rest_response = new WP_REST_Response();
+		$rest_response->set_data( $this->empty_response );
+		$rest_response->set_status( 400 );
+
+		// Get Vendor Details (payload) from the request
+		$vendor_data = $request->get_json_params();
+		if ( empty( $vendor_data ) ) {
+			$rest_response->set_data( 'Vendor data is required to update' );
+			return rest_ensure_response( $rest_response );
+		}
+
+		// Construct the Zoho Inventory URL for updating the vendor
+		$update_url = $zoho_inventory_url . "inventory/v1/contacts?organization_id=$zoho_inventory_oid";
+
+		// Get Vendor from request.
+		$vendor = $request['vendor'];
+
+		// Send the PUT or PATCH request to Zoho API to update the vendor
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
+		$json = $execute_curl_call_handle->execute_curl_call_post(
+			$update_url,
+			array(
+				'JSONString' => wp_json_encode( $vendor ),
+			)
+		);
+		$code = $json->code;
+		if ( 0 === (int) $code ) {
+			$response['code'] = 200;
+			$response['vendor'] = $json->contact;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 200 );
+		} else {
+			$response['code'] = $json->code;
+			$response['message'] = $json->message;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 200 );
+		}
+		return rest_ensure_response( $rest_response );
+	}
+
 	public function update_zi_vendor_details( $request ): WP_REST_Response {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
 		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
@@ -307,11 +351,13 @@ class Zoho extends WP_REST_Controller {
 		);
 		$code = $json->code;
 		if ( 0 === (int) $code ) {
-			$response['vendor'] = $json;//$json->purchaseorder;
+			$response['code'] = 200;
+			$response['vendor'] = $json->contact;
 			$rest_response->set_data( $response );
 			$rest_response->set_status( 200 );
 		} else {
-			$response['data'] = $json;
+			$response['code'] = $json->code;
+			$response['message'] = $json->message;
 			$rest_response->set_data( $response );
 			$rest_response->set_status( 200 );
 		}
