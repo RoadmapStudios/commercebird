@@ -96,8 +96,17 @@ class Plugin {
 			'zoho_inventory_access_token',
 			'zoho_inventory_refresh_token',
 			'zoho_inventory_timestamp',
-			'rms_ck',
-			'rms_cs',
+			'zoho_inventory_oid',
+			'zoho_inventory_url',
+			'zoho_inventory_cid',
+			'zoho_inventory_cs',
+			'zoho_inventory_domain',
+			'authorization_redirect_uri',
+			'zoho_crm_auth_code',
+			'zoho_crm_access_token',
+			'zoho_crm_refresh_token',
+			'zoho_crm_timestamp',
+			'cmbird_warehouse_data',
 		);
 
 		foreach ( $zi_option_keys as $zi_option ) {
