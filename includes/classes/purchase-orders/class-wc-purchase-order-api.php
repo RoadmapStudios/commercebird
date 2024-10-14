@@ -121,12 +121,20 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 		// Add line items (products) to the order
 		foreach ( $items as $item ) {
 			$product_id = $item['product_id'];
+			$variation_id = $item['variation_id'];
 			$quantity = $item['quantity'];
-			// for subtotal use the cost_price meta field of the product
-			$cost_price = get_post_meta( $product_id, '_cost_price', true );
-			$product = wc_get_product( $product_id );
-			if ( $product ) {
-				$order->add_product( $product, $quantity, array( 'subtotal' => $cost_price ) );
+			if ( $variation_id ) {
+				$product = wc_get_product( $variation_id );
+				$cost_price = get_post_meta( $variation_id, '_cost_price', true );
+				if ( $product ) {
+					$order->add_product( $product, $quantity, array( 'subtotal' => $cost_price ) );
+				}
+			} else {
+				$product = wc_get_product( $product_id );
+				$cost_price = get_post_meta( $product_id, '_cost_price', true );
+				if ( $product ) {
+					$order->add_product( $product, $quantity, array( 'subtotal' => $cost_price ) );
+				}
 			}
 		}
 
@@ -196,12 +204,20 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 		// Add line items (products) to the order
 		foreach ( $items as $item ) {
 			$product_id = $item['product_id'];
+			$variation_id = $item['variation_id'];
 			$quantity = $item['quantity'];
-			// for subtotal use the cost_price meta field of the product
-			$cost_price = get_post_meta( $product_id, '_cost_price', true );
-			$product = wc_get_product( $product_id );
-			if ( $product ) {
-				$order->add_product( $product, $quantity, array( 'subtotal' => $cost_price ) );
+			if ( $variation_id ) {
+				$product = wc_get_product( $variation_id );
+				$cost_price = get_post_meta( $variation_id, '_cost_price', true );
+				if ( $product ) {
+					$order->add_product( $product, $quantity, array( 'subtotal' => $cost_price ) );
+				}
+			} else {
+				$product = wc_get_product( $product_id );
+				$cost_price = get_post_meta( $product_id, '_cost_price', true );
+				if ( $product ) {
+					$order->add_product( $product, $quantity, array( 'subtotal' => $cost_price ) );
+				}
 			}
 		}
 
