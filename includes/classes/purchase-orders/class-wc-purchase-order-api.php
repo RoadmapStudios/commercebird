@@ -61,6 +61,16 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 				'permission_callback' => 'cmbird_rest_api_permissions_check',
 			)
 		);
+		// register route to update the warehouse data in settings
+		register_rest_route(
+			'wc/v3',
+			'/purchases/warehouse',
+			array(
+				'methods' => 'POST',
+				'callback' => 'cmbird_update_warehouse_data',
+				'permission_callback' => 'cmbird_rest_api_permissions_check',
+			)
+		);
 	}
 
 	/**
@@ -254,5 +264,28 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 
 		// Return the deleted order as the API response
 		return new WP_REST_Response( array( 'message' => 'Order deleted' ), 200 );
+	}
+
+	/**
+	 * Update the warehouse data in woocommerce settings.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 * @since 1.0.0
+	 */
+	public function cmbird_update_warehouse_data( $request ) {
+		// Get request parameters (sent via the API)
+		$params = $request->get_json_params();
+
+		// return error if no warehouse data is provided
+		if ( empty( $params ) ) {
+			return new WP_REST_Response( array( 'message' => 'No warehouse data provided' ), 400 );
+		}
+
+		// Save the array of warehouse data to the settings
+		update_option( 'cmbird_warehouse_data', $params, false );
+
+		// Return the updated warehouse data as the API response
+		return new WP_REST_Response( array( 'message' => 'Warehouse data updated' ), 200 );
 	}
 }
