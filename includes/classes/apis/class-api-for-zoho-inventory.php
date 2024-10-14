@@ -88,6 +88,17 @@ class Zoho extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->prefix,
+			'/' . $this->rest_base . '/delete-vendor/(?P<id>\d+)', // Add vendor ID as a URL parameter
+			array(
+				'methods' => WP_REST_Server::DELETABLE,
+				'callback' => array( $this, 'delete_zi_vendor' ), // Update to the delete vendor function
+				'permission_callback' => array( $this, 'permission_check' ),
+			)
+		);
+
+
+		register_rest_route(
+			$this->prefix,
 			'/' . $this->rest_base . '/update-vendor/',
 			array(
 				'methods' => WP_REST_Server::CREATABLE, // or use 'PUT' or 'PATCH' if needed
@@ -268,6 +279,46 @@ class Zoho extends WP_REST_Controller {
 		$get_url = $zoho_inventory_url . "inventory/v1/contacts/$vendor_id?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'contact', 'vendor' );
 	}
+	public function delete_zi_vendor( $request ): WP_REST_Response {
+		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+
+		$rest_response = new WP_REST_Response();
+		$rest_response->set_data( $this->empty_response );
+		$rest_response->set_status( 400 );
+		$id = $request['id'];
+		// Get Vendor ID from the request
+		$vendor_id = $request->get_param( 'vendor_id' );
+
+		if ( empty( $vendor_id ) ) {
+			$rest_response->set_data( 'Vendor ID is required' );
+			$rest_response->set_status( 400 );
+			return rest_ensure_response( $rest_response );
+		}
+
+		// Construct the DELETE URL for Zoho Inventory
+		$delete_url = $zoho_inventory_url . "inventory/v1/contacts/$vendor_id?organization_id=$zoho_inventory_oid";
+
+		// Handle the API request to delete the vendor
+		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
+		$json = $execute_curl_call_handle->execute_curl_call_delete( $delete_url );
+
+		$code = $json->code;
+		if ( 0 === (int) $code ) {
+			$response['code'] = 200;
+			$response['json'] = $json;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 200 );
+		} else {
+			$response['code'] = $json->code;
+			$response['message'] = $json->message;
+			$rest_response->set_data( $response );
+			$rest_response->set_status( 200 );
+		}
+
+		return rest_ensure_response( $rest_response );
+	}
+
 
 	public function create_zi_vendor( $request ) {
 		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
