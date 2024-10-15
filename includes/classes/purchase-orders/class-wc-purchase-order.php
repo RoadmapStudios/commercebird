@@ -16,7 +16,7 @@ if ( ! class_exists( 'WC_Order' ) ) {
  */
 
 class WC_Purchase_Order extends WC_Order {
-	public $order_type = '';
+	public $order_type = 'shop_purchase';
 
 	public function __construct( $order_id = 0 ) {
 		parent::__construct( $order_id );
