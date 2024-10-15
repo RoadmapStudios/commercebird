@@ -37,7 +37,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			'/purchases',
 			array(
 				'methods' => 'POST',
-				'callback' => 'cmbird_create_purchase_order',
+				'callback' => array( $this, 'cmbird_create_purchase_order'),
 				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
@@ -47,7 +47,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			'/purchases/(?P<id>[\d]+)',
 			array(
 				'methods' => 'PUT',
-				'callback' => 'cmbird_update_purchase_order',
+				'callback' => array( $this, 'cmbird_update_purchase_order'),
 				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
@@ -57,7 +57,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			'/purchases/(?P<id>[\d]+)',
 			array(
 				'methods' => 'DELETE',
-				'callback' => 'cmbird_delete_purchase_order',
+				'callback' => array( $this, 'cmbird_delete_purchase_order'),
 				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
@@ -67,7 +67,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			'/purchases/warehouse',
 			array(
 				'methods' => 'POST',
-				'callback' => 'cmbird_update_warehouse_data',
+				'callback' => array( $this, 'cmbird_update_warehouse'),
 				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
