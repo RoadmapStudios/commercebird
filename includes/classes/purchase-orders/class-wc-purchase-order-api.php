@@ -38,7 +38,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => 'cmbird_create_purchase_order',
-				'permission_callback' => 'cmbird_rest_api_permissions_check',
+				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
 		// register the route for updating a purchase order
@@ -48,7 +48,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			array(
 				'methods' => 'PUT',
 				'callback' => 'cmbird_update_purchase_order',
-				'permission_callback' => 'cmbird_rest_api_permissions_check',
+				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
 		// register the route for deleting a purchase order
@@ -58,7 +58,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			array(
 				'methods' => 'DELETE',
 				'callback' => 'cmbird_delete_purchase_order',
-				'permission_callback' => 'cmbird_rest_api_permissions_check',
+				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
 		// register route to update the warehouse data in settings
@@ -68,7 +68,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => 'cmbird_update_warehouse_data',
-				'permission_callback' => 'cmbird_rest_api_permissions_check',
+				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
 	}
