@@ -32,6 +32,22 @@ class WC_Purchase_Order extends WC_Order {
 	public function is_purchase() {
 		return true;
 	}
+
+	public function remove_item( $item_id ) {
+		parent::remove_item( $item_id );
+		$this->calculate_totals();
+	}
+
+	public function calculate_totals() {
+		parent::calculate_totals();
+		// Custom logic for calculating totals for purchase orders
+	}
+
+	// update meta data
+	public function update_meta_data( $key, $value ) {
+		parent::update_meta_data( $key, $value );
+		// Custom logic for updating meta data for purchase orders
+	}
 }
 
 // Register the custom order type
