@@ -43,24 +43,6 @@ class WC_Purchase_Order extends WC_Order {
 		parent::update_meta_data( $key, $value, $meta_id );
 		// Custom logic for updating meta data for purchase orders
 	}
-
-	// get billing address
-	public function get_billing_address() {
-		return $this->get_address( 'billing' );
-	}
-
-	// get address
-	public function get_address( $type = 'billing' ) {
-		$address = parent::get_address( $type );
-		// Custom logic for getting address for purchase orders
-		return $address;
-	}
-
-	// set address
-	public function set_address_prop( $prop, $key, $value ) {
-		parent::set_address_prop( $prop, $key, $value );
-		// Custom logic for setting address props for purchase orders
-	}
 }
 
 // Register the custom order type
