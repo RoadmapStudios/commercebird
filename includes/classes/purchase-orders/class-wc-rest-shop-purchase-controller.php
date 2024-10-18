@@ -72,7 +72,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 
 		$id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
 		$purchase = new WC_Purchase_Order( $id );
-		$schema = WC_REST_Orders_Controller::get_item_schema();
+		$schema = parent::get_item_schema();
 		$data_keys = array_keys( array_filter( $schema['properties'], array( $this, 'filter_writable_props' ) ) );
 
 		// Handle all writable props.
@@ -87,7 +87,7 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 						break;
 					case 'billing':
 					case 'shipping':
-						WC_REST_Orders_Controller::update_address( $purchase, $value, $key );
+						parent::update_address( $purchase, $value, $key );
 						break;
 					case 'line_items':
 					case 'shipping_lines':
@@ -95,10 +95,10 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 						if ( is_array( $value ) ) {
 							foreach ( $value as $item ) {
 								if ( is_array( $item ) ) {
-									if ( WC_REST_Orders_Controller::item_is_null( $item ) || ( isset( $item['quantity'] ) && 0 === $item['quantity'] ) ) {
+									if ( parent::item_is_null( $item ) || ( isset( $item['quantity'] ) && 0 === $item['quantity'] ) ) {
 										$purchase->remove_item( $item['id'] );
 									} else {
-										WC_REST_Orders_Controller::set_item( $purchase, $key, $item );
+										parent::set_item( $purchase, $key, $item );
 									}
 								}
 							}

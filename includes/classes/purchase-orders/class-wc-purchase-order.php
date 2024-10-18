@@ -35,18 +35,31 @@ class WC_Purchase_Order extends WC_Order {
 
 	public function remove_item( $item_id ) {
 		parent::remove_item( $item_id );
-		$this->calculate_totals();
-	}
-
-	public function calculate_totals() {
 		parent::calculate_totals();
-		// Custom logic for calculating totals for purchase orders
 	}
 
 	// update meta data
-	public function update_meta_data( $key, $value ) {
-		parent::update_meta_data( $key, $value );
+	public function update_meta_data( $key, $value, $meta_id = 0 ) {
+		parent::update_meta_data( $key, $value, $meta_id );
 		// Custom logic for updating meta data for purchase orders
+	}
+
+	// get billing address
+	public function get_billing_address() {
+		return $this->get_address( 'billing' );
+	}
+
+	// get address
+	public function get_address( $type = 'billing' ) {
+		$address = parent::get_address( $type );
+		// Custom logic for getting address for purchase orders
+		return $address;
+	}
+
+	// set address
+	public function set_address_prop( $prop, $key, $value ) {
+		parent::set_address_prop( $prop, $key, $value );
+		// Custom logic for setting address props for purchase orders
 	}
 }
 
@@ -324,5 +337,25 @@ function cmbird_additional_store_addresses_admin( $settings ) {
 	);
 
 	return array_merge( array_slice( $settings, 0, 7 ), $new_settings, array_slice( $settings, 7 ) );
-
 }
+
+/**
+ * Use 'woocommerce_rest_insert_customer' action hook to change the user role to vendor when creating customer.
+ *
+ * @param WP_User         $user_data Data used to create the customer.
+ * @param WP_REST_Request $request   Request object.
+ * @param boolean         $creating  True when creating customer, false when updating customer.
+ */
+function cmbird_change_user_role_to_vendor( $user_data, $request, $creating ) {
+	// Get the property 'role' from the request object
+	$role = $request->get_param( 'role' );
+
+	// Change the user role to 'vendor'
+	if ( ! empty( $role ) && 'vendor' === $role ) {
+		$user_data->set_role( 'vendor' );
+	}
+
+	// Return the user data
+	return $user_data;
+}
+add_action( 'woocommerce_rest_insert_customer', 'cmbird_change_user_role_to_vendor', 10, 3 );
