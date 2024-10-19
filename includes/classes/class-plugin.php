@@ -146,15 +146,16 @@ class Plugin {
 			// remove option zoho_inventory_access_token if it contains only one character
 			if ( $zoho_inventory_access_token && strlen( $zoho_inventory_access_token ) === 1 ) {
 				delete_option( 'zoho_inventory_access_token' );
-			}
-			// schedule cronjob for import sync
-			$interval = get_option( 'zi_cron_interval' );
-			if ( 'none' !== $interval && ! empty( $zoho_inventory_access_token ) ) {
-				if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
-					wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
-				}
 			} else {
-				wp_clear_scheduled_hook( 'zi_execute_import_sync' );
+				// schedule cronjob for import sync
+				$interval = get_option( 'zi_cron_interval' );
+				if ( 'none' !== $interval && ! empty( $zoho_inventory_access_token ) ) {
+					if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
+						wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
+					}
+				} else {
+					wp_clear_scheduled_hook( 'zi_execute_import_sync' );
+				}
 			}
 			// create webhook password
 			if ( ! get_option( 'zi_webhook_password', false ) ) {
