@@ -96,7 +96,7 @@ class CMBIRD_API_Handler_Zoho {
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			return 'Error: ' . $error_message;
+			return "Error: $error_message";
 		}
 	}
 
@@ -162,7 +162,7 @@ class CMBIRD_API_Handler_Zoho {
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			return 'Error: ' . $error_message;
+			return "Error: $error_message";
 		}
 	}
 
@@ -229,7 +229,7 @@ class CMBIRD_API_Handler_Zoho {
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			return 'Error: ' . $error_message;
+			return "Error: $error_message";
 		}
 	}
 
@@ -297,7 +297,7 @@ class CMBIRD_API_Handler_Zoho {
 		} else {
 			// If there was an error, handle it
 			$error_message = is_wp_error( $response ) ? $response->get_error_message() : 'Unknown error.';
-			return 'Error: ' . $error_message;
+			return "Error: $error_message";
 		}
 	}
 

@@ -60,9 +60,6 @@ use CommerceBird\API\CreateSFOrderWebhook;
 use CommerceBird\API\ShippingWebhook;
 use CommerceBird\API\Zoho;
 use CommerceBird\API\Exact;
-use WC_Purchase_Order;
-use WCP_WC_Admin_Manager;
-use WC_REST_Shop_Purchase_Controller;
 
 /*
 |--------------------------------------------------------------------------
