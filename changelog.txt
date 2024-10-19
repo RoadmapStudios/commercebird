@@ -1,3 +1,8 @@
+Version 2.2.3 - October 19 2024
+* New: Purchase Orders in WooCommerce using WC API
+* Fix: Zoho Inventory Purchase Orders API - vendors
+* Fix: cronjob not scheduled for new plugin users
+
 Version 2.2.2 - September 11 2024
 * Fix: fatal error on order edit page
 
