@@ -25,20 +25,11 @@ class Plugin {
 	}
 
 	public static function activate() {
-		$interval = get_option( 'zi_cron_interval' );
-		$access_token = get_option( 'zoho_inventory_access_token' );
-		if ( 'none' !== $interval && ! empty( $access_token ) ) {
-			if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
-				wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
-			}
-		} else {
-			wp_clear_scheduled_hook( 'zi_execute_import_sync' );
-		}
 		// create log table
 		// global $wpdb;
 		// $charset_collate = $wpdb->get_charset_collate();
-		// $zi_order_log_table = "{$wpdb->prefix}zoho_ordersale_error";
-		// $zi_create_sql = "CREATE TABLE $zi_order_log_table ( ID bigint(20) PRIMARY KEY auto_increment, user_id bigint(20) NOT NULL, order_id bigint(20) NOT NULL, error_message TEXT NOT NULL, order_timestamp VARCHAR(20) NOT NULL, status int(10) NOT NULL )$charset_collate;";
+		// $zi_product_log_table = "{$wpdb->prefix}cmbird_zi_product_error";
+		// $zi_create_sql = "CREATE TABLE $zi_product_log_table ( ID bigint(20) PRIMARY KEY auto_increment, product_id bigint(20) NOT NULL, error_message TEXT NOT NULL, sync_timestamp VARCHAR(20) NOT NULL, status int(10) NOT NULL )$charset_collate;";
 		// dbDelta( $zi_create_sql );
 	}
 
@@ -156,6 +147,16 @@ class Plugin {
 			if ( $zoho_inventory_access_token && strlen( $zoho_inventory_access_token ) === 1 ) {
 				delete_option( 'zoho_inventory_access_token' );
 			}
+			// schedule cronjob for import sync
+			$interval = get_option( 'zi_cron_interval' );
+			if ( 'none' !== $interval && ! empty( $zoho_inventory_access_token ) ) {
+				if ( ! wp_next_scheduled( 'zi_execute_import_sync' ) ) {
+					wp_schedule_event( time(), $interval, 'zi_execute_import_sync' );
+				}
+			} else {
+				wp_clear_scheduled_hook( 'zi_execute_import_sync' );
+			}
+			// create webhook password
 			if ( ! get_option( 'zi_webhook_password', false ) ) {
 				update_option( 'zi_webhook_password', password_hash( 'commercebird-zi-webhook-token', PASSWORD_BCRYPT ) );
 			}
