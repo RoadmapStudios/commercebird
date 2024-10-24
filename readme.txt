@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.6.2
 Requires PHP: 7.4
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,6 +53,11 @@ A: Please fork the repository first on https://github.com/RoadmapStudios/commerc
 
 
 == Changelog ==
+= 2.2.3 - October 19 2024 =
+* New: Purchase Orders in WooCommerce using WC API
+* Fix: Zoho Inventory Purchase Orders API - vendors
+* Fix: cronjob not scheduled for new plugin users
+
 = 2.2.2 - September 11 2024 =
 * Fix: fatal error on order edit page
 
