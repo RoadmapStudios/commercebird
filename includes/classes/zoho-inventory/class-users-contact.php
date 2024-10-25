@@ -221,6 +221,7 @@ class CMBIRD_Contact_ZI {
 			$billing_state = $order_data['billing']['state'];
 			$billing_postcode = $order_data['billing']['postcode'];
 			$billing_country = $order_data['billing']['country'];
+			$billing_phone = $order_data['billing']['phone'];
 
 			// SHIPPING INFORMATION:
 			$shipping_first_name = $order_data['shipping']['first_name'];
@@ -252,6 +253,7 @@ class CMBIRD_Contact_ZI {
 			$shipping_state = get_user_meta( $userid, 'shipping_state', true );
 			$shipping_postcode = get_user_meta( $userid, 'shipping_postcode', true );
 			$shipping_country = get_user_meta( $userid, 'shipping_country', true );
+			$billing_phone = get_user_meta( $userid, 'billing_phone', true );
 		}
 
 		$zi_customer_id = get_user_meta( $userid, 'zi_contact_id', true );
@@ -292,7 +294,7 @@ class CMBIRD_Contact_ZI {
 			$pdt2 = '"contact_name": "' . $contact_name . '","contact_type": "customer"';
 		}
 
-		$pdt2 .= ',"billing_address": { "attention": "' . $contact_name . '","address": "' . $billing_address . '","street2": "' . $billing_address2 . '","city": "' . $billing_city . '","state": "' . $billing_state . '","zip": "' . $billing_postcode . '","country": "' . $billing_country . '"},"shipping_address": { "attention": "' . $shipping_attention . '","address": "' . $shipping_address . '","street2": "' . $shipping_address2 . '","city": "' . $shipping_city . '","state": "' . $shipping_state . '","zip": "' . $shipping_postcode . '","country": "' . $shipping_country . '"}';
+		$pdt2 .= ',"billing_address": { "attention": "' . $contact_name . '","address": "' . $billing_address . '","street2": "' . $billing_address2 . '","city": "' . $billing_city . '","state": "' . $billing_state . '","zip": "' . $billing_postcode . '","country": "' . $billing_country . '"},"shipping_address": { "attention": "' . $shipping_attention . '","address": "' . $shipping_address . '","street2": "' . $shipping_address2 . '","city": "' . $shipping_city . '","state": "' . $shipping_state . '","zip": "' . $shipping_postcode . '","country": "' . $shipping_country . '"}, "phone": "' . $billing_phone . '", "mobile": "' . $billing_phone . '"';
 
 		if ( $eu_vat > 0 ) {
 			$pdt2 .= ',"vat_reg_no": "' . $eu_vat . '","country_code": "' . $billing_country . '"';

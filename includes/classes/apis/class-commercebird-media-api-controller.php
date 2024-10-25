@@ -129,7 +129,7 @@ class CMBIRD_Media_API_Controller extends WC_REST_CRUD_Controller {
 			'force' => array(
 				'type' => 'boolean',
 				'default' => false,
-				'description' => __( 'Whether to bypass trash and force deletion.' ),
+				'description' => __( 'Whether to bypass trash and force deletion.', 'commercebird' ),
 			),
 		);
 	}
