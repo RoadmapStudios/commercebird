@@ -225,7 +225,7 @@ function cmbird_product_metabox() {
 	}
 	add_meta_box(
 		'zoho-product-sync',
-		__( 'Zoho Inventory' ),
+		__( 'Zoho Inventory', 'commercebird' ),
 		'cmbird_product_metabox_callback',
 		'product',
 		'side',
@@ -269,7 +269,7 @@ function cmbird_item_id_field() {
 			'wrapper_class' => 'form-row',
 			'label' => esc_html__( 'Cost Price', 'commercebird' ),
 			'data_type' => 'price',
-			'description' => esc_html__( 'You can edit this via the CommerceBird App' ),
+			'description' => esc_html__( 'You can edit this via the CommerceBird App', 'commercebird' ),
 		)
 	);
 	woocommerce_wp_text_input(
@@ -415,7 +415,7 @@ function cmbird_zi_sync_column_products_overview( $columns ) {
 		$new_columns[ $column_name ] = $column_info;
 
 		if ( 'product_cat' === $column_name ) {
-			$new_columns['zoho_sync'] = __( 'Zoho Sync', 'my-textdomain' );
+			$new_columns['zoho_sync'] = __( 'Zoho Sync', 'commercebird' );
 		}
 	}
 

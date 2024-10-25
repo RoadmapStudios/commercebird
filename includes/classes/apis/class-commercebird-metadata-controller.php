@@ -86,7 +86,7 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 					'id' => $post_id,
 					'data' => $product_meta,
 				);
-			} catch (Exception $e) {
+			} catch ( Exception $e ) {
 				$response['products'][] = array(
 					'id' => $post_id,
 					'result' => 'error',
@@ -189,7 +189,7 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 						$result = $this->$action( $post_id, $type, $key, $value );
 
 						$response_data[] = $result;
-					} catch (Exception $e) {
+					} catch ( Exception $e ) {
 						$response_data[] = array_merge(
 							$meta,
 							array(
@@ -203,7 +203,7 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 					'id' => $post_id,
 					'data' => $response_data,
 				);
-			} catch (Exception $e) {
+			} catch ( Exception $e ) {
 				$response['products'][] = array(
 					'id' => $post_id,
 					'result' => 'error',
@@ -223,7 +223,7 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 				);
 				$update_post = wp_update_post( $post, true );
 				if ( is_wp_error( $update_post ) ) {
-					throw new Exception( $update_post->get_error_message() );
+					throw new Exception( esc_html( $update_post->get_error_message() ) );
 				}
 				break;
 
@@ -240,14 +240,14 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 			case 'taxonomy':
 				$post_type = get_post_type( $post_id );
 				if ( is_object_in_taxonomy( $post_type, $key ) === false ) {
-					throw new Exception( "Taxonomy '{$key}' is not applicable to '{$post_type}' post type." );
+					throw new Exception( esc_html( "Taxonomy '{$key}' is not applicable to '{$post_type}' post type." ) );
 				}
 				if ( empty( $value ) ) {
 					throw new Exception( 'Value is required to add taxonomy term.' );
 				}
 				$add_terms = wp_set_object_terms( $post_id, $value, $key, true );
 				if ( is_wp_error( $add_terms ) ) {
-					throw new Exception( $add_terms->get_error_message() );
+					throw new Exception( esc_html( $add_terms->get_error_message() ) );
 				}
 				break;
 		}
@@ -268,13 +268,13 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 				);
 				$update_post = wp_update_post( $post, true );
 				if ( is_wp_error( $update_post ) ) {
-					throw new Exception( $update_post->get_error_message() );
+					throw new Exception( esc_html( $update_post->get_error_message() ) );
 				}
 				break;
 
 			case 'meta':
 				$delete_post_meta = delete_post_meta( $post_id, $key );
-				if ( $update_post_meta === false ) {
+				if ( $delete_post_meta === false ) {
 					throw new Exception( 'Meta delete failed.' );
 				}
 				break;
@@ -282,14 +282,14 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 			case 'taxonomy':
 				$post_type = get_post_type( $post_id );
 				if ( is_object_in_taxonomy( $post_type, $key ) === false ) {
-					throw new Exception( "Taxonomy '{$key}' is not applicable to '{$post_type}' post type." );
+					throw new Exception( esc_html( "Taxonomy '{$key}' is not applicable to '{$post_type}' post type." ) );
 				}
 				if ( empty( $value ) ) {
 					throw new Exception( 'Value is required to delete taxonomy term.' );
 				}
 				$remove_term = wp_remove_object_terms( $post_id, $value, $key );
 				if ( is_wp_error( $remove_term ) ) {
-					throw new Exception( $add_terms->get_error_message() );
+					throw new Exception( esc_html( $remove_term->get_error_message() ) );
 				} elseif ( $remove_term === false ) {
 					throw new Exception( 'Term delete failed.' );
 				}
@@ -308,7 +308,7 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 			case 'post':
 				$post = get_post( $post_id );
 				if ( ! isset( $post->$key ) ) {
-					throw new Exception( "Post table don't have '{$key}' field." );
+					throw new Exception( esc_html( "Post table don't have '{$key}' field." ) );
 				}
 				$value = $post->$key;
 				break;
@@ -320,7 +320,7 @@ class CMBIRD_Metadata_API_Controller extends WC_REST_CRUD_Controller {
 			case 'taxonomy':
 				$post_type = get_post_type( $post_id );
 				if ( is_object_in_taxonomy( $post_type, $key ) === false ) {
-					throw new Exception( "Taxonomy '{$key}' is not applicable to '{$post_type}' post type." );
+					throw new Exception( esc_html( "Taxonomy '{$key}' is not applicable to '{$post_type}' post type." ) );
 				}
 				$terms = wp_get_object_terms( $post_id, $key, array( 'fields' => 'slugs' ) );
 				$value = implode( '|', $terms );

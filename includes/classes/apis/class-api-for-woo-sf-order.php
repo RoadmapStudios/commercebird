@@ -56,8 +56,9 @@ class CreateSFOrderWebhook {
 		}
 
 		if ( empty( $order_data['line_items'] ) ) {
+			// translators: 1: order number, 2: Store name.
 			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing line items.', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ) );
-			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
+			cmbird_error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
 			$response->set_status( 500 );
 			$response->set_data( $message );
 			return $response;
@@ -67,8 +68,9 @@ class CreateSFOrderWebhook {
 		$coupon_code = $this->get_coupon_code( $order_data );
 
 		if ( ! empty( $line_items['not_found'] ) ) {
+			// translators: 1: order number, 2: Store name, 3: missing items
 			$message = sprintf( __( 'SF order #%1$s could not be created in your store %2$s because of missing items: %3$s', 'commercebird' ), $order_data['order_id'], get_bloginfo( 'name' ), implode( ', ', $line_items['not_found'] ) );
-			error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
+			cmbird_error_log_api_email( __( 'SF Order Sync', 'commercebird' ), $message );
 			$response->set_status( 500 );
 			$response->set_data( $message );
 			return $response;

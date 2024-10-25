@@ -144,7 +144,7 @@ final class ZohoInventoryAjax {
 		foreach ( $all_fields as $name => $options ) {
 			if ( isset( $options['custom'] ) && $options['custom'] ) {
 				$label = trim( $options['label'] );
-				$custom_fields[ $name ] = empty( $label ) ? __( 'Please set label' ) : $label;
+				$custom_fields[ $name ] = empty( $label ) ? __( 'Please set label', 'commercebird' ) : $label;
 			}
 		}
 

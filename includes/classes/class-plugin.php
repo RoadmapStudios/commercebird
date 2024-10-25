@@ -183,13 +183,13 @@ class Plugin {
 		if ( ! isset( $schedules['weekly'] ) ) {
 			$schedules['weekly'] = array(
 				'interval' => 604800,
-				'display' => __( 'Once Weekly' ),
+				'display' => __( 'Once Weekly', 'commercebird' ),
 			);
 		}
 		if ( ! isset( $schedules['monthly'] ) ) {
 			$schedules['monthly'] = array(
 				'interval' => 2635200,
-				'display' => __( 'Once Monthly' ),
+				'display' => __( 'Once Monthly', 'commercebird' ),
 			);
 		}
 		return $schedules;

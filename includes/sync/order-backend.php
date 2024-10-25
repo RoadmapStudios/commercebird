@@ -95,7 +95,7 @@ function cmbird_admin_metabox_callback( $post_or_order_object ) {
  */
 add_filter( 'bulk_actions-woocommerce_page_wc-orders', 'cmbird_zi_sync_all_orders_to_zoho', 10, 1 );
 function cmbird_zi_sync_all_orders_to_zoho( $actions ) {
-	$actions['sync_order_to_zoho'] = __( 'Sync to Zoho', 'woocommerce' );
+	$actions['sync_order_to_zoho'] = __( 'Sync to Zoho', 'commercebird' );
 	return $actions;
 }
 

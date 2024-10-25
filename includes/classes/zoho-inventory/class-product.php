@@ -846,10 +846,9 @@ class CMBIRD_Products_ZI_Export {
 			}
 
 			return $product_id;
-		} catch (Exception $e) {
+		} catch ( Exception $e ) {
 			// Handle the exception, log it, or perform any necessary actions.
-			error_log( 'Error creating WooCommerce product: ' . $e->getMessage() );
-			return false;
+			return new WP_Error( 'Error creating WooCommerce product: ' . $e->getMessage() );
 		}
 	}
 }

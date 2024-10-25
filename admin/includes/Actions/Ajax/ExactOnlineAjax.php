@@ -425,7 +425,7 @@ final class ExactOnlineAjax {
 			);
 		}
 		$response = ( new CommerceBird() )->subscribe_exact_webhooks( $webhooks );
-		error_log( print_r( $response, true ) );
+		// error_log( print_r( $response, true ) );
 		$this->option_status_update( $this->data );
 		$this->response = array( 'message' => 'Saved!' );
 		$this->serve();

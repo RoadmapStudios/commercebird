@@ -82,32 +82,44 @@ function cmbird_register_shop_purchase_order_type() {
 		'class_name' => 'WC_Purchase_Order',
 	) );
 
-	register_post_status( 'wc-awaiting-approval', array(
-		'label' => _x( 'Awaiting Approval', 'Order status', 'commercebird' ),
-		'public' => true,
-		'exclude_from_search' => false,
-		'show_in_admin_all_list' => true,
-		'show_in_admin_status_list' => true,
-		'label_count' => _n_noop( 'Awaiting Approval <span class="count">(%s)</span>', 'Awaiting Approval <span class="count">(%s)</span>', 'commercebird' ),
-	) );
+	register_post_status(
+		'wc-awaiting-approval',
+		array(
+			'label' => _x( 'Awaiting Approval', 'Order status', 'commercebird' ),
+			'public' => true,
+			'exclude_from_search' => false,
+			'show_in_admin_all_list' => true,
+			'show_in_admin_status_list' => true,
+			// translators: 1-2: 1: count
+			'label_count' => _n_noop( 'Awaiting Approval <span class="count">(%s)</span>', 'Awaiting Approval <span class="count">(%s)</span>', 'commercebird' ),
+		)
+	);
 
-	register_post_status( 'wc-approved', array(
-		'label' => _x( 'Approved', 'Order status', 'commercebird' ),
-		'public' => true,
-		'exclude_from_search' => false,
-		'show_in_admin_all_list' => true,
-		'show_in_admin_status_list' => true,
-		'label_count' => _n_noop( 'Approved <span class="count">(%s)</span>', 'Approved <span class="count">(%s)</span>', 'commercebird' ),
-	) );
+	register_post_status(
+		'wc-approved',
+		array(
+			'label' => _x( 'Approved', 'Order status', 'commercebird' ),
+			'public' => true,
+			'exclude_from_search' => false,
+			'show_in_admin_all_list' => true,
+			'show_in_admin_status_list' => true,
+			// translators: 1-2: 1: count
+			'label_count' => _n_noop( 'Approved <span class="count">(%s)</span>', 'Approved <span class="count">(%s)</span>', 'commercebird' ),
+		)
+	);
 
-	register_post_status( 'wc-received', array(
-		'label' => _x( 'Received', 'Order status', 'commercebird' ),
-		'public' => true,
-		'exclude_from_search' => false,
-		'show_in_admin_all_list' => true,
-		'show_in_admin_status_list' => true,
-		'label_count' => _n_noop( 'Received <span class="count">(%s)</span>', 'Received <span class="count">(%s)</span>', 'commercebird' ),
-	) );
+	register_post_status(
+		'wc-received',
+		array(
+			'label' => _x( 'Received', 'Order status', 'commercebird' ),
+			'public' => true,
+			'exclude_from_search' => false,
+			'show_in_admin_all_list' => true,
+			'show_in_admin_status_list' => true,
+			// translators: 1-2: 1: count
+			'label_count' => _n_noop( 'Received <span class="count">(%s)</span>', 'Received <span class="count">(%s)</span>', 'commercebird' ),
+		)
+	);
 
 	// Create the "vendor" role
 	add_role(
