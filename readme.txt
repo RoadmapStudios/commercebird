@@ -1,4 +1,4 @@
-=== CommerceBird ===
+=== CommerceBird - Smart ERP ===
 Contributors: fawadinho
 Author link: https://commercebird.com
 Tags: shop,store,ecommerce,commerce,e-commerce
@@ -10,8 +10,28 @@ License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 == Description ==
+https://youtu.be/avQ08fG9tPw
+
+= The #1 ERP Platform for WooCommerce =
+
 This plugin ensures you can take the most of the CommerceBird App such as uploading product images, using integrations like Zoho Inventory, Zoho CRM & Exact Online.
-Please note that this plugin requires a subscription on https://commercebird.com.
+Subscribe to the 14-days Free Trial on: https://commercebird.com.
+
+= 🗝️ Key features: =
+- **Extremely Fast**: Utilizing the WooCommerce REST API and fully built in JavaScript.
+- **Product Blaze Editor**: our highly praised Product Management to manage products 10x easier & faster than WP Admin.
+- **Instant Purchase Orders**: Create purchase orders directly from the order or low / out-of stock items in one click!
+- **Advanced Stock Management**: Instant stock update with the fastest user friendly User Interface.
+- **Certified Integrations**: Connect your store 2-way to Zoho Inventory, CRM or Exact Online to sync Orders, Customers and Products.
+- **POS Module**: Accept in-store payments in cash or via terminal payments (Native iOS and Android app).
+- **Analytics Pro**: Generate a graph based on prompt using A.I. and get valuable tips to grow your store (soon).
+
+= ⏩ Use of 3rd Party Services =
+
+To improve the user experience, CommerceBird may use the following 3rd party services if the required feature is enabled:
+
+- Zoho CRM and Inventory API –  [TOS](https://www.zoho.com/terms.html) and [Privacy Policy](https://www.zoho.com/privacy.html)
+- Exact Online API - [TOS](https://www.exact.com/terms-and-conditions) and [Privacy Policy](https://www.exact.com/privacy-statement)
 
 == Frequently Asked Questions ==
 
@@ -22,16 +42,22 @@ A: No, you just need to create an account on https://commercebird.com to use thi
 A: Simple, Variable, Bundles, Simple Subscription & Variable Subscription.
 
 = Q: Can I create Purchase Orders? =
-A: Yes! you can also create purchase costs on the product edit page in the app.
+A: Yes! you can also add the cost price on the product edit page in the app.
 
 == Q: Which Integrations does it support? =
-A: Zoho CRM, Zoho Inventory and Exact Online. More will be added.
+A: Zoho CRM, Zoho Inventory and Exact Online. The integrations require the Business Plan or higher. Missing a particular integration? Let us know!
+
+== Q: What plan do I need for the integrations? =
+A: The Business plan for the most Integration features, some features require the Premium plan. Please check the [Pricing](https://commercebird.com/pricing) for more info.
+
+== Q: Is my WooCommerce data safe with CommerceBird? =
+A: Yes, as a matter of fact, we save 0 data in our own server as the app is fully dependent on the WooCommerce API. Meaning; you own your data!
 
 == Q: Where can I see the documentation and contact support?
-A: Please visit https://support.commercebird.com to read the docs and open support ticket
+A: Please visit the [Support site](https://support.commercebird.com) to read the docs and open support ticket
 
 == Q: How can I contribute as a developer?
-A: Please fork the repository first on https://github.com/RoadmapStudios/commercebird and then create a PR.
+A: Please fork the repository first on [Github](https://github.com/RoadmapStudios/commercebird) and then create a PR.
 
 == Installation ==
 
