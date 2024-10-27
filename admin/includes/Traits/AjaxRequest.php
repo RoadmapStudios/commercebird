@@ -3,6 +3,7 @@
 namespace CommerceBird\Admin\Traits;
 
 use CommerceBird\Admin\Template;
+use WP_Filesystem_Direct;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -49,7 +50,9 @@ trait AjaxRequest {
 		);
 		$this->errors = array();
 		$this->request = array_map( 'sanitize_text_field', $_REQUEST );
-		$contents = file_get_contents( 'php://input' );
+		$wpfsd = new WP_Filesystem_Direct( false );
+		$contents = $wpfsd->get_contents( 'php://input' );
+		// $contents = file_get_contents( 'php://input' );
 		$contents = sanitize_text_field( $contents );
 		$decode = json_decode( $contents, true );
 		if ( ! empty( $decode ) ) {
