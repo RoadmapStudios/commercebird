@@ -33,7 +33,7 @@ function cmbird_load_script() {
 add_action( 'admin_enqueue_scripts', 'cmbird_load_script' );
 
 function cmbird_zoho_admin_metabox() {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return;
 	}
@@ -53,7 +53,7 @@ function cmbird_zoho_admin_metabox() {
 add_action( 'add_meta_boxes', 'cmbird_zoho_admin_metabox' );
 
 function cmbird_admin_metabox_callback( $post_or_order_object ) {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return;
 	}

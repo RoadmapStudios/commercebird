@@ -16,8 +16,8 @@ class CMBIRD_Pricelist_ZI {
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'APIURL' => get_option( 'zoho_inventory_url' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 			),
 		);
 	}
@@ -105,7 +105,7 @@ class CMBIRD_Pricelist_ZI {
 		if ( is_object( $json ) && property_exists( $json, 'pricebook' ) ) {
 			$json = json_decode( wp_json_encode( $json->pricebook ), true );
 			set_transient( 'zoho_pricelist_' . $pricebook_id, $json, DAY_IN_SECONDS );
-			update_option( 'zoho_pricelist_id', $pricebook_id );
+			update_option( 'cmbird_zoho_pricelist_id', $pricebook_id );
 
 			return $json;
 		}

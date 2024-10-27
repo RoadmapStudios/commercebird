@@ -25,8 +25,9 @@
  * WC tested up to: 9.3.3
  */
 
-if ( ! defined( 'ABSPATH' ) )
+if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
+}
 
 
 if ( ! defined( 'CMBIRD_VERSION' ) ) {
@@ -170,7 +171,7 @@ add_action( 'upgrader_process_complete', 'cmbird_update_plugin_tasks', 10, 2 );
 function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
 	$this_plugin = plugin_basename( __FILE__ );
 
-	if ( '2.1.18' >= CMBIRD_VERSION ) {
+	if ( '2.2.4' < CMBIRD_VERSION ) {
 		return;
 	}
 
@@ -178,14 +179,20 @@ function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
 		foreach ( $options['plugins'] as $plugin ) {
 			if ( $plugin === $this_plugin ) {
 				// Perform tasks when the plugin is updated
-				$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+				$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 				if ( $zoho_inventory_url ) {
 					$new_zoho_inventory_url = str_replace( 'inventory.zoho', 'www.zohoapis', $zoho_inventory_url );
-					update_option( 'zoho_inventory_url', $new_zoho_inventory_url );
+					update_option( 'cmbird_zoho_inventory_url', $new_zoho_inventory_url );
 				}
 				// change the post meta key name from "cost_price" to "_cost_price" using wpdb query
 				global $wpdb;
 				$wpdb->query( "UPDATE $wpdb->postmeta SET meta_key = '_cost_price' WHERE meta_key = 'cost_price'" );
+				// add 'cmbird_' to every option key name that starts with 'zoho_' using wpdb query
+				$zoho_options = $wpdb->get_results( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'zoho_%' OR option_name LIKE 'zi_%'" );
+				foreach ( $zoho_options as $zoho_option ) {
+					$new_option_name = 'cmbird_' . $zoho_option->option_name;
+					$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->options SET option_name = %s WHERE option_name = %s", $new_option_name, $zoho_option->option_name ) );
+				}
 			}
 		}
 	}

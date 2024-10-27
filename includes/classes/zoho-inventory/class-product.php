@@ -13,14 +13,14 @@ class CMBIRD_Products_ZI_Export {
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'APIURL' => get_option( 'zoho_inventory_url' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 			),
 		);
 	}
 
 	public function cmbird_zi_products_prepare_sync( $product_ids ) {
-		$rate_limit = get_option( 'zoho_rate_limit_exceeded' );
+		$rate_limit = get_option( 'cmbird_zoho_rate_limit_exceeded' );
 		if ( is_array( $product_ids ) ) {
 			// schedule the unsynced products for tomorrow via action scheduler
 			if ( $rate_limit ) {
@@ -104,12 +104,12 @@ class CMBIRD_Products_ZI_Export {
 				$tax_id_key = $tax_key;
 				break;
 			}
-			$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
+			$tax_option = get_option( 'cmbird_zoho_inventory_tax_rate_' . $tax_id_key );
 			$tax_id = explode( '##', $tax_option )[0];
 
 			$zi_status = ( 'publish' === get_post_status( $post_id ) ) ? 'active' : 'inactive';
 			// request data for adding/updating value to zoho.
-			$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
+			$zi_disable_itemname_sync = get_option( 'cmbird_zoho_disable_name_sync_status' );
 			$zoho_item_id = get_post_meta( $post_id, 'zi_item_id', true );
 
 			$zidata = '';
@@ -375,7 +375,7 @@ class CMBIRD_Products_ZI_Export {
 			$tax_id_key = $tax_key;
 			break;
 		}
-		$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
+		$tax_option = get_option( 'cmbird_zoho_inventory_tax_rate_' . $tax_id_key );
 		$tax_id = explode( '##', $tax_option )[0];
 		if ( ! empty( $tax_rates ) ) {
 			$tax_rate = reset( $tax_rates );
@@ -498,7 +498,7 @@ class CMBIRD_Products_ZI_Export {
 			$tax_id_key = $tax_key;
 			break;
 		}
-		$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
+		$tax_option = get_option( 'cmbird_zoho_inventory_tax_rate_' . $tax_id_key );
 		$tax_id = explode( '##', $tax_option )[0];
 		$zi_category_id = $this->cmbird_zi_get_prod_updated_category( $post_id );
 
@@ -686,7 +686,7 @@ class CMBIRD_Products_ZI_Export {
 			$tax_id_key = $tax_key;
 			break;
 		}
-		$tax_option = get_option( 'zoho_inventory_tax_rate_' . $tax_id_key );
+		$tax_option = get_option( 'cmbird_zoho_inventory_tax_rate_' . $tax_id_key );
 		$tax_id = explode( '##', $tax_option )[0];
 
 		$zi_status = ( 'publish' === get_post_status( $post_id ) ) ? 'active' : 'inactive';
@@ -812,7 +812,7 @@ class CMBIRD_Products_ZI_Export {
 			$product = new WC_Product();
 
 			$allow_backorders = get_option( 'woocommerce_allow_backorders' );
-			$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+			$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 
 			// Set the product data
 			$product->set_status( 'publish' );
@@ -846,7 +846,7 @@ class CMBIRD_Products_ZI_Export {
 			}
 
 			return $product_id;
-		} catch ( Exception $e ) {
+		} catch (Exception $e) {
 			// Handle the exception, log it, or perform any necessary actions.
 			return new WP_Error( 'Error creating WooCommerce product: ' . $e->getMessage() );
 		}

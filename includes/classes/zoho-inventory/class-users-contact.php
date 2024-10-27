@@ -19,8 +19,8 @@ class CMBIRD_Contact_ZI {
 		$config = array(
 
 			'ContactZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'APIURL' => get_option( 'zoho_inventory_url' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 
 			),
 

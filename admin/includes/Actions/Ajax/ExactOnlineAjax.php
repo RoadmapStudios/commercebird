@@ -67,13 +67,13 @@ final class ExactOnlineAjax {
 	public function sync_order(): void {
 		$this->verify( array( 'sync' ) );
 		if ( $this->data['sync'] ) {
-			if ( ! wp_next_scheduled( 'commmercebird_exact_online_sync_orders' ) ) {
-				wp_schedule_event( time(), 'daily', 'commmercebird_exact_online_sync_orders' );
+			if ( ! wp_next_scheduled( 'cmbird_exact_online_sync_orders' ) ) {
+				wp_schedule_event( time(), 'daily', 'cmbird_exact_online_sync_orders' );
 			}
 		} else {
-			wp_clear_scheduled_hook( 'commmercebird_exact_online_sync_orders' );
+			wp_clear_scheduled_hook( 'cmbird_exact_online_sync_orders' );
 		}
-		update_option( 'commmercebird_exact_online_sync_orders', (bool) $this->data['sync'] );
+		update_option( 'cmbird_exact_online_sync_orders', (bool) $this->data['sync'] );
 		$this->response = array(
 			'success' => true,
 			'message' => __( 'Synced', 'commercebird' ),
@@ -389,7 +389,7 @@ final class ExactOnlineAjax {
 
 	public function __construct() {
 		$this->load_actions();
-		add_action( 'commmercebird_exact_online_sync_orders', array( $this, 'sync_via_cron' ) );
+		add_action( 'cmbird_exact_online_sync_orders', array( $this, 'sync_via_cron' ) );
 	}
 
 	public function connect_save() {

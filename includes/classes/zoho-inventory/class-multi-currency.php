@@ -20,8 +20,8 @@ class CMBIRD_Multicurrency_Zoho {
 		$config = array(
 
 			'MulticurrencyZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'APIURL' => get_option( 'zoho_inventory_url' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 
 			),
 

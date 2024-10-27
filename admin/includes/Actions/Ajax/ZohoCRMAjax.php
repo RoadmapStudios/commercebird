@@ -91,11 +91,11 @@ final class ZohoCRMAjax {
 		);
 		try {
 			$crm_url = sprintf( 'https://www.zohoapis.%s/', $this->data['account_domain'] );
-			update_option( 'zoho_crm_domain', $this->data['account_domain'] );
-			update_option( 'zoho_crm_cid', $this->data['client_id'] );
-			update_option( 'zoho_crm_cs', $this->data['client_secret'] );
-			update_option( 'zoho_crm_url', $crm_url );
-			update_option( 'authorization_redirect_uri', $this->data['redirect_uri'] );
+			update_option( 'cmbird_zoho_crm_domain', $this->data['account_domain'] );
+			update_option( 'cmbird_zoho_crm_cid', $this->data['client_id'] );
+			update_option( 'cmbird_zoho_crm_cs', $this->data['client_secret'] );
+			update_option( 'cmbird_zoho_crm_url', $crm_url );
+			update_option( 'cmbird_authorization_redirect_uri', $this->data['redirect_uri'] );
 			$redirect = esc_url_raw(
 				'https://accounts.zoho.'
 				. $this->data['account_domain']
@@ -122,11 +122,11 @@ final class ZohoCRMAjax {
 	 */
 	public function connection_get(): void {
 		$this->verify();
-		$this->response['account_domain'] = get_option( 'zoho_crm_domain' );
-		$this->response['client_id'] = get_option( 'zoho_crm_cid' );
-		$this->response['client_secret'] = get_option( 'zoho_crm_cs' );
-		$this->response['crm_url'] = get_option( 'zoho_crm_url' );
-		$this->response['redirect_uri'] = get_option( 'authorization_redirect_uri' );
+		$this->response['account_domain'] = get_option( 'cmbird_zoho_crm_domain' );
+		$this->response['client_id'] = get_option( 'cmbird_zoho_crm_cid' );
+		$this->response['client_secret'] = get_option( 'cmbird_zoho_crm_cs' );
+		$this->response['crm_url'] = get_option( 'cmbird_zoho_crm_url' );
+		$this->response['redirect_uri'] = get_option( 'cmbird_authorization_redirect_uri' );
 		$this->serve();
 	}
 
@@ -141,10 +141,10 @@ final class ZohoCRMAjax {
 			try {
 				$access_token = $class_functions->get_zoho_access_token( $code, 'zoho_crm' );
 				if ( array_key_exists( 'access_token', $access_token ) ) {
-					update_option( 'zoho_crm_auth_code', $code );
-					update_option( 'zoho_crm_access_token', $access_token['access_token'] );
-					update_option( 'zoho_crm_refresh_token', $access_token['refresh_token'] );
-					update_option( 'zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $access_token['expires_in'] );
+					update_option( 'cmbird_zoho_crm_auth_code', $code );
+					update_option( 'cmbird_zoho_crm_access_token', $access_token['access_token'] );
+					update_option( 'cmbird_zoho_crm_refresh_token', $access_token['refresh_token'] );
+					update_option( 'cmbird_zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $access_token['expires_in'] );
 					$this->response = (array) $access_token;
 				} else {
 					$this->errors = (array) $access_token;
@@ -183,7 +183,7 @@ final class ZohoCRMAjax {
 
 	public function connection_done() {
 		$this->verify();
-		$zoho_crm_url = get_option( 'zoho_crm_url' );
+		$zoho_crm_url = get_option( 'cmbird_zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/org';
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );

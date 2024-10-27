@@ -36,10 +36,10 @@ class Plugin {
 	public static function deactivate() {
 		wp_clear_scheduled_hook( 'zi_execute_import_sync' );
 		wp_clear_scheduled_hook( 'commmercebird_exact_online_get_payment_statuses' );
-		wp_clear_scheduled_hook( 'commmercebird_exact_online_sync_orders' );
-		wp_clear_scheduled_hook( 'zoho_sync_category_cron' );
-		wp_clear_scheduled_hook( 'zoho_contact_sync' );
-		update_option( 'woocommerce_enable_guest_checkout', 'yes' );
+		wp_clear_scheduled_hook( 'cmbird_exact_online_sync_orders' );
+		wp_clear_scheduled_hook( 'cmbird_zoho_sync_category_cron' );
+		wp_clear_scheduled_hook( 'cmbird_zoho_contact_sync' );
+		add_filter( 'pre_option_woocommerce_enable_guest_checkout', '__return_true' );
 	}
 
 	public static function uninstall() {
@@ -65,38 +65,37 @@ class Plugin {
 			'zi_currency_code',
 		);
 		$zi_option_keys = array(
-			'zi_cron_isactive',
-			'zi_webhook_password',
-			'zoho_inventory_cron_class',
-			'zoho_sync_status',
-			'zoho_item_category',
-			'zoho_stock_sync_status',
-			'zoho_item_name_sync_status',
-			'zoho_enable_auto_no_status',
-			'zoho_product_sync_status',
-			'zoho_disable_image_sync_status',
-			'zoho_disable_price_sync_status',
-			'zoho_disable_name_sync_status',
-			'zoho_disable_description_sync_status',
-			'zoho_enable_accounting_stock_status',
-			'zoho_enable_order_status',
-			'wootozoho_custom_fields',
-			'zoho_pricelist_id',
-			'zoho_warehouse_id_status',
-			'zoho_inventory_auth_code',
-			'zoho_inventory_access_token',
-			'zoho_inventory_refresh_token',
-			'zoho_inventory_timestamp',
-			'zoho_inventory_oid',
-			'zoho_inventory_url',
-			'zoho_inventory_cid',
-			'zoho_inventory_cs',
-			'zoho_inventory_domain',
-			'authorization_redirect_uri',
-			'zoho_crm_auth_code',
-			'zoho_crm_access_token',
-			'zoho_crm_refresh_token',
-			'zoho_crm_timestamp',
+			'cmbird_zi_webhook_password',
+			'cmbird_zoho_inventory_cron_class',
+			'cmbird_zoho_sync_status',
+			'cmbird_zoho_item_category',
+			'cmbird_zoho_stock_sync_status',
+			'cmbird_zoho_item_name_sync_status',
+			'cmbird_zoho_enable_auto_no_status',
+			'cmbird_zoho_product_sync_status',
+			'cmbird_zoho_disable_image_sync_status',
+			'cmbird_zoho_disable_price_sync_status',
+			'cmbird_zoho_disable_name_sync_status',
+			'cmbird_zoho_disable_description_sync_status',
+			'cmbird_zoho_enable_accounting_stock_status',
+			'cmbird_zoho_enable_order_status',
+			'cmbird_wootozoho_custom_fields',
+			'cmbird_zoho_pricelist_id',
+			'cmbird_zoho_warehouse_id_status',
+			'cmbird_zoho_inventory_auth_code',
+			'cmbird_zoho_inventory_access_token',
+			'cmbird_zoho_inventory_refresh_token',
+			'cmbird_zoho_inventory_timestamp',
+			'cmbird_zoho_inventory_oid',
+			'cmbird_zoho_inventory_url',
+			'cmbird_zoho_inventory_cid',
+			'cmbird_zoho_inventory_cs',
+			'cmbird_zoho_inventory_domain',
+			'cmbird_authorization_redirect_uri',
+			'cmbird_zoho_crm_auth_code',
+			'cmbird_zoho_crm_access_token',
+			'cmbird_zoho_crm_refresh_token',
+			'cmbird_zoho_crm_timestamp',
 			'cmbird_warehouse_data',
 		);
 
@@ -142,10 +141,10 @@ class Plugin {
 					)
 				);
 			}
-			$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+			$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 			// remove option zoho_inventory_access_token if it contains only one character
 			if ( $zoho_inventory_access_token && strlen( $zoho_inventory_access_token ) === 1 ) {
-				delete_option( 'zoho_inventory_access_token' );
+				delete_option( 'cmbird_zoho_inventory_access_token' );
 			} else {
 				// schedule cronjob for import sync
 				$interval = get_option( 'zi_cron_interval' );
@@ -158,8 +157,8 @@ class Plugin {
 				}
 			}
 			// create webhook password
-			if ( ! get_option( 'zi_webhook_password', false ) ) {
-				update_option( 'zi_webhook_password', password_hash( 'commercebird-zi-webhook-token', PASSWORD_BCRYPT ) );
+			if ( ! get_option( 'cmbird_zi_webhook_password', false ) ) {
+				update_option( 'cmbird_zi_webhook_password', password_hash( 'commercebird-zi-webhook-token', PASSWORD_BCRYPT ) );
 			}
 			Template::instance();
 			ZohoInventoryAjax::instance();

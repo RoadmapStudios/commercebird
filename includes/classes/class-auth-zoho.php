@@ -14,26 +14,26 @@ class CMBIRD_Auth_Zoho {
 		$config = array(
 
 			'ServiceZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'CLIENTSECRET' => get_option( 'zoho_inventory_cs' ),
-				'CLIENTID' => get_option( 'zoho_inventory_cid' ),
-				'REDIRECTURL' => get_option( 'authorization_redirect_uri' ),
-				'APIURL' => get_option( 'zoho_inventory_url' ),
-				'DOMAINNAME' => get_option( 'zoho_inventory_domain' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'CLIENTSECRET' => get_option( 'cmbird_zoho_inventory_cs' ),
+				'CLIENTID' => get_option( 'cmbird_zoho_inventory_cid' ),
+				'REDIRECTURL' => get_option( 'cmbird_authorization_redirect_uri' ),
+				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
+				'DOMAINNAME' => get_option( 'cmbird_zoho_inventory_domain' ),
 				'SCOPE' => 'ZohoInventory.FullAccess.all',
 				//'STATE' => wp_create_nonce('redirect_url'),
-				'AUTHURL' => 'https://accounts.zoho.' . get_option( 'zoho_inventory_domain' ) . '/oauth/v2/token',
+				'AUTHURL' => 'https://accounts.zoho.' . get_option( 'cmbird_zoho_inventory_domain' ) . '/oauth/v2/token',
 
 			),
 			'ServiceZCRM' => array(
-				'CLIENTSECRET' => get_option( 'zoho_crm_cs' ),
-				'CLIENTID' => get_option( 'zoho_crm_cid' ),
-				'REDIRECTURL' => get_option( 'authorization_redirect_uri' ),
-				'APIURL' => get_option( 'zoho_crm_url' ),
-				'DOMAINNAME' => get_option( 'zoho_crm_domain' ),
+				'CLIENTSECRET' => get_option( 'cmbird_zoho_crm_cs' ),
+				'CLIENTID' => get_option( 'cmbird_zoho_crm_cid' ),
+				'REDIRECTURL' => get_option( 'cmbird_authorization_redirect_uri' ),
+				'APIURL' => get_option( 'cmbird_zoho_crm_url' ),
+				'DOMAINNAME' => get_option( 'cmbird_zoho_crm_domain' ),
 				'SCOPE' => 'ZohoCRM.users.ALL,ZohoCRM.bulk.ALL,ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.org.ALL,profile.userphoto.READ,ZohoFiles.files.CREATE',
 				//'STATE' => wp_create_nonce('redirect_url'),
-				'AUTHURL' => 'https://accounts.zoho.' . get_option( 'zoho_crm_domain' ) . '/oauth/v2/token',
+				'AUTHURL' => 'https://accounts.zoho.' . get_option( 'cmbird_zoho_crm_domain' ) . '/oauth/v2/token',
 			),
 
 		);

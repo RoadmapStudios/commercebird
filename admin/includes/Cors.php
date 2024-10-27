@@ -24,7 +24,7 @@ final class Cors {
 
 	public function __construct() {
 
-		$option = (bool) get_option( 'zoho_cors_status', 0 );
+		$option = (bool) get_option( 'cmbird_zoho_cors_status', 0 );
 		if ( ! $option ) {
 			return;
 		}
@@ -50,7 +50,7 @@ final class Cors {
 	 * It modifies the .htaccess file to add headers for allowing fonts and css
 	 */
 	public function modify_htaccess() {
-		$option = (bool) get_option( 'zoho_cors_status', 0 );
+		$option = (bool) get_option( 'cmbird_zoho_cors_status', 0 );
 		if ( $option ) {
 			$lines = array(
 				'<IfModule mod_headers.c>',

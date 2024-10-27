@@ -50,7 +50,7 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 	$zi_common_class->clear_orphan_data();
 
 	// get category to filter by category
-	$opt_category = get_option( 'zoho_item_category' );
+	$opt_category = get_option( 'cmbird_zoho_item_category' );
 
 	if ( $opt_category ) {
 		$opt_category = unserialize( $opt_category );
@@ -59,7 +59,7 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 	}
 
 	// Retrieve the last synced category index from the previous run
-	$last_synced_category_index = get_option( 'last_synced_category_index_groupitems', 0 );
+	$last_synced_category_index = get_option( 'cmbird_last_synced_category_index_groupitems', 0 );
 
 	// Slice the category array to start from the last synced category index
 	$opt_category = array_slice( $opt_category, $last_synced_category_index );
@@ -70,7 +70,7 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 			// get last backed up page number for particular category Id.
 			// And start syncing from the last synced page.
 			// If no page number available, it will start from zero.
-			$last_synced_page = get_option( 'group_item_sync_page_cat_id_' . $category_id );
+			$last_synced_page = get_option( 'cmbird_group_item_sync_page_cat_id_' . $category_id );
 			$data_arr->page = $last_synced_page;
 			if ( ! intval( $last_synced_page ) ) {
 				$data_arr->page = 1;
@@ -84,7 +84,7 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 			}
 
 			// Update the last synced category index in the options
-			update_option( 'last_synced_category_index_groupitems', $last_synced_category_index + $category_index + 1 );
+			update_option( 'cmbird_cmbird_last_synced_category_index_groupitems', $last_synced_category_index + $category_index + 1 );
 		}
 		// Check if all categories have been imported or passed to the loop
 		$total_categories = count( $opt_category );
@@ -92,7 +92,7 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 
 		if ( $processed_categories >= $total_categories ) {
 			// Reset the last synced category index
-			update_option( 'last_synced_category_index_groupitems', 0 );
+			update_option( 'cmbird_cmbird_last_synced_category_index_groupitems', 0 );
 		}
 	}
 
@@ -110,7 +110,7 @@ add_action( 'zi_execute_import_sync', 'cmbird_ajax_call_item_from_zoho_func' );
 
 add_action( 'wp_ajax_zoho_ajax_call_item_from_zoho', 'cmbird_ajax_call_item_from_zoho_func' );
 function cmbird_ajax_call_item_from_zoho_func() {
-	$zoho_item_category = get_option( 'zoho_item_category' );
+	$zoho_item_category = get_option( 'cmbird_zoho_item_category' );
 	$last_synced_category_index = get_option( 'last_synced_category_index', 0 );
 
 	if ( $zoho_item_category ) {
@@ -126,7 +126,7 @@ function cmbird_ajax_call_item_from_zoho_func() {
 	} else {
 		foreach ( $categories as $index => $category_id ) {
 			$data = (object) array();
-			$last_synced_page = get_option( 'simple_item_sync_page_cat_id_' . $category_id );
+			$last_synced_page = get_option( 'cmbird_simple_item_sync_page_cat_id_' . $category_id );
 			if ( ! intval( $last_synced_page ) ) {
 				$last_synced_page = 1;
 			}
@@ -139,14 +139,14 @@ function cmbird_ajax_call_item_from_zoho_func() {
 				as_schedule_single_action( time(), 'import_simple_items_cron', array( $data ) );
 			}
 
-			update_option( 'last_synced_category_index', $last_synced_category_index + $index + 1 );
+			update_option( 'cmbird_last_synced_category_index', $last_synced_category_index + $index + 1 );
 		}
 
 		$total_categories = count( $categories );
 		$processed_categories = $last_synced_category_index + $index + 1;
 
 		if ( $processed_categories >= $total_categories ) {
-			update_option( 'last_synced_category_index', 0 );
+			update_option( 'cmbird_last_synced_category_index', 0 );
 		}
 	}
 	wp_send_json_success( array( 'message' => __( 'Items are being imported in background. You can visit other tabs :).', 'commercebird' ) ) );
@@ -244,7 +244,7 @@ function cmbird_zoho_contacts_import( $page = '' ) {
 add_action( 'wp_ajax_zoho_ajax_call_composite_item_from_zoho', 'cmbird_sync_composite_item_from_zoho' );
 function cmbird_sync_composite_item_from_zoho() {
 
-	$opt_category = get_option( 'zoho_item_category' );
+	$opt_category = get_option( 'cmbird_zoho_item_category' );
 	if ( $opt_category ) {
 		$opt_category = unserialize( $opt_category );
 	} else {
@@ -393,7 +393,7 @@ function cmbird_zi_subcategory_sync_call() {
 
 				if ( $term_id && $zoho_pid > 0 ) {
 					// Update zoho sub category id for term(sub category) of woocommerce.
-					update_option( 'zoho_id_for_term_id_' . $term_id, $subcategory['category_id'] );
+					update_option( 'cmbird_zoho_id_for_term_id_' . $term_id, $subcategory['category_id'] );
 
 				}
 				$response[] = cmbird_zi_response_message( $subcategory['category_id'], $subcategory['name'], $term_id );
@@ -424,9 +424,9 @@ function cmbird_zi_subcategory_sync_call() {
 			$subcategories_terms = get_terms( $args );
 			if ( $subcategories_terms && count( $subcategories_terms ) > 0 ) {
 				foreach ( $subcategories_terms as $term ) {
-					$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $term->term_id );
+					$zoho_cat_id = get_option( 'cmbird_zoho_id_for_term_id_' . $term->term_id );
 					if ( empty( $zoho_cat_id ) ) {
-						$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $parent_id );
+						$zoho_cat_id = get_option( 'cmbird_zoho_id_for_term_id_' . $parent_id );
 						$pid = $zoho_cat_id;
 						$add_response = cmbird_zi_category_export( $term->name, $term->term_id, $pid );
 						$response[] = $add_response;
@@ -502,7 +502,7 @@ function cmbird_zi_category_sync_call() {
 				}
 				if ( $term_id ) {
 					// Update zoho category id for term(category) of woocommerce.
-					update_option( 'zoho_id_for_term_id_' . $term_id, $category['category_id'] );
+					update_option( 'cmbird_zoho_id_for_term_id_' . $term_id, $category['category_id'] );
 				}
 				$response[] = cmbird_zi_response_message( $category['category_id'], $category['name'], $term_id );
 			}
@@ -526,7 +526,7 @@ function cmbird_zi_category_sync_call() {
 				continue;
 			}
 
-			$zoho_cat_id = get_option( 'zoho_id_for_term_id_' . $term->term_id );
+			$zoho_cat_id = get_option( 'cmbird_zoho_id_for_term_id_' . $term->term_id );
 			if ( empty( $zoho_cat_id ) ) {
 				// fwrite( $fd, PHP_EOL . 'Category Name : ' . $term->name );
 				$add_response = cmbird_zi_category_export( $term->name, $term->term_id );
@@ -554,8 +554,8 @@ function cmbird_zi_category_sync_call() {
  */
 function cmbird_zi_category_export( $cat_name, $term_id = '0', $pid = '' ) {
 
-	$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-	$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+	$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+	$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 	if ( ! empty( $pid ) || $pid > 0 ) {
 		$zidata = '"name" : "' . $cat_name . '","parent_category_id" : "' . $pid . '",';
@@ -577,7 +577,7 @@ function cmbird_zi_category_export( $cat_name, $term_id = '0', $pid = '' ) {
 	if ( '0' == $code || 0 == $code ) {
 		foreach ( $json->category as $key => $value ) {
 			if ( 'category_id' === $key ) {
-				update_option( 'zoho_id_for_term_id_' . $term_id, $value );
+				update_option( 'cmbird_zoho_id_for_term_id_' . $term_id, $value );
 			}
 		}
 	}
@@ -594,16 +594,16 @@ function cmbird_zi_category_export( $cat_name, $term_id = '0', $pid = '' ) {
 function cmbird_get_zoho_item_categories() {
 	// $fd = fopen( __DIR__ . '/cmbird_get_zoho_item_categories.txt', 'a+' );
 
-	$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-	$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+	$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+	$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 	$url = $zoho_inventory_url . 'inventory/v1/categories/?organization_id=' . $zoho_inventory_oid;
 
 	$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 	$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 	$code = $json->code;
-	$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-	$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+	$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+	$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 	$url = $zoho_inventory_url . 'inventory/v1/categories/?organization_id=' . $zoho_inventory_oid;
 

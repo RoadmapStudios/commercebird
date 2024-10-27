@@ -21,8 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 function cmbird_clear_product_cache( $object, $request, $is_creating ) {
 	if ( ! $is_creating ) {
 		$product_id = $object->get_id();
-		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
-		$cmbird_zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
+		$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
+		$cmbird_zi_product_sync = get_option( 'cmbird_zoho_disable_product_sync_status' );
 		if ( ! empty( $zoho_inventory_access_token ) && ! $cmbird_zi_product_sync ) {
 			$product_handler = new CMBIRD_Products_ZI_Export();
 			$product_handler->cmbird_zi_product_sync( $product_id );
@@ -39,7 +39,7 @@ add_action( 'woocommerce_rest_insert_product_object', 'cmbird_clear_product_cach
  * @param $user_id
  */
 function cmbird_update_contact_via_accountpage( $user_id ) {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( ! empty( $zoho_inventory_access_token ) ) {
 		$contact_class_handle = new CMBIRD_Contact_ZI();
 		$contact_class_handle->cmbird_contact_update_function( $user_id );
@@ -72,8 +72,8 @@ function cmbird_zi_product_sync_class( $product_id ) {
 			}
 		}
 	}
-	$cmbird_zi_product_sync = get_option( 'zoho_disable_product_sync_status' );
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	$cmbird_zi_product_sync = get_option( 'cmbird_zoho_disable_product_sync_status' );
+	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( ! $cmbird_zi_product_sync && ! empty( $zoho_inventory_access_token ) ) {
 		$product_handler = new CMBIRD_Products_ZI_Export();
 		$product_handler->cmbird_zi_product_sync( $product_id );
@@ -219,7 +219,7 @@ function cmbird_zi_customer_unmap_hook( $order_id ) {
  * Add WordPress Meta box to show sync response
  */
 function cmbird_product_metabox() {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( ! $zoho_inventory_access_token ) {
 		return;
 	}
@@ -332,7 +332,7 @@ function cmbird_item_id_variation_field( $loop, $variation_data, $variation ) {
  * @return string[] $new_columns
  */
 function cmbird_zi_sync_column_orders_overview( $columns ) {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return $columns;
 	}
@@ -357,7 +357,7 @@ add_filter( 'manage_woocommerce_page_wc-orders_columns', 'cmbird_zi_sync_column_
  * @return void
  */
 function cmbird_zi_add_zoho_orders_content( $column, $order_id ) {
-	$zi_url = get_option( 'zoho_inventory_url' );
+	$zi_url = get_option( 'cmbird_zoho_inventory_url' );
 	$zi_visit_url = str_replace( 'www.zohoapis', 'inventory.zoho', $zi_url );
 	switch ( $column ) {
 		case 'zoho_sync':
@@ -404,7 +404,7 @@ add_action( 'manage_product_posts_custom_column', 'cmbird_zi_add_zoho_column_con
  * @return string[] $new_columns
  */
 function cmbird_zi_sync_column_products_overview( $columns ) {
-	$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( empty( $zoho_inventory_access_token ) ) {
 		return $columns;
 	}

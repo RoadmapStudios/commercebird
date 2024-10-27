@@ -16,8 +16,8 @@ class CMBIRD_Products_ZI {
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'APIURL' => get_option( 'zoho_inventory_url' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 			),
 		);
 	}
@@ -56,7 +56,7 @@ class CMBIRD_Products_ZI {
 							continue;
 						}
 
-						$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
+						$zi_disable_itemdescription_sync = get_option( 'cmbird_zoho_disable_description_sync_status' );
 						if ( ! empty( $arr->description ) && ! $zi_disable_itemdescription_sync ) {
 							$product->set_short_description( $arr->description );
 						}
@@ -66,7 +66,7 @@ class CMBIRD_Products_ZI {
 							$product->set_status( $status );
 						}
 
-						$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
+						$zi_disable_itemname_sync = get_option( 'cmbird_zoho_disable_name_sync_status' );
 						if ( ( ! $zi_disable_itemname_sync ) && ! empty( $arr->name ) ) {
 							$product->set_name( stripslashes( $arr->name ) );
 						}
@@ -75,7 +75,7 @@ class CMBIRD_Products_ZI {
 							$product->set_sku( $arr->sku );
 						}
 
-						$zi_disable_itemprice_sync = get_option( 'zoho_disable_price_sync_status' );
+						$zi_disable_itemprice_sync = get_option( 'cmbird_zoho_disable_price_sync_status' );
 						if ( ! empty( $arr->rate ) && ! $zi_disable_itemprice_sync ) {
 							$product->set_regular_price( $arr->rate );
 							$sale_price = $product->get_sale_price();
@@ -94,14 +94,14 @@ class CMBIRD_Products_ZI {
 						$product->update_meta_data( '_cost_price', $arr->purchase_rate );
 
 						// To check status of stock sync option.
-						$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+						$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 						if ( ! $zi_disable_stock_sync ) {
 							$stock = '';
 							// Update stock
-							$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
+							$accounting_stock = get_option( 'cmbird_zoho_enable_accounting_stock_status' );
 							// Sync from specific warehouse check
-							$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-							$warehouse_id = get_option( 'zoho_warehouse_id_status' );
+							$zi_enable_warehousestock = get_option( 'cmbird_zoho_enable_warehousestock_status' );
+							$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
 							$warehouses = $arr->warehouses;
 							if ( $zi_enable_warehousestock ) {
 								foreach ( $warehouses as $warehouse ) {
@@ -180,7 +180,7 @@ class CMBIRD_Products_ZI {
 		}
 
 		// Keep backup of current syncing page of particular category.
-		update_option( 'simple_item_sync_page_cat_id_' . $category, $page );
+		update_option( 'cmbird_simple_item_sync_page_cat_id_' . $category, $page );
 
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
@@ -298,7 +298,7 @@ class CMBIRD_Products_ZI {
 						}
 					}
 					// Sync Featured Image if not disabled.
-					$zi_disable_image_sync = get_option( 'zoho_disable_image_sync_status' );
+					$zi_disable_image_sync = get_option( 'cmbird_zoho_disable_image_sync_status' );
 					if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
 						$image_class = new CMBIRD_Image_ZI();
 						$image_class->cmbird_zi_get_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name, $arr->image_document_id );
@@ -324,7 +324,7 @@ class CMBIRD_Products_ZI {
 				} else {
 					// If there is no more page to sync last backup page will be starting from 1.
 					// This we have used because in shared hosting only 1000 records are syncing.
-					update_option( 'simple_item_sync_page_cat_id_' . $category, 1 );
+					update_option( 'cmbird_simple_item_sync_page_cat_id_' . $category, 1 );
 				}
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
@@ -387,7 +387,7 @@ class CMBIRD_Products_ZI {
 			}
 
 			// Keep backup of current syncing page of particular category.
-			update_option( 'group_item_sync_page_cat_id_' . $category, $page );
+			update_option( 'cmbird_group_item_sync_page_cat_id_' . $category, $page );
 
 			// fwrite($fd, PHP_EOL . 'Test name Update ' . print_r($data, true));
 			global $wpdb;
@@ -406,8 +406,8 @@ class CMBIRD_Products_ZI {
 			$response_msg = array();
 
 			if ( $code === '0' || $code === 0 ) {
-				$zi_disable_description_sync = get_option( 'zoho_disable_description_sync_status' );
-				$zi_disable_name_sync = get_option( 'zoho_disable_name_sync_status' );
+				$zi_disable_description_sync = get_option( 'cmbird_zoho_disable_description_sync_status' );
+				$zi_disable_name_sync = get_option( 'cmbird_zoho_disable_name_sync_status' );
 				// fwrite( $fd, PHP_EOL . '$json->itemgroups : ' . print_r( $json->itemgroups, true ) );
 				foreach ( $json->itemgroups as $gp_arr ) {
 					$zi_group_id = $gp_arr->group_id;
@@ -521,7 +521,7 @@ class CMBIRD_Products_ZI {
 				} else {
 					// If there is no more page to sync last backup page will be starting from 1.
 					// This we have used because in shared hosting only 1000 records are syncing.
-					update_option( 'group_item_sync_page_cat_id_' . $category, 1 );
+					update_option( 'cmbird_group_item_sync_page_cat_id_' . $category, 1 );
 				}
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
@@ -574,10 +574,10 @@ class CMBIRD_Products_ZI {
 
 			// fwrite( $fd, PHP_EOL . 'Items : ' . print_r( $items, true ) );
 			// get the options for stock sync
-			$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-			$warehouse_id = get_option( 'zoho_warehouse_id_status' );
-			$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
-			$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+			$zi_enable_warehousestock = get_option( 'cmbird_zoho_enable_warehousestock_status' );
+			$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
+			$accounting_stock = get_option( 'cmbird_zoho_enable_accounting_stock_status' );
+			$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 
 			foreach ( $items as $item ) {
 				// reset this array
@@ -986,8 +986,8 @@ class CMBIRD_Products_ZI {
 		// $fd = fopen( __DIR__ . '/sync_variation_of_group.txt', 'a+' );
 		global $wpdb;
 		// Stock mode check
-		$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
-		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
+		$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
+		$accounting_stock = get_option( 'cmbird_zoho_enable_accounting_stock_status' );
 		if ( $accounting_stock ) {
 			$stock = $item->available_stock;
 		} else {
@@ -1026,7 +1026,7 @@ class CMBIRD_Products_ZI {
 					update_post_meta( $variation_id, '_cost_price', $item->purchase_rate );
 				}
 				// Price - Imported
-				$zi_disable_price_sync = get_option( 'zoho_disable_price_sync_status' );
+				$zi_disable_price_sync = get_option( 'cmbird_zoho_disable_price_sync_status' );
 				$variation_sale_price = $variation->get_sale_price();
 				if ( empty( $variation_sale_price ) && ! $zi_disable_price_sync ) {
 					$variation->set_sale_price( $item->rate );
@@ -1413,12 +1413,12 @@ class CMBIRD_Products_ZI {
 				return $response_msg;
 			}
 			// Accounting stock mode check
-			$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
+			$accounting_stock = get_option( 'cmbird_zoho_enable_accounting_stock_status' );
 			foreach ( $json->composite_items as $comp_item ) {
 				// fwrite( $fd, PHP_EOL . 'Composite Item : ' . print_r( $comp_item, true ) );
 				// Sync stock from specific warehouse check
-				$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-				$warehouse_id = get_option( 'zoho_warehouse_id_status' );
+				$zi_enable_warehousestock = get_option( 'cmbird_zoho_enable_warehousestock_status' );
+				$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
 				$warehouses = $comp_item->warehouses;
 
 				if ( $zi_enable_warehousestock === true ) {
@@ -1520,7 +1520,7 @@ class CMBIRD_Products_ZI {
 					}
 					// Check if stock sync allowed by plugin.
 					if ( $key === 'available_stock' || $key === 'actual_available_stock' ) {
-						$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+						$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 						if ( ! $zi_disable_stock_sync ) {
 							if ( $stock ) {
 								if ( ! empty( $com_prod_id ) ) {

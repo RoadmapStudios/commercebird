@@ -160,12 +160,12 @@ final class ZohoInventoryAjax {
 	 */
 	public function connection_get(): void {
 		$this->verify();
-		$this->response['account_domain'] = get_option( 'zoho_inventory_domain' );
-		$this->response['organization_id'] = get_option( 'zoho_inventory_oid' );
-		$this->response['client_id'] = get_option( 'zoho_inventory_cid' );
-		$this->response['client_secret'] = get_option( 'zoho_inventory_cs' );
-		$this->response['inventory_url'] = get_option( 'zoho_inventory_url' );
-		$this->response['redirect_uri'] = get_option( 'authorization_redirect_uri' );
+		$this->response['account_domain'] = get_option( 'cmbird_zoho_inventory_domain' );
+		$this->response['organization_id'] = get_option( 'cmbird_zoho_inventory_oid' );
+		$this->response['client_id'] = get_option( 'cmbird_zoho_inventory_cid' );
+		$this->response['client_secret'] = get_option( 'cmbird_zoho_inventory_cs' );
+		$this->response['inventory_url'] = get_option( 'cmbird_zoho_inventory_url' );
+		$this->response['redirect_uri'] = get_option( 'cmbird_authorization_redirect_uri' );
 		$this->serve();
 	}
 
@@ -199,7 +199,7 @@ final class ZohoInventoryAjax {
 	}
 
 	private function get_subscription_data_from_api(): array {
-		$subscription_id = get_option( 'zoho_id_status', 0 );
+		$subscription_id = get_option( 'cmbird_zoho_id_status', 0 );
 		if ( ! $subscription_id ) {
 			return array();
 		}
@@ -299,7 +299,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function fields_get(): void {
 		$this->verify();
-		$this->response['form'] = get_option( 'wootozoho_custom_fields', array() );
+		$this->response['form'] = get_option( 'cmbird_wootozoho_custom_fields', array() );
 		$this->serve();
 	}
 
@@ -311,7 +311,7 @@ final class ZohoInventoryAjax {
 	public function fields_set(): void {
 		$this->verify( array( 'form' ) );
 		try {
-			update_option( 'wootozoho_custom_fields', $this->data['form'] );
+			update_option( 'cmbird_wootozoho_custom_fields', $this->data['form'] );
 			$this->response = array( 'message' => 'saved' );
 		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
@@ -326,7 +326,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function fields_reset(): void {
 		$this->verify();
-		delete_option( 'wootozoho_custom_fields' );
+		delete_option( 'cmbird_wootozoho_custom_fields' );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
@@ -338,9 +338,9 @@ final class ZohoInventoryAjax {
 	 */
 	public function price_reset(): void {
 		$this->verify();
-		delete_option( 'zoho_pricelist_id' );
-		delete_option( 'zoho_pricelist_role' );
-		delete_option( 'zoho_pricelist_wcb2b_groups' );
+		delete_option( 'cmbird_zoho_pricelist_id' );
+		delete_option( 'cmbird_zoho_pricelist_role' );
+		delete_option( 'cmbird_zoho_pricelist_wcb2b_groups' );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
@@ -352,10 +352,10 @@ final class ZohoInventoryAjax {
 	 */
 	public function price_get(): void {
 		$this->verify();
-		$this->response['zoho_inventory_pricelist'] = get_option( 'zoho_pricelist_id' );
-		$this->response['wp_user_role'] = get_option( 'zoho_pricelist_role' );
+		$this->response['zoho_inventory_pricelist'] = get_option( 'cmbird_zoho_pricelist_id' );
+		$this->response['wp_user_role'] = get_option( 'cmbird_zoho_pricelist_role' );
 		if ( class_exists( 'WooCommerceB2B' ) ) {
-			$this->response['wcb2b'] = get_option( 'zoho_pricelist_wcb2b_groups' );
+			$this->response['wcb2b'] = get_option( 'cmbird_zoho_pricelist_wcb2b_groups' );
 		}
 		$this->serve();
 	}
@@ -370,9 +370,9 @@ final class ZohoInventoryAjax {
 			$import_pricelist = new CMBIRD_Pricelist_ZI();
 			$success = $import_pricelist->save_price_list( $this->data );
 			if ( class_exists( 'Addify_B2B_Plugin' ) ) {
-				update_option( 'zoho_pricelist_role', $this->data['wp_user_role'] );
+				update_option( 'cmbird_zoho_pricelist_role', $this->data['wp_user_role'] );
 			} else {
-				update_option( 'zoho_pricelist_wcb2b_groups', $this->data['wcb2b'] );
+				update_option( 'cmbird_zoho_pricelist_wcb2b_groups', $this->data['wcb2b'] );
 			}
 			if ( $success ) {
 				$this->response = array( 'message' => 'Saved' );
@@ -494,8 +494,8 @@ final class ZohoInventoryAjax {
 	 */
 	public function zoho_warehouses_collect(): void {
 		$this->verify();
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$url = $zoho_inventory_url . 'inventory/v1/settings/warehouses?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
@@ -517,7 +517,7 @@ final class ZohoInventoryAjax {
 		}
 		if ( array_key_exists( 'categories', $this->data ) ) {
 			$decode = json_decode( $this->data['categories'] );
-			update_option( 'zoho_item_category', serialize( $decode ) );
+			update_option( 'cmbird_zoho_item_category', serialize( $decode ) );
 		}
 		$this->response = array( 'message' => 'Saved' );
 		$this->serve();
@@ -544,7 +544,7 @@ final class ZohoInventoryAjax {
 			),
 		);
 		$this->response['form']['zi_cron_interval'] = get_option( 'zi_cron_interval', 'none' );
-		$this->response['categories'] = unserialize( get_option( 'zoho_item_category', '' ) );
+		$this->response['categories'] = unserialize( get_option( 'cmbird_zoho_item_category', '' ) );
 		$this->serve();
 	}
 
@@ -566,7 +566,7 @@ final class ZohoInventoryAjax {
 				'disable_description_sync',
 			),
 		);
-		delete_option( 'zoho_item_category' );
+		delete_option( 'cmbird_zoho_item_category' );
 		// delete all options that contain 'zoho_id_for_term_id_'
 		global $wpdb;
 		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE 'zoho_id_for_term_id_%'" );
@@ -599,8 +599,8 @@ final class ZohoInventoryAjax {
 	 */
 	public function connection_done(): void {
 		$this->verify();
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
 		$url = $zoho_inventory_url . 'inventory/v1/organizations/?organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
@@ -658,7 +658,7 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$this->response = array();
 		foreach ( $this->wc_taxes() as $tax ) {
-			$this->response['selectedTaxRates'][] = $tax['id'] . '^^' . get_option( 'zoho_inventory_tax_rate_' . $tax['id'] );
+			$this->response['selectedTaxRates'][] = $tax['id'] . '^^' . get_option( 'cmbird_zoho_inventory_tax_rate_' . $tax['id'] );
 		}
 		$this->serve();
 	}
@@ -699,7 +699,7 @@ final class ZohoInventoryAjax {
 	public function tax_reset(): void {
 		$this->verify();
 		foreach ( $this->wc_taxes() as $tax ) {
-			delete_option( 'zoho_inventory_tax_rate_' . $tax['id'] );
+			delete_option( 'cmbird_zoho_inventory_tax_rate_' . $tax['id'] );
 		}
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
@@ -714,7 +714,7 @@ final class ZohoInventoryAjax {
 		try {
 			foreach ( $rates as $value ) {
 				$valarray = explode( '^^', $value );
-				update_option( 'zoho_inventory_tax_rate_' . $valarray[0], $valarray[1] );
+				update_option( 'cmbird_zoho_inventory_tax_rate_' . $valarray[0], $valarray[1] );
 			}
 			$this->response = array( 'message' => 'Saved' );
 		} catch (Throwable $throwable) {
@@ -739,13 +739,13 @@ final class ZohoInventoryAjax {
 		);
 		try {
 			$inventory = sprintf( 'https://www.zohoapis.%s/', $this->data['account_domain'] );
-			update_option( 'zoho_inventory_domain', $this->data['account_domain'] );
-			update_option( 'zoho_inventory_oid', $this->data['organization_id'] );
-			update_option( 'zoho_inventory_cid', $this->data['client_id'] );
-			update_option( 'zoho_inventory_cs', $this->data['client_secret'] );
-			update_option( 'zoho_inventory_url', $inventory );
-			update_option( 'authorization_redirect_uri', $this->data['redirect_uri'] );
-			update_option( 'woocommerce_enable_guest_checkout', 'no' );
+			update_option( 'cmbird_zoho_inventory_domain', $this->data['account_domain'] );
+			update_option( 'cmbird_zoho_inventory_oid', $this->data['organization_id'] );
+			update_option( 'cmbird_zoho_inventory_cid', $this->data['client_id'] );
+			update_option( 'cmbird_zoho_inventory_cs', $this->data['client_secret'] );
+			update_option( 'cmbird_zoho_inventory_url', $inventory );
+			update_option( 'cmbird_authorization_redirect_uri', $this->data['redirect_uri'] );
+			add_filter( 'pre_option_woocommerce_enable_guest_checkout', '__return_false' );
 			$redirect = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoInventory.FullAccess.all&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
 			$this->response = array(
 				'redirect' => $redirect,
@@ -775,7 +775,7 @@ final class ZohoInventoryAjax {
 			foreach ( $options as $zi_option ) {
 				delete_option( $zi_option );
 			}
-			update_option( 'woocommerce_enable_guest_checkout', 'yes' );
+			add_filter( 'pre_option_woocommerce_enable_guest_checkout', '__return_true' );
 			$this->response = array( 'message' => 'Reset successfully!' );
 		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
@@ -795,8 +795,8 @@ final class ZohoInventoryAjax {
 	 */
 	public function zoho_tax_rates_collect(): void {
 		$this->verify();
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$url = $zoho_inventory_url . 'inventory/v1/settings/taxes?organization_id=' . $zoho_inventory_oid;
 		try {
 			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
@@ -836,10 +836,10 @@ final class ZohoInventoryAjax {
 			try {
 				$access_token = $class_functions->get_zoho_access_token( $code, 'zoho_inventory' );
 				if ( array_key_exists( 'access_token', $access_token ) ) {
-					update_option( 'zoho_inventory_auth_code', $code );
-					update_option( 'zoho_inventory_access_token', $access_token['access_token'] );
-					update_option( 'zoho_inventory_refresh_token', $access_token['refresh_token'] );
-					update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $access_token['expires_in'] );
+					update_option( 'cmbird_zoho_inventory_auth_code', $code );
+					update_option( 'cmbird_zoho_inventory_access_token', $access_token['access_token'] );
+					update_option( 'cmbird_zoho_inventory_refresh_token', $access_token['refresh_token'] );
+					update_option( 'cmbird_zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $access_token['expires_in'] );
 					$this->response = (array) $access_token;
 				} else {
 					$this->errors = (array) $access_token;

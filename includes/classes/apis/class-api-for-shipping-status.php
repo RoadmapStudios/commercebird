@@ -70,8 +70,8 @@ class ShippingWebhook {
 
 			/* Getting Packages if empty in response */
 			if ( empty( $packages ) && ! empty( $post_id ) ) {
-				$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-				$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+				$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+				$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 				$package_url = $zoho_inventory_url . 'inventory/v1/packages?organization_id=' . $zoho_inventory_oid;
 				$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 				$json = $execute_curl_call_handle->execute_curl_call_get( $package_url );

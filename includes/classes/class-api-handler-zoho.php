@@ -19,15 +19,15 @@ class CMBIRD_API_Handler_Zoho {
 	public function __construct() {
 		$this->config = array(
 			'ExecutecallZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'ATOKEN' => get_option( 'zoho_inventory_access_token' ),
-				'RTOKEN' => get_option( 'zoho_inventory_refresh_token' ),
-				'EXPIRESTIME' => get_option( 'zoho_inventory_timestamp' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'ATOKEN' => get_option( 'cmbird_zoho_inventory_access_token' ),
+				'RTOKEN' => get_option( 'cmbird_zoho_inventory_refresh_token' ),
+				'EXPIRESTIME' => get_option( 'cmbird_zoho_inventory_timestamp' ),
 			),
 			'ExecutecallZCRM' => array(
-				'ATOKEN' => get_option( 'zoho_crm_access_token' ),
-				'RTOKEN' => get_option( 'zoho_crm_refresh_token' ),
-				'EXPIRESTIME' => get_option( 'zoho_crm_timestamp' ),
+				'ATOKEN' => get_option( 'cmbird_zoho_crm_access_token' ),
+				'RTOKEN' => get_option( 'cmbird_zoho_crm_refresh_token' ),
+				'EXPIRESTIME' => get_option( 'cmbird_zoho_crm_timestamp' ),
 			),
 		);
 	}
@@ -61,11 +61,11 @@ class CMBIRD_API_Handler_Zoho {
 			}
 			$zoho_access_token = $respo_at_js['access_token'];
 			if ( 'zoho_inventory' === $app_name ) {
-				update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_inventory_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			} else {
-				update_option( 'zoho_crm_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_crm_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			}
 		}
 
@@ -81,9 +81,9 @@ class CMBIRD_API_Handler_Zoho {
 		$status_code = wp_remote_retrieve_response_code( $response );
 		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
 		if ( 429 === $status_code ) {
-			update_option( 'zoho_rate_limit_exceeded', true );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', true );
 		} else {
-			update_option( 'zoho_rate_limit_exceeded', false );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', false );
 		}
 
 		// Check if the request was successful
@@ -128,11 +128,11 @@ class CMBIRD_API_Handler_Zoho {
 
 			$zoho_access_token = $respo_at_js['access_token'];
 			if ( 'zoho_inventory' === $app_name ) {
-				update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_inventory_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			} else {
-				update_option( 'zoho_crm_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_crm_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			}
 		}
 
@@ -148,9 +148,9 @@ class CMBIRD_API_Handler_Zoho {
 		$status_code = wp_remote_retrieve_response_code( $response );
 		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
 		if ( 429 === $status_code ) {
-			update_option( 'zoho_rate_limit_exceeded', true );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', true );
 		} else {
-			update_option( 'zoho_rate_limit_exceeded', false );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', false );
 		}
 
 		// Check if the request was successful
@@ -194,11 +194,11 @@ class CMBIRD_API_Handler_Zoho {
 			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, $app_name );
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			if ( 'zoho_inventory' === $app_name ) {
-				update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_inventory_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			} else {
-				update_option( 'zoho_crm_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_crm_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			}
 		}
 
@@ -215,9 +215,9 @@ class CMBIRD_API_Handler_Zoho {
 		$status_code = wp_remote_retrieve_response_code( $response );
 		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
 		if ( 429 === $status_code ) {
-			update_option( 'zoho_rate_limit_exceeded', true );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', true );
 		} else {
-			update_option( 'zoho_rate_limit_exceeded', false );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', false );
 		}
 
 		// Check if the request was successful
@@ -263,11 +263,11 @@ class CMBIRD_API_Handler_Zoho {
 			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, $app_name );
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
 			if ( 'zoho_inventory' === $app_name ) {
-				update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_inventory_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			} else {
-				update_option( 'zoho_crm_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_crm_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			}
 		}
 
@@ -283,9 +283,9 @@ class CMBIRD_API_Handler_Zoho {
 		$status_code = wp_remote_retrieve_response_code( $response );
 		// if code is 429, update the option "zoho_rate_limit_exceeded" to true
 		if ( 429 === $status_code ) {
-			update_option( 'zoho_rate_limit_exceeded', true );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', true );
 		} else {
-			update_option( 'zoho_rate_limit_exceeded', false );
+			update_option( 'cmbird_zoho_rate_limit_exceeded', false );
 		}
 
 		// Check if the request was successful
@@ -324,8 +324,8 @@ class CMBIRD_API_Handler_Zoho {
 			$respo_at_js = $handlefunction->get_zoho_refresh_token( $zoho_inventory_refresh_token, 'zoho_inventory' );
 
 			$zoho_inventory_access_token = $respo_at_js['access_token'];
-			update_option( 'zoho_inventory_access_token', $respo_at_js['access_token'] );
-			update_option( 'zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+			update_option( 'cmbird_zoho_inventory_access_token', $respo_at_js['access_token'] );
+			update_option( 'cmbird_zoho_inventory_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 
 		}
 		$args = array(

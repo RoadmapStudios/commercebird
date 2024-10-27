@@ -14,7 +14,7 @@ class CMBIRD_Order_Sync_ZI {
 	 * Initialize the class.
 	 */
 	public function __construct() {
-		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+		$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 		if ( ! empty( $zoho_inventory_access_token ) ) {
 			add_action( 'woocommerce_rest_insert_shop_order_object', array( $this, 'on_insert_rest_api' ), 20, 3 );
 			add_filter( 'wcs_renewal_order_created', array( $this, 'cmbird_zi_sync_renewal_order' ), 10, 2 );
@@ -60,7 +60,7 @@ class CMBIRD_Order_Sync_ZI {
 	public function zi_orders_prepare_sync() {
 		$args = func_get_args();
 		$order_id = $args[0];
-		if ( ! get_option( 'zoho_inventory_access_token' ) || ! $order_id ) {
+		if ( ! get_option( 'cmbird_zoho_inventory_access_token' ) || ! $order_id ) {
 			return;
 		}
 		$this->zi_order_sync( $order_id );
@@ -74,7 +74,7 @@ class CMBIRD_Order_Sync_ZI {
 	 * @param boolean $creating True when creating object, false when updating.
 	 */
 	public function on_insert_rest_api( $object, $request, $is_creating ) {
-		if ( empty( get_option( 'zoho_inventory_access_token' ) ) ) {
+		if ( empty( get_option( 'cmbird_zoho_inventory_access_token' ) ) ) {
 			return;
 		}
 		// $fd = fopen(__DIR__ . '/on_insert_rest_api.txt', 'w+');
@@ -98,7 +98,7 @@ class CMBIRD_Order_Sync_ZI {
 	 * Sync Renewal Order to Zoho once it's created.
 	 */
 	public function cmbird_zi_sync_renewal_order( $renewal_order, $subscription ) {
-		if ( empty( get_option( 'zoho_inventory_access_token' ) ) ) {
+		if ( empty( get_option( 'cmbird_zoho_inventory_access_token' ) ) ) {
 			return $renewal_order;
 		}
 
@@ -131,8 +131,8 @@ class CMBIRD_Order_Sync_ZI {
 		}
 
 		if ( $zi_customer_id ) {
-			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+			$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+			$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
@@ -158,8 +158,8 @@ class CMBIRD_Order_Sync_ZI {
 		if ( ! $zi_customer_id ) {
 
 			// First check based on customer email address
-			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+			$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+			$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 			// fwrite($fd,PHP_EOL.'$user_mail : '.$user_email);
 			$url = $zoho_inventory_url . 'inventory/v1/contacts?organization_id=' . $zoho_inventory_oid . '&email=' . $user_email;
 
@@ -213,8 +213,8 @@ class CMBIRD_Order_Sync_ZI {
 			// echo $message;
 			return $zi_customer_id;
 		} else {
-			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+			$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+			$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 			$get_url = $zoho_inventory_url . 'inventory/v1/contacts/' . $zi_customer_id . '/contactpersons/?organization_id=' . $zoho_inventory_oid;
 
 			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
@@ -392,7 +392,7 @@ class CMBIRD_Order_Sync_ZI {
 
 					$qty = ( $val['quantity'] ) ? $val['quantity'] : 1;
 					// adding warehouse_id in line items array
-					$warehouse_id = get_option( 'zoho_warehouse_id_status' );
+					$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
 					if ( $warehouse_id > 0 ) {
 						$warehouse_id = ',"warehouse_id": "' . $warehouse_id . '"';
 					} else {
@@ -487,7 +487,7 @@ class CMBIRD_Order_Sync_ZI {
 				$response_msg = '';
 
 				// Send orders as confirmed
-				$order_status = get_option( 'zoho_enable_order_status_status' );
+				$order_status = get_option( 'cmbird_zoho_enable_order_status_status' );
 				if ( $order_status ) {
 					$pdt1 .= ',"order_status": "draft"';
 				} else {
@@ -505,7 +505,7 @@ class CMBIRD_Order_Sync_ZI {
 				}
 
 				// Custom Field mapping with zoho.
-				$getmappedfields = get_option( 'wootozoho_custom_fields' );
+				$getmappedfields = get_option( 'cmbird_wootozoho_custom_fields' );
 				$customfield = ',"custom_fields":[';
 
 				$data = json_decode( $getmappedfields, true );
@@ -526,12 +526,12 @@ class CMBIRD_Order_Sync_ZI {
 				$pdt1 .= $customfield . ']';
 
 				// If auto order number is enabled.
-				$enabled_auto_no = get_option( 'zoho_enable_auto_number_status' );
+				$enabled_auto_no = get_option( 'cmbird_zoho_enable_auto_number_status' );
 				$transaction_id = $order->get_transaction_id();
 				if ( empty( $transaction_id ) ) {
 					$transaction_id = $order->get_meta( '_order_number', true );
 				}
-				$order_prefix = get_option( 'zoho_order_prefix_status' );
+				$order_prefix = get_option( 'cmbird_zoho_order_prefix_status' );
 				$reference_no = '';
 				if ( class_exists( 'WCJ_Order_Numbers' ) || class_exists( 'WC_Seq_Order_Number_Pro' ) ) {
 					$reference_no = $order_prefix . $transaction_id;
@@ -582,7 +582,7 @@ class CMBIRD_Order_Sync_ZI {
 		if ( ! $order_id ) {
 			return;
 		}
-		$zoho_inventory_access_token = get_option( 'zoho_inventory_access_token' );
+		$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 		if ( empty( $zoho_inventory_access_token ) ) {
 			return;
 		}
@@ -596,8 +596,8 @@ class CMBIRD_Order_Sync_ZI {
 
 		if ( $order_status == 'cancelled' || $order_status == 'wc-merged' ) {
 			$zi_sales_order_id = $order->get_meta( 'zi_salesorder_id', true );
-			$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-			$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+			$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+			$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 			$url = $zoho_inventory_url . 'inventory/v1/salesorders/' . $zi_sales_order_id . '/status/void?organization_id=' .
 				$zoho_inventory_oid;
@@ -629,8 +629,8 @@ class CMBIRD_Order_Sync_ZI {
 		//start logging
 		// $fd = fopen( __DIR__ . '/order-sync-backend.txt', 'w+' );
 
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 		$data = array(
 			'JSONString' => '{' . $pdt1 . '}',
@@ -640,7 +640,7 @@ class CMBIRD_Order_Sync_ZI {
 		//logging
 		// fwrite($fd, PHP_EOL . 'Data log : ' . print_r($data, true));
 
-		$enabled_auto_no = get_option( 'zoho_enable_auto_number_status' );
+		$enabled_auto_no = get_option( 'cmbird_zoho_enable_auto_number_status' );
 		$ignore_auto_no = ( $enabled_auto_no ) ? 'false' : 'true';
 		$url = $zoho_inventory_url . 'inventory/v1/salesorders?ignore_auto_number_generation=' . $ignore_auto_no;
 
@@ -680,8 +680,8 @@ class CMBIRD_Order_Sync_ZI {
 		// $fd = fopen( __DIR__. '/single_saleorder_update.txt', 'w+' );
 
 		$response = array();
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 		$url = $zoho_inventory_url . 'inventory/v1/salesorders/' . $zi_sales_order_id;
 		$data = array(

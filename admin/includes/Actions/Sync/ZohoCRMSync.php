@@ -18,7 +18,7 @@ class ZohoCRMSync {
 	 * @return array | \WP_Error
 	 */
 	public static function get_custom_fields( $module ) {
-		$zoho_crm_url = get_option( 'zoho_crm_url' );
+		$zoho_crm_url = get_option( 'cmbird_zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/settings/fields?module=' . $module;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
@@ -51,11 +51,11 @@ class ZohoCRMSync {
 	 */
 	public static function refresh_token() {
 		// return if there is no access token
-		if ( empty( get_option( 'zoho_crm_access_token' ) ) ) {
+		if ( empty( get_option( 'cmbird_zoho_crm_access_token' ) ) ) {
 			return;
 		}
-		$zoho_refresh_token = get_option( 'zoho_crm_refresh_token' );
-		$zoho_timestamp = get_option( 'zoho_crm_timestamp' );
+		$zoho_refresh_token = get_option( 'cmbird_zoho_crm_refresh_token' );
+		$zoho_timestamp = get_option( 'cmbird_zoho_crm_timestamp' );
 		$current_time = strtotime( gmdate( 'Y-m-d H:i:s' ) );
 		if ( $zoho_timestamp < $current_time ) {
 			$handlefunction = new CMBIRD_Auth_Zoho();
@@ -63,8 +63,8 @@ class ZohoCRMSync {
 			if ( empty( $respo_at_js ) || ! array_key_exists( 'access_token', $respo_at_js ) ) {
 				return new WP_Error( 403, 'Access denied!' );
 			} else {
-				update_option( 'zoho_crm_access_token', $respo_at_js['access_token'] );
-				update_option( 'zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
+				update_option( 'cmbird_zoho_crm_access_token', $respo_at_js['access_token'] );
+				update_option( 'cmbird_zoho_crm_timestamp', strtotime( gmdate( 'Y-m-d H:i:s' ) ) + $respo_at_js['expires_in'] );
 			}
 		}
 	}

@@ -76,7 +76,7 @@ final class Template {
 			'commercebird_admin',
 			array(
 				'security_token' => wp_create_nonce( self::NAME ),
-				'api_token' => get_option( 'zi_webhook_password', false ),
+				'api_token' => get_option( 'cmbird_zi_webhook_password', false ),
 				'webhooks' => array(
 					'Items' => ProductWebhook::endpoint(),
 					'Order Create' => CreateOrderWebhook::endpoint(),
@@ -93,7 +93,7 @@ final class Template {
 				'wcb2b_enabled' => class_exists( 'WooCommerceB2B' ),
 				'wcb2b_groups' => get_transient( 'wc_b2b_groups' ),
 				'site_url' => site_url(),
-				'eo_sync' => get_option( 'commmercebird_exact_online_sync_orders' ),
+				'eo_sync' => get_option( 'cmbird_exact_online_sync_orders' ),
 			),
 		);
 	}

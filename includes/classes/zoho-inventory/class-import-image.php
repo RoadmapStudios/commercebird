@@ -25,8 +25,8 @@ class CMBIRD_Image_ZI {
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
-				'OID' => get_option( 'zoho_inventory_oid' ),
-				'APIURL' => get_option( 'zoho_inventory_url' ),
+				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
+				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 			),
 		);
 	}

@@ -51,9 +51,9 @@ class ProductWebhook {
 		}
 
 		// Accounting stock mode check
-		$accounting_stock = get_option( 'zoho_enable_accounting_stock_status' );
-		$zi_enable_warehousestock = get_option( 'zoho_enable_warehousestock_status' );
-		$warehouse_id = get_option( 'zoho_warehouse_id_status' );
+		$accounting_stock = get_option( 'cmbird_zoho_enable_accounting_stock_status' );
+		$zi_enable_warehousestock = get_option( 'cmbird_zoho_enable_warehousestock_status' );
+		$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
 
 		// variable item sync
 		if ( array_key_exists( 'item', $data ) ) {
@@ -135,13 +135,13 @@ class ProductWebhook {
 
 			if ( ! empty( $group_id ) ) {
 				$existing_parent_product = wc_get_product( $group_id );
-				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
+				$zi_disable_itemdescription_sync = get_option( 'cmbird_zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					// fwrite($fd, PHP_EOL . 'Item description update : ' . $item_description);
 					$existing_parent_product->set_short_description( $item_description );
 				}
 				// Update the name of the variable product if allowed
-				$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
+				$zi_disable_itemname_sync = get_option( 'cmbird_zoho_disable_name_sync_status' );
 				if ( ! $zi_disable_itemname_sync ) {
 					$existing_parent_product->set_name( $item['group_name'] );
 					$slug = sanitize_title( $item['group_name'] );
@@ -175,7 +175,7 @@ class ProductWebhook {
 				}
 				$variation->set_regular_price( $item_price );
 				// Stock
-				$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+				$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 				if ( ! empty( $item_stock ) && ! $zi_disable_stock_sync ) {
 					// fwrite($fd, PHP_EOL . 'Stock is here:'. $item_stock);
 					$variation->set_stock_quantity( $item_stock );
@@ -186,7 +186,7 @@ class ProductWebhook {
 					$variation->set_manage_stock( false );
 				}
 				// featured image
-				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
+				$zi_disable_itemimage_sync = get_option( 'cmbird_zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new CMBIRD_Image_ZI();
@@ -231,7 +231,7 @@ class ProductWebhook {
 				}
 
 				// here actually create new variation because sku not found
-				$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+				$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 				$variation = new WC_Product_Variation();
 				$variation->set_parent_id( $group_id );
 				$variation->set_status( 'publish' );
@@ -292,7 +292,7 @@ class ProductWebhook {
 				}
 
 				// featured image
-				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
+				$zi_disable_itemimage_sync = get_option( 'cmbird_zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new CMBIRD_Image_ZI();
 					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image, $item['image_document_id'] );
@@ -330,7 +330,7 @@ class ProductWebhook {
 
 				// Check if Category is selected before creating simple item
 				if ( 'publish' === $item_status ) {
-					$opt_category = get_option( 'zoho_item_category' );
+					$opt_category = get_option( 'cmbird_zoho_item_category' );
 					$category_id = $item['category_id'];
 					if ( $opt_category ) {
 						$opt_category = unserialize( $opt_category );
@@ -347,7 +347,7 @@ class ProductWebhook {
 			if ( ! empty( $pdt_id ) ) {
 				$simple_product = wc_get_product( $pdt_id );
 				// update the name if its allowed
-				$zi_disable_itemname_sync = get_option( 'zoho_disable_name_sync_status' );
+				$zi_disable_itemname_sync = get_option( 'cmbird_zoho_disable_name_sync_status' );
 				if ( ! $zi_disable_itemname_sync ) {
 					$simple_product->set_name( $item_name );
 					$slug = sanitize_title( $item_name );
@@ -368,7 +368,7 @@ class ProductWebhook {
 				// Update Purchase price
 				$simple_product->update_meta_data( '_cost_price', $item['purchase_rate'] );
 				// description
-				$zi_disable_itemdescription_sync = get_option( 'zoho_disable_description_sync_status' );
+				$zi_disable_itemdescription_sync = get_option( 'cmbird_zoho_disable_description_sync_status' );
 				if ( ! empty( $item_description ) && ! $zi_disable_itemdescription_sync ) {
 					$simple_product->set_short_description( $item_description );
 				}
@@ -379,7 +379,7 @@ class ProductWebhook {
 					wp_set_object_terms( $pdt_id, $item_brand, 'product_brands' );
 				}
 				// stock
-				$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+				$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 				if ( ! $zi_disable_stock_sync ) {
 					// fwrite( $fd, PHP_EOL . 'Inside1' );
 					if ( 'NULL' !== gettype( $item_stock ) ) {
@@ -409,7 +409,7 @@ class ProductWebhook {
 				$simple_product->set_height( $height );
 
 				// featured image
-				$zi_disable_itemimage_sync = get_option( 'zoho_disable_image_sync_status' );
+				$zi_disable_itemimage_sync = get_option( 'cmbird_zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new CMBIRD_Image_ZI();
 					$image_class->cmbird_zi_get_image( $item_id, $item_name, $pdt_id, $item_image, $item['image_document_id'] );
@@ -500,7 +500,7 @@ class ProductWebhook {
 
 		if ( ! empty( $mapped_product_id ) ) {
 			// stock
-			$zi_disable_stock_sync = get_option( 'zoho_disable_stock_sync_status' );
+			$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
 			$product = wc_get_product( $mapped_product_id );
 			// Check if the product is in stock
 			if ( ! $zi_disable_stock_sync ) {

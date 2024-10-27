@@ -159,8 +159,8 @@ class Zoho extends WP_REST_Controller {
 		$rest_response->set_status( 400 );
 
 		// connection
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . 'inventory/v1/organizations/' . $zoho_inventory_oid . '?organization_id=' . $zoho_inventory_oid;
 
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
@@ -203,8 +203,8 @@ class Zoho extends WP_REST_Controller {
 	}
 
 	public function get_zi_invoices(): WP_REST_Response {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/invoices/?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'invoices', 'invoices' );
 	}
@@ -222,15 +222,15 @@ class Zoho extends WP_REST_Controller {
 			$rest_response->set_status( 400 );
 			return rest_ensure_response( $rest_response );
 		}
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/invoices/$invoice_id?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'invoice', 'invoice' );
 	}
 
 	public function get_zi_purchase_orders(): WP_REST_Response {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders/?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'purchaseorders', 'purchaseorders' );
 	}
@@ -248,22 +248,22 @@ class Zoho extends WP_REST_Controller {
 			$rest_response->set_status( 400 );
 			return rest_ensure_response( $rest_response );
 		}
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders/$purchaseorder_id?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'purchaseorder', 'purchase_order' );
 	}
 
 	public function get_zi_vendors( $request ): WP_REST_RESPONSE {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/vendors?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'contacts', 'users' );
 	}
 
 	public function get_zi_vendor_details( $request ): WP_REST_RESPONSE {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 		$rest_response = new WP_REST_Response();
 		$rest_response->set_data( $this->empty_response );
@@ -280,8 +280,8 @@ class Zoho extends WP_REST_Controller {
 		return $this->handle_get_api_request( $get_url, 'contact', 'vendor' );
 	}
 	public function delete_zi_vendor( $request ): WP_REST_Response {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 		$rest_response = new WP_REST_Response();
 		$rest_response->set_data( $this->empty_response );
@@ -321,8 +321,8 @@ class Zoho extends WP_REST_Controller {
 
 
 	public function create_zi_vendor( $request ) {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 		$rest_response = new WP_REST_Response();
 		$rest_response->set_data( $this->empty_response );
@@ -365,8 +365,8 @@ class Zoho extends WP_REST_Controller {
 	}
 
 	public function update_zi_vendor_details( $request ): WP_REST_Response {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 
 		$rest_response = new WP_REST_Response();
 		$rest_response->set_data( $this->empty_response );
@@ -416,8 +416,8 @@ class Zoho extends WP_REST_Controller {
 	}
 
 	public function get_zi_warehouses( $request ): WP_REST_RESPONSE {
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/settings/warehouses?organization_id=$zoho_inventory_oid";
 		return $this->handle_get_api_request( $get_url, 'warehouses', 'warehouses' );
 	}
@@ -435,8 +435,8 @@ class Zoho extends WP_REST_Controller {
 			$rest_response->set_status( 400 );
 			return rest_ensure_response( $rest_response );
 		}
-		$zoho_inventory_oid = get_option( 'zoho_inventory_oid' );
-		$zoho_inventory_url = get_option( 'zoho_inventory_url' );
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$get_url = $zoho_inventory_url . "inventory/v1/purchaseorders?organization_id=$zoho_inventory_oid&ignore_auto_number_generation=false";
 
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
