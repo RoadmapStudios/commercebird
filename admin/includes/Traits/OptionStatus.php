@@ -16,7 +16,7 @@ trait OptionStatus {
 	 */
 	private function option_status_update( array $form ): bool {
 		foreach ( $form as $key => $value ) {
-			update_option( $this->getName( $key ), $value ?? '' );
+			update_option( $this->get_name( $key ), $value ?? '' );
 		}
 
 		return true;
@@ -29,8 +29,8 @@ trait OptionStatus {
 	 *
 	 * @return string The generated status name.
 	 */
-	public function getName( string $key ): string {
-		return 'zoho_' . $key . '_status';
+	public function get_name( string $key ): string {
+		return 'cmbird_zoho_' . $key . '_status';
 	}
 
 	/**
@@ -43,7 +43,7 @@ trait OptionStatus {
 	private function option_status_get( array $keys ): array {
 		$options = array();
 		foreach ( $keys as $key ) {
-			$options[ $key ] = get_option( $this->getName( $key ), '' );
+			$options[ $key ] = get_option( $this->get_name( $key ), '' );
 		}
 
 		return $options;
@@ -59,7 +59,7 @@ trait OptionStatus {
 	 */
 	private function option_status_remove( array $keys ): bool {
 		foreach ( $keys as $key ) {
-			delete_option( $this->getName( $key ) );
+			delete_option( $this->get_name( $key ) );
 		}
 
 		return true;

@@ -4,7 +4,7 @@
  * Plugin URI:  https://commercebird.com
  * Author:      CommerceBird
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho Inventory, Zoho CRM, Exact Online and more. Requires a subscription at CommerceBird.com.
- * Version: 2.2.3
+ * Version: 2.2.4
  * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  * Requires at least: 6.5
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 if ( ! defined( 'CMBIRD_VERSION' ) ) {
-	define( 'CMBIRD_VERSION', '2.2.3' );
+	define( 'CMBIRD_VERSION', '2.2.4' );
 }
 if ( ! defined( 'CMBIRD_PATH' ) ) {
 	define( 'CMBIRD_PATH', plugin_dir_path( __FILE__ ) );
@@ -171,10 +171,6 @@ add_action( 'upgrader_process_complete', 'cmbird_update_plugin_tasks', 10, 2 );
 function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
 	$this_plugin = plugin_basename( __FILE__ );
 
-	if ( '2.2.4' < CMBIRD_VERSION ) {
-		return;
-	}
-
 	if ( $options['action'] === 'update' && $options['type'] === 'plugin' ) {
 		foreach ( $options['plugins'] as $plugin ) {
 			if ( $plugin === $this_plugin ) {
@@ -190,8 +186,10 @@ function cmbird_update_plugin_tasks( $upgrader_object, $options ) {
 				// add 'cmbird_' to every option key name that starts with 'zoho_' using wpdb query
 				$zoho_options = $wpdb->get_results( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'zoho_%' OR option_name LIKE 'zi_%'" );
 				foreach ( $zoho_options as $zoho_option ) {
-					$new_option_name = 'cmbird_' . $zoho_option->option_name;
-					$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->options SET option_name = %s WHERE option_name = %s", $new_option_name, $zoho_option->option_name ) );
+					if ( strpos( $zoho_option->option_name, 'cmbird_' ) !== 0 ) {
+						$new_option_name = 'cmbird_' . $zoho_option->option_name;
+						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->options SET option_name = %s WHERE option_name = %s", $new_option_name, $zoho_option->option_name ) );
+					}
 				}
 			}
 		}

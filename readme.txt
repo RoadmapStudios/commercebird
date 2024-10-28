@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.6.2
 Requires PHP: 7.4
-Stable tag: 2.2.3
+Stable tag: 2.2.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,6 +79,10 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.4 - October 28 2024 =
+* Fix: update phone number during customer update to Zoho Inventory
+* Tweak: added 'cmbird' prefix to all options
+
 = 2.2.3 - October 19 2024 =
 * New: Purchase Orders in WooCommerce using WC API
 * Fix: Zoho Inventory Purchase Orders API - vendors

@@ -4,8 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-use WC_REST_Orders_Controller;
-
 /**
  * Class to extend WC REST API for custom order type 'shop_purchase'
  */

@@ -765,12 +765,12 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		try {
 			$options = array(
-				'zoho_inventory_domain',
-				'zoho_inventory_oid',
-				'zoho_inventory_cid',
-				'zoho_inventory_cs',
-				'zoho_inventory_url',
-				'zoho_inventory_access_token',
+				'cmbird_zoho_inventory_domain',
+				'cmbird_zoho_inventory_oid',
+				'cmbird_zoho_inventory_cid',
+				'cmbird_zoho_inventory_cs',
+				'cmbird_zoho_inventory_url',
+				'cmbird_zoho_inventory_access_token',
 			);
 			foreach ( $options as $zi_option ) {
 				delete_option( $zi_option );
