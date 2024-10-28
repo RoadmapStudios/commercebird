@@ -1,4 +1,4 @@
-=== CommerceBird - Smart ERP ===
+=== CommerceBird ===
 Contributors: fawadinho
 Author link: https://commercebird.com
 Tags: shop,store,ecommerce,commerce,e-commerce
