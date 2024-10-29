@@ -39,7 +39,6 @@ class Plugin {
 		wp_clear_scheduled_hook( 'cmbird_exact_online_sync_orders' );
 		wp_clear_scheduled_hook( 'cmbird_zoho_sync_category_cron' );
 		wp_clear_scheduled_hook( 'cmbird_zoho_contact_sync' );
-		add_filter( 'pre_option_woocommerce_enable_guest_checkout', '__return_true' );
 	}
 
 	public static function uninstall() {

@@ -745,7 +745,6 @@ final class ZohoInventoryAjax {
 			update_option( 'cmbird_zoho_inventory_cs', $this->data['client_secret'] );
 			update_option( 'cmbird_zoho_inventory_url', $inventory );
 			update_option( 'cmbird_authorization_redirect_uri', $this->data['redirect_uri'] );
-			add_filter( 'pre_option_woocommerce_enable_guest_checkout', '__return_false' );
 			$redirect = esc_url_raw( 'https://accounts.zoho.' . $this->data['account_domain'] . '/oauth/v2/auth?response_type=code&client_id=' . $this->data['client_id'] . '&scope=ZohoInventory.FullAccess.all&redirect_uri=' . $this->data['redirect_uri'] . '&prompt=consent&access_type=offline&state=' . wp_create_nonce( Template::NAME ) );
 			$this->response = array(
 				'redirect' => $redirect,
@@ -775,7 +774,6 @@ final class ZohoInventoryAjax {
 			foreach ( $options as $zi_option ) {
 				delete_option( $zi_option );
 			}
-			add_filter( 'pre_option_woocommerce_enable_guest_checkout', '__return_true' );
 			$this->response = array( 'message' => 'Reset successfully!' );
 		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );

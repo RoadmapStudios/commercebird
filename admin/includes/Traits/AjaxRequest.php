@@ -3,7 +3,6 @@
 namespace CommerceBird\Admin\Traits;
 
 use CommerceBird\Admin\Template;
-use WP_Filesystem_Direct;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -45,22 +44,22 @@ trait AjaxRequest {
 	 */
 	private function verify( array $keys = array() ): void {
 		check_ajax_referer( Template::NAME, 'security_token' );
+
+		// Initialize the response and errors
 		$this->response = array(
 			'success' => true,
 		);
 		$this->errors = array();
-		$this->request = array_map( 'sanitize_text_field', $_REQUEST );
-		$wpfsd = new WP_Filesystem_Direct( false );
-		$contents = $wpfsd->get_contents( 'php://input' );
-		// $contents = file_get_contents( 'php://input' );
-		$contents = sanitize_text_field( $contents );
-		$decode = json_decode( $contents, true );
-		if ( ! empty( $decode ) ) {
-			$data = $this->extract_data( $decode, $keys );
-			if ( ! empty( $data ) ) {
-				$this->data = $data;
-			} else {
-				$this->data = array();
+
+		// Sanitize and decode JSON data from AJAX request
+		$this->request = array_map( 'sanitize_text_field', wp_unslash( $_REQUEST ) );
+		$json_data = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // Assuming JSON data is sent in 'data'
+
+		if ( $json_data ) {
+			$decode = json_decode( $json_data, true );
+			if ( ! empty( $decode ) && is_array( $decode ) ) {
+				$data = $this->extract_data( $decode, $keys );
+				$this->data = ! empty( $data ) ? $data : array();
 			}
 		}
 	}
