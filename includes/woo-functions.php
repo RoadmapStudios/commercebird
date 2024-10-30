@@ -41,8 +41,14 @@ add_action( 'woocommerce_rest_insert_product_object', 'cmbird_clear_product_cach
 function cmbird_update_contact_via_accountpage( $user_id ) {
 	$zoho_inventory_access_token = get_option( 'cmbird_zoho_inventory_access_token' );
 	if ( ! empty( $zoho_inventory_access_token ) ) {
-		$contact_class_handle = new CMBIRD_Contact_ZI();
-		$contact_class_handle->cmbird_contact_update_function( $user_id );
+		$zi_contact_person_id = get_user_meta( $user_id, 'zi_contact_person_id', true );
+		if ( empty( $zi_contact_person_id ) ) {
+			$contact_class_handle = new CMBIRD_Contact_ZI();
+			$contact_class_handle->cmbird_contact_update_function( $user_id );
+		} else {
+			$contact_class_handle = new CMBIRD_Contact_ZI();
+			$contact_class_handle->cmbird_update_contact_person( $user_id, $zi_contact_person_id );
+		}
 	} else {
 		return;
 	}

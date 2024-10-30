@@ -79,6 +79,10 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.5 - October 30 2024 =
+* Fix: update also zoho contact person phone during customer update
+* Fix: ajax error on saving plugin settings
+
 = 2.2.4 - October 28 2024 =
 * Fix: update phone number during customer update to Zoho Inventory
 * Tweak: added 'cmbird' prefix to all options
