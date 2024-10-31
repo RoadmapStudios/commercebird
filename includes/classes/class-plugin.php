@@ -163,7 +163,7 @@ class Plugin {
 			$zoho_options = $wpdb->get_results( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'zoho_%' OR option_name LIKE 'zi_%'" );
 			foreach ( $zoho_options as $zoho_option ) {
 				// Skip if the option name already starts with 'cmbird_' or is exactly 'cmbird_zi_webhook_password'
-				if ( strpos( $zoho_option->option_name, 'cmbird_' ) !== 0 && 'cmbird_zi_webhook_password' !== $zoho_option->option_name ) {
+				if ( strpos( $zoho_option->option_name, 'cmbird_' ) !== 0 ) {
 					$new_option_name = 'cmbird_' . $zoho_option->option_name;
 					$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->options SET option_name = %s WHERE option_name = %s", $new_option_name, $zoho_option->option_name ) );
 				}
