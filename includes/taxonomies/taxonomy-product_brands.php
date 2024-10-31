@@ -53,6 +53,8 @@ function cmbird_register_custom_product_taxonomies() {
 		),
 		'show_admin_column'     => true,
 		'show_in_rest'          => true,
+		'rest_base'             => 'brands',
+		'rest_controller_class' => 'WP_REST_Terms_Controller',
 		'show_tagcloud'         => false,
 		'show_in_quick_edit'    => true,
 		'sort'                  => true,
