@@ -50,18 +50,38 @@ trait AjaxRequest {
 			'success' => true,
 		);
 		$this->errors = array();
-
-		// Sanitize and decode JSON data from AJAX request
 		$this->request = array_map( 'sanitize_text_field', wp_unslash( $_REQUEST ) );
-		$json_data = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // Assuming JSON data is sent in 'data'
 
+		// Try to detect JSON content in the request if specific data key is not used
+		$json_data = null;
+
+		if ( empty( $_POST ) ) {
+			// Attempt to retrieve raw JSON content if POST is empty
+			$contents = trim( file_get_contents( 'php://input' ) );
+
+			// Check if contents contain valid JSON
+			if ( $this->is_json( $contents ) ) {
+				$json_data = sanitize_text_field( $contents );
+			}
+		}
+
+		// Decode JSON if found, then extract data
 		if ( $json_data ) {
 			$decode = json_decode( $json_data, true );
-			if ( ! empty( $decode ) && is_array( $decode ) ) {
+			if ( ! empty( $decode ) ) {
 				$data = $this->extract_data( $decode, $keys );
 				$this->data = ! empty( $data ) ? $data : array();
 			}
 		}
+	}
+
+
+	/**
+	 * Utility to check if a string is JSON.
+	 */
+	private function is_json( string $string ): bool {
+		json_decode( $string );
+		return json_last_error() === JSON_ERROR_NONE;
 	}
 
 	/**
