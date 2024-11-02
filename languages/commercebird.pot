@@ -1,0 +1,848 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: CommerceBird\n"
+"POT-Creation-Date: 2024-11-02 19:54+0100\n"
+"PO-Revision-Date: 2024-11-02 19:52+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.5\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: commercebird.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: admin/assets/node_modules\n"
+"X-Poedit-SearchPathExcluded-2: build/commercebird/vendor\n"
+"X-Poedit-SearchPathExcluded-3: vendor\n"
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:79
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:79
+msgid "Synced"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:116
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:116
+msgid "No Invoice orders found"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:143
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:143
+msgid "Payment status updated"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:180
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:241
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:180
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:241
+msgid "Select dates"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:197
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:197
+msgid "Mapped"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:249
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:249
+msgid "Exported"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:278
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:300
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:278
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:300
+msgid "Items are being mapped in background. You can visit other tabs :)."
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:324
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:324
+msgid "Cost centers not found"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:333
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:333
+msgid "Cost centers saved"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:342
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:342
+msgid "Cost units not found"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:351
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:351
+msgid "Cost units saved"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:360
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:360
+msgid "GL accounts not found"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:369
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:369
+msgid "GL accounts saved"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:399
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:399
+msgid "Saved"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:402
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:402
+msgid "Token is required"
+msgstr ""
+
+#: admin/includes/Actions/Ajax/ZohoInventoryAjax.php:147
+#: build/commercebird/admin/includes/Actions/Ajax/ZohoInventoryAjax.php:147
+msgid "Please set label"
+msgstr ""
+
+#: admin/includes/Actions/Sync/ExactOnlineSync.php:272
+#: build/commercebird/admin/includes/Actions/Sync/ExactOnlineSync.php:272
+msgid "Payment processed in Exact Online"
+msgstr ""
+
+#: admin/includes/Actions/Sync/ExactOnlineSync.php:278
+#: build/commercebird/admin/includes/Actions/Sync/ExactOnlineSync.php:278
+msgid "Payment not processed in Exact Online"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+#. Author of the plugin/theme
+#: admin/includes/Template.php:27 admin/includes/Template.php:28
+#: build/commercebird/admin/includes/Template.php:27
+#: build/commercebird/admin/includes/Template.php:28
+msgid "CommerceBird"
+msgstr ""
+
+#: build/commercebird/data-sync.php:125 data-sync.php:125
+msgid "Please select at least one category from cron tab"
+msgstr ""
+
+#: build/commercebird/data-sync.php:152 data-sync.php:152
+msgid "Items are being imported in background. You can visit other tabs :)."
+msgstr ""
+
+#. translators: 1: order number, 2: Store name
+#: build/commercebird/includes/classes/apis/class-api-for-woo-order.php:98
+#: includes/classes/apis/class-api-for-woo-order.php:98
+#, php-format
+msgid ""
+"Zoho order #%1$s could not be created in your store %2$s because of missing "
+"line items."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-api-for-woo-order.php:99
+#: build/commercebird/includes/classes/apis/class-api-for-woo-order.php:110
+#: includes/classes/apis/class-api-for-woo-order.php:99
+#: includes/classes/apis/class-api-for-woo-order.php:110
+msgid "Zoho Order Sync"
+msgstr ""
+
+#. translators: 1: order number, 2: Store name, 3: missing items
+#: build/commercebird/includes/classes/apis/class-api-for-woo-order.php:109
+#: includes/classes/apis/class-api-for-woo-order.php:109
+#, php-format
+msgid ""
+"Zoho order #%1$s could not be created in your store %2$s because of missing "
+"items: %3$s"
+msgstr ""
+
+#. translators: 1: order number, 2: Store name.
+#: build/commercebird/includes/classes/apis/class-api-for-woo-sf-order.php:60
+#: includes/classes/apis/class-api-for-woo-sf-order.php:60
+#, php-format
+msgid ""
+"SF order #%1$s could not be created in your store %2$s because of missing "
+"line items."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-api-for-woo-sf-order.php:61
+#: build/commercebird/includes/classes/apis/class-api-for-woo-sf-order.php:73
+#: includes/classes/apis/class-api-for-woo-sf-order.php:61
+#: includes/classes/apis/class-api-for-woo-sf-order.php:73
+msgid "SF Order Sync"
+msgstr ""
+
+#. translators: 1: order number, 2: Store name, 3: missing items
+#: build/commercebird/includes/classes/apis/class-api-for-woo-sf-order.php:72
+#: includes/classes/apis/class-api-for-woo-sf-order.php:72
+#, php-format
+msgid ""
+"SF order #%1$s could not be created in your store %2$s because of missing "
+"items: %3$s"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:45
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:45
+msgid "Type of item to list (\"users\", \"posts\", \"products\", etc)"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:53
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:53
+msgid "Parameter to sort items by (default \"modified\")"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:62
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:62
+msgid "ASC or DESC (default \"DESC\")"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:74
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:74
+msgid "last_modified after this date"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:80
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:80
+msgid "last_modified before that date"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:86
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:86
+msgid "The maximum returned number of results (needed in pagination)"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:92
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:92
+msgid "Offset the returned results (needed in pagination)"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:97
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:97
+msgid ""
+"When used with number, defines the page of results to return. Default 1."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-list-items-api-controller.php:102
+#: includes/classes/apis/class-commercebird-list-items-api-controller.php:102
+msgid "Status of posts to retrieve"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-media-api-controller.php:111
+#: includes/classes/apis/class-commercebird-media-api-controller.php:111
+msgid "Image encoded as base64."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-media-api-controller.php:116
+#: includes/classes/apis/class-commercebird-media-api-controller.php:116
+msgid "The title for the object."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-media-api-controller.php:120
+#: includes/classes/apis/class-commercebird-media-api-controller.php:120
+msgid "Path to directory where file will be uploaded."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-media-api-controller.php:132
+#: includes/classes/apis/class-commercebird-media-api-controller.php:132
+msgid "Whether to bypass trash and force deletion."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:104
+#: includes/classes/apis/class-commercebird-metadata-controller.php:104
+msgid "Array of products to change."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:107
+#: includes/classes/apis/class-commercebird-metadata-controller.php:107
+msgid "Post object"
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:112
+#: includes/classes/apis/class-commercebird-metadata-controller.php:112
+msgid "Post ID."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:117
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:120
+#: includes/classes/apis/class-commercebird-metadata-controller.php:117
+#: includes/classes/apis/class-commercebird-metadata-controller.php:120
+msgid "Array of meta and taxonomy fields to change."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:124
+#: includes/classes/apis/class-commercebird-metadata-controller.php:124
+msgid "Field or taxonomy name."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:129
+#: includes/classes/apis/class-commercebird-metadata-controller.php:129
+msgid "Value."
+msgstr ""
+
+#: build/commercebird/includes/classes/apis/class-commercebird-metadata-controller.php:134
+#: includes/classes/apis/class-commercebird-metadata-controller.php:134
+msgid "Key type. Possible values are \"meta\" and \"taxonomy\"."
+msgstr ""
+
+#: build/commercebird/includes/classes/class-plugin.php:197
+#: includes/classes/class-plugin.php:197
+msgid "Once Weekly"
+msgstr ""
+
+#: build/commercebird/includes/classes/class-plugin.php:203
+#: includes/classes/class-plugin.php:203
+msgid "Once Monthly"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:43
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:53
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:95
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:52
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:43
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:53
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:95
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:52
+msgid "Purchase Orders"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:64
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:64
+msgid "Add New Purchase Order"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:74
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:74
+msgid "Edit purchase"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:53
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:53
+msgid "Purchase Order"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:54
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:54
+msgctxt "custom post type setting"
+msgid "Add Purchase"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:55
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:55
+msgctxt "custom post type setting"
+msgid "Add New Purchase"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:56
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:56
+msgctxt "custom post type setting"
+msgid "Edit"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:57
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:57
+msgctxt "custom post type setting"
+msgid "Edit Purchase"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:58
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:58
+msgctxt "custom post type setting"
+msgid "New Purchase"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:59
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:60
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:59
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:60
+msgctxt "custom post type setting"
+msgid "View Purchase"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:61
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:61
+msgid "Search Purchases"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:62
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:62
+msgctxt "custom post type setting"
+msgid "No Purchases found in trash"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:63
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:63
+msgctxt "custom post type setting"
+msgid "Parent Purchases"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:64
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:64
+msgid "Purchases"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:88
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:88
+msgctxt "Order status"
+msgid "Awaiting Approval"
+msgstr ""
+
+#. translators: 1-2: 1: count
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:94
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:94
+#, php-format
+msgid "Awaiting Approval <span class=\"count\">(%s)</span>"
+msgid_plural "Awaiting Approval <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:101
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:101
+msgctxt "Order status"
+msgid "Approved"
+msgstr ""
+
+#. translators: 1-2: 1: count
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:107
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:107
+#, php-format
+msgid "Approved <span class=\"count\">(%s)</span>"
+msgid_plural "Approved <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:114
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:114
+msgctxt "Order status"
+msgid "Received"
+msgstr ""
+
+#. translators: 1-2: 1: count
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:120
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:120
+#, php-format
+msgid "Received <span class=\"count\">(%s)</span>"
+msgid_plural "Received <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:127
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:127
+msgid "Vendor"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:173
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:173
+msgid "Change status to awaiting approval"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:174
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:174
+msgid "Change status to approved"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:175
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:175
+msgid "Change status to received"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:291
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:291
+msgid "Address line 1"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:297
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:297
+msgid "Address line 2"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:303
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:303
+msgid "City"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:309
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:309
+msgid "State"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:315
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:315
+msgid "Country"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:321
+#: includes/classes/purchase-orders/class-wc-purchase-order.php:321
+msgid "Postcode / ZIP"
+msgstr ""
+
+#: build/commercebird/includes/classes/purchase-orders/class-wc-rest-shop-purchase-controller.php:55
+#: includes/classes/purchase-orders/class-wc-rest-shop-purchase-controller.php:55
+msgid "Sorry, you are not allowed to create purchase orders."
+msgstr ""
+
+#: build/commercebird/includes/sync/order-backend.php:98
+#: includes/sync/order-backend.php:98
+msgid "Sync to Zoho"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:13
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:15
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:41
+#: includes/taxonomies/taxonomy-product_brands.php:13
+#: includes/taxonomies/taxonomy-product_brands.php:15
+#: includes/taxonomies/taxonomy-product_brands.php:41
+msgid "Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:14
+#: includes/taxonomies/taxonomy-product_brands.php:14
+msgid "Brand"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:16
+#: includes/taxonomies/taxonomy-product_brands.php:16
+msgid "All Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:17
+#: includes/taxonomies/taxonomy-product_brands.php:17
+msgid "Edit Brand"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:18
+#: includes/taxonomies/taxonomy-product_brands.php:18
+msgid "View Brand"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:19
+#: includes/taxonomies/taxonomy-product_brands.php:19
+msgid "Update Brand name"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:20
+#: includes/taxonomies/taxonomy-product_brands.php:20
+msgid "Add new Brand"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:21
+#: includes/taxonomies/taxonomy-product_brands.php:21
+msgid "New Brand name"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:22
+#: includes/taxonomies/taxonomy-product_brands.php:22
+msgid "Parent Brand"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:23
+#: includes/taxonomies/taxonomy-product_brands.php:23
+msgid "Parent Brand:"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:24
+#: includes/taxonomies/taxonomy-product_brands.php:24
+msgid "Search Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:25
+#: includes/taxonomies/taxonomy-product_brands.php:25
+msgid "Popular Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:26
+#: includes/taxonomies/taxonomy-product_brands.php:26
+msgid "Separate Brands with commas"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:27
+#: includes/taxonomies/taxonomy-product_brands.php:27
+msgid "Add or remove Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:28
+#: includes/taxonomies/taxonomy-product_brands.php:28
+msgid "Choose from the most used Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:29
+#: includes/taxonomies/taxonomy-product_brands.php:29
+msgid "No Brands found"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:30
+#: includes/taxonomies/taxonomy-product_brands.php:30
+msgid "No Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:31
+#: includes/taxonomies/taxonomy-product_brands.php:31
+msgid "Brands list navigation"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:32
+#: includes/taxonomies/taxonomy-product_brands.php:32
+msgid "Brands list"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:33
+#: includes/taxonomies/taxonomy-product_brands.php:33
+msgid "Back to Brands"
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:34
+#: includes/taxonomies/taxonomy-product_brands.php:34
+msgid "The name is how it appears on your site."
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:35
+#: includes/taxonomies/taxonomy-product_brands.php:35
+msgid ""
+"Assign a parent term to create a hierarchy. The term Jazz, for example, "
+"would be the parent of Bebop and Big Band."
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:36
+#: includes/taxonomies/taxonomy-product_brands.php:36
+msgid ""
+"The slug is the URL-friendly version of the name. It is usually all "
+"lowercase and contains only letters, numbers, and hyphens."
+msgstr ""
+
+#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:37
+#: includes/taxonomies/taxonomy-product_brands.php:37
+msgid ""
+"The description is not prominent by default; however, some themes may show "
+"it."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:162
+#: build/commercebird/includes/wc-am-client.php:163
+#: build/commercebird/includes/wc-am-client.php:279
+#: build/commercebird/includes/wc-am-client.php:280
+#: includes/wc-am-client.php:162 includes/wc-am-client.php:163
+#: includes/wc-am-client.php:279 includes/wc-am-client.php:280
+#, php-format
+msgid "%s"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:164
+#: build/commercebird/includes/wc-am-client.php:628
+#: includes/wc-am-client.php:164 includes/wc-am-client.php:628
+msgid "API Key Activation"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:165
+#: includes/wc-am-client.php:165
+msgid "API Key Deactivation"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:404
+#: includes/wc-am-client.php:404
+msgid "Auto-updates unavailable."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:413
+#: includes/wc-am-client.php:413
+msgid "Auto-updates enabled"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:415
+#: includes/wc-am-client.php:415
+msgid "Auto-updates disabled"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:421
+#: includes/wc-am-client.php:421
+msgid "Disable auto-updates"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:425
+#: includes/wc-am-client.php:425
+msgid "Enable auto-updates"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:521
+#: includes/wc-am-client.php:521
+msgid ""
+"The API Key could not be deactivated. Use the API Key Deactivation tab to "
+"manually deactivate the API Key before activating a new API Key. If all else "
+"fails, go to Plugins, then deactivate and reactivate this plugin, or if a "
+"theme change themes, then change back to this theme, then go to the Settings "
+"for this plugin/theme and enter the API Key information again to activate "
+"it. Also check the My Account dashboard to see if the API Key for this site "
+"was still active before the error message was displayed."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:552
+#: includes/wc-am-client.php:552
+#, php-format
+msgid ""
+"The <strong>%1$s</strong> API Key has not been activated, so the %2$s is "
+"inactive! %3$sClick here%4$s to activate <strong>%5$s</strong>."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:572
+#: includes/wc-am-client.php:572
+#, php-format
+msgid ""
+"<b>Warning!</b> You're blocking external requests which means you won't be "
+"able to get %1$s updates. Please add %2$s to %3$s."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:607
+#: build/commercebird/includes/wc-am-client.php:611
+#: includes/wc-am-client.php:607 includes/wc-am-client.php:611
+msgid "Save Changes"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:637
+#: includes/wc-am-client.php:637
+msgid "API Key"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:652
+#: includes/wc-am-client.php:652
+msgid "Product ID"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:673
+#: includes/wc-am-client.php:673
+msgid "API Key Status"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:683
+#: includes/wc-am-client.php:683
+msgid "Activation Info"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:702
+#: includes/wc-am-client.php:702
+msgid "API Deactivation"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:711
+#: includes/wc-am-client.php:711
+msgid "Deactivate API Key"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:728
+#: includes/wc-am-client.php:728
+msgid "Activated"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:732
+#: includes/wc-am-client.php:732
+msgid "Deactivated"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:817
+#: includes/wc-am-client.php:817
+msgid "Previous activation attempt errors:"
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:924
+#: includes/wc-am-client.php:924
+#, php-format
+msgid "%s activated. "
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:931
+#: includes/wc-am-client.php:931
+msgid ""
+"Connection failed to the License Key API server. See the Activation Error "
+"section below for details. There may be a problem on your server preventing "
+"outgoing requests, or the store is blocking your request to activate the "
+"plugin/theme."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:940
+#: includes/wc-am-client.php:940
+msgid ""
+"The API Key activation could not be completed due to an error on the store "
+"server or your server. See the Activation Error section below for details. "
+"The activation results were empty."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:967
+#: includes/wc-am-client.php:967
+msgid "API Key deactivated. "
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:978
+#: includes/wc-am-client.php:978
+msgid ""
+"The API Key activation could not be completed due to an unknown error "
+"possibly on the store server The activation results were empty."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:1007
+#: includes/wc-am-client.php:1007
+msgid "Deactivates an API Key so it can be used on another blog."
+msgstr ""
+
+#: build/commercebird/includes/wc-am-client.php:1032
+#: build/commercebird/includes/wc-am-client.php:1074
+#: includes/wc-am-client.php:1032 includes/wc-am-client.php:1074
+msgid "The API Key is missing from the deactivation request."
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:234
+#: includes/woo-functions.php:234
+msgid "Zoho Inventory"
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:276
+#: build/commercebird/includes/woo-functions.php:307
+#: includes/woo-functions.php:276 includes/woo-functions.php:307
+msgid "Cost Price"
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:278
+#: build/commercebird/includes/woo-functions.php:309
+#: includes/woo-functions.php:278 includes/woo-functions.php:309
+msgid "You can edit this via the CommerceBird App"
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:284
+#: build/commercebird/includes/woo-functions.php:316
+#: includes/woo-functions.php:284 includes/woo-functions.php:316
+msgid "Exact Item ID"
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:287
+#: build/commercebird/includes/woo-functions.php:319
+#: includes/woo-functions.php:287 includes/woo-functions.php:319
+msgid "This is the Exact Item ID of this product. You cannot change this"
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:293
+#: build/commercebird/includes/woo-functions.php:326
+#: includes/woo-functions.php:293 includes/woo-functions.php:326
+msgid "Zoho Item ID"
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:296
+#: build/commercebird/includes/woo-functions.php:329
+#: includes/woo-functions.php:296 includes/woo-functions.php:329
+msgid "This is the Zoho Item ID of this product. You cannot change this"
+msgstr ""
+
+#: build/commercebird/includes/woo-functions.php:351
+#: build/commercebird/includes/woo-functions.php:424
+#: includes/woo-functions.php:351 includes/woo-functions.php:424
+msgid "Zoho Sync"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://commercebird.com"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"This plugin helps you get the most of CommerceBird by allowing you to upload "
+"product images, use integrations like Zoho Inventory, Zoho CRM, Exact Online "
+"and more. Requires a subscription at CommerceBird.com."
+msgstr ""
