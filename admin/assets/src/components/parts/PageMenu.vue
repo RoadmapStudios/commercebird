@@ -12,8 +12,8 @@ import Logo from "@/components/logo.vue";
 import { useExactOnlineStore } from "@/stores/exactOnline";
 import { backendAction } from "@/keys";
 import { useStorage } from "@/composable/storage";
-import Swal from "sweetalert2";
 import { useZohoCrmStore } from "@/stores/zohoCrm";
+import Swal from "sweetalert2";
 
 const showMobileMenu = ref(false);
 const loader = useLoadingStore();
