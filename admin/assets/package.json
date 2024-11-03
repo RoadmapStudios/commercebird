@@ -15,7 +15,7 @@
     "notyf": "^3.10.0",
     "pinia": "^2.1.7",
     "postcss-prefix-selector": "^1.16.1",
-    "sweetalert2": "^11.6.13",
+    "sweetalert2": "^11.14.4",
     "vue": "^3.4.25",
     "vue-router": "^4.3.2",
     "vue-sweetalert2": "^5.0.11",
