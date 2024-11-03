@@ -2,8 +2,8 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": [
     "./src/**/*.ts",
-    "./src/**/*.vue"
-
+    "./src/**/*.vue",
+    "./src/*.js"
   ],
   "compilerOptions": {
     "composite": true,

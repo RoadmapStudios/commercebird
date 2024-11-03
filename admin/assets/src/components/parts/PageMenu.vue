@@ -30,7 +30,7 @@ const clearCache = () => {
 };
 
 const checkIfActiveIntegration = (integrationName: any) => {
-  if (homepage.subscription.fee_lines) {
+  if (homepage.subscription && 'fee_lines' in homepage.subscription) {
     const integration = homepage.subscription.fee_lines.find(
       (feeLine: { name: any; }) => feeLine.name === integrationName
     );
@@ -41,7 +41,7 @@ const checkIfActiveIntegration = (integrationName: any) => {
         text: `Please activate this integration first via the App`,
         icon: "info",
         confirmButtonText: "Activate",
-      }).then((action) => {
+      }).then((action: { isConfirmed: any; }) => {
         if (action.isConfirmed) {
           window.open("https://app.commercebird.com/integrations", "_blank");
         }
