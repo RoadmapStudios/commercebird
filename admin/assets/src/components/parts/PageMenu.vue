@@ -6,6 +6,10 @@ import { useHomepageStore } from "@/stores/homepage";
 import { formatDate } from "@/composable/helpers";
 import Sidebar from "../ui/Sidebar.vue";
 import LoaderIcon from "../ui/LoaderIcon.vue";
+import { BellAlertIcon } from "@heroicons/vue/24/solid";
+import { XMarkIcon } from "@heroicons/vue/24/solid";
+import { Bars3Icon } from "@heroicons/vue/24/solid";
+import { TagIcon } from "@heroicons/vue/24/solid";
 import { useZohoInventoryStore } from "@/stores/zohoInventory";
 import BaseButton from "../ui/BaseButton.vue";
 import Logo from "@/components/logo.vue";
@@ -181,7 +185,7 @@ const checkIfActiveIntegration = (integrationName: any) => {
               <template #content>
                 <div class="flow-root">
                   <LoaderIcon
-                    v-if="loader.isLoading(backendAction.get_changelog)"
+                    v-if="loader.isLoading(backendAction.homepage.changelog)"
                   />
                   <ul
                     v-if="Object.keys(homepage.changelog).length > 0"

@@ -18,7 +18,7 @@ const loader = useLoadingStore()
 <template>
   <Card :foot="true" title="Settings">
     <template #action>
-      <LoaderIcon :loading="loader.isLoading(backendAction.get_settings)"/>
+      <LoaderIcon :loading="loader.isLoading(backendAction.homepage.settings.get)"/>
     </template>
     <div class=" px-4 space-y-4 mb-[50px]">
       <InputGroup label="Enable CORS">

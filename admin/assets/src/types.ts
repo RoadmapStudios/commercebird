@@ -151,7 +151,6 @@ export type StoreKey = {
 }
 
 export type BackendAction = {
-    get_changelog(get_changelog: any): unknown;
     homepage: {
         settings: { get: string; save: string; reset: string; };
         changelog: string;
