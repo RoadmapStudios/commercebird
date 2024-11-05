@@ -6,14 +6,13 @@ import { useHomepageStore } from "@/stores/homepage";
 import { formatDate } from "@/composable/helpers";
 import Sidebar from "../ui/Sidebar.vue";
 import LoaderIcon from "../ui/LoaderIcon.vue";
-import { BellAlertIcon } from "@heroicons/vue/24/solid";
-import { XMarkIcon } from "@heroicons/vue/24/solid";
-import { Bars3Icon } from "@heroicons/vue/24/solid";
-import { TagIcon } from "@heroicons/vue/24/solid";
+import { BellAlertIcon } from "@heroicons/vue/24/outline";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { Bars3Icon } from "@heroicons/vue/24/outline";
+import { TagIcon } from "@heroicons/vue/24/outline";
 import { useZohoInventoryStore } from "@/stores/zohoInventory";
 import BaseButton from "../ui/BaseButton.vue";
 import Logo from "@/components/logo.vue";
-import { useExactOnlineStore } from "@/stores/exactOnline";
 import { backendAction } from "@/keys";
 import { useStorage } from "@/composable/storage";
 import { useZohoCrmStore } from "@/stores/zohoCrm";
@@ -24,13 +23,19 @@ const loader = useLoadingStore();
 const homepage = useHomepageStore();
 const zoho = useZohoInventoryStore();
 const zohoCrm = useZohoCrmStore();
-const exact = useExactOnlineStore();
 const router = useRouter();
 
 const clearCache = () => {
   loader.setLoading("clear_cache");
   useStorage().removeAll();
   loader.clearLoading("clear_cache");
+};
+
+const icons = {
+  bell: BellAlertIcon,
+  tag: TagIcon,
+  bars: Bars3Icon,
+  close: XMarkIcon
 };
 
 const checkIfActiveIntegration = (integrationName: any) => {
@@ -66,8 +71,7 @@ const checkIfActiveIntegration = (integrationName: any) => {
             @click.prevent="showMobileMenu = !showMobileMenu"
           >
             <span class="sr-only">Open main menu</span>
-            <XMarkIcon v-if="showMobileMenu" />
-            <Bars3Icon v-else />
+            <component :is="showMobileMenu ? icons.close : icons.bars" />
           </button>
         </div>
         <div
@@ -179,9 +183,9 @@ const checkIfActiveIntegration = (integrationName: any) => {
               title="Announcement"
               toggle-class="flex items-center justify-center w-6 h-6 cursor-pointer sm:w-8 sm:h-8 whitespace-nowrap "
             >
-              <template #toggleIcon>
-                <BellAlertIcon />
-              </template>
+            <template #toggleIcon>
+              <component :is="icons.bell" aria-hidden="true" class="w-6 h-6" />
+            </template>
               <template #content>
                 <div class="flow-root">
                   <LoaderIcon
@@ -205,7 +209,7 @@ const checkIfActiveIntegration = (integrationName: any) => {
                             <div
                               class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full ring-8 ring-white"
                             >
-                              <TagIcon class="w-5 h-5 text-gray-600" />
+                              <component :is="icons.tag" aria-hidden="true" class="w-5 h-5 text-gray-600" />
                             </div>
                           </div>
                           <div class="flex-1 min-w-0">
@@ -326,13 +330,9 @@ const checkIfActiveIntegration = (integrationName: any) => {
           }"
           class="block p-2 text-base font-medium border-l-4"
           to="/exact-online"
-        >
-          <span
-            class="flex items-baseline justify-between gap-2"
-            @click.prevent="checkIfActiveIntegration('ExactOnline')"
+           @click.prevent="checkIfActiveIntegration('ExactOnline')"
           >
             Exact Online
-          </span>
         </router-link>
       </div>
       <div class="flex p-2">

@@ -45,7 +45,7 @@
                             @click.prevent="closeSlideOver"
                           >
                             <span class="sr-only">Close panel</span>
-                            <XMarkIcon aria-hidden="true" class="w-6 h-6" />
+                            <component :is="XMarkIcon" aria-hidden="true" class="w-6 h-6" />
                           </button>
                         </div>
                       </div>
@@ -86,6 +86,8 @@ defineProps({
 
 const slideOver = ref<Boolean>(false);
 const slideOverRoot = ref<Boolean>(false);
+
+const close = XMarkIcon;
 
 const openSlideOver = () => {
   slideOverRoot.value = true;

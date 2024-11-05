@@ -12,7 +12,7 @@
         </div>
         <div class="min-w-fit">
           <BaseLink href="https://app.commercebird.com" target="_blank">
-            <ArrowTopRightOnSquareIcon class="w-4 h-4"/>
+            <component :is="arrow" class="w-4 h-4"/>
             Launch App
           </BaseLink>
         </div>
@@ -25,4 +25,6 @@ import Card from "@/components/ui/Card.vue";
 import {ArrowTopRightOnSquareIcon} from "@heroicons/vue/24/solid";
 import BaseLink from "@/components/ui/BaseLink.vue";
 import { bannerImage } from "@/composable/helpers";
+
+const arrow = ArrowTopRightOnSquareIcon;
 </script>
