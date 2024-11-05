@@ -3,9 +3,9 @@ Contributors: fawadinho
 Author link: https://commercebird.com
 Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
-Tested up to: 6.6.2
+Tested up to: 6.7.0
 Requires PHP: 7.4
-Stable tag: 2.2.4
+Stable tag: 2.2.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,6 +79,15 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.7 - November 5 2024 =
+* Fix: connection saving not working for all hosting
+* Fix: icons vue not showing
+* Tweak: added English POT language
+
+= 2.2.6 - October 31 2024 =
+* Fix: connection saving
+* Fix: getting all product brands via app
+
 = 2.2.5 - October 30 2024 =
 * Fix: update also zoho contact person phone during customer update
 * Fix: ajax error on saving plugin settings

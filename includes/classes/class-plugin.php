@@ -155,19 +155,6 @@ class Plugin {
 					wp_clear_scheduled_hook( 'zi_execute_import_sync' );
 				}
 			}
-			// TODO: remove this wpdb query in next major version - 28 October 2024 - v2.2.4
-			// change the post meta key name from "cost_price" to "_cost_price" using wpdb query
-			global $wpdb;
-			$wpdb->query( "UPDATE $wpdb->postmeta SET meta_key = '_cost_price' WHERE meta_key = 'cost_price'" );
-			// add 'cmbird_' to every option key name that starts with 'zoho_' or 'zi_' using wpdb query
-			$zoho_options = $wpdb->get_results( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'zoho_%' OR option_name LIKE 'zi_%'" );
-			foreach ( $zoho_options as $zoho_option ) {
-				// Skip if the option name already starts with 'cmbird_' or is exactly 'cmbird_zi_webhook_password'
-				if ( strpos( $zoho_option->option_name, 'cmbird_' ) !== 0 ) {
-					$new_option_name = 'cmbird_' . $zoho_option->option_name;
-					$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->options SET option_name = %s WHERE option_name = %s", $new_option_name, $zoho_option->option_name ) );
-				}
-			}
 			// create webhook password if does not exists.
 			if ( ! get_option( 'cmbird_zi_webhook_password', false ) ) {
 				add_option( 'cmbird_zi_webhook_password', password_hash( 'commercebird-zi-webhook-token', PASSWORD_BCRYPT ) );

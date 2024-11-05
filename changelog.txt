@@ -1,3 +1,8 @@
+Version 2.2.7 - November 5 2024
+* Fix: connection saving not working for all hosting
+* Fix: icons vue not showing
+* Tweak: added English POT language
+
 Version 2.2.6 - October 31 2024
 * Fix: connection saving
 * Fix: getting all product brands via app
