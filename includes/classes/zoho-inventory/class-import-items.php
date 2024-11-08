@@ -84,26 +84,30 @@ class CMBIRD_Products_ZI {
 							}
 						}
 
-						$details = $arr->package_details;
-						$product->set_weight( floatval( $details->weight ) );
-						$product->set_length( floatval( $details->length ) );
-						$product->set_width( floatval( $details->width ) );
-						$product->set_height( floatval( $details->height ) );
+						if ( isset( $arr->package_details ) ) {
+							$details = $arr->package_details;
+							if ( is_object( $details ) ) {
+								$product->set_weight( floatval( $details->weight ) );
+								$product->set_length( floatval( $details->length ) );
+								$product->set_width( floatval( $details->width ) );
+								$product->set_height( floatval( $details->height ) );
+							}
+						}
 
 						// Update Purchase Rate as Cost Price
 						$product->update_meta_data( '_cost_price', $arr->purchase_rate );
 
 						// To check status of stock sync option.
 						$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
-						if ( ! $zi_disable_stock_sync ) {
+						if ( ! $zi_disable_stock_sync && isset( $arr->available_for_sale_stock ) ) {
 							$stock = '';
 							// Update stock
 							$accounting_stock = get_option( 'cmbird_zoho_enable_accounting_stock_status' );
 							// Sync from specific warehouse check
 							$zi_enable_warehousestock = get_option( 'cmbird_zoho_enable_warehousestock_status' );
-							$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
-							$warehouses = $arr->warehouses;
-							if ( $zi_enable_warehousestock && isset( $warehouses ) ) {
+							if ( $zi_enable_warehousestock && isset( $arr->warehouses ) ) {
+								$warehouses = $arr->warehouses;
+								$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
 								foreach ( $warehouses as $warehouse ) {
 									if ( $warehouse->warehouse_id === $warehouse_id ) {
 										if ( $accounting_stock ) {
@@ -119,7 +123,7 @@ class CMBIRD_Products_ZI {
 								$stock = $arr->actual_available_for_sale_stock;
 							}
 
-							if ( $stock ) {
+							if ( is_numeric( $stock ) ) {
 								$product->set_manage_stock( true );
 								$product->set_stock_quantity( number_format( $stock, 0, '.', '' ) );
 								if ( $stock > 0 ) {
@@ -167,11 +171,17 @@ class CMBIRD_Products_ZI {
 		// $fd = fopen( __DIR__ . '/simple-items-sync.txt', 'a+' );
 
 		$args = func_get_args();
-		if ( ! empty( $args ) ) {
-			$data = $args[0];
-			if ( isset( $data['page'] ) && isset( $data['category'] ) ) {
-				$page = $data['page'];
-				$category = $data['category'];
+		// fwrite( $fd, PHP_EOL . 'Args ' . print_r( $args, true ) );
+		if ( is_array( $args ) ) {
+			if ( isset( $args['page'] ) && isset( $args['category'] ) ) {
+				$page = $args['page'];
+				$category = $args['category'];
+			} elseif ( isset( $args[0] ) && isset( $args[1] ) ) {
+				$page = $args[0];
+				$category = $args[1];
+			} elseif ( isset( $args[0] ) && ! isset( $args[1] ) ) {
+				$page = $args[0]['page'];
+				$category = $args[0]['category'];
 			} else {
 				return;
 			}
@@ -250,8 +260,8 @@ class CMBIRD_Products_ZI {
 						}
 					} catch (Exception $e) {
 						// fwrite( $fd, PHP_EOL . 'Error : ' . $e->getMessage() );
-						throw new Exception( esc_html( $e->getMessage() ) );
-						// continue;
+						// throw new Exception( esc_html( $e->getMessage() ) );
+						continue;
 					}
 				}
 
@@ -313,13 +323,16 @@ class CMBIRD_Products_ZI {
 				$item_details_url = "{$zoho_inventory_url}inventory/v1/itemdetails?item_ids={$item_id_str}&organization_id={$zoho_inventory_oid}";
 				$this->zi_item_bulk_sync( $item_details_url );
 
-				if ( $json->page_context['has_more_page'] ) {
-					$data = (object) array();
-					$data->page = $page + 1;
-					$data->category = $category;
+				if ( isset( $json->page_context ) && $json->page_context->has_more_page ) {
+					$data = array(
+						'page' => $page + 1,
+						'category' => $category,
+					);
+					// fwrite( $fd, PHP_EOL . 'Data: ' . print_r( $data, true ) );
 					$existing_schedule = as_has_scheduled_action( 'import_simple_items_cron', array( $data ) );
 					if ( ! $existing_schedule ) {
 						as_schedule_single_action( time(), 'import_simple_items_cron', array( $data ) );
+						// fwrite( $fd, PHP_EOL . 'Scheduled' );
 					}
 				} else {
 					// If there is no more page to sync last backup page will be starting from 1.
@@ -378,10 +391,19 @@ class CMBIRD_Products_ZI {
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
-			$data = $args[0];
-			if ( isset( $data['page'] ) && isset( $data['category'] ) ) {
-				$page = $data['page'];
-				$category = $data['category'];
+			if ( is_array( $args ) ) {
+				if ( isset( $args['page'] ) && isset( $args['category'] ) ) {
+					$page = $args['page'];
+					$category = $args['category'];
+				} elseif ( isset( $args[0] ) && isset( $args[1] ) ) {
+					$page = $args[0];
+					$category = $args[1];
+				} elseif ( isset( $args[0] ) && ! isset( $args[1] ) ) {
+					$page = $args[0]['page'];
+					$category = $args[0]['category'];
+				} else {
+					return;
+				}
 			} else {
 				return;
 			}
@@ -509,14 +531,15 @@ class CMBIRD_Products_ZI {
 					} // create variable product
 				} // end foreach group items
 
-				if ( $json->page_context->has_more_page ) {
-					$data_arr = (object) array();
-					$data_arr->page = $page + 1;
-					$data_arr->category = $category;
-					$existing_schedule = as_has_scheduled_action( 'import_group_items_cron', array( $data_arr ) );
+				if ( isset( $json->page_context ) && $json->page_context->has_more_page ) {
+					$data = array(
+						'page' => $page + 1,
+						'category' => $category,
+					);
+					$existing_schedule = as_has_scheduled_action( 'import_group_items_cron', $data );
 					// Check if the scheduled action exists
 					if ( ! $existing_schedule ) {
-						as_schedule_single_action( time(), 'import_group_items_cron', array( $data_arr ) );
+						as_schedule_single_action( time(), 'import_group_items_cron', $data );
 					}
 				} else {
 					// If there is no more page to sync last backup page will be starting from 1.
