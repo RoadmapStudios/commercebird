@@ -387,7 +387,10 @@ class CMBIRD_Order_Sync_ZI {
 					}
 
 					$product_description = isset( $val['product_desc'] ) ? $val['product_desc'] : '';
-					$product_desc = str_replace( '"', '', $product_description );
+					if ( ! empty( $product_description ) ) {
+						$product_desc = sanitize_text_field( $product_description );
+						$product_desc = preg_replace( '/[^A-Za-z0-9 :\-]/', '', $product_desc );
+					}
 					$discount_per_item = '';
 
 					$qty = ( $val['quantity'] ) ? $val['quantity'] : 1;
