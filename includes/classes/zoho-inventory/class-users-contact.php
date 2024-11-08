@@ -449,6 +449,8 @@ class CMBIRD_Contact_ZI {
 				$company_name = isset( $contacts->company_name ) ? $contacts->company_name : '';
 				$credit_limit1 = $contacts->customer_credit_limit;
 				$credit_limit = preg_replace( '/[^0-9,]/', '', $credit_limit1 );
+				$gst_no = isset( $contacts->gst_no ) ? $contacts->gst_no : '';
+				$gst_treatment = isset( $contacts->gst_treatment ) ? $contacts->gst_treatment : '';
 				//check if user type is customer
 				if ( ! empty( $email ) ) {
 					if ( $contact_type === 'customer' && ! email_exists( $email ) ) {
@@ -462,6 +464,10 @@ class CMBIRD_Contact_ZI {
 							update_user_meta( $user_id, 'billing_last_name', $last_name );
 							update_user_meta( $user_id, 'first_name', $first_name );
 							update_user_meta( $user_id, 'last_name', $last_name );
+							update_user_meta( $user_id, 'billing_email', $email );
+							// add gst_no and gst_treatment
+							update_user_meta( $user_id, 'gst_no', $gst_no );
+							update_user_meta( $user_id, 'gst_treatment', $gst_treatment );
 							if ( class_exists( 'WooCommerceB2B' ) ) {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}
@@ -480,6 +486,9 @@ class CMBIRD_Contact_ZI {
 							update_user_meta( $user_id, 'billing_last_name', $last_name );
 							update_user_meta( $user_id, 'first_name', $first_name );
 							update_user_meta( $user_id, 'last_name', $last_name );
+							// update gst_no and gst_treatment
+							update_user_meta( $user_id, 'gst_no', $gst_no );
+							update_user_meta( $user_id, 'gst_treatment', $gst_treatment );
 							if ( class_exists( 'WooCommerceB2B' ) ) {
 								update_user_meta( $user_id, 'wcb2b_unpaid_limit', intval( $credit_limit ) );
 							}

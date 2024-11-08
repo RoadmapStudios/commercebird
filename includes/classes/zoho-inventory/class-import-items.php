@@ -103,7 +103,7 @@ class CMBIRD_Products_ZI {
 							$zi_enable_warehousestock = get_option( 'cmbird_zoho_enable_warehousestock_status' );
 							$warehouse_id = get_option( 'cmbird_zoho_warehouse_id_status' );
 							$warehouses = $arr->warehouses;
-							if ( $zi_enable_warehousestock ) {
+							if ( $zi_enable_warehousestock && isset( $warehouses ) ) {
 								foreach ( $warehouses as $warehouse ) {
 									if ( $warehouse->warehouse_id === $warehouse_id ) {
 										if ( $accounting_stock ) {

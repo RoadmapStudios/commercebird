@@ -421,7 +421,9 @@ class CMBIRD_Order_Sync_ZI {
 						$item_taxes = $order_item->get_taxes();
 						$tax_rate_id = current( array_keys( $item_taxes['subtotal'] ) );
 						$tax_percent = $tax_rates[ $tax_rate_id ];
-						$taxid = '"tax_percentage": "' . $tax_percent . '",';
+						// get zoho tax id
+						$zi_tax_id = $this->zi_get_tax_id( $tax_percent );
+						$taxid = '"tax_percentage": "' . $tax_percent . '", "tax_id": "' . $zi_tax_id . '",';
 
 						$item_price = $item_price1 * ( $tax_percent / 100 + 1 );
 						$item_price = round( $item_price, 2 );
@@ -540,11 +542,19 @@ class CMBIRD_Order_Sync_ZI {
 				} else {
 					$reference_no = $order_id;
 				}
-
+				// if auto-generated sales order number is enabled.
 				if ( $enabled_auto_no ) {
 					$pdt1 .= ',"reference_number": "' . $reference_no . '"';
 				} else {
 					$pdt1 .= ',"salesorder_number": "' . $order_id . '"';
+				}
+
+				// add gst_no and gst_treatment to the order
+				$gst_no = get_user_meta( $userid, 'gst_no', true );
+				$gst_treatment = get_user_meta( $userid, 'gst_treatment', true );
+				if ( ! empty( $gst_no ) ) {
+					$pdt1 .= ',"gst_no": "' . $gst_no . '"';
+					$pdt1 .= ',"gst_treatment": "' . $gst_treatment . '"';
 				}
 
 				// fwrite($fd, PHP_EOL . '$pdt1 : {' . $pdt1 . '}');
@@ -758,7 +768,7 @@ class CMBIRD_Order_Sync_ZI {
 		// $fd = fopen( __DIR__ . '/zi_get_tax_id.txt', 'a+' );
 		// get all options that contain zoho_inventory_tax_rate_ in the name using global $wpdb.
 		global $wpdb;
-		$zoho_tax_rates = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name LIKE 'zoho_inventory_tax_rate_%'" );
+		$zoho_tax_rates = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name LIKE 'cmbird_zoho_inventory_tax_rate_%'" );
 		$input_tax_percentage = floor( $percentage * 10 ) / 10;
 		// fwrite( $fd, PHP_EOL . 'Input Tax Percentage: ' . $input_tax_percentage );
 		$tax_id = '';
