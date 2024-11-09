@@ -674,9 +674,20 @@ class CMBIRD_Products_ZI {
 				// fwrite($fd, PHP_EOL . '$variation_attributes : ' . print_r($variation_attributes, true));
 				// Loop through the variations and create them
 				try {
-					$variation = new WC_Product_Variation();
-					$variation->set_parent_id( $group_id );
-					$variation->set_status( $status );
+					$variation_post = array(
+						'post_title' => $product->get_name(),
+						'post_name' => 'product-' . $group_id . '-variation',
+						'post_status' => 'publish',
+						'post_parent' => $group_id,
+						'post_type' => 'product_variation',
+						'guid' => $product->get_permalink(),
+					);
+					// Creating the product variation
+					$variation_id = wp_insert_post( $variation_post );
+					if ( is_wp_error( $variation_id ) ) {
+						continue;
+					}
+					$variation = new WC_Product_Variation( $variation_id );
 					$variation->set_regular_price( $item->rate );
 					$variation->set_sku( $item->sku );
 					if ( ! $zi_disable_stock_sync && $stock > 0 ) {
@@ -687,7 +698,6 @@ class CMBIRD_Products_ZI {
 						$variation->set_manage_stock( false );
 					}
 					$variation->add_meta_data( 'zi_item_id', $item->item_id );
-					// $variation->set_attributes($variation_attributes);
 					$variation_id = $variation->save();
 				} catch (Exception $e) {
 					// fwrite( $fd, PHP_EOL . 'Error : ' . $e->getMessage() );

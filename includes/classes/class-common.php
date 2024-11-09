@@ -19,7 +19,8 @@ if ( ! class_exists( 'CMBIRD_Common_Functions' ) ) {
 		 */
 		public function clear_orphan_data() {
 			global $wpdb;
-			$result = absint(
+			// Delete orphaned product variations
+			$deleted_variations = absint(
 				$wpdb->query(
 					"DELETE products
 					FROM {$wpdb->posts} products
@@ -27,7 +28,17 @@ if ( ! class_exists( 'CMBIRD_Common_Functions' ) ) {
 					WHERE wp.ID IS NULL AND products.post_type = 'product_variation';"
 				)
 			);
-			return $result;
+			// Delete orphaned postmeta
+			$deleted_postmeta = absint(
+				$wpdb->query(
+					"DELETE pm
+					FROM {$wpdb->postmeta} pm
+					LEFT JOIN {$wpdb->posts} wp ON wp.ID = pm.post_id
+					WHERE wp.ID IS NULL;"
+				)
+			);
+			// Return the number of deleted entries (orphaned variations + orphaned postmeta)
+			return $deleted_variations + $deleted_postmeta;
 		}
 
 		/**
