@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.7.0
 Requires PHP: 7.4
-Stable tag: 2.2.7
+Stable tag: 2.2.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,6 +79,11 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.8 - November 9 2024 =
+* New: added support for GST India during Contact import
+* Fix: pagination of Items api calls failed due to action scheduler bug
+* Improvement: orphaned postmeta will be deleted automatically during import items
+
 = 2.2.7 - November 5 2024 =
 * Fix: connection saving not working for all hosting
 * Fix: icons vue not showing

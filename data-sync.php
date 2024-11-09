@@ -110,6 +110,10 @@ add_action( 'zi_execute_import_sync', 'cmbird_ajax_call_item_from_zoho_func' );
 
 add_action( 'wp_ajax_zoho_ajax_call_item_from_zoho', 'cmbird_ajax_call_item_from_zoho_func' );
 function cmbird_ajax_call_item_from_zoho_func() {
+	// Clear Orphan data.
+	$zi_common_class = new CMBIRD_Common_Functions();
+	$zi_common_class->clear_orphan_data();
+
 	$zoho_item_category = get_option( 'cmbird_zoho_item_category' );
 	$last_synced_category_index = get_option( 'cmbird_last_synced_category_index', 0 );
 

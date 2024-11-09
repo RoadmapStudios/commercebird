@@ -1,3 +1,8 @@
+Version 2.2.8 - November 9 2024
+* New: added support for GST India during Contact import
+* Fix: pagination of Items api calls failed due to action scheduler bug
+* Improvement: orphaned postmeta will be deleted automatically during import items
+
 Version 2.2.7 - November 5 2024
 * Fix: connection saving not working for all hosting
 * Fix: icons vue not showing
