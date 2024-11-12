@@ -282,6 +282,13 @@ final class ExactOnlineAjax {
 	public function customer_map() {
 		$this->verify( self::FORMS['customer'] );
 		$customers = ( new CommerceBird() )->customer();
+		if ( is_string( $customers ) ) {
+			$this->response = array(
+				'success' => false,
+				'message' => $customers,
+			);
+			$this->serve();
+		}
 		$chunked = array_chunk( $customers['customers'], 20 );
 		foreach ( $chunked as $chunked_customers ) {
 			$id = as_schedule_single_action(
