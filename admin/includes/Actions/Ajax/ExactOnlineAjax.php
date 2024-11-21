@@ -281,6 +281,29 @@ final class ExactOnlineAjax {
 
 	public function customer_map() {
 		$this->verify( self::FORMS['customer'] );
+		// get all customers that have a meta key eo_gl_account.
+		/*
+		$customers = get_users(
+			array(
+				'meta_query' => array(
+					array(
+						'key' => 'eo_gl_account',
+						'compare' => 'EXISTS',
+					),
+				),
+			)
+		);
+		// update each customer by adding "test" to biography of each customer.
+		foreach ( $customers as $customer ) {
+			// use wp_update_user() function to update the user.
+			wp_update_user(
+				array(
+					'ID' => $customer->ID,
+					'description' => 'test',
+				)
+			);
+		}
+		*/
 		$customers = ( new CommerceBird() )->customer();
 		if ( is_string( $customers ) ) {
 			$this->response = array(
