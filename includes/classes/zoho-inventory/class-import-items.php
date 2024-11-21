@@ -1073,7 +1073,7 @@ class CMBIRD_Products_ZI {
 					$variation->set_tax_class( $woo_tax_class );
 				}
 				// Stock Imported code
-				if ( ! $zi_disable_stock_sync && $stock_quantity ) {
+				if ( ! $zi_disable_stock_sync && is_numeric( $stock_quantity ) ) {
 					$variation->set_manage_stock( true );
 					if ( $stock_quantity > 0 ) {
 						$variation->set_manage_stock( true );
