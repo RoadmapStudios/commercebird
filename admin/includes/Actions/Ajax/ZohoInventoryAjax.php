@@ -101,6 +101,11 @@ final class ZohoInventoryAjax {
 		'handle_code' => 'handle_code',
 	);
 
+	private const SOURCE = 'zoho';
+
+	/**
+	 * ZohoInventoryAjax constructor.
+	 */
 	public function __construct() {
 		$this->load_actions();
 	}
@@ -253,7 +258,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function settings_reset(): void {
 		$this->verify();
-		$this->option_status_remove( self::FORMS['settings'] );
+		$this->option_status_remove( self::FORMS['settings'], self::SOURCE );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
@@ -265,7 +270,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function settings_get(): void {
 		$this->verify();
-		$this->response = $this->option_status_get( self::FORMS['settings'] );
+		$this->response = $this->option_status_get( self::FORMS['settings'], self::SOURCE );
 		$this->serve();
 	}
 
@@ -278,7 +283,7 @@ final class ZohoInventoryAjax {
 		try {
 			$this->verify( self::FORMS['settings'] );
 			if ( $this->data ) {
-				$this->option_status_update( $this->data );
+				$this->option_status_update( $this->data, self::SOURCE );
 				delete_transient( 'zoho_subscription' );
 			} else {
 				$this->errors = array(
@@ -415,7 +420,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function contact_get() {
 		$this->verify();
-		$this->response = $this->option_status_get( self::FORMS['contact'] );
+		$this->response = $this->option_status_get( self::FORMS['contact'], self::SOURCE );
 		$this->serve();
 	}
 	/**
@@ -424,7 +429,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function contact_set() {
 		$this->verify( self::FORMS['contact'] );
-		$this->option_status_update( $this->data );
+		$this->option_status_update( $this->data, self::SOURCE );
 		if ( isset( $this->data['enable'] ) && ! empty( $this->data['enable'] ) ) {
 			if ( ! wp_next_scheduled( 'zoho_contact_sync' ) ) {
 				wp_schedule_event( time(), 'daily', 'zoho_contact_sync' );
@@ -441,7 +446,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function contact_reset() {
 		$this->verify();
-		$this->option_status_remove( self::FORMS['contact'] );
+		$this->option_status_remove( self::FORMS['contact'], self::SOURCE );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
@@ -453,7 +458,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function order_set(): void {
 		$this->verify( self::FORMS['order'] );
-		$this->option_status_update( $this->data );
+		$this->option_status_update( $this->data, self::SOURCE );
 		$this->response = array( 'message' => 'Saved!' );
 		$this->serve();
 	}
@@ -465,7 +470,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function order_get(): void {
 		$this->verify();
-		$this->response = $this->option_status_get( self::FORMS['order'] );
+		$this->response = $this->option_status_get( self::FORMS['order'], self::SOURCE );
 		$this->serve();
 	}
 
@@ -476,7 +481,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function order_reset(): void {
 		$this->verify();
-		$this->option_status_remove( self::FORMS['order'] );
+		$this->option_status_remove( self::FORMS['order'], self::SOURCE );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}
@@ -513,7 +518,7 @@ final class ZohoInventoryAjax {
 			$decode = json_decode( $this->data['form'], true );
 			update_option( 'zi_cron_interval', $decode['zi_cron_interval'] );
 			unset( $decode['zi_cron_interval'] );
-			$this->option_status_update( $decode );
+			$this->option_status_update( $decode, self::SOURCE );
 		}
 		if ( array_key_exists( 'categories', $this->data ) ) {
 			$decode = json_decode( $this->data['categories'] );
@@ -542,6 +547,7 @@ final class ZohoInventoryAjax {
 				'disable_image_sync',
 				'disable_description_sync',
 			),
+			self::SOURCE,
 		);
 		$this->response['form']['zi_cron_interval'] = get_option( 'zi_cron_interval', 'none' );
 		$this->response['categories'] = unserialize( get_option( 'cmbird_zoho_item_category', '' ) );
@@ -565,6 +571,7 @@ final class ZohoInventoryAjax {
 				'disable_image_sync',
 				'disable_description_sync',
 			),
+			self::SOURCE,
 		);
 		delete_option( 'cmbird_zoho_item_category' );
 		// delete all options that contain 'zoho_id_for_term_id_'
@@ -620,7 +627,7 @@ final class ZohoInventoryAjax {
 	public function product_set(): void {
 		$this->verify( self::FORMS['product'] );
 		if ( ! empty( $this->data ) ) {
-			$this->option_status_update( $this->data );
+			$this->option_status_update( $this->data, self::SOURCE );
 		}
 		$this->response = array( 'message' => 'Saved!' );
 		$this->serve();
@@ -633,7 +640,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function product_get(): void {
 		$this->verify();
-		$this->response = $this->option_status_get( self::FORMS['product'] );
+		$this->response = $this->option_status_get( self::FORMS['product'], self::SOURCE );
 		$this->serve();
 	}
 
@@ -644,7 +651,7 @@ final class ZohoInventoryAjax {
 	 */
 	public function product_reset(): void {
 		$this->verify();
-		$this->option_status_remove( self::FORMS['product'] );
+		$this->option_status_remove( self::FORMS['product'], self::SOURCE );
 		$this->response = array( 'message' => 'Reset successfully!' );
 		$this->serve();
 	}

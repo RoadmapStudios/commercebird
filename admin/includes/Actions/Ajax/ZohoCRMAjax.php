@@ -163,11 +163,11 @@ final class ZohoCRMAjax {
 		$this->verify();
 		try {
 			$options = array(
-				'zoho_crm_domain',
-				'zoho_crm_cid',
-				'zoho_crm_cs',
-				'zoho_crm_url',
-				'zoho_crm_access_token',
+				'cmbird_zoho_crm_domain',
+				'cmbird_zoho_crm_cid',
+				'cmbird_zoho_crm_cs',
+				'cmbird_zoho_crm_url',
+				'cmbird_zoho_crm_access_token',
 			);
 			foreach ( $options as $zi_option ) {
 				delete_option( $zi_option );

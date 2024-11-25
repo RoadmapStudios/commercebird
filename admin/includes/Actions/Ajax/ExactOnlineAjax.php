@@ -59,6 +59,8 @@ final class ExactOnlineAjax {
 		'gl_accounts' => 'commercebird-exact-online-gl-accounts',
 	);
 
+	private const SOURCE = 'exact';
+
 	/**
 	 * Sync orders from Exact Online.
 	 *
