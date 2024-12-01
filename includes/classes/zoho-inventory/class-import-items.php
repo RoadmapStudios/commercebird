@@ -641,9 +641,9 @@ class CMBIRD_Products_ZI {
 					foreach ( $warehouses as $warehouse ) {
 						if ( $warehouse->warehouse_id === $warehouse_id ) {
 							if ( $accounting_stock ) {
-								$stock = $warehouse->warehouse_available_for_sale_stock;
+								$stock = isset( $warehouse->warehouse_available_for_sale_stock );
 							} else {
-								$stock = $warehouse->warehouse_actual_available_for_sale_stock;
+								$stock = isset( $warehouse->warehouse_actual_available_for_sale_stock );
 							}
 						}
 					}
@@ -1236,16 +1236,18 @@ class CMBIRD_Products_ZI {
 		if ( $json ) {
 			// fwrite($fd, PHP_EOL . '$json->item_group : ' . print_r($json->item_group,true));
 			foreach ( $json->item_group as $key => $arr ) {
+				$zi_category_name = '';
+				$zi_category_id = '';
 				// fwrite($fd, PHP_EOL . '$term_id 3 : ' . $term_id);
 
-				if ( $key === 'category_id' ) {
+				if ( 'category_id' === $key ) {
 					$zi_category_id = $arr;
 				}
-				if ( $key === 'category_name' ) {
+				if ( 'category_name' === $key ) {
 					$zi_category_name = $arr;
 				}
 
-				if ( ! empty( $pdt_id ) && $zi_category_name != '' ) {
+				if ( ! empty( $pdt_id ) && $zi_category_name !== '' ) {
 					// fwrite($fd, PHP_EOL . '$term_id : 5' . $term_id);
 					// $category_id = get_cat_ID( $arr->category_name );
 					$term = get_term_by( 'name', $zi_category_name, 'product_cat' );

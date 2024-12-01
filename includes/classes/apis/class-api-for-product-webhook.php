@@ -92,6 +92,8 @@ class ProductWebhook {
 		$item_brand = $item['brand'];
 		$category_id = $item['category_id'];
 		$custom_fields = $item['custom_fields'];
+		$item_image = $item['image_name'];
+		$item_image_id = $item['image_document_id'] ?? '';
 		// Stock mode check
 		$warehouses = $item['warehouses'];
 		if ( true === $zi_enable_warehousestock ) {
@@ -109,7 +111,6 @@ class ProductWebhook {
 		} else {
 			$item_stock = $item['actual_available_for_sale_stock'];
 		}
-		$item_image = $item['image_name'];
 		if ( isset( $item['group_name'] ) ) {
 			$group_name = $item['group_name'];
 		} else {
@@ -222,7 +223,7 @@ class ProductWebhook {
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					// fwrite($fd, PHP_EOL . 'Sync Image' );
 					$image_class = new CMBIRD_Image_ZI();
-					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image, $item['image_document_id'] );
+					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image, $item_image_id );
 				}
 				// Disable or enable the variation based on the item_status
 				$variation->set_status( $item_status );
@@ -327,7 +328,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'cmbird_zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new CMBIRD_Image_ZI();
-					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image, $item['image_document_id'] );
+					$image_class->cmbird_zi_get_image( $item_id, $item_name, $variation_id, $item_image, $item_image_id );
 				}
 
 				update_post_meta( $variation_id, 'zi_item_id', $item_id );
@@ -444,7 +445,7 @@ class ProductWebhook {
 				$zi_disable_itemimage_sync = get_option( 'cmbird_zoho_disable_image_sync_status' );
 				if ( ! empty( $item_image ) && ! $zi_disable_itemimage_sync ) {
 					$image_class = new CMBIRD_Image_ZI();
-					$image_class->cmbird_zi_get_image( $item_id, $item_name, $pdt_id, $item_image, $item['image_document_id'] );
+					$image_class->cmbird_zi_get_image( $item_id, $item_name, $pdt_id, $item_image, $item_image_id );
 				}
 
 				// category

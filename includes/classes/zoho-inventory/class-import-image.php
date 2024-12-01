@@ -38,6 +38,7 @@ class CMBIRD_Image_ZI {
 	 * @param [string] $item_name - Item name.
 	 * @param [string] $post_id - Post id of product.
 	 * @param [string] $image_name - Image name.
+	 * @param [string] $image_document_id - Image document id.
 	 * @return integer | void
 	 */
 	public function cmbird_zi_get_image( $item_id, $item_name, $post_id, $image_name, $image_document_id ) {
