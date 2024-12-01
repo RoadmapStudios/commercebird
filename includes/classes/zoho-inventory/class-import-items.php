@@ -561,16 +561,11 @@ class CMBIRD_Products_ZI {
 	 *
 	 * @param object $args Group item details.
 	 */
-	public function import_variable_product_variations( $args = null ) {
+	public function import_variable_product_variations() {
 		// $fd = fopen( __DIR__ . '/import_variable_product_variations.txt', 'a+' );
-		if ( empty( $args ) ) {
-			$args = func_get_args();
-			$zi_group_id = $args[0];
-			$group_id = $args[1];
-		} else {
-			$zi_group_id = $args->zi_group_id;
-			$group_id = $args->group_id;
-		}
+		$args = func_get_args();
+		$zi_group_id = $args[0];
+		$group_id = $args[1];
 		// fwrite( $fd, PHP_EOL . 'Parent Product ID ' . $group_id );
 		// fclose( $fd );
 
