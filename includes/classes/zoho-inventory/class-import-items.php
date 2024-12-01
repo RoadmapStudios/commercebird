@@ -559,15 +559,20 @@ class CMBIRD_Products_ZI {
 	/**
 	 * Callback function for importing a variable product and its variations.
 	 *
-	 * @param object $gp_arr Group item details.
-	 * @param int $group_id Parent variable Product ID.
+	 * @param object $args Group item details.
 	 */
-	public function import_variable_product_variations() {
+	public function import_variable_product_variations( $args = null ) {
 		// $fd = fopen( __DIR__ . '/import_variable_product_variations.txt', 'a+' );
-
-		$args = func_get_args();
-		$zi_group_id = $args[0];
-		$group_id = $args[1];
+		if ( empty( $args ) ) {
+			$args = func_get_args();
+			$zi_group_id = $args[0];
+			$group_id = $args[1];
+		} else {
+			$zi_group_id = $args->zi_group_id;
+			$group_id = $args->group_id;
+		}
+		// fwrite( $fd, PHP_EOL . 'Parent Product ID ' . $group_id );
+		// fclose( $fd );
 
 		if ( empty( $zi_group_id ) || empty( $group_id ) ) {
 			return;
@@ -774,6 +779,10 @@ class CMBIRD_Products_ZI {
 	 */
 	public function sync_attributes_of_group( $gp_arr, $group_id ) {
 		// $fd = fopen(__DIR__ . '/sync_attributes_of_group.txt', 'a+');
+		// Check if the group item has attributes
+		if ( empty( $gp_arr->attribute_name1 ) ) {
+			return false;
+		}
 		// Create attributes
 		$success = true; // Track the success of attribute creation
 		$attributes_data = array();

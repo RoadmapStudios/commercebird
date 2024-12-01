@@ -6,9 +6,6 @@
  * @version  1.0.0
  */
 
-use Automattic\WooCommerce\Admin\Features\Navigation\Menu;
-use Automattic\WooCommerce\Admin\Features\Navigation\Screen;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -27,7 +24,6 @@ class WCP_WC_Admin_Manager {
 		}
 
 		add_action( 'admin_menu', array( __CLASS__, 'cmbird_register_purchase_admin_pages' ) );
-		add_action( 'admin_menu', array( __CLASS__, 'cmbird_register_navigation_items' ), 6 );
 	}
 
 	/**
@@ -74,29 +70,5 @@ class WCP_WC_Admin_Manager {
 				'title' => __( 'Edit purchase', 'commercebird' ),
 			)
 		);
-	}
-
-	/**
-	 * Register the navigation items in the WooCommerce navigation.
-	 *
-	 * @since 1.0.0
-	 */
-	public static function cmbird_register_navigation_items() {
-		if (
-			! class_exists( '\Automattic\WooCommerce\Admin\Features\Navigation\Menu' ) ||
-			! class_exists( '\Automattic\WooCommerce\Admin\Features\Navigation\Screen' )
-		) {
-			return;
-		}
-
-		$purchase_items = Menu::get_post_type_items(
-			'shop_purchase',
-			array(
-				'title' => __( 'Purchase Orders', 'commercebird' ),
-			)
-		);
-
-		Menu::add_plugin_item( $purchase_items['all'] );
-		Screen::register_post_type( 'shop_purchase' );
 	}
 }

@@ -66,6 +66,17 @@ trait Api {
 		if ( array_key_exists( 'JSONString', $data ) ) {
 			$data = str_replace( '\\', '', $data['JSONString'] );
 		}
+		// Create a unique key based on the payload
+		$payload_hash = wp_hash( wp_json_encode( $data ) );
+		$lock_key = 'cmbird_processing_payload_' . $payload_hash;
+		// Check and set lock using update_option
+		$lock_acquired = add_option( $lock_key, time() );
+		if ( ! $lock_acquired ) {
+			$response->set_data( 'Duplicate payload ignored. Already being processed.' );
+			$response->set_status( 200 );
+			return rest_ensure_response( $response );
+		}
+		// Process the payload
 		if ( ! empty( $data ) ) {
 			try {
 				$response = $this->process( $data );
@@ -74,7 +85,8 @@ trait Api {
 				$response->set_status( 500 );
 			}
 		}
-
+		// Clean up the lock after processing
+		delete_option( $lock_key );
 		return rest_ensure_response( $response );
 	}
 }

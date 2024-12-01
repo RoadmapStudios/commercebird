@@ -26,15 +26,19 @@ final class Template {
 		add_menu_page(
 			__( 'CommerceBird', 'commercebird' ),
 			__( 'CommerceBird', 'commercebird' ),
-			'manage_options',
+			'manage_woocommerce',
 			self::NAME,
 			function () {
 				wp_enqueue_style( self::NAME );
 				wp_enqueue_style( self::NAME . '-notify', CMBIRD_URL . 'admin/css/notyf.min.css', array(), CMBIRD_VERSION );
 				// Pass version number to the Vue script
-				wp_localize_script( self::NAME, 'cmbirdData', array(
-					'version' => CMBIRD_VERSION,
-				) );
+				wp_localize_script(
+					self::NAME,
+					'cmbirdData',
+					array(
+						'version' => CMBIRD_VERSION,
+					)
+				);
 				wp_enqueue_script( self::NAME );
 				add_filter( 'script_loader_tag', array( $this, 'add_module' ), 10, 3 );
 				printf( '<div id="%s">Loading...</div>', esc_attr( self::NAME ) );

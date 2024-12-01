@@ -16,7 +16,6 @@ use WP_REST_Response;
 use WP_REST_Server;
 use wpdb;
 use CMBIRD_Common_Functions;
-
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 
 class ProductWebhook {
@@ -58,7 +57,6 @@ class ProductWebhook {
 		// variable item sync
 		if ( array_key_exists( 'item', $data ) ) {
 			return $this->process_product_data( $data['item'], $zi_enable_warehousestock, $warehouse_id, $accounting_stock );
-
 		}
 		// inventory_adjustment
 		if ( array_key_exists( 'inventory_adjustment', $data ) ) {
@@ -80,6 +78,10 @@ class ProductWebhook {
 	public function process_product_data( $item, $zi_enable_warehousestock, $warehouse_id, $accounting_stock ): WP_REST_Response {
 		// $fd = fopen( __DIR__ . '/process_product_data.txt', 'a+' );
 
+		// clean orphaned data from the database
+		$common_class = new CMBIRD_Common_Functions();
+		$common_class->clear_orphan_data();
+
 		global $wpdb;
 		$item_id = $item['item_id'];
 		$item_name = $item['name'];
@@ -88,6 +90,7 @@ class ProductWebhook {
 		$item_description = $item['description'];
 		$item_status = $item['status'] === 'active' ? 'publish' : 'draft';
 		$item_brand = $item['brand'];
+		$category_id = $item['category_id'];
 		$custom_fields = $item['custom_fields'];
 		// Stock mode check
 		$warehouses = $item['warehouses'];
@@ -154,14 +157,43 @@ class ProductWebhook {
 					wp_set_object_terms( $groupid, $item_brand, 'product_brands' );
 				}
 				// Update the custom fields if the custom fields are not empty
+				$cmbird_product_zi = new CMBIRD_Products_ZI();
 				if ( ! empty( $custom_fields ) ) {
-					$import_class = new CMBIRD_Products_ZI();
-					$import_class->sync_item_custom_fields( $custom_fields, $groupid );
+					$cmbird_product_zi->sync_item_custom_fields( $custom_fields, $groupid );
+				}
+
+				// Create or Update the Attributes
+				// turn $item into array
+				$gp_arr = (array) $item;
+				$attr_created = $cmbird_product_zi->sync_attributes_of_group( $gp_arr, $group_id );
+				if ( ! empty( $group_id ) && $attr_created ) {
+					// Create the variations
+					// create object with the $group_id and the $groupid
+					$args = array(
+						'zi_group_id' => $groupid,
+						'group_id' => $group_id,
+					);
+					$cmbird_product_zi->import_variable_product_variations( $args );
 				}
 
 				// set the product status of the variable parent product
 				// $existing_parent_product->set_status( $item_status );
 				$existing_parent_product->save();
+			} else {
+				// Add in scheduler to create the Variable Product
+				$last_synced_page = get_option( 'cmbird_group_item_sync_page_cat_id_' . $category_id );
+				if ( ! intval( $last_synced_page ) ) {
+					$last_synced_page = 1;
+				}
+				$data = array(
+					'page'     => $last_synced_page,
+					'category' => $category_id,
+				);
+				$existing_schedule = as_has_scheduled_action( 'import_group_items_cron', $data );
+				// Schedule the action if it doesn't exist.
+				if ( ! $existing_schedule ) {
+					as_schedule_single_action( time(), 'import_group_items_cron', $data );
+				}
 			}
 
 			$row_item = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key='zi_item_id' AND meta_value=%s", $item_id ) );
