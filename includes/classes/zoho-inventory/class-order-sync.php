@@ -39,9 +39,7 @@ class CMBIRD_Order_Sync_ZI {
 			return;
 		}
 		// First sync the customer to Zoho Inventory
-		if ( ! empty( $zoho_inventory_access_token ) ) {
-			$this->zi_sync_customer_checkout( $order_id );
-		}
+		$this->zi_sync_customer_checkout( $order_id );
 
 		// Use WC Action Scheduler to sync the order to Zoho Inventory
 		$existing_schedule = as_has_scheduled_action( 'sync_zi_order', array( $order_id ) );
