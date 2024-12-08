@@ -39,7 +39,7 @@ class CMBIRD_Order_Sync_ZI {
 			return;
 		}
 		// First sync the customer to Zoho Inventory
-		$this->zi_sync_customer_checkout( $order_id );
+		$this->cmbird_zi_sync_customer_checkout( $order_id );
 
 		// Use WC Action Scheduler to sync the order to Zoho Inventory
 		$existing_schedule = as_has_scheduled_action( 'sync_zi_order', array( $order_id ) );
@@ -111,8 +111,8 @@ class CMBIRD_Order_Sync_ZI {
 	 * @param int $order_id Order ID.
 	 *
 	 */
-	public function zi_sync_customer_checkout( $order_id ) {
-		// $fd = fopen( __DIR__ . '/zi_sync_customer_checkout.txt', 'w+' );
+	public function cmbird_zi_sync_customer_checkout( $order_id ) {
+		// $fd = fopen( __DIR__ . '/cmbird_zi_sync_customer_checkout.txt', 'w+' );
 
 		$order = wc_get_order( $order_id );
 		$userid = $order->get_user_id();
@@ -352,7 +352,7 @@ class CMBIRD_Order_Sync_ZI {
 			if ( $order_status !== 'failed' ) {
 
 				if ( empty( $zi_customer_id ) ) {
-					$zi_customer_id = $this->zi_sync_customer_checkout( $order_id );
+					$zi_customer_id = $this->cmbird_zi_sync_customer_checkout( $order_id );
 				} else {
 					$contact_class_handle = new CMBIRD_Contact_ZI();
 					$contact_class_handle->cmbird_contact_update_function( $userid, $order_id );
@@ -701,9 +701,7 @@ class CMBIRD_Order_Sync_ZI {
 		);
 
 		$order = wc_get_order( $order_id );
-
 		// fwrite($fd, PHP_EOL. print_r($data, true)); //logging response
-
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
 
@@ -718,27 +716,13 @@ class CMBIRD_Order_Sync_ZI {
 
 		if ( ! empty( $package_id ) ) {
 			// fwrite($fd, PHP_EOL. 'inside package exists'); //logging response
-
 			foreach ( $json->salesorder as $key => $value ) {
-
-				if ( $key == 'salesorder_id' ) {
-					$salesorder_id = $value;
-				}
-
-				if ( $key == 'salesorder_number' ) {
-					$package_number = $value;
-				}
-
 				if ( $key == 'date' ) {
 					$ship_date = $value;
 				}
 
 				if ( $key == 'line_items' ) {
-
-					// $array1 = wp_json_encode( $value );
-
 					foreach ( $value as $kk => $vv ) {
-
 						$line_items[] = '{"so_line_item_id": "' . $vv->line_item_id . '","quantity": "' . $vv->quantity . '"}';
 					}
 					$impot = implode( ',', $line_items );
