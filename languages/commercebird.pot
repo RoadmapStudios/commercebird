@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CommerceBird\n"
-"POT-Creation-Date: 2024-12-09 15:03+0100\n"
+"POT-Creation-Date: 2024-12-09 15:04+0100\n"
 "PO-Revision-Date: 2024-11-02 19:52+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -484,110 +484,6 @@ msgstr ""
 #: build/commercebird/includes/sync/order-backend.php:98
 #: includes/sync/order-backend.php:98
 msgid "Sync to Zoho"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:13
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:15
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:41
-msgid "Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:14
-msgid "Brand"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:16
-msgid "All Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:17
-msgid "Edit Brand"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:18
-msgid "View Brand"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:19
-msgid "Update Brand name"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:20
-msgid "Add new Brand"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:21
-msgid "New Brand name"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:22
-msgid "Parent Brand"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:23
-msgid "Parent Brand:"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:24
-msgid "Search Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:25
-msgid "Popular Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:26
-msgid "Separate Brands with commas"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:27
-msgid "Add or remove Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:28
-msgid "Choose from the most used Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:29
-msgid "No Brands found"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:30
-msgid "No Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:31
-msgid "Brands list navigation"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:32
-msgid "Brands list"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:33
-msgid "Back to Brands"
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:34
-msgid "The name is how it appears on your site."
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:35
-msgid ""
-"Assign a parent term to create a hierarchy. The term Jazz, for example, "
-"would be the parent of Bebop and Big Band."
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:36
-msgid ""
-"The slug is the URL-friendly version of the name. It is usually all "
-"lowercase and contains only letters, numbers, and hyphens."
-msgstr ""
-
-#: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:37
-msgid ""
-"The description is not prominent by default; however, some themes may show "
-"it."
 msgstr ""
 
 #: build/commercebird/includes/wc-am-client.php:162
