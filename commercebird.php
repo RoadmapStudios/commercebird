@@ -70,14 +70,26 @@ register_activation_hook( __FILE__, array( Plugin::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Plugin::class, 'deactivate' ) );
 register_uninstall_hook( __FILE__, array( Plugin::class, 'uninstall' ) );
 
+/*
+|--------------------------------------------------------------------------
+| Load the plugin translations
+|--------------------------------------------------------------------------
+*/
+add_action( 'init', 'cmbird_load_textdomain' );
+function cmbird_load_textdomain() {
+	load_plugin_textdomain( 'commercebird', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+}
+
 /** Loading Purchase Order Class
  * @since 1.0.0
  */
-add_action( 'plugins_loaded', 'cmbird_wc_purchase_order_class' );
-add_action( 'init', array( WCP_WC_Admin_Manager::class, 'init' ), 11 );
-function cmbird_wc_purchase_order_class() {
-	new WC_Purchase_Order();
+function cmbird_purchase_order_class() {
+	if ( class_exists( 'WooCommerce' ) ) {
+		new WC_Purchase_Order();
+	}
 }
+add_action( 'woocommerce_init', 'cmbird_purchase_order_class' );
+add_action( 'init', array( WCP_WC_Admin_Manager::class, 'init' ), 11 );
 
 /*
 |--------------------------------------------------------------------------
