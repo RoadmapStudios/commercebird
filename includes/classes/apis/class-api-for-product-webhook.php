@@ -154,8 +154,8 @@ class ProductWebhook {
 				// Brand update if taxonomy product_brand exists
 				if ( ! empty( $item_brand ) && taxonomy_exists( 'product_brand' ) ) {
 					wp_set_object_terms( $groupid, $item_brand, 'product_brand' );
-				} elseif ( ! empty( $item_brand ) && taxonomy_exists( 'product_brands' ) ) {
-					wp_set_object_terms( $groupid, $item_brand, 'product_brands' );
+				} elseif ( ! empty( $item_brand ) && taxonomy_exists( 'product_brand' ) ) {
+					wp_set_object_terms( $groupid, $item_brand, 'product_brand' );
 				}
 				// Update the custom fields if the custom fields are not empty
 				$cmbird_product_zi = new CMBIRD_Products_ZI();
@@ -187,7 +187,7 @@ class ProductWebhook {
 					$last_synced_page = 1;
 				}
 				$data = array(
-					'page'     => $last_synced_page,
+					'page' => $last_synced_page,
 					'category' => $category_id,
 				);
 				$existing_schedule = as_has_scheduled_action( 'import_group_items_cron', $data );
@@ -408,8 +408,8 @@ class ProductWebhook {
 				// Brand update if taxonomy product_brand(s) exists
 				if ( ! empty( $item_brand ) && taxonomy_exists( 'product_brand' ) ) {
 					wp_set_object_terms( $pdt_id, $item_brand, 'product_brand' );
-				} elseif ( ! empty( $item_brand ) && taxonomy_exists( 'product_brands' ) ) {
-					wp_set_object_terms( $pdt_id, $item_brand, 'product_brands' );
+				} elseif ( ! empty( $item_brand ) && taxonomy_exists( 'product_brand' ) ) {
+					wp_set_object_terms( $pdt_id, $item_brand, 'product_brand' );
 				}
 				// stock
 				$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );

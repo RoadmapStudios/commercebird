@@ -303,8 +303,8 @@ class CMBIRD_Products_ZI {
 						// check if the Brand or Brands taxonomy exists and then update the term
 						if ( taxonomy_exists( 'product_brand' ) ) {
 							wp_set_object_terms( $pdt_id, $arr->brand, 'product_brand' );
-						} elseif ( taxonomy_exists( 'product_brands' ) ) {
-							wp_set_object_terms( $pdt_id, $arr->brand, 'product_brands' );
+						} elseif ( taxonomy_exists( 'product_brand' ) ) {
+							wp_set_object_terms( $pdt_id, $arr->brand, 'product_brand' );
 						}
 					}
 					// Sync Featured Image if not disabled.
@@ -488,8 +488,8 @@ class CMBIRD_Products_ZI {
 							// check if the Brand or Brands taxonomy exists and then update the term
 							if ( taxonomy_exists( 'product_brand' ) ) {
 								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brand' );
-							} elseif ( taxonomy_exists( 'product_brands' ) ) {
-								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brands' );
+							} elseif ( taxonomy_exists( 'product_brand' ) ) {
+								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brand' );
 							}
 						}
 					} else {
@@ -507,8 +507,8 @@ class CMBIRD_Products_ZI {
 							// check if the Brand or Brands taxonomy exists and then update the term
 							if ( taxonomy_exists( 'product_brand' ) ) {
 								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brand' );
-							} elseif ( taxonomy_exists( 'product_brands' ) ) {
-								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brands' );
+							} elseif ( taxonomy_exists( 'product_brand' ) ) {
+								wp_set_object_terms( $group_id, $gp_arr->brand, 'product_brand' );
 							}
 						}
 
@@ -1043,8 +1043,8 @@ class CMBIRD_Products_ZI {
 			// fwrite($fd, PHP_EOL . 'Inside item sync : ' . $item->name);
 			// Brand
 			if ( isset( $item->brand ) && ! empty( $group_id ) ) {
-				if ( taxonomy_exists( 'product_brands' ) ) {
-					wp_set_object_terms( $group_id, $item->brand, 'product_brands' );
+				if ( taxonomy_exists( 'product_brand' ) ) {
+					wp_set_object_terms( $group_id, $item->brand, 'product_brand' );
 				}
 			}
 

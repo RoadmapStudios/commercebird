@@ -45,7 +45,6 @@ if ( ! defined( 'CMBIRD_MENU_SLUG' ) ) {
 
 require_once CMBIRD_PATH . 'includes/woo-functions.php';
 require_once CMBIRD_PATH . 'includes/sync/order-backend.php';
-require_once CMBIRD_PATH . 'includes/taxonomies/taxonomy-product_brands.php';
 require_once CMBIRD_PATH . 'data-sync.php';
 require_once CMBIRD_PATH . 'includes/wc-am-client.php';
 

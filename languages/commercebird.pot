@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CommerceBird\n"
-"POT-Creation-Date: 2024-11-02 19:54+0100\n"
+"POT-Creation-Date: 2024-12-09 15:03+0100\n"
 "PO-Revision-Date: 2024-11-02 19:52+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -24,87 +24,87 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-2: build/commercebird/vendor\n"
 "X-Poedit-SearchPathExcluded-3: vendor\n"
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:79
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:79
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:81
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:81
 msgid "Synced"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:116
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:116
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:118
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:118
 msgid "No Invoice orders found"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:143
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:143
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:145
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:145
 msgid "Payment status updated"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:180
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:241
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:180
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:241
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:182
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:243
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:182
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:243
 msgid "Select dates"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:197
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:197
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:199
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:199
 msgid "Mapped"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:249
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:249
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:251
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:251
 msgid "Exported"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:278
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:300
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:278
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:300
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:280
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:332
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:280
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:332
 msgid "Items are being mapped in background. You can visit other tabs :)."
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:324
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:324
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:356
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:356
 msgid "Cost centers not found"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:333
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:333
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:365
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:365
 msgid "Cost centers saved"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:342
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:342
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:374
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:374
 msgid "Cost units not found"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:351
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:351
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:383
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:383
 msgid "Cost units saved"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:360
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:360
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:392
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:392
 msgid "GL accounts not found"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:369
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:369
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:401
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:401
 msgid "GL accounts saved"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:399
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:399
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:431
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:431
 msgid "Saved"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:402
-#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:402
+#: admin/includes/Actions/Ajax/ExactOnlineAjax.php:434
+#: build/commercebird/admin/includes/Actions/Ajax/ExactOnlineAjax.php:434
 msgid "Token is required"
 msgstr ""
 
-#: admin/includes/Actions/Ajax/ZohoInventoryAjax.php:147
-#: build/commercebird/admin/includes/Actions/Ajax/ZohoInventoryAjax.php:147
+#: admin/includes/Actions/Ajax/ZohoInventoryAjax.php:152
+#: build/commercebird/admin/includes/Actions/Ajax/ZohoInventoryAjax.php:152
 msgid "Please set label"
 msgstr ""
 
@@ -126,11 +126,11 @@ msgstr ""
 msgid "CommerceBird"
 msgstr ""
 
-#: build/commercebird/data-sync.php:125 data-sync.php:125
+#: build/commercebird/data-sync.php:129 data-sync.php:129
 msgid "Please select at least one category from cron tab"
 msgstr ""
 
-#: build/commercebird/data-sync.php:152 data-sync.php:152
+#: build/commercebird/data-sync.php:154 data-sync.php:154
 msgid "Items are being imported in background. You can visit other tabs :)."
 msgstr ""
 
@@ -287,34 +287,32 @@ msgstr ""
 msgid "Key type. Possible values are \"meta\" and \"taxonomy\"."
 msgstr ""
 
-#: build/commercebird/includes/classes/class-plugin.php:197
-#: includes/classes/class-plugin.php:197
+#: build/commercebird/includes/classes/class-plugin.php:184
+#: includes/classes/class-plugin.php:184
 msgid "Once Weekly"
 msgstr ""
 
-#: build/commercebird/includes/classes/class-plugin.php:203
-#: includes/classes/class-plugin.php:203
+#: build/commercebird/includes/classes/class-plugin.php:190
+#: includes/classes/class-plugin.php:190
 msgid "Once Monthly"
 msgstr ""
 
-#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:43
-#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:53
-#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:95
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:39
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:49
 #: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-order.php:52
-#: includes/classes/purchase-orders/class-wc-purchase-admin.php:43
-#: includes/classes/purchase-orders/class-wc-purchase-admin.php:53
-#: includes/classes/purchase-orders/class-wc-purchase-admin.php:95
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:39
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:49
 #: includes/classes/purchase-orders/class-wc-purchase-order.php:52
 msgid "Purchase Orders"
 msgstr ""
 
-#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:64
-#: includes/classes/purchase-orders/class-wc-purchase-admin.php:64
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:60
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:60
 msgid "Add New Purchase Order"
 msgstr ""
 
-#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:74
-#: includes/classes/purchase-orders/class-wc-purchase-admin.php:74
+#: build/commercebird/includes/classes/purchase-orders/class-wc-purchase-admin.php:70
+#: includes/classes/purchase-orders/class-wc-purchase-admin.php:70
 msgid "Edit purchase"
 msgstr ""
 
@@ -491,128 +489,102 @@ msgstr ""
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:13
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:15
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:41
-#: includes/taxonomies/taxonomy-product_brands.php:13
-#: includes/taxonomies/taxonomy-product_brands.php:15
-#: includes/taxonomies/taxonomy-product_brands.php:41
 msgid "Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:14
-#: includes/taxonomies/taxonomy-product_brands.php:14
 msgid "Brand"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:16
-#: includes/taxonomies/taxonomy-product_brands.php:16
 msgid "All Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:17
-#: includes/taxonomies/taxonomy-product_brands.php:17
 msgid "Edit Brand"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:18
-#: includes/taxonomies/taxonomy-product_brands.php:18
 msgid "View Brand"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:19
-#: includes/taxonomies/taxonomy-product_brands.php:19
 msgid "Update Brand name"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:20
-#: includes/taxonomies/taxonomy-product_brands.php:20
 msgid "Add new Brand"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:21
-#: includes/taxonomies/taxonomy-product_brands.php:21
 msgid "New Brand name"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:22
-#: includes/taxonomies/taxonomy-product_brands.php:22
 msgid "Parent Brand"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:23
-#: includes/taxonomies/taxonomy-product_brands.php:23
 msgid "Parent Brand:"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:24
-#: includes/taxonomies/taxonomy-product_brands.php:24
 msgid "Search Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:25
-#: includes/taxonomies/taxonomy-product_brands.php:25
 msgid "Popular Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:26
-#: includes/taxonomies/taxonomy-product_brands.php:26
 msgid "Separate Brands with commas"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:27
-#: includes/taxonomies/taxonomy-product_brands.php:27
 msgid "Add or remove Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:28
-#: includes/taxonomies/taxonomy-product_brands.php:28
 msgid "Choose from the most used Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:29
-#: includes/taxonomies/taxonomy-product_brands.php:29
 msgid "No Brands found"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:30
-#: includes/taxonomies/taxonomy-product_brands.php:30
 msgid "No Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:31
-#: includes/taxonomies/taxonomy-product_brands.php:31
 msgid "Brands list navigation"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:32
-#: includes/taxonomies/taxonomy-product_brands.php:32
 msgid "Brands list"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:33
-#: includes/taxonomies/taxonomy-product_brands.php:33
 msgid "Back to Brands"
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:34
-#: includes/taxonomies/taxonomy-product_brands.php:34
 msgid "The name is how it appears on your site."
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:35
-#: includes/taxonomies/taxonomy-product_brands.php:35
 msgid ""
 "Assign a parent term to create a hierarchy. The term Jazz, for example, "
 "would be the parent of Bebop and Big Band."
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:36
-#: includes/taxonomies/taxonomy-product_brands.php:36
 msgid ""
 "The slug is the URL-friendly version of the name. It is usually all "
 "lowercase and contains only letters, numbers, and hyphens."
 msgstr ""
 
 #: build/commercebird/includes/taxonomies/taxonomy-product_brands.php:37
-#: includes/taxonomies/taxonomy-product_brands.php:37
 msgid ""
 "The description is not prominent by default; however, some themes may show "
 "it."

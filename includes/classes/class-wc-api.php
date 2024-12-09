@@ -30,7 +30,6 @@ class CommerceBird_WC_API {
 			'CMBIRD_Media_API_Controller',
 			'CMBIRD_Metadata_API_Controller',
 			'CMBIRD_List_Items_API_Controller',
-			'CMBIRD_Product_Brands_API_Controller',
 		);
 		foreach ( $api_classes as $api_class ) {
 			$controller = new $api_class();
