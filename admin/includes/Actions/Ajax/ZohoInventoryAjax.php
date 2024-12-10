@@ -550,7 +550,7 @@ final class ZohoInventoryAjax {
 			self::SOURCE,
 		);
 		$this->response['form']['zi_cron_interval'] = get_option( 'zi_cron_interval', 'none' );
-		$this->response['categories'] = unserialize( get_option( 'cmbird_zoho_item_category', '' ) );
+		$this->response['categories'] = get_option( 'cmbird_zoho_item_category', '' );
 		$this->serve();
 	}
 

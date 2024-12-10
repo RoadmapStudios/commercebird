@@ -366,7 +366,6 @@ class ProductWebhook {
 					$opt_category = get_option( 'cmbird_zoho_item_category' );
 					$category_id = $item['category_id'];
 					if ( $opt_category ) {
-						$opt_category = unserialize( $opt_category );
 						if ( in_array( $category_id, $opt_category, true ) ) {
 							$product_class = new CMBIRD_Products_ZI_Export();
 							$pdt_id = $product_class->cmbird_zi_product_to_woocommerce( $item, $item_stock );
