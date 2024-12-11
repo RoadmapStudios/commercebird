@@ -38,7 +38,7 @@ const handleClick = () => {
           <TextInput v-model="store.connection.token"/>
           <button class="w-[2.875rem] h-[2.875rem] flex-shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold border border-transparent disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-0 dark:focus:ring-gray-600" type="button"
                   @click="showHint = !showHint">
-            <QuestionMarkCircleIcon @click="handleClick"/>
+            <component :is="QuestionMarkCircleIcon" @click="handleClick"/>
           </button>
         </div>
         <BaseLink href="/wp-admin/admin.php?page=wc-settings&tab=advanced&section=webhooks" rel="noopener noreferrer"
