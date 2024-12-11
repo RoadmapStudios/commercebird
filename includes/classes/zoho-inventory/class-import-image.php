@@ -113,10 +113,10 @@ class CMBIRD_Image_ZI {
 				// Get the title of the existing image
 				$existing_image_title = get_the_title( $media_image->ID );
 				// check if the existing image title contains the item image name
-				if ( strpos( $existing_image_title, $item_image ) !== false ) {
+				if ( $existing_image_title === $item_image ) {
 					return $media_image->ID; // Return the ID of the existing image
 				}
-				if ( strpos( $existing_image_title, $item_name ) !== false ) {
+				if ( $existing_image_title === $item_name ) {
 					return $media_image->ID; // Return the ID of the existing image
 				}
 			}
