@@ -44,7 +44,7 @@ class CMBIRD_Image_ZI {
 	public function cmbird_zi_get_image( $item_id, $item_name, $post_id, $image_name, $image_document_id ) {
 		// $fd = fopen( __DIR__ . '/image_sync.txt', 'a+' );
 
-		$attachment_id = $this->compare_image_with_media_library( $item_name, $image_name );
+		$attachment_id = $this->compare_image_with_media_library( $image_document_id, $image_name );
 		if ( $attachment_id ) {
 			set_post_thumbnail( $post_id, $attachment_id );
 			update_post_meta( $attachment_id, '_wp_attachment_image_alt', $item_name );
@@ -100,7 +100,7 @@ class CMBIRD_Image_ZI {
 	 * @return int|bool The ID of the existing image if a match is found, or false if no match is found.
 	 * @since 1.0.0
 	 */
-	protected function compare_image_with_media_library( $item_name, $item_image ) {
+	protected function compare_image_with_media_library( $image_document_id, $item_image ) {
 
 		if ( ! empty( $item_image ) ) {
 			$args = array(
@@ -110,13 +110,12 @@ class CMBIRD_Image_ZI {
 			);
 			$media_library_images = get_posts( $args );
 			foreach ( $media_library_images as $media_image ) {
-				// Get the title of the existing image
-				$existing_image_title = get_the_title( $media_image->ID );
-				// check if the existing image title contains the item image name
-				if ( $existing_image_title === $item_image ) {
+				// Get the postmeta zoho_product_image_id of the existing image
+				$existing_image_title = get_post_meta( $media_image->ID, 'zoho_product_image_id', true );
+				if ( $image_document_id === $item_image ) {
 					return $media_image->ID; // Return the ID of the existing image
 				}
-				if ( $existing_image_title === $item_name ) {
+				if ( $existing_image_title === $item_image ) {
 					return $media_image->ID; // Return the ID of the existing image
 				}
 			}
