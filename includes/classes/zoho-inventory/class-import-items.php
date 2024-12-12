@@ -13,6 +13,8 @@ use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 class CMBIRD_Products_ZI {
 
 	private $config;
+	private $is_tax_enabled;
+
 	public function __construct() {
 		$this->config = array(
 			'ProductZI' => array(
@@ -20,6 +22,13 @@ class CMBIRD_Products_ZI {
 				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 			),
 		);
+		// Check if WooCommerce taxes are enabled and store the result
+		$this->is_tax_enabled = 'yes' === get_option( 'woocommerce_calc_taxes' );
+	}
+
+	// Method to use the tax check across the class
+	public function is_tax_enabled(): bool {
+		return $this->is_tax_enabled;
 	}
 
 	/**
@@ -136,7 +145,7 @@ class CMBIRD_Products_ZI {
 							}
 						}
 
-						if ( ! empty( $arr->tax_id ) ) {
+						if ( ! empty( $arr->tax_id ) && ! $this->is_tax_enabled() ) {
 							$zi_common_class = new CMBIRD_Common_Functions();
 							$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $arr->tax_percentage );
 							$product->set_tax_status( 'taxable' );
@@ -1070,7 +1079,7 @@ class CMBIRD_Products_ZI {
 				}
 				$variation->set_regular_price( $item->rate );
 				// Set Tax Class
-				if ( $item->tax_id ) {
+				if ( $item->tax_id && ! $this->is_tax_enabled() ) {
 					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item->tax_percentage );
 					$variation->set_tax_status( 'taxable' );

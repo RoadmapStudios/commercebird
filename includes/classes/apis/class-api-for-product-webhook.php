@@ -24,6 +24,7 @@ class ProductWebhook {
 
 	private static string $endpoint = 'zoho-product';
 
+	private $is_tax_enabled;
 
 	public function __construct() {
 		register_rest_route(
@@ -35,6 +36,13 @@ class ProductWebhook {
 				'permission_callback' => '__return_true',
 			)
 		);
+		// Check if WooCommerce taxes are enabled and store the result
+		$this->is_tax_enabled = 'yes' === get_option( 'woocommerce_calc_taxes' );
+	}
+
+	// Method to use the tax check across the class
+	public function is_tax_enabled(): bool {
+		return $this->is_tax_enabled;
 	}
 
 
@@ -231,7 +239,7 @@ class ProductWebhook {
 				$variation->update_meta_data( '_cost_price', $item['purchase_rate'] );
 
 				// Map taxes while syncing product from zoho.
-				if ( $item['tax_id'] ) {
+				if ( $item['tax_id'] && ! $this->is_tax_enabled() ) {
 					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$variation->set_tax_status( 'taxable' );
@@ -282,7 +290,7 @@ class ProductWebhook {
 					$variation->set_manage_stock( false );
 				}
 				// Map taxes while syncing product from zoho.
-				if ( $item['tax_id'] ) {
+				if ( $item['tax_id'] && ! $this->is_tax_enabled() ) {
 					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$variation->set_tax_status( 'taxable' );
@@ -489,7 +497,7 @@ class ProductWebhook {
 				}
 
 				// Map taxes while syncing product from zoho.
-				if ( $item['tax_id'] ) {
+				if ( $item['tax_id'] && ! $this->is_tax_enabled() ) {
 					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item['tax_percentage'] );
 					$simple_product->set_tax_status( 'taxable' );
