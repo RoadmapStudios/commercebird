@@ -1,4 +1,11 @@
-Version 2.2.9 = December 1th 2024
+Version 2.2.10 - December 12 2024
+* New: support and documentation support directly via plugin
+* Removal: product brands taxonomy as its now part of WC Core
+* Fix: featured image import from Zoho due to strict validation
+* Fix: stock update for quantity 0
+* Fix: zoho customer update via my-account page
+
+Version 2.2.9 - December 1th 2024
 * New: Group Items will be created via Webhook now
 * Minor bugfixes
 * Tested up to WooCommerce 9.4.2
