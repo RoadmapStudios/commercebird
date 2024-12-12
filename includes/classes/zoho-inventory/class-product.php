@@ -134,7 +134,9 @@ class CMBIRD_Products_ZI_Export {
 				$zidata .= '"initial_stock_rate" : "' . $in_stock_rate . '",';
 			}
 			$zidata .= '"rate" : "' . $rate . '",';
-			$zidata .= '"tax_id" : "' . $tax_id . '",';
+			if ( $tax_id ) {
+				$zidata .= '"tax_id" : "' . $tax_id . '",';
+			}
 			//$zidata .= '"image_name" : "' . $image . '",';
 
 			// Get cost_price from meta data.
