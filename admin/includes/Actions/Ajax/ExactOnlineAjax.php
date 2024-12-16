@@ -117,10 +117,10 @@ final class ExactOnlineAjax {
 		}
 		foreach ( $orders as $order_id ) {
 			// send each order_id to wc action scheduler to process if not scheduled
-			if ( ! as_has_scheduled_action( 'sync_payment_status', array( $order_id ) ) ) {
+			if ( ! as_has_scheduled_action( 'cmbird_payment_status', array( $order_id ) ) ) {
 				as_schedule_single_action(
 					time(),
-					'sync_payment_status',
+					'cmbird_payment_status',
 					array(
 						$order_id,
 					)
@@ -132,9 +132,9 @@ final class ExactOnlineAjax {
 		// fclose( $fd );
 
 		// Schedule the event to run weekly starting next week
-		if ( ! wp_next_scheduled( 'commmercebird_exact_online_get_payment_statuses' ) ) {
+		if ( ! wp_next_scheduled( 'cmbird_eo_get_payment_statuses' ) ) {
 			$seven_days_in_future = time() + 7 * DAY_IN_SECONDS;
-			wp_schedule_event( $seven_days_in_future, 'weekly', 'commmercebird_exact_online_get_payment_statuses' );
+			wp_schedule_event( $seven_days_in_future, 'weekly', 'cmbird_eo_get_payment_statuses' );
 		}
 		$this->response = array(
 			'success' => true,
@@ -157,7 +157,7 @@ final class ExactOnlineAjax {
 		foreach ( $chunked as $chunked_order ) {
 			$result = as_schedule_single_action(
 				time(),
-				'sync_eo',
+				'cmbird_sync_eo',
 				array(
 					'orders',
 					wp_json_encode( $chunked_order ),
@@ -262,7 +262,7 @@ final class ExactOnlineAjax {
 		foreach ( $chunked as $chunked_products ) {
 			$id = as_schedule_single_action(
 				time(),
-				'sync_eo',
+				'cmbird_sync_eo',
 				array(
 					'product',
 					wp_json_encode( $chunked_products ),
@@ -281,27 +281,27 @@ final class ExactOnlineAjax {
 		$this->verify( self::FORMS['customer'] );
 		// get all customers that have a meta key eo_gl_account.
 		/*
-		$customers = get_users(
-			array(
-				'meta_query' => array(
-					array(
-						'key' => 'eo_gl_account',
-						'compare' => 'EXISTS',
-					),
-				),
-			)
-		);
-		// update each customer by adding "test" to biography of each customer.
-		foreach ( $customers as $customer ) {
-			// use wp_update_user() function to update the user.
-			wp_update_user(
-				array(
-					'ID' => $customer->ID,
-					'description' => 'test',
-				)
-			);
-		}
-		*/
+						  $customers = get_users(
+							  array(
+								  'meta_query' => array(
+									  array(
+										  'key' => 'eo_gl_account',
+										  'compare' => 'EXISTS',
+									  ),
+								  ),
+							  )
+						  );
+						  // update each customer by adding "test" to biography of each customer.
+						  foreach ( $customers as $customer ) {
+							  // use wp_update_user() function to update the user.
+							  wp_update_user(
+								  array(
+									  'ID' => $customer->ID,
+									  'description' => 'test',
+								  )
+							  );
+						  }
+						  */
 		$customers = ( new CommerceBird() )->customer();
 		if ( is_string( $customers ) ) {
 			$this->response = array(
@@ -314,7 +314,7 @@ final class ExactOnlineAjax {
 		foreach ( $chunked as $chunked_customers ) {
 			$id = as_schedule_single_action(
 				time(),
-				'sync_eo',
+				'cmbird_sync_eo',
 				array(
 					'customer',
 					wp_json_encode( $chunked_customers ),

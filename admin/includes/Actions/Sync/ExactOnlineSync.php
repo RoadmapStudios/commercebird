@@ -244,7 +244,7 @@ class ExactOnlineSync {
 	 * @param array $
 	 * @return void
 	 */
-	public static function sync_payment_status() {
+	public static function cmbird_payment_status() {
 		$args = func_get_args();
 		$order_id = $args[0];
 		if ( empty( $order_id ) ) {

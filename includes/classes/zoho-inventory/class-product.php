@@ -26,8 +26,8 @@ class CMBIRD_Products_ZI_Export {
 			if ( $rate_limit ) {
 				$timestamp = strtotime( 'tomorrow' );
 				// set the zoho rate limit option exceeded to false tomorrow if not scheduled yet.
-				if ( ! wp_next_scheduled( 'commercebird_common' ) ) {
-					wp_schedule_single_event( $timestamp, 'commercebird_common' );
+				if ( ! wp_next_scheduled( 'cmbird_common' ) ) {
+					wp_schedule_single_event( $timestamp, 'cmbird_common' );
 				}
 				// Get all scheduled actions with the specific hook name
 				$action_ids = as_get_scheduled_actions(

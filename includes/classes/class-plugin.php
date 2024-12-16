@@ -34,7 +34,7 @@ class Plugin {
 
 	public static function deactivate() {
 		wp_clear_scheduled_hook( 'zi_execute_import_sync' );
-		wp_clear_scheduled_hook( 'commmercebird_exact_online_get_payment_statuses' );
+		wp_clear_scheduled_hook( 'cmbird_eo_get_payment_statuses' );
 		wp_clear_scheduled_hook( 'cmbird_exact_online_sync_orders' );
 		wp_clear_scheduled_hook( 'cmbird_zoho_sync_category_cron' );
 		wp_clear_scheduled_hook( 'cmbird_zoho_contact_sync' );
