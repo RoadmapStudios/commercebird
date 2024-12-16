@@ -98,15 +98,11 @@ final class ExactOnlineAjax {
 
 		$start_date = gmdate( 'Y-m-d H:i:s', strtotime( '-200 days' ) );
 		$end_date = gmdate( 'Y-m-d H:i:s', strtotime( '-5 days' ) );
-		// $exclude_statuses = array( 'wc-sf-order' );
-		// $included_status = 'wc-completed';
 
-		// Calculate included statuses by removing excluded ones
-		// $included_statuses = array_diff( wc_get_order_statuses(), $exclude_statuses );
 		// Get all orders with the included statuses
 		$orders = wc_get_orders(
 			array(
-				'status' => 'wc-sf-order',
+				'status' => 'wc-on-hold',
 				'limit' => -1,
 				'date_created' => $start_date . '...' . $end_date,
 				'return' => 'ids',
