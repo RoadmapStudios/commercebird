@@ -108,16 +108,16 @@ class ProductWebhook {
 			foreach ( $warehouses as $warehouse ) {
 				if ( $warehouse['warehouse_id'] === $warehouse_id ) {
 					if ( $accounting_stock ) {
-						$item_stock = $warehouse['warehouse_available_for_sale_stock'];
+						$item_stock = $warehouse['warehouse_available_stock'];
 					} else {
-						$item_stock = $warehouse['warehouse_actual_available_for_sale_stock'];
+						$item_stock = $warehouse['warehouse_actual_available_stock'];
 					}
 				}
 			}
 		} elseif ( $accounting_stock ) {
-			$item_stock = $item['available_for_sale_stock'];
+			$item_stock = $item['available_stock'];
 		} else {
-			$item_stock = $item['actual_available_for_sale_stock'];
+			$item_stock = $item['actual_available_stock'];
 		}
 		if ( isset( $item['group_name'] ) ) {
 			$group_name = $item['group_name'];

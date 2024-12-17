@@ -108,7 +108,7 @@ class CMBIRD_Products_ZI {
 
 						// To check status of stock sync option.
 						$zi_disable_stock_sync = get_option( 'cmbird_zoho_disable_stock_sync_status' );
-						if ( ! $zi_disable_stock_sync && isset( $arr->available_for_sale_stock ) ) {
+						if ( ! $zi_disable_stock_sync && isset( $arr->available_stock ) ) {
 							$stock = '';
 							// Update stock
 							$accounting_stock = get_option( 'cmbird_zoho_enable_accounting_stock_status' );
@@ -120,16 +120,16 @@ class CMBIRD_Products_ZI {
 								foreach ( $warehouses as $warehouse ) {
 									if ( $warehouse->warehouse_id === $warehouse_id ) {
 										if ( $accounting_stock ) {
-											$stock = $warehouse->warehouse_available_for_sale_stock;
+											$stock = $warehouse->warehouse_available_stock;
 										} else {
-											$stock = $warehouse->warehouse_actual_available_for_sale_stock;
+											$stock = $warehouse->warehouse_actual_available_stock;
 										}
 									}
 								}
 							} elseif ( $accounting_stock ) {
-								$stock = $arr->available_for_sale_stock;
+								$stock = $arr->available_stock;
 							} else {
-								$stock = $arr->actual_available_for_sale_stock;
+								$stock = $arr->actual_available_stock;
 							}
 
 							if ( is_numeric( $stock ) ) {
@@ -650,9 +650,9 @@ class CMBIRD_Products_ZI {
 					foreach ( $warehouses as $warehouse ) {
 						if ( $warehouse->warehouse_id === $warehouse_id ) {
 							if ( $accounting_stock ) {
-								$stock = isset( $warehouse->warehouse_available_for_sale_stock );
+								$stock = isset( $warehouse->warehouse_available_stock );
 							} else {
-								$stock = isset( $warehouse->warehouse_actual_available_for_sale_stock );
+								$stock = isset( $warehouse->warehouse_actual_available_stock );
 							}
 						}
 					}
@@ -1473,16 +1473,16 @@ class CMBIRD_Products_ZI {
 					foreach ( $warehouses as $warehouse ) {
 						if ( $warehouse->warehouse_id === $warehouse_id ) {
 							if ( $accounting_stock ) {
-								$stock = $warehouse->warehouse_available_for_sale_stock;
+								$stock = $warehouse->warehouse_available_stock;
 							} else {
-								$stock = $warehouse->warehouse_actual_available_for_sale_stock;
+								$stock = $warehouse->warehouse_actual_available_stock;
 							}
 						}
 					}
 				} elseif ( $accounting_stock ) {
-					$stock = $comp_item->available_for_sale_stock;
+					$stock = $comp_item->available_stock;
 				} else {
-					$stock = $comp_item->actual_available_for_sale_stock;
+					$stock = $comp_item->actual_available_stock;
 				}
 
 				// ----------------- Create composite item in woocommerce--------------.
