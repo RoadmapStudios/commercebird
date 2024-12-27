@@ -8,11 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once ABSPATH . 'wp-includes/post.php';
-require_once ABSPATH . 'wp-admin/includes/image.php';
-require_once ABSPATH . 'wp-admin/includes/media.php';
-require_once ABSPATH . 'wp-admin/includes/file.php';
-
 /**
  * Class for All Product Data from Woo To Zoho
  *
