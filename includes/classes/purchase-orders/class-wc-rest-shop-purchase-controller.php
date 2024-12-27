@@ -64,12 +64,12 @@ class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 	 *
 	 * @param WP_REST_Request $request  Request object.
 	 * @param bool            $creating If the request is for creating a new object.
-	 * @return WP_Error|WC_Purchase_Order
+	 * @return WP_Error|CMBIRD_Purchase_Order
 	 */
 	public function prepare_object_for_database( $request, $creating = false ) {
 
 		$id = isset( $request['id'] ) ? absint( $request['id'] ) : 0;
-		$purchase = new WC_Purchase_Order( $id );
+		$purchase = new CMBIRD_Purchase_Order( $id );
 		$schema = parent::get_item_schema();
 		$data_keys = array_keys( array_filter( $schema['properties'], array( $this, 'filter_writable_props' ) ) );
 

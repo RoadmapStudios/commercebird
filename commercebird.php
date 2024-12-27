@@ -84,11 +84,11 @@ function cmbird_load_textdomain() {
  */
 function cmbird_purchase_order_class() {
 	if ( class_exists( 'WooCommerce' ) ) {
-		new WC_Purchase_Order();
+		new CMBIRD_Purchase_Order();
 	}
 }
 add_action( 'woocommerce_init', 'cmbird_purchase_order_class' );
-add_action( 'init', array( WCP_WC_Admin_Manager::class, 'init' ), 11 );
+add_action( 'init', array( CMBIRD_PO_Admin_Manager::class, 'init' ), 11 );
 
 /*
 |--------------------------------------------------------------------------

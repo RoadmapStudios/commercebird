@@ -15,7 +15,7 @@ if ( ! class_exists( 'WC_Order' ) ) {
  * This class extends the WC_Order class to add custom functionality for purchase orders.
  */
 
-class WC_Purchase_Order extends WC_Order {
+class CMBIRD_Purchase_Order extends WC_Order {
 	public $order_type = 'shop_purchase';
 
 	public function __construct( $order_id = 0 ) {
@@ -79,7 +79,7 @@ function cmbird_register_shop_purchase_order_type() {
 		'exclude_from_order_reports' => true,
 		'exclude_from_order_sales_reports' => true,
 		'add_order_meta_boxes' => true,
-		'class_name' => 'WC_Purchase_Order',
+		'class_name' => 'CMBIRD_Purchase_Order',
 	) );
 
 	register_post_status(
@@ -136,7 +136,7 @@ add_action( 'init', 'cmbird_register_shop_purchase_order_type' );
 // Load custom class for Purchase Orders
 function cmbird_load_purchase_order_class( $order_classname, $order_type, $order_id ) {
 	if ( 'shop_purchase' === $order_type ) {
-		$order_classname = 'WC_Purchase_Order';
+		$order_classname = 'CMBIRD_Purchase_Order';
 	}
 	return $order_classname;
 }

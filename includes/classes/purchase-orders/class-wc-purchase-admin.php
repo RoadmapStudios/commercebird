@@ -2,7 +2,7 @@
 /**
  * WooCommerce Purchase Orders WC Admin Manager.
  *
- * @package  WooCommerce Purchase/Admin
+ * @package  CommerceBird Purchase/Admin
  * @version  1.0.0
  */
 
@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * @since 1.0.0
  * @return void
  */
-class WCP_WC_Admin_Manager {
+class CMBIRD_PO_Admin_Manager {
 
 	/**
 	 * Initialise the class and attach hook callbacks.
