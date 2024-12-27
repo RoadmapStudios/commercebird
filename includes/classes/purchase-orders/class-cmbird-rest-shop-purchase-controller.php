@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class to extend WC REST API for custom order type 'shop_purchase'
  */
-class WC_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
+class CMBIRD_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 
 	protected $post_type = 'shop_purchase';
 	protected $namespace = 'wc/v3';

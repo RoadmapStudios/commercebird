@@ -154,7 +154,7 @@ add_action(
 		new ShippingWebhook();
 		new CreateOrderWebhook();
 		new CreateSFOrderWebhook();
-		$po_controller = new WC_REST_Shop_Purchase_Controller();
+		$po_controller = new CMBIRD_REST_Shop_Purchase_Controller();
 		$po_controller->register_routes();
 	}
 );
