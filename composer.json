@@ -21,7 +21,8 @@
   "require": {
     "php": ">=7.4",
     "ext-curl": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "league/container": "^4.2"
   },
   "require-dev": {
     "coenjacobs/mozart": "^0.7.1",
@@ -44,6 +45,7 @@
       "classmap_directory": "/includes/classes/dependencies/",
       "classmap_prefix": "CMBIRD_",
       "packages": [
+        "league/container"
       ],
       "delete_vendor_directories": true
     }

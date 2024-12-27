@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class Acf {
+final class Cmbird_Acf {
 	use Singleton;
 
 	public function __construct() {
