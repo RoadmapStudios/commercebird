@@ -13,7 +13,7 @@
   },
   "authors": [
     {
-      "name": "Roadmap Studios",
+      "name": "Fawad Tiemoerie",
       "email": "info@roadmapstudios.com",
       "role": "Owner"
     }
@@ -24,6 +24,7 @@
     "ext-json": "*"
   },
   "require-dev": {
+    "coenjacobs/mozart": "^0.7.1",
     "filp/whoops": ">=2.15.4",
     "roots/wordpress-no-content": ">=6.3.2",
     "symfony/var-dumper": "^5.4",
@@ -35,5 +36,22 @@
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
+  },
+  "extra": {
+    "mozart": {
+      "dep_namespace": "CommerceBird\\Dependencies\\",
+      "dep_directory": "/includes/Dependencies/",
+      "classmap_directory": "/includes/classes/dependencies/",
+      "classmap_prefix": "CMBIRD_",
+      "packages": [
+      ],
+      "delete_vendor_directories": true
+    }
+  },
+"scripts": {
+    "post-update-cmd": [
+        "test -f vendor/bin/mozart && vendor/bin/mozart compose || echo 'Mozart not available'",
+        "composer dump-autoload"
+    ]
   }
 }

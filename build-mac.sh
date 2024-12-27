@@ -36,6 +36,7 @@ rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
 
 ## Install PHP dependencies
 progress_message "Installing PHP dependencies..."
+composer require --working-dir="$DEST_PATH" coenjacobs/mozart --dev
 composer install --working-dir="$DEST_PATH" --no-dev
 rm "$DEST_PATH"/composer.lock
 
