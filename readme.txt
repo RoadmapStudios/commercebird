@@ -26,6 +26,9 @@ Subscribe to the 14-days Free Trial on: https://commercebird.com.
 - **POS Module**: Accept in-store payments in cash or via terminal payments (Native iOS and Android app).
 - **Analytics Pro**: Generate a graph based on prompt using A.I. and get valuable tips to grow your store (soon).
 
+Terms: [TOS](https://commercebird.com/terms-conditions)
+Privacy Policy: [Privacy Policy](https://commercebird.com/privacy-policy/)
+
 = ⏩ Use of 3rd Party Services =
 
 To improve the user experience, CommerceBird may use the following 3rd party services if the required feature is enabled:
@@ -79,6 +82,18 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.10 - December 12 2024 =
+* New: support and documentation support directly via plugin
+* Removal: product brands taxonomy as its now part of WC Core
+* Fix: featured image import from Zoho due to strict validation
+* Fix: stock update for quantity 0
+* Fix: zoho customer update via my-account page
+
+= 2.2.9 - December 1th 2024 =
+* New: Group Items will be created via Webhook now
+* Minor bugfixes
+* Tested up to WooCommerce 9.4.2
+
 = 2.2.8 - November 9 2024 =
 * New: added support for GST India during Contact import
 * Fix: pagination of Items api calls failed due to action scheduler bug

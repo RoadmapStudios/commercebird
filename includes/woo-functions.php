@@ -272,6 +272,27 @@ function cmbird_product_metabox_callback( $post ) {
 	if ( $zi_category_id ) {
 		echo '<p class="howto"><strong>Zoho Category: </strong>' . esc_html( $zi_category_id ) . '</p>';
 	}
+	// make api call to get the zoho item details
+	$zi_item_id = get_post_meta( $post->ID, 'zi_item_id', true );
+	if ( $zi_item_id ) {
+		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_organization_id' );
+		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
+		$urlitem = "{$zoho_inventory_url}inventory/v1/items/{$zi_item_id}?organization_id=$zoho_inventory_oid";
+		// fwrite( $fd, PHP_EOL . 'URL : ' . $urlitem );
+
+		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
+		$json = $execute_curl_call->execute_curl_call_get( $urlitem );
+		$code = (int) property_exists( $json, 'code' ) ? $json->code : '0';
+		if ( '0' === $code || 0 === $code ) {
+			// echo the item details here that are in array called "item"
+			$item = $json->item;
+			$actual_available_stock = (int) property_exists( $item, 'actual_available_stock' ) ? $item->actual_available_stock : '0';
+			$rate = (int) property_exists( $item, 'rate' ) ? $item->rate : '0';
+			echo '<p class="howto"><strong>Rate: </strong>' . esc_html( $rate ) . '</p>';
+			// echo the actual_available_stock
+			echo '<p class="howto"><strong>Available Stock: </strong>' . esc_html( $actual_available_stock ) . '</p>';
+		}
+	}
 }
 add_action( 'add_meta_boxes', 'cmbird_product_metabox' );
 
