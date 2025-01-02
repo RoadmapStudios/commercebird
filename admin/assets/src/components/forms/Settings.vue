@@ -15,7 +15,6 @@ const store = useHomepageStore()
 const loader = useLoadingStore()
 const { invalidEmail, settings } = store; // Destructure invalidEmail and settings
 </script>
-
 <template>
   <Card :foot="true" title="Settings">
     <template #action>

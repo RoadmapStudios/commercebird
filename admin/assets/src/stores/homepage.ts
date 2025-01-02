@@ -65,9 +65,9 @@ export const useHomepageStore = defineStore('homepage', () => {
                 storage.save(key, response); // Save the subscription only if emails match
                 invalidEmail.value = false; // Clear invalidEmail if the emails match
             } else {
-                subscription.value = {}; // Clear subscription on mismatch
+                subscription.value = {};
                 storage.remove(key);
-                invalidEmail.value = true; // Mark email as invalid
+                invalidEmail.value = true;
                 Swal.fire({
                     title: 'Invalid Email Address',
                     text: 'The email address you entered does not match the email of the subscription. Please enter the correct email address.',
@@ -92,10 +92,19 @@ export const useHomepageStore = defineStore('homepage', () => {
         const key = storeKey.homepage.settings;
         if (loader.isLoading(action)) return
         loader.setLoading(action)
-        const store: { cors: boolean, id: string } = storage.get(key)
+        const store: { cors: boolean, id: string, email: string } = storage.get(key)
+        // if store.email is empty then remove the key
+        if (store && !store.email) {
+            subscription.value = {};
+            storage.remove(key);
+            storage.remove(storeKey.homepage.subscription);
+            invalidEmail.value = true;
+            loader.clearLoading(action);
+        }
         if (store) {
             settings.cors = store.cors
             settings.id = store.id
+            settings.email = store.email
         } else {
             const response = await fetchData(action, key);
             if (response) {
@@ -115,12 +124,17 @@ export const useHomepageStore = defineStore('homepage', () => {
         if (loader.isLoading(action)) return
         loader.setLoading(action)
         const response = await sendData(action, settings, key);
-        if (response) {
+        if (response && settings.id !== '' && settings.email !== '') {
             storage.save(key, settings)
             if (response.message) {
                 notify.success(response.message)
             }
             await get_subscription();
+        } else {
+            storage.remove(key)
+            if (response.message) {
+                notify.error(response.message)
+            }
         }
         loader.clearLoading(action)
 
