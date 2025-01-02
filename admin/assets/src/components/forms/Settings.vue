@@ -29,7 +29,7 @@ const { invalidEmail, settings } = store; // Destructure invalidEmail and settin
         label="Subscription ID">
         <TextInput v-model="store.settings.id" :invalid="store.invalidId" />
       </InputGroup>
-      <InputGroup :invalid="invalidEmail" error-message="The subscription email is required and must be valid."
+      <InputGroup :invalid="store.invalidEmail" error-message="Please enter the email address used for the subscription"
         label="Email">
         <TextInput v-model="settings.email" :invalid="invalidEmail" />
       </InputGroup>
