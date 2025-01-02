@@ -7,17 +7,20 @@ import { useStorage } from "@/composable/storage";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { notify } from "@/composable/helpers";
+import Swal from 'sweetalert2'
 
 export const useHomepageStore = defineStore('homepage', () => {
     const storage = useStorage()
     const loader = useLoadingStore()
     const settings = reactive({
         cors: false,
-        id: ''
+        id: '',
+        email: ''
     })
     const subscription: Ref<Subscription | {}> = ref({})
     const changelog: Ref<Changelog[]> = ref([])
     const invalidId = ref(false)
+    const invalidEmail = ref(false)
 
 
     const get_changelog = async () => {
@@ -46,16 +49,34 @@ export const useHomepageStore = defineStore('homepage', () => {
             subscription.value = instore
         }
         if (settings.id === '' || settings.id === null || settings.id === undefined) return
+        // Validate the email
+        if (!settings.email || !settings.email.includes('@')) {
+            invalidEmail.value = true;
+            return;
+        }
         const action = backendAction.homepage.subscription;
         if (loader.isLoading(action)) return
         loader.setLoading(action)
         const response = await fetchData(action, key);
         if (response) {
             subscription.value = response
-            storage.save(key, response)
+            // Check if the emails match
+            if (response.billing.email === settings.email) {
+                storage.save(key, response); // Save the subscription only if emails match
+                invalidEmail.value = false; // Clear invalidEmail if the emails match
+            } else {
+                subscription.value = {}; // Clear subscription on mismatch
+                storage.remove(key);
+                invalidEmail.value = true; // Mark email as invalid
+                Swal.fire({
+                    title: 'Invalid Email Address',
+                    text: 'The email address you entered does not match the email of the subscription. Please enter the correct email address.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         }
         loader.clearLoading(action)
-
     }
     const isPremiumSubscription = async () => {
         if (!subscription.value) await get_subscription();
@@ -80,6 +101,7 @@ export const useHomepageStore = defineStore('homepage', () => {
             if (response) {
                 settings.cors = response.cors
                 settings.id = response.id || ''
+                settings.email = response.email || ''
                 await get_subscription()
             }
         }
@@ -112,8 +134,10 @@ export const useHomepageStore = defineStore('homepage', () => {
         await resetData(action, key).then(() => {
             settings.cors = false
             settings.id = ''
+            settings.email = ''
             subscription.value = {
                 currency: "",
+                billing: {},
                 fee_lines: [],
                 needs_payment: false,
                 next_payment_date_gmt: "",
@@ -134,6 +158,10 @@ export const useHomepageStore = defineStore('homepage', () => {
         if (settings.id !== '') {
             invalidId.value = Number.isNaN(parseInt(settings.id))
         }
+        // Update invalidEmail if email is empty or doesn't include '@'
+        if (!settings.email || !settings.email.includes('@')) {
+            invalidEmail.value = true;
+        }
     })
     return {
         save_settings,
@@ -144,6 +172,7 @@ export const useHomepageStore = defineStore('homepage', () => {
         subscription,
         changelog,
         invalidId,
+        invalidEmail,
         load
     }
 })

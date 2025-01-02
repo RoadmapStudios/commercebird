@@ -87,6 +87,17 @@ import LoaderIcon from "@/components/ui/LoaderIcon.vue";
 import Badge from "@/components/ui/Badge.vue";
 import { backendAction } from "@/keys";
 
-const store = useHomepageStore();
+interface Subscription {
+  plan: string[];
+  status: string;
+  needs_payment: boolean;
+  payment_url: string;
+  fee_lines: { id: number; name: string }[];
+  total: number;
+  currency: string;
+  next_payment_date_gmt: string;
+}
+
+const store = useHomepageStore() as { subscription: Subscription };
 const loader = useLoadingStore();
 </script>

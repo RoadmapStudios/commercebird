@@ -243,6 +243,7 @@ final class ZohoInventoryAjax {
 				'status',
 				'variation_id',
 				'line_items',
+				'billing',
 			),
 		);
 		$data['variation_id'] = array_column( $data['line_items'], 'variation_id' );

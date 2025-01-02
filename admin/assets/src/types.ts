@@ -255,6 +255,12 @@ export type Subscription = {
     next_payment_date_gmt: string;
     variation_id: number[];
     plan: string[];
+    billing: {
+        first_name: string;
+        company: string;
+        country: string;
+        email: string;
+    };
 }
 
 export type FeeLine = {
