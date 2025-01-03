@@ -21,7 +21,7 @@
           <slot :id="id" />
         </div>
         <div v-if="invalid" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <ExclamationCircleIcon class="w-6 h-6 text-rose-600" />
+          <component :is="ExclamationCircleIcon" class="w-6 h-6 text-rose-600" />
         </div>
       </div>
       <p v-if="invalid || hint" v-html="hint ? hint : errorMessage"></p>
