@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.7.0
 Requires PHP: 7.4
-Stable tag: 2.2.10
+Stable tag: 2.2.11
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -31,10 +31,10 @@ Privacy Policy: [Privacy Policy](https://commercebird.com/privacy-policy/)
 
 = ⏩ Use of 3rd Party Services =
 
-To improve the user experience, CommerceBird may use the following 3rd party services if the required feature is enabled:
+To improve the user experience, CommerceBird may use the following 3rd party services if the feature is enabled:
 
-- Zoho CRM and Inventory API –  [TOS](https://www.zoho.com/terms.html) and [Privacy Policy](https://www.zoho.com/privacy.html)
-- Exact Online API - [TOS](https://www.exact.com/terms-and-conditions) and [Privacy Policy](https://www.exact.com/privacy-statement)
+- Zoho CRM and Inventory API to synchronize Orders, Products and Customers –  [TOS](https://www.zoho.com/terms.html) and [Privacy Policy](https://www.zoho.com/privacy.html)
+- Exact Online API to synchronize Orders, Products and Customers - [TOS](https://www.exact.com/terms-and-conditions) and [Privacy Policy](https://www.exact.com/privacy-statement)
 
 == Frequently Asked Questions ==
 
@@ -82,6 +82,13 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.11 - January 4th 2025 =
+* New: activation now requires also email address in addition to subscription ID
+* Fix: stock update due to Zoho API changes of stock labels
+* Fix: image duplication fixed by validation improvement
+* Fix: tax enabled/disabled is respected during product import from Zoho Inventory
+* Fix: User Interface elements not showing properly
+
 = 2.2.10 - December 12 2024 =
 * New: support and documentation support directly via plugin
 * Removal: product brands taxonomy as its now part of WC Core
