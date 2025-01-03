@@ -41,6 +41,8 @@ trait AjaxRequest {
 
 	/**
 	 * Verify AJAX request.
+	 *
+	 * @param array $keys The keys to verify (optional).
 	 */
 	private function verify( array $keys = array() ): void {
 		check_ajax_referer( Template::NAME, 'security_token' );
@@ -57,7 +59,7 @@ trait AjaxRequest {
 
 		if ( empty( $_POST ) ) {
 			// Attempt to retrieve raw JSON content if POST is empty
-			$contents = trim( file_get_contents( 'php://input' ) );
+			$contents = trim( file_get_contents( 'php://input' ) ); // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 
 			// Check if contents contain valid JSON
 			if ( $this->is_json( $contents ) ) {
@@ -74,7 +76,6 @@ trait AjaxRequest {
 			}
 		}
 	}
-
 
 	/**
 	 * Utility to check if a string is JSON.

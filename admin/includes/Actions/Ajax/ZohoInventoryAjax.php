@@ -29,6 +29,7 @@ final class ZohoInventoryAjax {
 		'settings' => array(
 			'cors',
 			'id',
+			'email',
 		),
 		'tax' => array(
 			'selectedTaxRates',
@@ -47,7 +48,6 @@ final class ZohoInventoryAjax {
 			'disable_sync',
 			'enable_auto_number',
 			'enable_order_status',
-			'enable_multicurrency',
 			'order_prefix',
 			'warehouse_id',
 			'enable_warehousestock',
