@@ -364,7 +364,7 @@ function cmbird_zi_subcategory_sync_call() {
 				$term = get_term_by( 'name', $subcategory['name'], 'product_cat' );
 
 				if ( $subcategory['parent_category_id'] > 0 ) {
-					$zoho_pid = intval( subcategories_term_id( $subcategory['parent_category_id'] ) );
+					$zoho_pid = intval( cmbird_subcategories_term_id( $subcategory['parent_category_id'] ) );
 				}
 
 				if ( empty( $term ) && $zoho_pid ) {
@@ -681,7 +681,7 @@ function cmbird_get_zoho_item_categories() {
  * @return string - Term ID
  */
 
-function subcategories_term_id( $option_value ) {
+function cmbird_subcategories_term_id( $option_value ) {
 	global $wpdb;
 	$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}options WHERE option_value = %s", $option_value ) );
 	if ( ! empty( $row->option_name ) ) {

@@ -16,7 +16,7 @@ class ZCRM_Custom_Fields {
 	 * @param module $module - module name
 	 * @return array | \WP_Error
 	 */
-	public function get_custom_fields( $module ) {
+	public function cmbird_get_custom_fields( $module ) {
 		$zoho_crm_url = get_option( 'cmbird_zoho_crm_url' );
 		$url = $zoho_crm_url . 'crm/v6/settings/fields?module=' . $module;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
