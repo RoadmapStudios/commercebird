@@ -7,7 +7,7 @@ import { useStorage } from "@/composable/storage";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { notify } from "@/composable/helpers";
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 export const useHomepageStore = defineStore('homepage', () => {
     const storage = useStorage()
