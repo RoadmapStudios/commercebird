@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author Fawad Tiemoerie <info@roadmapstudios.com>
  * @since 2.0.0
  */
-class CommerceBird_WC_API {
+class Cmbird_WC_API {
 
 	/**
 	 * Constructor.

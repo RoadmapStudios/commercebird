@@ -144,9 +144,9 @@ class CMBIRD_List_Items_API_Controller extends WC_REST_CRUD_Controller {
 			if ( $request['type'] === 'users' ) {
 				$users = get_users( array( 'fields' => array( 'ID' ) ) );
 				foreach ( $users as $user ) {
-					$UserData = get_user_meta( $user->ID );
+					$user_data = get_user_meta( $user->ID );
 					if ( ! empty( $request['after_date'] ) ) {
-						if ( strtotime( $UserData['commercebird_profile_updated'][0] ) > strtotime( $request['after_date'] ) ) {
+						if ( strtotime( $user_data['cmbird_profile_updated'][0] ) > strtotime( $request['after_date'] ) ) {
 							if ( ! in_array( $user->ID, $ids ) ) {
 								$ids[] = (int) $user->ID;
 							}
