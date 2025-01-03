@@ -321,6 +321,8 @@ class CMBIRD_API_Handler_Zoho {
 	public function execute_curl_call_image_get( $url, $image_name ) {
 		// $fd = fopen( __DIR__ . '/execute_curl_call_image_get.txt', 'w' );
 
+		global $wp_filesystem;
+
 		$handlefunction = new CMBIRD_Auth_Zoho();
 		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
 		$zoho_inventory_refresh_token = $this->config['ExecutecallZI']['RTOKEN'];
@@ -357,7 +359,7 @@ class CMBIRD_API_Handler_Zoho {
 			$url_upload_path = $upload['baseurl'] . '/zoho_image/';
 
 			// Generate a unique image name
-			$img = wp_rand() . '_' . $image_name;
+			$img = $image_name;
 			$upload_dir = $absolute_upload_path . '/' . $img;
 
 			// remove the file if it exists
@@ -371,7 +373,7 @@ class CMBIRD_API_Handler_Zoho {
 			}
 			// Save the image file
 			try {
-				$this->filesystem->put_contents( $upload_dir, $body );
+				$wp_filesystem->put_contents( $upload_dir, $body );
 			} catch (Exception $e) {
 				wp_delete_file( $upload_dir );
 				// If there was an error, handle it

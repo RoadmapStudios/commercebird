@@ -320,7 +320,7 @@ class CMBIRD_Products_ZI {
 					$zi_disable_image_sync = get_option( 'cmbird_zoho_disable_image_sync_status' );
 					if ( ! empty( $arr->image_document_id ) && ! $zi_disable_image_sync ) {
 						$image_class = new CMBIRD_Image_ZI();
-						$image_class->cmbird_zi_get_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name, $arr->image_document_id );
+						$image_class->cmbird_zi_get_image( $arr->item_id, $arr->name, $pdt_id, $arr->image_name );
 					}
 
 					$item_ids[] = $arr->item_id;
@@ -754,7 +754,7 @@ class CMBIRD_Products_ZI {
 				// Featured Image of variation
 				if ( ! empty( $item->image_name ) ) {
 					$image_class = new CMBIRD_Image_ZI();
-					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
+					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name );
 					if ( ! has_post_thumbnail( $group_id ) ) {
 						if ( $variation_image_id ) {
 							set_post_thumbnail( $group_id, $variation_image_id );
@@ -1102,7 +1102,7 @@ class CMBIRD_Products_ZI {
 				// Featured Image of variation
 				if ( ! empty( $item->image_document_id ) ) {
 					$image_class = new CMBIRD_Image_ZI();
-					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
+					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name );
 					if ( ! has_post_thumbnail( $group_id ) ) {
 						if ( $variation_image_id ) {
 							set_post_thumbnail( $group_id, $variation_image_id );
@@ -1213,7 +1213,7 @@ class CMBIRD_Products_ZI {
 				// Featured Image of variation
 				if ( ! empty( $item->image_document_id ) ) {
 					$image_class = new CMBIRD_Image_ZI();
-					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name, $item->image_document_id );
+					$variation_image_id = $image_class->cmbird_zi_get_image( $item->item_id, $item->name, $variation_id, $item->image_name );
 					if ( ! has_post_thumbnail( $group_id ) ) {
 						if ( $variation_image_id ) {
 							set_post_thumbnail( $group_id, $variation_image_id );
@@ -1610,7 +1610,7 @@ class CMBIRD_Products_ZI {
 					if ( $key === 'image_document_id' ) {
 						if ( ! empty( $com_prod_id ) && ! empty( $value ) ) {
 							$image_class = new CMBIRD_Image_ZI();
-							$image_class->cmbird_zi_get_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name, $comp_item->image_document_id );
+							$image_class->cmbird_zi_get_image( $zoho_comp_item_id, $comp_item->name, $com_prod_id, $comp_item->image_name );
 						}
 					}
 					if ( $key === 'category_name' ) {
