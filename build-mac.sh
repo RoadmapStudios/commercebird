@@ -34,6 +34,25 @@ progress_message "Copying files for production..."
 rsync -rc --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
 rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
 
+# Modify `index.js` to remove lines with URLs ending in .mp3
+INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
+
+if [ -f "$INDEX_JS_PATH" ]; then
+    progress_message "Modifying index.js to remove lines with URLs ending in .mp3..."
+
+    # Use sed to remove lines containing .mp3 URLs (macOS-compatible)
+    sed -i '' 's/n\.src="https:\/\/[^"]*\.mp3"/n.src=""/g' "$DEST_PATH/admin/assets/dist/index.js"
+    # Optionally, verify the modification
+    if grep -q '\.mp3' "$INDEX_JS_PATH"; then
+        echo "Failed to remove lines with .mp3 URLs."
+        exit 1
+    else
+        echo "Lines with .mp3 URLs successfully removed."
+    fi
+else
+    echo "index.js not found. Skipping modification."
+fi
+
 ## Install PHP dependencies
 progress_message "Installing PHP dependencies..."
 composer install --working-dir="$DEST_PATH" --no-dev
