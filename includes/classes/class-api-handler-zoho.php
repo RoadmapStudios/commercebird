@@ -9,12 +9,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once ABSPATH . 'wp-admin/includes/file.php';
 class CMBIRD_API_Handler_Zoho {
 	/**
 	 * @var array|array[]
 	 */
 	private array $config;
+
+	private $filesystem;
 
 	public function __construct() {
 		$this->config = array(
@@ -30,6 +31,16 @@ class CMBIRD_API_Handler_Zoho {
 				'EXPIRESTIME' => get_option( 'cmbird_zoho_crm_timestamp' ),
 			),
 		);
+		if ( null === $this->filesystem ) {
+			global $wp_filesystem;
+
+			if ( empty( $wp_filesystem ) ) {
+				require_once ABSPATH . '/wp-admin/includes/file.php';
+				WP_Filesystem();
+			}
+
+			$this->filesystem = $wp_filesystem;
+		}
 	}
 
 	// Get Call Zoho
@@ -309,8 +320,6 @@ class CMBIRD_API_Handler_Zoho {
 	 */
 	public function execute_curl_call_image_get( $url, $image_name ) {
 		// $fd = fopen( __DIR__ . '/execute_curl_call_image_get.txt', 'w' );
-		global $wp_filesystem;
-		WP_Filesystem();
 
 		$handlefunction = new CMBIRD_Auth_Zoho();
 		$zoho_inventory_access_token = $this->config['ExecutecallZI']['ATOKEN'];
@@ -362,7 +371,7 @@ class CMBIRD_API_Handler_Zoho {
 			}
 			// Save the image file
 			try {
-				$wp_filesystem->put_contents( $upload_dir, $body );
+				$this->filesystem->put_contents( $upload_dir, $body );
 			} catch (Exception $e) {
 				wp_delete_file( $upload_dir );
 				// If there was an error, handle it
