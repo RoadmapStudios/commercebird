@@ -46,19 +46,19 @@ function cmbird_update_contact_via_accountpage( $user_id ) {
 
 		global $wpdb;
 		$meta_key_search = 'zi_contact_person_id%';
-		$table = $wpdb->usermeta;
-		$query = $wpdb->prepare(
-			"SELECT meta_key, meta_value
-     		FROM $table
-     		WHERE user_id = %d
-       		AND meta_key LIKE %s",
-			$user_id,
-			$meta_key_search
+		$query = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT meta_key, meta_value
+				FROM {$wpdb->usermeta}
+     			WHERE user_id = %d
+       			AND meta_key LIKE %s",
+				$user_id,
+				$meta_key_search
+			)
 		);
-		$results = $wpdb->get_results( $query );
-		if ( ! empty( $results ) ) {
+		if ( ! empty( $query ) ) {
 			// Usermeta keys containing 'zi_contact_person_id' exist.
-			foreach ( $results as $row ) {
+			foreach ( $query as $row ) {
 				$contact_class_handle->cmbird_update_contact_person( $user_id, $row->meta_value );
 			}
 		} else {
