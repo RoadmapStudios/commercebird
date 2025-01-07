@@ -135,14 +135,14 @@ add_action( 'cmbird_eo_get_payment_statuses', array( ExactOnlineSync::class, 'ge
 add_action( 'init', array( ZohoCRMSync::class, 'refresh_token' ) );
 
 // Load License Key library
-if ( class_exists( 'cmbird_AM_Client' ) ) {
+if ( class_exists( 'Cmbird_AM_Client' ) ) {
 	$wcam_lib_custom_menu = array(
 		'menu_type' => 'add_submenu_page',
 		'parent_slug' => 'commercebird-app',
 		'page_title' => 'API key Activation',
 		'menu_title' => 'License Activation',
 	);
-	$wcam_lib = new cmbird_AM_Client( __FILE__, '', CMBIRD_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
+	$wcam_lib = new Cmbird_AM_Client( __FILE__, '', CMBIRD_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
 }
 // add classes to REST API
 add_action(
