@@ -371,6 +371,7 @@ class ProductWebhook {
 				// Check if Category is selected before creating simple item
 				if ( 'publish' === $item_status ) {
 					$opt_category = get_option( 'cmbird_zoho_item_category' );
+					$opt_category = maybe_unserialize( $opt_category );
 					// convert opt_category to array
 					$opt_category = explode( ',', $opt_category );
 					$category_id = $item['category_id'];

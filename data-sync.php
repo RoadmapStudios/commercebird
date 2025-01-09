@@ -53,7 +53,7 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 	$opt_category = get_option( 'cmbird_zoho_item_category' );
 
 	if ( $opt_category ) {
-		$opt_category = unserialize( $opt_category );
+		$opt_category = maybe_unserialize( $opt_category );
 	} else {
 		$opt_category = array();
 	}
@@ -119,7 +119,7 @@ function cmbird_ajax_call_item_from_zoho_func() {
 
 	if ( $zoho_item_category ) {
 		// convert serialized string to array
-		$categories = unserialize( $zoho_item_category );
+		$categories = maybe_unserialize( $zoho_item_category );
 		$categories = array_slice( $categories, $last_synced_category_index );
 	} else {
 		$categories = array();
@@ -248,7 +248,7 @@ function cmbird_sync_composite_item_from_zoho() {
 
 	$opt_category = get_option( 'cmbird_zoho_item_category' );
 	if ( $opt_category ) {
-		$opt_category = unserialize( $opt_category );
+		$opt_category = maybe_unserialize( $opt_category );
 	} else {
 		$opt_category = array();
 	}
