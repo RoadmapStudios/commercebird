@@ -45,6 +45,9 @@ final class Cmbird_Acf {
 		return $this->extract_choice( $cost_units, $field );
 	}
 
+	/**
+	 * Register ACF fields for the REST API of WooCommerce Orders.
+	 */
 	public function register_routes() {
 		$exclude_type = [ 'acf-field-group', 'acf-field' ];
 		$include_types = [ 'page' ];
@@ -53,7 +56,7 @@ final class Cmbird_Acf {
 
 		array_walk(
 			$post_types,
-			function ($post_type) {
+			function ( $post_type ) {
 				register_rest_field(
 					$post_type,
 					'ACF',

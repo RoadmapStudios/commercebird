@@ -296,7 +296,7 @@ class CMBIRD_Contact_ZI {
 			$pdt2 = '"contact_name": "' . $contact_name . '","contact_type": "customer"';
 		}
 
-		$pdt2 .= ',"billing_address": { "attention": "' . $contact_name . '","address": "' . $billing_address . '","street2": "' . $billing_address2 . '","city": "' . $billing_city . '","state": "' . $billing_state . '","zip": "' . $billing_postcode . '","country": "' . $billing_country . '"},"shipping_address": { "attention": "' . $shipping_attention . '","address": "' . $shipping_address . '","street2": "' . $shipping_address2 . '","city": "' . $shipping_city . '","state": "' . $shipping_state . '","zip": "' . $shipping_postcode . '","country": "' . $shipping_country . '","phone": "'. $shipping_phone .'"}, "phone": "' . $billing_phone . '", "mobile": "' . $billing_phone . '"';
+		$pdt2 .= ',"billing_address": { "attention": "' . $contact_name . '","address": "' . $billing_address . '","street2": "' . $billing_address2 . '","city": "' . $billing_city . '","state": "' . $billing_state . '","zip": "' . $billing_postcode . '","country": "' . $billing_country . '"},"shipping_address": { "attention": "' . $shipping_attention . '","address": "' . $shipping_address . '","street2": "' . $shipping_address2 . '","city": "' . $shipping_city . '","state": "' . $shipping_state . '","zip": "' . $shipping_postcode . '","country": "' . $shipping_country . '","phone": "' . $shipping_phone . '"}, "phone": "' . $billing_phone . '", "mobile": "' . $billing_phone . '"';
 
 		if ( $eu_vat > 0 ) {
 			$pdt2 .= ',"vat_reg_no": "' . $eu_vat . '","country_code": "' . $billing_country . '"';

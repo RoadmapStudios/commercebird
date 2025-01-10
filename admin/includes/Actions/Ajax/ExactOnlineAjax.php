@@ -358,6 +358,26 @@ final class ExactOnlineAjax {
 				$response['data']
 			);
 			update_option( self::OPTIONS['cost_center'], $centers );
+			// remove each meta if it does not exists in the cost centers.
+			global $wpdb;
+			if ( ! empty( $centers ) ) {
+				// Sanitize and prepare the units for the SQL query
+				$placeholders = implode( ',', array_fill( 0, count( $centers ), '%s' ) );
+
+				// Prepare the query string
+				$query = "DELETE FROM {$wpdb->prefix}wc_orders_meta
+              			WHERE meta_key = 'costcenter'
+              			AND meta_value NOT IN ($placeholders)";
+
+				// Execute the query with the units as arguments
+				$wpdb->query( $wpdb->prepare( $query, ...$centers ) ); // phpcs:ignore
+			} else {
+				// If $units is empty, delete all meta keys with 'costunit'
+				$wpdb->query(
+					"DELETE FROM {$wpdb->prefix}wc_orders_meta
+         			WHERE meta_key = 'costcenter'"
+				);
+			}
 			$this->response['message'] = __( 'Cost centers saved', 'commercebird' );
 		}
 		$this->serve();
@@ -376,6 +396,26 @@ final class ExactOnlineAjax {
 				$response['data']
 			);
 			update_option( self::OPTIONS['cost_unit'], $units );
+			// remove each meta if it does not exists in the units.
+			global $wpdb;
+			if ( ! empty( $units ) ) {
+				// Sanitize and prepare the units for the SQL query
+				$placeholders = implode( ',', array_fill( 0, count( $units ), '%s' ) );
+
+				// Prepare the query string
+				$query = "DELETE FROM {$wpdb->prefix}wc_orders_meta
+              			WHERE meta_key = 'costunit'
+              			AND meta_value NOT IN ($placeholders)";
+
+				// Execute the query with the units as arguments
+				$wpdb->query( $wpdb->prepare( $query, ...$units ) ); // phpcs:ignore
+			} else {
+				// If $units is empty, delete all meta keys with 'costunit'
+				$wpdb->query(
+					"DELETE FROM {$wpdb->prefix}wc_orders_meta
+         			WHERE meta_key = 'costunit'"
+				);
+			}
 			$this->response['message'] = __( 'Cost units saved', 'commercebird' );
 		}
 		$this->serve();
