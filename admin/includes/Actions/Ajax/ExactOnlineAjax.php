@@ -368,9 +368,12 @@ final class ExactOnlineAjax {
 				$query = "DELETE FROM {$wpdb->prefix}wc_orders_meta
               			WHERE meta_key = 'costcenter'
               			AND meta_value NOT IN ($placeholders)";
-
-				// Execute the query with the units as arguments
 				$wpdb->query( $wpdb->prepare( $query, ...$centers ) ); // phpcs:ignore
+				// also remove from postmeta table.
+				$query2 = "DELETE FROM {$wpdb->prefix}postmeta
+              			WHERE meta_key = 'costcenter'
+              			AND meta_value NOT IN ($placeholders)";
+				$wpdb->query( $wpdb->prepare( $query2, ...$centers ) ); // phpcs:ignore
 			} else {
 				// If $units is empty, delete all meta keys with 'costunit'
 				$wpdb->query(
@@ -406,9 +409,12 @@ final class ExactOnlineAjax {
 				$query = "DELETE FROM {$wpdb->prefix}wc_orders_meta
               			WHERE meta_key = 'costunit'
               			AND meta_value NOT IN ($placeholders)";
-
-				// Execute the query with the units as arguments
 				$wpdb->query( $wpdb->prepare( $query, ...$units ) ); // phpcs:ignore
+				// also remove from postmeta table
+				$query2 = "DELETE FROM {$wpdb->prefix}postmeta
+              			WHERE meta_key = 'costunit'
+              			AND meta_value NOT IN ($placeholders)";
+				$wpdb->query( $wpdb->prepare( $query2, ...$units ) ); // phpcs:ignore
 			} else {
 				// If $units is empty, delete all meta keys with 'costunit'
 				$wpdb->query(
