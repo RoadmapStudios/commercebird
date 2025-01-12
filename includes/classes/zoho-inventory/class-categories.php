@@ -226,7 +226,7 @@ class CMBIRD_Categories_ZI {
 	public function cmbird_zi_subcategory_sync_call() {
 		// $fd = fopen( __DIR__ . '/ajax_subcategory_sync_call.txt', 'a+' );
 		$response = array(); // Response array.
-		$zoho_subcategories = cmbird_get_zoho_item_categories();
+		$zoho_subcategories = $this->cmbird_get_zoho_item_categories();
 		// Import category from zoho to woocommerce.
 		$response[] = $this->cmbird_zi_response_message( '-', '-', '--- Importing Sub Category from zoho ---' );
 		//echo '<pre>'; print_r($zoho_categories);
@@ -302,7 +302,7 @@ class CMBIRD_Categories_ZI {
 						if ( empty( $zoho_cat_id ) ) {
 							$zoho_cat_id = get_option( 'cmbird_zoho_id_for_term_id_' . $parent_id );
 							$pid = $zoho_cat_id;
-							$add_response = cmbird_zi_category_export( $term->name, $term->term_id, $pid );
+							$add_response = $this->cmbird_zi_category_export( $term->name, $term->term_id, $pid );
 							$response[] = $add_response;
 						} else {
 							$response[] = $this->cmbird_zi_response_message( $zoho_cat_id, 'Sub Category name : "' . $term->name . '" already synced with zoho', $term->term_id );

@@ -125,6 +125,7 @@ add_action( 'sync_zi_product_cron', array( $product_class, 'cmbird_zi_products_p
 add_action( 'sync_zi_pricelist', array( $import_pricelist, 'zi_get_pricelist' ), 10, 2 );
 add_action( 'sync_zi_order', array( $order_class, 'zi_orders_prepare_sync' ), 10, 2 );
 add_action( 'sync_zi_import_contacts', array( $contact_class, 'cmbird_get_zoho_contacts' ), 10, 2 );
+add_action( 'cmbird_zi_category_cron', array( CMBIRD_Categories_ZI::class, 'cmbird_zi_category_sync_call' ) );
 // add action to set the zoho rate limit option exceeded to false
 add_action( 'cmbird_common', array( CMBIRD_Common_Functions::class, 'set_zoho_rate_limit_option' ) );
 // Exact Online Hooks

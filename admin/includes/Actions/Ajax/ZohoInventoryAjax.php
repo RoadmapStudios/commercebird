@@ -5,6 +5,7 @@ namespace CommerceBird\Admin\Actions\Ajax;
 use CMBIRD_Auth_Zoho;
 use CMBIRD_API_Handler_Zoho;
 use CMBIRD_Pricelist_ZI;
+use CMBIRD_Categories_ZI;
 use CommerceBird\Admin\Template;
 use CommerceBird\Admin\Traits\AjaxRequest;
 use CommerceBird\Admin\Traits\OptionStatus;
@@ -526,6 +527,10 @@ final class ZohoInventoryAjax {
 			update_option( 'cmbird_zoho_item_category', serialize( $decode ) );
 		}
 		$this->response = array( 'message' => 'Saved' );
+		// also set the cron job to sync categories.
+		if ( ! wp_next_scheduled( 'cmbird_zi_category_cron' ) ) {
+			wp_schedule_event( time(), '1day', 'cmbird_zi_category_cron' );
+		}
 		$this->serve();
 	}
 
@@ -594,7 +599,8 @@ final class ZohoInventoryAjax {
 	 */
 	public function zoho_categories_collect(): void {
 		$this->verify();
-		$categories = cmbird_get_zoho_item_categories();
+		$category_class = new CMBIRD_Categories_ZI();
+		$categories = $category_class->cmbird_get_zoho_item_categories();
 		if ( gettype( $categories ) === 'array' ) {
 			// $filtered = wp_list_pluck( $categories, 'name', 'category_id' );
 			// unset( $filtered[ -1 ] );

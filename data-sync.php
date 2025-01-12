@@ -325,11 +325,3 @@ function cmbird_sync_composite_item_to_zoho() {
 
 	exit();
 }
-
-/**
- * Cron job to update category per day.
- */
-if ( ! wp_next_scheduled( 'zoho_sync_category_cron' ) ) {
-	wp_schedule_event( time(), '1day', 'zoho_sync_category_cron' );
-}
-add_action( 'zoho_sync_category_cron', 'cmbird_zi_category_sync_call' );
