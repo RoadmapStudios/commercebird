@@ -435,7 +435,7 @@ class CMBIRD_Products_ZI {
 			$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 			$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=10&filter_by=Status.Active';
+			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=20&filter_by=Status.Active';
 			// fwrite($fd, PHP_EOL . '$url : ' . $url);
 
 			$execute_curl_call = new CMBIRD_API_Handler_Zoho();
