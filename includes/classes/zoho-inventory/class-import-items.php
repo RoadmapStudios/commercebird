@@ -29,7 +29,7 @@ class CMBIRD_Products_ZI {
 				'enable_accounting_stock' => get_option( 'cmbird_zoho_enable_accounting_stock_status' ),
 				'enable_warehouse_stock' => get_option( 'cmbird_zoho_enable_warehousestock_status' ),
 				'zoho_warehouse_id' => get_option( 'cmbird_zoho_warehouse_id_status' ),
-				'disable_image' => get_option( 'cmbird_zoho_disable_image_sync_status' )
+				'disable_image' => get_option( 'cmbird_zoho_disable_image_sync_status' ),
 			),
 		);
 		// Check if WooCommerce taxes are enabled and store the result
@@ -406,7 +406,7 @@ class CMBIRD_Products_ZI {
 	 * @return mixed
 	 */
 	public function sync_groupitem_recursively() {
-		// $fd = fopen( __DIR__ . '/sync_groupitem_recursively.txt', 'a+' );
+		$fd = fopen( __DIR__ . '/sync_groupitem_recursively.txt', 'a+' );
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
@@ -435,7 +435,7 @@ class CMBIRD_Products_ZI {
 			$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 			$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 
-			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&filter_by=Status.Active';
+			$url = $zoho_inventory_url . 'inventory/v1/itemgroups/?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=10&filter_by=Status.Active';
 			// fwrite($fd, PHP_EOL . '$url : ' . $url);
 
 			$execute_curl_call = new CMBIRD_API_Handler_Zoho();
@@ -490,11 +490,7 @@ class CMBIRD_Products_ZI {
 						$variations_check = $existing_parent_product->get_children();
 						if ( empty( $variations_check ) ) {
 							// fwrite( $fd, PHP_EOL . 'No Variations found' );
-							// Enqueue and schedule the action using WC Action Scheduler
-							$existing_schedule = as_has_scheduled_action( 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
-							if ( ! $existing_schedule ) {
-								as_schedule_single_action( time(), 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
-							}
+							$this->import_variable_product_variations( $gp_arr, $group_id );
 						}
 						$existing_parent_product->save();
 						// ACF Fields
@@ -521,6 +517,21 @@ class CMBIRD_Products_ZI {
 						$parent_product->add_meta_data( 'zi_category_id', $category );
 						$group_id = $parent_product->save();
 
+						// Sync category by finding it first
+						$category_handler = new CMBIRD_Categories_ZI();
+						$term_id = $category_handler->cmbird_subcategories_term_id( $category );
+						$term = get_term_by( 'id', $term_id, 'product_cat' );
+						if ( $term && ! is_wp_error( $term ) ) {
+							// Assign the category to the product
+							wp_set_object_terms( $group_id, $term->term_id, 'product_cat' );
+
+							// Remove the "uncategorized" category if it's assigned
+							$uncategorized_term = get_term_by( 'slug', 'uncategorized', 'product_cat' );
+							if ( $uncategorized_term && has_term( $uncategorized_term->term_id, 'product_cat', $group_id ) ) {
+								wp_remove_object_terms( $group_id, $uncategorized_term->term_id, 'product_cat' );
+							}
+						}
+
 						// update Brand.
 						if ( ! empty( $gp_arr->brand ) ) {
 							// check if the Brand or Brands taxonomy exists and then update the term
@@ -541,13 +552,9 @@ class CMBIRD_Products_ZI {
 						$attr_created = $this->sync_attributes_of_group( $gp_arr, $group_id );
 
 						if ( ! empty( $group_id ) && $attr_created ) {
-							// Enqueue and schedule the action using WC Action Scheduler
-							$existing_schedule = as_has_scheduled_action( 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
-							if ( ! $existing_schedule ) {
-								as_schedule_single_action( time(), 'import_variable_product_cron', array( $zi_group_id, $group_id ) );
-							}
-						} // end for each item loop
-					} // create variable product
+							$this->import_variable_product_variations( $gp_arr, $group_id );
+						}
+					} // end of create variable product
 				} // end foreach group items
 
 				if ( isset( $json->page_context ) && $json->page_context->has_more_page ) {
@@ -568,7 +575,7 @@ class CMBIRD_Products_ZI {
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
 			// End of logging.
-			// fclose( $fd );
+			fclose( $fd );
 			return $response_msg;
 		} else {
 			return;
@@ -578,37 +585,23 @@ class CMBIRD_Products_ZI {
 	/**
 	 * Callback function for importing a variable product and its variations.
 	 *
-	 * @param object $args Group item details.
+	 * @param object $gp_arr - Group item object.
+	 * @param int $group_id - Group item id.
 	 */
-	public function import_variable_product_variations() {
+	public function import_variable_product_variations( $gp_arr, $group_id ): void {
 		// $fd = fopen( __DIR__ . '/import_variable_product_variations.txt', 'a+' );
-		$args = func_get_args();
-		$zi_group_id = $args[0];
-		$group_id = $args[1];
-		// fwrite( $fd, PHP_EOL . 'Parent Product ID ' . $group_id );
-		// fclose( $fd );
 
-		if ( empty( $zi_group_id ) || empty( $group_id ) ) {
+		if ( empty( $gp_arr ) || empty( $group_id ) ) {
 			return;
 		}
-		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
-		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
-		$url = $zoho_inventory_url . 'inventory/v1/itemgroups/' . $zi_group_id . '?organization_id=' . $zoho_inventory_oid;
-		$execute_curl_call = new CMBIRD_API_Handler_Zoho();
-		$json = $execute_curl_call->execute_curl_call_get( $url );
-		$code = $json->code;
 
 		global $wpdb;
 		$product = wc_get_product( $group_id );
 
-		if ( $code === '0' || $code === 0 ) {
+		if ( ! is_wp_error( $product ) ) {
 
-			// Sync category first
-			$this->sync_groupitem_category( $json, $group_id );
-
-			// log the json
-			// fwrite( $fd, PHP_EOL . 'Group Item : ' . print_r( $json, true ) );
-			$item_group = $json->item_group;
+			$item_group = $gp_arr;
+			// fwrite( $fd, PHP_EOL . 'Item Group : ' . print_r( $item_group, true ) );
 			$items = $item_group->items;
 			$attribute_name1 = $item_group->attribute_name1;
 			$attribute_name2 = $item_group->attribute_name2;
@@ -696,7 +689,7 @@ class CMBIRD_Products_ZI {
 					$variation_post = array(
 						'post_title' => $product->get_name(),
 						'post_name' => 'product-' . $group_id . '-variation',
-						'post_status' => 'publish',
+						'post_status' => $status,
 						'post_parent' => $group_id,
 						'post_type' => 'product_variation',
 						'guid' => $product->get_permalink(),
@@ -1245,73 +1238,6 @@ class CMBIRD_Products_ZI {
 		}
 		// fwrite($fd, PHP_EOL . 'After group item sync');
 		// fclose( $fd );
-	}
-
-	// variable category check functionality
-	public function sync_groupitem_category( $json, $pdt_id ) {
-		// $fd = fopen(__DIR__ . '/category.txt', 'w+');
-		$term_id = 0;
-
-		if ( $json ) {
-			// fwrite($fd, PHP_EOL . '$json->item_group : ' . print_r($json->item_group,true));
-			foreach ( $json->item_group as $key => $arr ) {
-				$zi_category_name = '';
-				$zi_category_id = '';
-				// fwrite($fd, PHP_EOL . '$term_id 3 : ' . $term_id);
-
-				if ( 'category_id' === $key ) {
-					$zi_category_id = $arr;
-				}
-				if ( 'category_name' === $key ) {
-					$zi_category_name = $arr;
-				}
-
-				if ( ! empty( $pdt_id ) && $zi_category_name !== '' ) {
-					// fwrite($fd, PHP_EOL . '$term_id : 5' . $term_id);
-					// $category_id = get_cat_ID( $arr->category_name );
-					$term = get_term_by( 'name', $zi_category_name, 'product_cat' );
-					$term_id = $term->term_id;
-					// fwrite($fd, PHP_EOL . 'Term Id by Name ' . $term_id);
-					if ( empty( $term_id ) ) {
-						$term = wp_insert_term(
-							$zi_category_name,
-							'product_cat',
-							array(
-								'parent' => 0,
-							)
-						);
-						$term_id = $term->term_id;
-					}
-					// fwrite($fd, PHP_EOL . 'Term Id after insert ' . $term_id);
-					// If term id and zoho category id then import category.
-					if ( $term_id && $zi_category_id ) {
-						// update_post_meta($pdt_id, 'zi_category_id', $zi_category_id);
-						// update_post_meta($pdt_id, 'category_id', $term_id);
-						// $resp = wp_set_object_terms($pdt_id, $term_id, 'product_cat');
-						$existing_terms = wp_get_object_terms( $pdt_id, 'product_cat' );
-						if ( $existing_terms && count( $existing_terms ) > 0 ) {
-							$is_terms_exist = $this->zi_check_terms_exists( $existing_terms, $term_id );
-							if ( ! $is_terms_exist ) {
-								update_post_meta( $pdt_id, 'zi_category_id', $zi_category_id );
-								wp_add_object_terms( $pdt_id, $term_id, 'product_cat' );
-							}
-						} else {
-							update_post_meta( $pdt_id, 'zi_category_id', $zi_category_id );
-							wp_set_object_terms( $pdt_id, $term_id, 'product_cat' );
-						}
-					}
-					// Remove "uncategorized" category if assigned
-					$uncategorized_term = get_term_by( 'slug', 'uncategorized', 'product_cat' );
-					if ( $uncategorized_term && has_term( $uncategorized_term->term_id, 'product_cat', $pdt_id ) ) {
-						wp_remove_object_terms( $pdt_id, $uncategorized_term->term_id, 'product_cat' );
-					}
-				}
-				// } // closing of category check.
-			} // item for each end
-		}
-		// fwrite($fd, PHP_EOL . 'Return $term_id : ' . $term_id);
-		// fclose($fd);
-		return $term_id;
 	}
 
 	/**

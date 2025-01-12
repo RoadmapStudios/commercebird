@@ -43,7 +43,7 @@ class CMBIRD_Categories_ZI {
 	 * @return string - Term ID
 	 */
 
-	private function cmbird_subcategories_term_id( $option_value ) {
+	public function cmbird_subcategories_term_id( $option_value ) {
 		global $wpdb;
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}options WHERE option_value = %s", $option_value ) );
 		if ( ! empty( $row->option_name ) ) {
@@ -86,7 +86,7 @@ class CMBIRD_Categories_ZI {
 					// sanitize category name.
 					$category_name = wc_sanitize_taxonomy_name( $category['name'] );
 					// fwrite( $fd, PHP_EOL . 'Category Name : ' . $category_name );
-					$term = get_term_by( 'name', $category_name, 'product_cat' );
+					$term = get_term_by( 'slug', $category_name, 'product_cat' );
 					if ( ! empty( $term ) ) {
 						$term_id = $term->term_id;
 					} else {
@@ -105,6 +105,7 @@ class CMBIRD_Categories_ZI {
 					}
 					if ( $term_id ) {
 						// Update zoho category id for term(category) of woocommerce.
+						// fwrite( $fd, PHP_EOL . 'Category ID : ' . $category['category_id'] . ' Term ID : ' . $term_id );
 						update_option( 'cmbird_zoho_id_for_term_id_' . $term_id, $category['category_id'] );
 					}
 					$response[] = $this->cmbird_zi_response_message( $category['category_id'], $category['name'], $term_id );
@@ -132,7 +133,7 @@ class CMBIRD_Categories_ZI {
 				$zoho_cat_id = get_option( 'cmbird_zoho_id_for_term_id_' . $term->term_id );
 				if ( empty( $zoho_cat_id ) ) {
 					// fwrite( $fd, PHP_EOL . 'Category Name : ' . $term->name );
-					$add_response = cmbird_zi_category_export( $term->name, $term->term_id );
+					$add_response = $this->cmbird_zi_category_export( $term->name, $term->term_id );
 					// fwrite( $fd, PHP_EOL . 'Response : ' . print_r( $add_response, true ) );
 					$response[] = $add_response;
 				} else {
@@ -233,7 +234,9 @@ class CMBIRD_Categories_ZI {
 		foreach ( $zoho_subcategories as $subcategory ) {
 			if ( $subcategory['parent_category_id'] > 0 ) {
 				if ( '-1' !== $subcategory['category_id'] && $subcategory['category_id'] > 0 ) {
-					$term = get_term_by( 'name', $subcategory['name'], 'product_cat' );
+					$subcategory_name = wc_sanitize_taxonomy_name( $subcategory['name'] );
+
+					$term = get_term_by( 'slug', $subcategory_name, 'product_cat' );
 
 					if ( $subcategory['parent_category_id'] > 0 ) {
 						$zoho_pid = intval( $this->cmbird_subcategories_term_id( $subcategory['parent_category_id'] ) );
