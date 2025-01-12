@@ -529,7 +529,7 @@ final class ZohoInventoryAjax {
 		$this->response = array( 'message' => 'Saved' );
 		// also set the cron job to sync categories.
 		if ( ! wp_next_scheduled( 'cmbird_zi_category_cron' ) ) {
-			wp_schedule_event( time(), '1day', 'cmbird_zi_category_cron' );
+			wp_schedule_event( time(), 'daily', 'cmbird_zi_category_cron' );
 		}
 		$this->serve();
 	}

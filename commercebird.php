@@ -117,6 +117,7 @@ $import_pricelist = new CMBIRD_Pricelist_ZI();
 $product_class = new CMBIRD_Products_ZI_Export();
 $order_class = new CMBIRD_Order_Sync_ZI();
 $contact_class = new CMBIRD_Contact_ZI();
+$category_class = new CMBIRD_Categories_ZI();
 $import_pricelist->wc_b2b_groups();
 add_action( 'import_group_items_cron', array( $import_products, 'sync_groupitem_recursively' ), 10, 2 );
 add_action( 'import_simple_items_cron', array( $import_products, 'sync_item_recursively' ), 10, 2 );
@@ -125,7 +126,7 @@ add_action( 'sync_zi_product_cron', array( $product_class, 'cmbird_zi_products_p
 add_action( 'sync_zi_pricelist', array( $import_pricelist, 'zi_get_pricelist' ), 10, 2 );
 add_action( 'sync_zi_order', array( $order_class, 'zi_orders_prepare_sync' ), 10, 2 );
 add_action( 'sync_zi_import_contacts', array( $contact_class, 'cmbird_get_zoho_contacts' ), 10, 2 );
-add_action( 'cmbird_zi_category_cron', array( CMBIRD_Categories_ZI::class, 'cmbird_zi_category_sync_call' ) );
+add_action( 'cmbird_zi_category_cron', array( $category_class, 'cmbird_zi_category_sync_call' ), 10 );
 // add action to set the zoho rate limit option exceeded to false
 add_action( 'cmbird_common', array( CMBIRD_Common_Functions::class, 'set_zoho_rate_limit_option' ) );
 // Exact Online Hooks
