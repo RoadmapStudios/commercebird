@@ -118,7 +118,7 @@ class CMBIRD_Products_ZI {
 
 						// To check status of stock sync option.
 						$zi_disable_stock_sync = $this->config['Settings']['disable_stock'];
-						if ( ! $zi_disable_stock_sync && isset( $arr->available_stock ) ) {
+						if ( ! $zi_disable_stock_sync && isset( $arr->available_for_sale_stock ) ) {
 							$stock = '';
 							// Update stock
 							$accounting_stock = $this->config['Settings']['enable_accounting_stock'];
@@ -130,16 +130,16 @@ class CMBIRD_Products_ZI {
 								foreach ( $warehouses as $warehouse ) {
 									if ( $warehouse->warehouse_id === $warehouse_id ) {
 										if ( $accounting_stock ) {
-											$stock = $warehouse->warehouse_available_stock;
+											$stock = $warehouse->warehouse_available_for_sale_stock;
 										} else {
-											$stock = $warehouse->warehouse_actual_available_stock;
+											$stock = $warehouse->warehouse_actual_available_for_sale_stock;
 										}
 									}
 								}
 							} elseif ( $accounting_stock ) {
-								$stock = $arr->available_stock;
+								$stock = $arr->available_for_sale_stock;
 							} else {
-								$stock = $arr->actual_available_stock;
+								$stock = $arr->actual_available_for_sale_stock;
 							}
 
 							if ( is_numeric( $stock ) ) {
