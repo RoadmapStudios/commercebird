@@ -23,7 +23,7 @@ class ShippingWebhook {
 			array(
 				'methods' => WP_REST_Server::EDITABLE,
 				'callback' => array( $this, 'handle' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( $this, 'permission_check' ),
 			)
 		);
 	}
