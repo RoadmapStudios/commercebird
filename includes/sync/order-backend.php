@@ -256,6 +256,15 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 		if ( $webhook_status === 'disabled' || $webhook_status === 'paused' ) {
 			$should_deliver = false;
 		}
+		// If order is older than 2 months, return false
+		$current_date = new DateTime();
+		$order_date = $order->get_date_created(); // Assuming $order is a WC_Order object
+		if ( $order_date ) {
+			$interval = $current_date->diff( $order_date ); // Use $order_date directly
+			$total_months = $interval->y * 12 + $interval->m; // Calculate total months difference
+			// If the order is older than 2 months, return false
+			$should_deliver = $total_months > 2 ? false : true;
+		}
 	}
 	$cmbird_customers = 'CommerceBird Customers Update';
 	if ( $webhook->get_name() === $cmbird_customers ) {
