@@ -84,11 +84,17 @@ class CMBIRD_Categories_ZI {
 
 				if ( $category['category_id'] ) {
 					// sanitize category name.
-					$category_name = wc_sanitize_taxonomy_name( $category['name'] );
+					$category_slug = wc_sanitize_taxonomy_name( $category['name'] );
 					// fwrite( $fd, PHP_EOL . 'Category Name : ' . $category_name );
-					$term = get_term_by( 'slug', $category_name, 'product_cat' );
-					if ( ! empty( $term ) ) {
-						$term_id = $term->term_id;
+					$terms = get_terms(
+						array(
+							'taxonomy' => 'product_cat',
+							'hide_empty' => false,
+							'slug' => $category_slug,
+						)
+					);
+					if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+						$term_id = $terms[0]->term_id;
 					} else {
 						$term = wp_insert_term(
 							$category['name'],
@@ -152,6 +158,9 @@ class CMBIRD_Categories_ZI {
 
 	public function cmbird_get_zoho_item_categories() {
 		// $fd = fopen( __DIR__ . '/cmbird_get_zoho_item_categories.txt', 'a+' );
+
+		// first remove duplicates from woocommerce categories.
+		$this->cmbird_remove_duplicate_woocommerce_categories();
 
 		$zoho_inventory_oid = $this->config['ConnectZI']['OID'];
 		$zoho_inventory_url = $this->config['ConnectZI']['APIURL'];
@@ -234,15 +243,29 @@ class CMBIRD_Categories_ZI {
 		foreach ( $zoho_subcategories as $subcategory ) {
 			if ( $subcategory['parent_category_id'] > 0 ) {
 				if ( '-1' !== $subcategory['category_id'] && $subcategory['category_id'] > 0 ) {
-					$subcategory_name = wc_sanitize_taxonomy_name( $subcategory['name'] );
-
-					$term = get_term_by( 'slug', $subcategory_name, 'product_cat' );
+					$subcategory_slug = wc_sanitize_taxonomy_name( $subcategory['name'] );
+					$terms = get_terms(
+						array(
+							'taxonomy' => 'product_cat',
+							'hide_empty' => false,
+							'slug' => $subcategory_slug,
+						)
+					);
 
 					if ( $subcategory['parent_category_id'] > 0 ) {
 						$zoho_pid = intval( $this->cmbird_subcategories_term_id( $subcategory['parent_category_id'] ) );
 					}
-
-					if ( empty( $term ) && $zoho_pid ) {
+					if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+						$term_id = $terms[0]->term_id;
+						// update the term as sub category of parent category.
+						wp_update_term(
+							$term_id,
+							'product_cat',
+							array(
+								'parent' => $zoho_pid,
+							)
+						);
+					} elseif ( empty( $terms ) && $zoho_pid ) {
 						$child_term = wp_insert_term(
 							$subcategory['name'],
 							'product_cat',
@@ -256,16 +279,6 @@ class CMBIRD_Categories_ZI {
 						} else {
 							$term_id = $child_term['term_id'];
 						}
-					} elseif ( $term instanceof WP_Term ) {
-						$term_id = $term->term_id;
-						// update the term as sub category of parent category.
-						wp_update_term(
-							$term_id,
-							'product_cat',
-							array(
-								'parent' => $zoho_pid,
-							)
-						);
 					}
 
 					if ( $term_id && $zoho_pid > 0 ) {
@@ -363,5 +376,46 @@ class CMBIRD_Categories_ZI {
 		//echo '<pre>'; print_r($json);
 		$return = $this->cmbird_zi_response_message( $code, $response_msg, $term_id );
 		return wp_json_encode( $return );
+	}
+
+	/**
+	 * Remove duplicate WooCommerce categories.
+	 */
+	public function cmbird_remove_duplicate_woocommerce_categories() {
+		// Get all product categories, including empty ones
+		$terms = get_terms(
+			array(
+				'taxonomy' => 'product_cat',
+				'hide_empty' => false, // Include categories with zero product count
+			)
+		);
+
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return; // No terms found or an error occurred
+		}
+
+		// Create an array to store category names and their associated terms
+		$categories_by_name = array();
+
+		foreach ( $terms as $term ) {
+			$name = strtolower( $term->name ); // Normalize the name for comparison
+
+			// Check if a category with this name is already processed
+			if ( isset( $categories_by_name[ $name ] ) ) {
+				$existing_term = $categories_by_name[ $name ];
+
+				if ( $term->count > 0 && $existing_term->count === 0 ) {
+					// Keep the current term, remove the existing one
+					wp_delete_term( $existing_term->term_id, 'product_cat' );
+					$categories_by_name[ $name ] = $term;
+				} elseif ( $term->count === 0 ) {
+					// Remove the current term as it has zero product count
+					wp_delete_term( $term->term_id, 'product_cat' );
+				}
+			} else {
+				// Add the term to the array if not already processed
+				$categories_by_name[ $name ] = $term;
+			}
+		}
 	}
 }
