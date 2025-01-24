@@ -406,7 +406,7 @@ class CMBIRD_Products_ZI {
 	 * @return mixed
 	 */
 	public function sync_groupitem_recursively() {
-		$fd = fopen( __DIR__ . '/sync_groupitem_recursively.txt', 'a+' );
+		// $fd = fopen( __DIR__ . '/sync_groupitem_recursively.txt', 'a+' );
 
 		$args = func_get_args();
 		if ( ! empty( $args ) ) {
@@ -575,7 +575,7 @@ class CMBIRD_Products_ZI {
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
 			// End of logging.
-			fclose( $fd );
+			// fclose( $fd );
 			return $response_msg;
 		} else {
 			return;
