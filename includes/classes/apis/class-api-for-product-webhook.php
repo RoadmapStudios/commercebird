@@ -13,7 +13,6 @@ use WC_Data_Exception;
 use WC_Product_Variation;
 use WC_Product_Variable;
 use WP_REST_Response;
-use WP_REST_Server;
 use wpdb;
 use CMBIRD_Common_Functions;
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
@@ -31,7 +30,7 @@ class ProductWebhook {
 			self::$namespace,
 			self::$endpoint,
 			array(
-				'methods' => WP_REST_Server::EDITABLE,
+				'methods' => 'POST',
 				'callback' => array( $this, 'handle' ),
 				'permission_callback' => array( $this, 'permission_check' ),
 			)

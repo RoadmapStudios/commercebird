@@ -31,7 +31,7 @@ trait Api {
 			if ( ! password_verify( 'commercebird-zi-webhook-token', $authorization ) ) {
 				return new WP_Error(
 					'rest_forbidden',
-					'You are not header to access this endpoint',
+					'You are not allowed to access this endpoint',
 					array(
 						'status' => 400,
 						'header' => $authorization,
