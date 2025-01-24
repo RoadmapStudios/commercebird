@@ -242,7 +242,7 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 		$order = wc_get_order( $arg );
 		// check if order status is failed, pending, on-hold or cancelled
 		$order_status = $order->get_status();
-		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
+		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled', 'auto-draft' ) ) ) {
 			$should_deliver = false;
 		}
 		// check if order contains meta data for eo_order_id
@@ -256,14 +256,20 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 		if ( $webhook_status === 'disabled' || $webhook_status === 'paused' ) {
 			$should_deliver = false;
 		}
-		// If order is older than 2 months, return false
+		// Check if the order is older than 2 months, return false if so
+		// first check if site_url is perfecthealth.nl
+		$site_url = get_site_url();
+		if ( strpos( $site_url, 'perfecthealth.nl' ) === false ) {
+			return $should_deliver;
+		}
 		$current_date = new DateTime();
-		$order_date = $order->get_date_created(); // Assuming $order is a WC_Order object
-		if ( $order_date ) {
-			$interval = $current_date->diff( $order_date ); // Use $order_date directly
-			$total_months = $interval->y * 12 + $interval->m; // Calculate total months difference
-			// If the order is older than 2 months, return false
-			$should_deliver = $total_months > 2 ? false : true;
+		$order_date = $order->get_date_created();
+
+		if ( $order_date instanceof WC_DateTime ) {
+			$two_months_ago = $current_date->modify( '-2 months' );
+			if ( $order_date < $two_months_ago ) {
+				$should_deliver = false;
+			}
 		}
 	}
 	$cmbird_customers = 'CommerceBird Customers Update';
