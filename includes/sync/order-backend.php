@@ -266,7 +266,7 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 		$order_date = $order->get_date_created();
 
 		if ( $order_date instanceof WC_DateTime ) {
-			$two_months_ago = $current_date->modify( '-2 months' );
+			$two_months_ago = $current_date->modify( '-6 months' );
 			if ( $order_date < $two_months_ago ) {
 				$should_deliver = false;
 			}
