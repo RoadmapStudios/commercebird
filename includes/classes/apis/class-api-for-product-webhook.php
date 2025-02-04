@@ -356,7 +356,7 @@ class ProductWebhook {
 			// simple product
 			// fwrite($fd, PHP_EOL . 'Before Match check');
 			$pdt_id = '';
-			if ( ! empty( $mapped_product_id ) ) {
+			if ( ! empty( $mapped_product_id ) && null !== $mapped_product_id ) {
 				$product_found = wc_get_product( $mapped_product_id );
 				if ( ! $product_found ) {
 					// remove all postmeta of that product id.
@@ -371,8 +371,6 @@ class ProductWebhook {
 				if ( 'publish' === $item_status ) {
 					$opt_category = get_option( 'cmbird_zoho_item_category' );
 					$opt_category = maybe_unserialize( $opt_category );
-					// convert opt_category to array
-					$opt_category = explode( ',', $opt_category );
 					$category_id = $item['category_id'];
 					if ( $opt_category ) {
 						if ( in_array( $category_id, $opt_category, true ) ) {

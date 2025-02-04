@@ -216,6 +216,8 @@ final class ZohoInventoryAjax {
 				'headers' => array(
 					'Accept' => 'application/json',
 					'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
+					'Cache-Control' => 'public,max-age=3600',
+					'X-LiteSpeed-Cache-Control' => 'public,max-age=3600',
 				),
 				'timeout' => 15,
 			),
