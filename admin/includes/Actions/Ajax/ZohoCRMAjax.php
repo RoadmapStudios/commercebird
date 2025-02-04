@@ -301,4 +301,62 @@ final class ZohoCRMAjax {
 			$this->serve();
 		}
 	}
+
+	/**
+	 * Export Orders to Zoho CRM.
+	 *
+	 * @param int $start_date_raw The start date.
+	 * @param int $end_date_raw The end date.
+	 */
+	public function export_order( $start_date_raw, $end_date_raw ) {
+		// $fd = fopen( __DIR__ . '/export_order.log', 'a+' );
+
+		$start_date = gmdate( 'Y-m-d H:i:s', $start_date_raw );
+		$end_date = gmdate( 'Y-m-d H:i:s', $end_date_raw );
+		// Define the order statuses to exclude
+		$exclude_statuses = array( 'wc-failed', 'wc-pending', 'wc-on-hold', 'wc-cancelled' );
+		$posts_per_page = 20;
+		$paged = 1;
+
+		do {
+			// Query to get orders
+			$args = array(
+				'date_created' => $start_date . '...' . $end_date,
+				'status' => array_diff( array_keys( wc_get_order_statuses() ), $exclude_statuses ),
+				'limit' => $posts_per_page,
+				'paged' => $paged,
+				'orderby' => 'date',
+				'order' => 'ASC',
+				'return' => 'ids',
+			);
+			$orders = wc_get_orders( $args );
+
+			// Loop through orders and add customer note
+			foreach ( $orders as $order_id ) {
+				$order = wc_get_order( $order_id );
+				$order->set_status( $order->get_status() );
+				$order->save();
+			}
+
+			// Increment the offset for the next batch
+			++$paged;
+		} while ( ! empty( $orders ) );
+		// fclose( $fd );
+	}
+
+	public function order_export() {
+		$this->verify( self::FORMS['order'] );
+		if ( empty( $this->data ) || empty( $this->data['range'] ) ) {
+			$this->response['success'] = false;
+			$this->response['message'] = __( 'Select dates', 'commercebird' );
+			$this->serve();
+		}
+		// Set the date range to last 30 days
+		$start_date = strtotime( $this->data['range'][0] );
+		$end_date = strtotime( $this->data['range'][1] );
+		$this->export_order( $start_date, $end_date );
+		$this->response['success'] = true;
+		$this->response['message'] = __( 'Exported', 'commercebird' );
+		$this->serve();
+	}
 }
