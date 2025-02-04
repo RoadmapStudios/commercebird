@@ -16,6 +16,16 @@ class CMBIRD_Products_ZI_Export {
 				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
 				'APIURL' => get_option( 'cmbird_zoho_inventory_url' ),
 			),
+			'Settings' => array(
+				'disable_description' => get_option( 'cmbird_zoho_disable_description_sync_status' ),
+				'disable_name' => get_option( 'cmbird_zoho_disable_name_sync_status' ),
+				'disable_price' => get_option( 'cmbird_zoho_disable_price_sync_status' ),
+				'disable_stock' => get_option( 'cmbird_zoho_disable_stock_sync_status' ),
+				'enable_accounting_stock' => get_option( 'cmbird_zoho_enable_accounting_stock_status' ),
+				'enable_warehouse_stock' => get_option( 'cmbird_zoho_enable_warehousestock_status' ),
+				'zoho_warehouse_id' => get_option( 'cmbird_zoho_warehouse_id_status' ),
+				'disable_image' => get_option( 'cmbird_zoho_disable_image_sync_status' ),
+			),
 		);
 	}
 
@@ -161,7 +171,7 @@ class CMBIRD_Products_ZI_Export {
 			// $zidata .= '"image_type" : "' . $ext . '"';
 			if ( ! empty( $zoho_item_id ) && ctype_digit( $zoho_item_id ) ) {
 				// fwrite($fd,PHP_EOL.'Inside Update: ');
-				$this->cmbird_zi_product_post( $post_id, $zoho_item_id, $zidata );
+				$this->cmbird_zi_product_put( $post_id, $zoho_item_id, $zidata );
 			} else {
 				// fwrite($fd,PHP_EOL.'Inside Create ');
 				$zoho_inventory_oid = $this->config['ProductZI']['OID'];
@@ -266,7 +276,7 @@ class CMBIRD_Products_ZI_Export {
 	 * @param mixed  $pdt3 - Zoho item object for post request.
 	 * @return string
 	 */
-	protected function cmbird_zi_product_post( $proid, $item_id, $pdt3, $bundle = '' ) {
+	public function cmbird_zi_product_put( $proid, $item_id, $pdt3 = '' ) {
 		// $fd = fopen(__DIR__.'/product_class.txt','a+');
 		// fwrite($fd,PHP_EOL.'Inside update : ');
 		$errmsg = '';
@@ -280,12 +290,78 @@ class CMBIRD_Products_ZI_Export {
 			'organization_id' => $zoho_inventory_oid,
 		);
 
-		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
-		$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
-		// fwrite($fd,PHP_EOL.'Update response : '.print_r($json,true));
-		$code = $json->code;
-		$errmsg = $json->message;
-		update_post_meta( $proid, 'zi_product_errmsg', $errmsg );
+		// if pdt3 is empty then do GET call, else do PUT call
+		if ( empty( $pdt3 ) ) {
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
+			$json = $execute_curl_call_handle->execute_curl_call_get( $url );
+			$code = $json->code;
+			$errmsg = $json->message;
+		} else {
+			$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
+			$json = $execute_curl_call_handle->execute_curl_call_put( $url, $data );
+			$code = $json->code;
+			$errmsg = $json->message;
+		}
+
+		if ( 0 === $code || '0' === $code ) {
+			$product = wc_get_product( $proid );
+			// if type is not simple then return.
+			if ( ! $product->is_type( 'simple' ) ) {
+				return $errmsg;
+			}
+			$item = $json->item;
+			// update price
+			$zi_disable_itemprice_sync = $this->config['Settings']['disable_price'];
+			if ( ! empty( $item->rate ) && ! $zi_disable_itemprice_sync ) {
+				$product->set_regular_price( $item->rate );
+				$sale_price = $product->get_sale_price();
+				if ( empty( $sale_price ) ) {
+					$product->set_price( $item->rate );
+				}
+			}
+			// To check status of stock sync option.
+			$zi_disable_stock_sync = $this->config['Settings']['disable_stock'];
+			if ( ! $zi_disable_stock_sync && isset( $item->available_for_sale_stock ) ) {
+				$stock = '';
+				// Update stock
+				$accounting_stock = $this->config['Settings']['enable_accounting_stock'];
+				// Sync from specific warehouse check
+				$zi_enable_warehousestock = $this->config['Settings']['enable_warehouse_stock'];
+				if ( $zi_enable_warehousestock && isset( $item->warehouses ) ) {
+					$warehouses = $item->warehouses;
+					$warehouse_id = $this->config['Settings']['zoho_warehouse_id'];
+					foreach ( $warehouses as $warehouse ) {
+						if ( $warehouse->warehouse_id === $warehouse_id ) {
+							if ( $accounting_stock ) {
+								$stock = $warehouse->warehouse_available_for_sale_stock;
+							} else {
+								$stock = $warehouse->warehouse_actual_available_for_sale_stock;
+							}
+						}
+					}
+				} elseif ( $accounting_stock ) {
+					$stock = $item->available_for_sale_stock;
+				} else {
+					$stock = $item->actual_available_for_sale_stock;
+				}
+
+				if ( is_numeric( $stock ) ) {
+					$product->set_manage_stock( true );
+					$product->set_stock_quantity( number_format( $stock, 0, '.', '' ) );
+					if ( $stock > 0 ) {
+						$product->set_stock_status( 'instock' );
+					} else {
+						$backorder_status = $product->backorders_allowed();
+						$status = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
+						$product->set_stock_status( $status );
+					}
+				}
+			}
+			$product->save();
+			update_post_meta( $proid, 'zi_product_errmsg', $errmsg );
+		} else {
+			update_post_meta( $proid, 'zi_product_errmsg', $errmsg );
+		}
 		// fclose($fd);
 		return $errmsg;
 	}
@@ -452,7 +528,7 @@ class CMBIRD_Products_ZI_Export {
 					}
 				}
 			}
-			if ( $code === '0' || $code === 0 ) {
+			if ( '0' === $code || 0 === $code ) {
 				foreach ( $json->composite_item as $key => $value ) {
 
 					if ( $key === 'composite_item_id' ) {
@@ -583,7 +659,7 @@ class CMBIRD_Products_ZI_Export {
 			$errmsg = $json->message;
 			update_post_meta( $post_id, 'zi_product_errmsg', $errmsg );
 			$code = $json->code;
-			if ( $code === '0' || $code === 0 ) {
+			if ( '0' === $code || 0 === $code ) {
 
 				// This item will keep the copy of zoho item_id with respect to product.
 				//  name as key synced to zoho.
@@ -728,7 +804,7 @@ class CMBIRD_Products_ZI_Export {
 		// fwrite($fd,PHP_EOL.'Get data for $post_id '.$post_id);
 		if ( ctype_digit( $zoho_item_id ) ) {
 			// fwrite($fd, PHP_EOL . 'Update Item');
-			$update_error_msg = $this->cmbird_zi_product_post( $post_id, $zoho_item_id, $zidata );
+			$update_error_msg = $this->cmbird_zi_product_put( $post_id, $zoho_item_id, $zidata );
 			$zidataa = '';
 			// fwrite($fd, PHP_EOL . '{' . $zidata . '}');
 			return $zidataa .= '{' . $zidata . '}';
