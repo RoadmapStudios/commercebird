@@ -15,7 +15,7 @@ use CommerceBird\Admin\Actions\Ajax\AcfAjax;
 use CommerceBird\Admin\Cors;
 use CommerceBird\Admin\Template;
 use CommerceBird\Admin\Cmbird_Acf;
-use CommerceBird\CommerceBird_WC_API;
+use CommerceBird\Cmbird_WC_API;
 
 class Plugin {
 
@@ -168,7 +168,7 @@ class Plugin {
 		if ( class_exists( 'ACF' ) ) {
 			Cmbird_Acf::instance();
 		}
-		new CommerceBird_WC_API();
+		new Cmbird_WC_API();
 		// CMBIRD_Webhook_Modify::instance();
 	}
 }

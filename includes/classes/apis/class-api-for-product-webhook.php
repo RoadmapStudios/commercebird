@@ -13,7 +13,6 @@ use WC_Data_Exception;
 use WC_Product_Variation;
 use WC_Product_Variable;
 use WP_REST_Response;
-use WP_REST_Server;
 use wpdb;
 use CMBIRD_Common_Functions;
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
@@ -31,9 +30,9 @@ class ProductWebhook {
 			self::$namespace,
 			self::$endpoint,
 			array(
-				'methods' => WP_REST_Server::EDITABLE,
+				'methods' => 'POST',
 				'callback' => array( $this, 'handle' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( $this, 'permission_check' ),
 			)
 		);
 		// Check if WooCommerce taxes are enabled and store the result
@@ -357,7 +356,7 @@ class ProductWebhook {
 			// simple product
 			// fwrite($fd, PHP_EOL . 'Before Match check');
 			$pdt_id = '';
-			if ( ! empty( $mapped_product_id ) ) {
+			if ( ! empty( $mapped_product_id ) && null !== $mapped_product_id ) {
 				$product_found = wc_get_product( $mapped_product_id );
 				if ( ! $product_found ) {
 					// remove all postmeta of that product id.
@@ -371,8 +370,7 @@ class ProductWebhook {
 				// Check if Category is selected before creating simple item
 				if ( 'publish' === $item_status ) {
 					$opt_category = get_option( 'cmbird_zoho_item_category' );
-					// convert opt_category to array
-					$opt_category = explode( ',', $opt_category );
+					$opt_category = maybe_unserialize( $opt_category );
 					$category_id = $item['category_id'];
 					if ( $opt_category ) {
 						if ( in_array( $category_id, $opt_category, true ) ) {

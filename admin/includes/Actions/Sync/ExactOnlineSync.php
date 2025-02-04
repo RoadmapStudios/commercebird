@@ -80,7 +80,7 @@ class ExactOnlineSync {
 					'status' => 'publish',
 					'type' => 'simple',
 					'regular_price' => (string) $data['StandardSalesPrice'],
-					'stock_quantity' => (string) $data['Stock'],
+					// 'stock_quantity' => (string) $data['Stock'],
 					'images' => array(
 						array(
 							'src' => $data['PictureUrl'],

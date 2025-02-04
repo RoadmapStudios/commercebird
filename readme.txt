@@ -3,9 +3,9 @@ Contributors: fawadinho
 Author link: https://commercebird.com
 Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
-Tested up to: 6.7.0
+Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 2.2.11
+Stable tag: 2.2.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -82,6 +82,19 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.13 - January 24 2025 =
+* Fix: get subscription on slow servers
+* Fix: available stock via cron
+* Tweak: secured product and shipping status webhook
+* Tweak: duplicated categories will be removed automatically in WooCommerce
+* Compatibility with WooCommerce 9.6
+
+= 2.2.12 - Januari 13th 2025 =
+* Fix: not all categories were saved for syncing from Zoho Inventory
+* Fix: license key activation
+* Fix: excessive api calls for group items from zoho inventory
+* Tweak: improved get costunits and costcenters from Exact Online
+
 = 2.2.11 - January 4th 2025 =
 * New: activation now requires also email address in addition to subscription ID
 * Fix: stock update due to Zoho API changes of stock labels

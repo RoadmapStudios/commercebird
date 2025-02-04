@@ -4,7 +4,7 @@
  * Plugin URI:  https://commercebird.com
  * Author:      CommerceBird
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho Inventory, Zoho CRM, Exact Online and more. Requires a subscription at CommerceBird.com.
- * Version: 2.2.11
+ * Version: 2.2.13
  * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  * Requires at least: 6.5
@@ -22,7 +22,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.html GPL-3.0-or-later
  *
  * WC requires at least: 9.4.0
- * WC tested up to: 9.4.3
+ * WC tested up to: 9.6.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'CMBIRD_VERSION' ) ) {
-	define( 'CMBIRD_VERSION', '2.2.11' );
+	define( 'CMBIRD_VERSION', '2.2.13' );
 }
 if ( ! defined( 'CMBIRD_PATH' ) ) {
 	define( 'CMBIRD_PATH', plugin_dir_path( __FILE__ ) );
@@ -117,6 +117,7 @@ $import_pricelist = new CMBIRD_Pricelist_ZI();
 $product_class = new CMBIRD_Products_ZI_Export();
 $order_class = new CMBIRD_Order_Sync_ZI();
 $contact_class = new CMBIRD_Contact_ZI();
+$category_class = new CMBIRD_Categories_ZI();
 $import_pricelist->wc_b2b_groups();
 add_action( 'import_group_items_cron', array( $import_products, 'sync_groupitem_recursively' ), 10, 2 );
 add_action( 'import_simple_items_cron', array( $import_products, 'sync_item_recursively' ), 10, 2 );
@@ -125,6 +126,7 @@ add_action( 'sync_zi_product_cron', array( $product_class, 'cmbird_zi_products_p
 add_action( 'sync_zi_pricelist', array( $import_pricelist, 'zi_get_pricelist' ), 10, 2 );
 add_action( 'sync_zi_order', array( $order_class, 'zi_orders_prepare_sync' ), 10, 2 );
 add_action( 'sync_zi_import_contacts', array( $contact_class, 'cmbird_get_zoho_contacts' ), 10, 2 );
+add_action( 'cmbird_zi_category_cron', array( $category_class, 'cmbird_zi_category_sync_call' ), 10 );
 // add action to set the zoho rate limit option exceeded to false
 add_action( 'cmbird_common', array( CMBIRD_Common_Functions::class, 'set_zoho_rate_limit_option' ) );
 // Exact Online Hooks
@@ -135,14 +137,14 @@ add_action( 'cmbird_eo_get_payment_statuses', array( ExactOnlineSync::class, 'ge
 add_action( 'init', array( ZohoCRMSync::class, 'refresh_token' ) );
 
 // Load License Key library
-if ( class_exists( 'commercebird_AM_Client' ) ) {
+if ( class_exists( 'Cmbird_AM_Client' ) ) {
 	$wcam_lib_custom_menu = array(
 		'menu_type' => 'add_submenu_page',
 		'parent_slug' => 'commercebird-app',
 		'page_title' => 'API key Activation',
 		'menu_title' => 'License Activation',
 	);
-	$wcam_lib = new commercebird_AM_Client( __FILE__, '', CMBIRD_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
+	$wcam_lib = new Cmbird_AM_Client( __FILE__, '', CMBIRD_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
 }
 // add classes to REST API
 add_action(

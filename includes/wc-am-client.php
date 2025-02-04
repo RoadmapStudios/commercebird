@@ -17,8 +17,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'commercebird_AM_Client' ) ) {
-	class commercebird_AM_Client {
+if ( ! class_exists( 'Cmbird_AM_Client' ) ) {
+	class Cmbird_AM_Client {
 
 
 		/**

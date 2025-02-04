@@ -20,7 +20,7 @@ class CMBIRD_List_Items_API_Controller extends WC_REST_CRUD_Controller {
 					'methods' => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'list_items' ),
 					'args' => $this->get_params(),
-					'permission_callback' => '__return_true',
+					'permission_callback' => array( $this, 'check_permission_to_edit_products' ),
 				),
 			)
 		);
@@ -32,10 +32,14 @@ class CMBIRD_List_Items_API_Controller extends WC_REST_CRUD_Controller {
 					'methods' => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'list_items' ),
 					'args' => $this->get_params(),
-					'permission_callback' => '__return_true',
+					'permission_callback' => array( $this, 'check_permission_to_edit_products' ),
 				),
 			)
 		);
+	}
+
+	public function check_permission_to_edit_products() {
+		return current_user_can( 'edit_products' );
 	}
 
 	public function get_params() {
@@ -144,9 +148,9 @@ class CMBIRD_List_Items_API_Controller extends WC_REST_CRUD_Controller {
 			if ( $request['type'] === 'users' ) {
 				$users = get_users( array( 'fields' => array( 'ID' ) ) );
 				foreach ( $users as $user ) {
-					$UserData = get_user_meta( $user->ID );
+					$user_data = get_user_meta( $user->ID );
 					if ( ! empty( $request['after_date'] ) ) {
-						if ( strtotime( $UserData['commercebird_profile_updated'][0] ) > strtotime( $request['after_date'] ) ) {
+						if ( strtotime( $user_data['cmbird_profile_updated'][0] ) > strtotime( $request['after_date'] ) ) {
 							if ( ! in_array( $user->ID, $ids ) ) {
 								$ids[] = (int) $user->ID;
 							}

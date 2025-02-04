@@ -237,12 +237,12 @@ function cmbird_modify_order_webhook_payload( $payload, $resource, $resource_id,
 add_filter( 'woocommerce_webhook_should_deliver', 'cmbird_skip_webhook_delivery', 10, 3 );
 function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 
-	$commercebird_orders = 'CommerceBird Orders';
-	if ( $webhook->get_name() === $commercebird_orders ) {
+	$cmbird_orders = 'CommerceBird Orders';
+	if ( $webhook->get_name() === $cmbird_orders ) {
 		$order = wc_get_order( $arg );
 		// check if order status is failed, pending, on-hold or cancelled
 		$order_status = $order->get_status();
-		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled' ) ) ) {
+		if ( in_array( $order_status, array( 'failed', 'pending', 'on-hold', 'cancelled', 'auto-draft' ) ) ) {
 			$should_deliver = false;
 		}
 		// check if order contains meta data for eo_order_id
@@ -256,9 +256,24 @@ function cmbird_skip_webhook_delivery( $should_deliver, $webhook, $arg ) {
 		if ( $webhook_status === 'disabled' || $webhook_status === 'paused' ) {
 			$should_deliver = false;
 		}
+		// Check if the order is older than 2 months, return false if so
+		// first check if site_url is perfecthealth.nl
+		$site_url = get_site_url();
+		if ( strpos( $site_url, 'perfecthealth.nl' ) === false ) {
+			return $should_deliver;
+		}
+		$current_date = new DateTime();
+		$order_date = $order->get_date_created();
+
+		if ( $order_date instanceof WC_DateTime ) {
+			$two_months_ago = $current_date->modify( '-6 months' );
+			if ( $order_date < $two_months_ago ) {
+				$should_deliver = false;
+			}
+		}
 	}
-	$commercebird_customers = 'CommerceBird Customers Update';
-	if ( $webhook->get_name() === $commercebird_customers ) {
+	$cmbird_customers = 'CommerceBird Customers Update';
+	if ( $webhook->get_name() === $cmbird_customers ) {
 		$customer_id = $arg['customer_id'];
 		$last_order_id = wc_get_customer_last_order( $customer_id );
 		// if last order created date is less than 5 minutes, then return false
