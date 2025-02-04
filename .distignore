@@ -3,6 +3,7 @@
 .gitignore
 .travis.yml
 .git/
+.github
 .eslintrc
 .eslintignore
 .wordpress-org/
@@ -32,5 +33,6 @@ commercebird
 includes/wc-am-client.php
 build.sh
 build-mac.sh
+build-ubuntu.sh
 README.md
 requirements.md
