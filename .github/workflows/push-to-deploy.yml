@@ -12,11 +12,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@master
 
-      - name: Make build-mac.sh executable
-        run: chmod +x build-mac.sh
+      - name: Install Node.js and npm
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install npm dependencies
+        run: npm install -g vite
+
+      - name: Make build script executable
+        run: chmod +x build-ubuntu.sh
 
       - name: Run Build Script
-        run: ./build-mac.sh
+        run: ./build-ubuntu.sh
 
       - name: Deploy to WordPress.org
         uses: 10up/action-wordpress-plugin-deploy@master
@@ -24,4 +32,4 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         with:
-          path: build/commercebird # Only deploy this directory to SVN
+          path: build/commercebird # Deploy only this directory
