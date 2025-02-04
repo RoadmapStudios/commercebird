@@ -27,6 +27,7 @@ mkdir -p "$DEST_PATH"
 
 # build assets
 progress_message "Building admin template..."
+npm --prefix ./admin/assets/ install
 npm --prefix ./admin/assets/ run build-only
 
 # copy all files for production
