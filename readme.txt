@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 2.2.13
+Stable tag: 2.2.14
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,7 +39,7 @@ To improve the user experience, CommerceBird may use the following 3rd party ser
 == Frequently Asked Questions ==
 
 = Q: Do I need a paid plan to use this plugin? =
-A: No, you just need to create an account on https://commercebird.com to use this plugin.
+A: No, you just need to create an account on [commercebird.com](https://commercebird.com) to use this plugin.
 
 = Q: Which product types does it support? =
 A: Simple, Variable, Bundles, Simple Subscription & Variable Subscription.
@@ -82,6 +82,11 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.14 - February 4th 2024 =
+* Fix: webhook sync of products from zoho inventory to woocommerce
+* Fix: export orders to Zoho CRM
+* Tweak: price and stock will get imported from Zoho on manual sync
+
 = 2.2.13 - January 24 2025 =
 * Fix: get subscription on slow servers
 * Fix: available stock via cron

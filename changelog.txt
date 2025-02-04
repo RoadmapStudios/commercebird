@@ -1,3 +1,8 @@
+Version 2.2.14 - February 4th 2024
+* Fix: webhook sync of products from zoho inventory to woocommerce
+* Fix: export orders to Zoho CRM
+* Tweak: price and stock will get imported from Zoho on manual sync
+
 Version 2.2.13 - January 24 2025
 * Fix: get subscription on slow servers
 * Fix: available stock via cron
