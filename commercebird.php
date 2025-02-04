@@ -45,7 +45,6 @@ if ( ! defined( 'CMBIRD_MENU_SLUG' ) ) {
 require_once CMBIRD_PATH . 'includes/woo-functions.php';
 require_once CMBIRD_PATH . 'includes/sync/order-backend.php';
 require_once CMBIRD_PATH . 'data-sync.php';
-require_once CMBIRD_PATH . 'includes/wc-am-client.php';
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -136,16 +135,6 @@ add_action( 'cmbird_eo_get_payment_statuses', array( ExactOnlineSync::class, 'ge
 // Zoho CRM Hooks
 add_action( 'init', array( ZohoCRMSync::class, 'refresh_token' ) );
 
-// Load License Key library
-if ( class_exists( 'Cmbird_AM_Client' ) ) {
-	$wcam_lib_custom_menu = array(
-		'menu_type' => 'add_submenu_page',
-		'parent_slug' => 'commercebird-app',
-		'page_title' => 'API key Activation',
-		'menu_title' => 'License Activation',
-	);
-	$wcam_lib = new Cmbird_AM_Client( __FILE__, '', CMBIRD_VERSION, 'plugin', 'https://commercebird.com/', 'commercebird', '', $wcam_lib_custom_menu, false );
-}
 // add classes to REST API
 add_action(
 	'rest_api_init',

@@ -1,0 +1,27 @@
+name: Deploy to WordPress.org
+on:
+  push:
+    tags:
+      - "*" # Trigger on new tag push
+
+jobs:
+  tag:
+    name: New tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+
+      - name: Make build-mac.sh executable
+        run: chmod +x build-mac.sh
+
+      - name: Run Build Script
+        run: ./build-mac.sh
+
+      - name: Deploy to WordPress.org
+        uses: 10up/action-wordpress-plugin-deploy@master
+        env:
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+        with:
+          path: build/commercebird # Only deploy this directory to SVN
