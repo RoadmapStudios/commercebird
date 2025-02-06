@@ -3,7 +3,10 @@ on:
   push:
     tags:
       - "*" # Trigger on new tag push
-
+  release:
+    types:
+      - published  # Triggers on new release
+      - edited     # Triggers when a release (including tag) is edited
 jobs:
   tag:
     name: New tag
