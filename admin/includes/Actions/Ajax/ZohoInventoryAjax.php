@@ -198,7 +198,7 @@ final class ZohoInventoryAjax {
 		$data = $this->get_subscription_data_from_api();
 
 		if ( ! empty( $data ) ) {
-			set_transient( 'zoho_subscription', $data, DAY_IN_SECONDS );
+			set_transient( 'zoho_subscription', $data, WEEK_IN_SECONDS );
 		}
 
 		return $data;

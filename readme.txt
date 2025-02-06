@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 2.2.14
+Stable tag: 2.2.15
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Elevate WooCommerce to the next level by turning it into a full ERP system.
@@ -83,7 +83,11 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
-= 2.2.14 - February 4th 2024 =
+= 2.2.15 - February 6th 2025 =
+* Fix: fatal error of autoload.php not found
+* Tweak: subscription data will get saved for one week
+
+= 2.2.14 - February 4th 2025 =
 * Fix: webhook sync of products from zoho inventory to woocommerce
 * Fix: export orders to Zoho CRM
 * Tweak: price and stock will get imported from Zoho on manual sync
