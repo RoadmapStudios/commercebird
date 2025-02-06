@@ -15,7 +15,7 @@ https://youtu.be/avQ08fG9tPw
 = The #1 ERP Platform for WooCommerce =
 
 This plugin ensures you can take the most of the CommerceBird App such as uploading product images, using integrations like Zoho Inventory, Zoho CRM & Exact Online.
-Subscribe to the 14-days Free Trial on: https://commercebird.com.
+Subscribe to the 14-days Free Trial on: [commercebird.com](https://commercebird.com).
 
 = 🗝️ Key features: =
 - **Extremely Fast**: Utilizing the WooCommerce REST API and fully built in JavaScript.
