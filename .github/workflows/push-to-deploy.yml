@@ -39,6 +39,12 @@ jobs:
       - name: Run Build Script
         run: ./build-ubuntu.sh
 
+      - name: Copy .distignore to build directory
+        run: cp .distignore build/commercebird/.distignore
+
+      - name: Verify .distignore is in build folder
+        run: cat build/commercebird/.distignore
+
       - name: Deploy to WordPress.org
         uses: 10up/action-wordpress-plugin-deploy@master
         env:

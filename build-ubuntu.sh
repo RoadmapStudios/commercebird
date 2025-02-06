@@ -24,6 +24,7 @@ mkdir -p "$DEST_PATH"
 # Install npm dependencies and build assets
 progress_message "Building admin template..."
 npm --prefix ./admin/assets/ install
+npm --prefix ./admin/assets/ audit fix
 npm --prefix ./admin/assets/ run build-only
 
 # Copy all files for production
@@ -43,8 +44,10 @@ progress_message "Installing PHP dependencies..."
 composer install --working-dir="$DEST_PATH" --no-dev
 rm "$DEST_PATH/composer.lock"
 
+# Remove dev data
 progress_message "Removing dev data..."
-sed -i '' '74,77d' "$DEST_PATH"/admin/includes/Template.php
+sed -i '74,77d' "$DEST_PATH/admin/includes/Template.php"
+
 # Add index.php to every directory
 progress_message "Adding index.php to every directory..."
 find "$DEST_PATH" -type d -exec sh -c "echo '<?php // silence' > {}/index.php" \;
