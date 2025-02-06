@@ -8,6 +8,7 @@ Requires PHP: 7.4
 Stable tag: 2.2.14
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
+Elevate WooCommerce to the next level by turning it into a full ERP system.
 
 == Description ==
 https://youtu.be/avQ08fG9tPw
