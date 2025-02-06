@@ -54,7 +54,6 @@ use CommerceBird\Admin\Actions\Sync\ExactOnlineSync;
 use CommerceBird\Admin\Actions\Sync\ZohoCRMSync;
 use CommerceBird\API\ProductWebhook;
 use CommerceBird\API\CreateOrderWebhook;
-use CommerceBird\API\CreateSFOrderWebhook;
 use CommerceBird\API\ShippingWebhook;
 use CommerceBird\API\Zoho;
 use CommerceBird\API\Exact;
@@ -144,7 +143,6 @@ add_action(
 		new ProductWebhook();
 		new ShippingWebhook();
 		new CreateOrderWebhook();
-		new CreateSFOrderWebhook();
 		$po_controller = new CMBIRD_REST_Shop_Purchase_Controller();
 		$po_controller->register_routes();
 	}
