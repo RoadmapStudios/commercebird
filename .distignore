@@ -25,7 +25,6 @@ changelog/
 
 # build files
 bin/
-vendor/
 build/
 admin/assets
 commercebird.zip
