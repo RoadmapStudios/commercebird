@@ -28,7 +28,7 @@ jobs:
       - name: Install Node.js and npm
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 23.7.0
 
       - name: Install npm dependencies
         run: npm install -g vite
@@ -47,3 +47,11 @@ jobs:
         with:
           path: build/commercebird # Deploy only this directory
           skip_existing: true # Optional, avoids re-deploying existing tags
+          generate-zip: true # Optional, generates a zip file for the plugin
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+            files: ${{github.workspace}}/${{ github.event.repository.name }}.zip
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

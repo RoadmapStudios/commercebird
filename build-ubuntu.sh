@@ -47,14 +47,6 @@ rm "$DEST_PATH/composer.lock"
 progress_message "Adding index.php to every directory..."
 find "$DEST_PATH" -type d -exec sh -c "echo '<?php // silence' > {}/index.php" \;
 
-# Create zip archive
-progress_message "Creating zip archive..."
-cd "$BUILD_PATH" || exit
-zip -q -r "${PLUGIN_SLUG}.zip" "$PLUGIN_SLUG/"
-
-cd "$PROJECT_PATH" || exit
-mv "$BUILD_PATH/${PLUGIN_SLUG}.zip" "$PROJECT_PATH"
-
 # Completion message
 progress_message "Build process completed successfully."
 exit
