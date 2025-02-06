@@ -22,12 +22,14 @@ jobs:
       - name: Get Tag Name
         id: get_tag
         run: |
-            if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-              echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-            else
-              TAG_FROM_GH=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
-              echo "TAG_NAME=$TAG_FROM_GH" >> $GITHUB_ENV
-            fi
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "Fetching latest release tag from GitHub API..."
+            gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+            TAG_FROM_GH=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
+            echo "TAG_NAME=$TAG_FROM_GH" >> $GITHUB_ENV
+          fi
 
       - name: Debug Tag Name
         run: "echo 'Deploying tag: $TAG_NAME'"
