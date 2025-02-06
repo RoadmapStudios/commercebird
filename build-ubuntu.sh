@@ -43,6 +43,8 @@ progress_message "Installing PHP dependencies..."
 composer install --working-dir="$DEST_PATH" --no-dev
 rm "$DEST_PATH/composer.lock"
 
+progress_message "Removing dev data..."
+sed -i '' '74,77d' "$DEST_PATH"/admin/includes/Template.php
 # Add index.php to every directory
 progress_message "Adding index.php to every directory..."
 find "$DEST_PATH" -type d -exec sh -c "echo '<?php // silence' > {}/index.php" \;
