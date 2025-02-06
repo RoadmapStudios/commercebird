@@ -42,6 +42,8 @@ fi
 progress_message "Installing PHP dependencies..."
 composer install --working-dir="$DEST_PATH" --no-dev
 rm "$DEST_PATH/composer.lock"
+# Remove unnecessary vendor packages while keeping Composer
+find "$DEST_PATH/vendor" ! -path "$DEST_PATH/vendor" ! -path "$DEST_PATH/vendor/composer*" ! -name "autoload.php" -exec rm -rf {} +
 
 progress_message "Removing dev data..."
 sed -i '' '74,77d' "$DEST_PATH"/admin/includes/Template.php

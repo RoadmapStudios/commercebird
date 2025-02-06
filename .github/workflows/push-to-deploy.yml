@@ -39,6 +39,12 @@ jobs:
       - name: Run Build Script
         run: ./build-ubuntu.sh
 
+      - name: Clean Up Vendor Folder (Keep Only Composer)
+        run: |
+          find build/commercebird/vendor ! -path "build/commercebird/vendor" \
+          ! -path "build/commercebird/vendor/composer*" \
+          ! -name "autoload.php" -exec rm -rf {} +
+
       - name: Deploy to WordPress.org
         uses: 10up/action-wordpress-plugin-deploy@master
         env:
