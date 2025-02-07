@@ -3,6 +3,8 @@ on:
   push:
     branches:
     - main
+    paths:
+      - ".wordpress-org/**"  # Trigger only if files in .wordpress-org change
 jobs:
   master:
     name: Push to main
