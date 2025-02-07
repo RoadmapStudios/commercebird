@@ -32,7 +32,7 @@ class ProductWebhook {
 			array(
 				'methods' => 'POST',
 				'callback' => array( $this, 'handle' ),
-				'permission_callback' => array( $this, 'permission_check' ),
+				'permission_callback' => 'return_true',
 			)
 		);
 		// Check if WooCommerce taxes are enabled and store the result
