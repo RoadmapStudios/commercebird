@@ -14,7 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure all tags are fetched
+
+      - name: Get Tag Name
+        id: get_tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Debug Tag Name
+        run: "echo 'Deploying tag: $TAG_NAME'"
 
       - name: Install Node.js and npm
         uses: actions/setup-node@v4
@@ -36,4 +45,4 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         with:
-          path: build/commercebird # Deploy only this directory
+          path: build/commercebird
