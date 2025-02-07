@@ -3,10 +3,6 @@ on:
   push:
     tags:
       - "*" # Trigger on new tag push
-  release:
-    types:
-      - published  # Triggers on new release
-      - edited     # Triggers when a release (including tag) is edited
   workflow_dispatch: # Allows manual trigger
 jobs:
   tag:
