@@ -48,12 +48,6 @@ jobs:
       - name: Run Build Script
         run: ./build-ubuntu.sh
 
-      - name: Copy .distignore to build directory
-        run: cp .distignore build/commercebird/.distignore
-
-      - name: Verify .distignore is in build folder
-        run: cat build/commercebird/.distignore
-
       - name: Deploy to WordPress.org
         uses: 10up/action-wordpress-plugin-deploy@master
         env:
@@ -63,11 +57,3 @@ jobs:
           path: build/commercebird # Deploy only this directory
           tag: ${{ env.TAG_NAME }} # Ensure the correct tag is deployed
           skip_existing: true # Optional, avoids re-deploying existing tags
-          generate-zip: true # Optional, generates a zip file for the plugin
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-            files: ${{github.workspace}}/${{ github.event.repository.name }}.zip
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
