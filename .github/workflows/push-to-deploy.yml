@@ -14,13 +14,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@master
         with:
-          fetch-depth: 0  # Ensure all tags are fetched
+          fetch-depth: 0 # Ensure all tags are fetched
+          ref: ${{ github.ref }}
 
       - name: Get Tag Name
         id: get_tag
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "Fetching latest release tag from GitHub API..."
+            gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+            TAG_FROM_GH=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
+            echo "TAG_NAME=$TAG_FROM_GH" >> $GITHUB_ENV
+          fi
 
       - name: Debug Tag Name
         run: "echo 'Deploying tag: $TAG_NAME'"
@@ -45,4 +54,6 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         with:
-          path: build/commercebird
+          path: build/commercebird # Deploy only this directory
+          tag: ${{ env.TAG_NAME }} # Ensure the correct tag is deployed
+          skip_existing: true # Optional, avoids re-deploying existing tags
