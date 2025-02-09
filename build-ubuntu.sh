@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
-PLUGIN_SLUG="$(basename "$PROJECT_PATH")"
+PLUGIN_SLUG="$(basename "$PWD")"
 PROJECT_PATH=$(pwd)
-BUILD_PATH="$PROJECT_PATH/build"
-DEST_PATH="$BUILD_PATH/$PLUGIN_SLUG"
+BUILD_PATH="${PROJECT_PATH}/build"
+DEST_PATH="${BUILD_PATH}/${PLUGIN_SLUG}"
 
 # Function to display progress messages
 progress_message() {
@@ -37,8 +37,10 @@ ls -l "$DEST_PATH"
 progress_message "DEBUG: Checking if .distignore exists..."
 ls -l "$PROJECT_PATH/.distignore"
 
+mkdir -p "$DEST_PATH/admin/assets/"
+
 progress_message "Copying files for production..."
-rsync -av --progress --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
+rsync -av --progress "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
 ls -l "$DEST_PATH/admin/assets/"
 cat "$PROJECT_PATH/.distignore"
 
