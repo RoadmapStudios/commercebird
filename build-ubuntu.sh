@@ -20,6 +20,7 @@ progress_message "Preparing build directory..."
 rm -rf "$BUILD_PATH"
 rm -rf "$PLUGIN_SLUG".zip
 mkdir -p "$DEST_PATH"
+mkdir -p "$BUILD_PATH"
 
 echo "PROJECT_PATH: $PROJECT_PATH"
 echo "BUILD_PATH: $BUILD_PATH"
@@ -38,19 +39,20 @@ progress_message "DEBUG: Checking if .distignore exists..."
 ls -l "$PROJECT_PATH/.distignore"
 
 mkdir -p "$DEST_PATH/admin/assets/"
+mkdir -p "$DEST_PATH/admin/assets/dist/"
 
 progress_message "DEBUG: Checking if dist folder exists in the source path..."
 ls -l "$PROJECT_PATH/admin/assets/dist"
 
 progress_message "Copying files for production..."
-rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
+rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/dist/"
 progress_message "DEBUG: Checking if files are copied to the destination..."
 ls -l "$DEST_PATH/admin/assets/"
 # cat "$PROJECT_PATH/.distignore"
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
 INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
-chmod +w "$DEST_PATH/admin/assets/dist/index.js"
+chmod +w "$INDEX_JS_PATH"
 if [ -f "$INDEX_JS_PATH" ]; then
     progress_message "Modifying index.js to remove lines with .mp3 URLs..."
     sed -i 's/n\.src="https:\/\/[^"]*\.mp3"/n.src=""/g' "$INDEX_JS_PATH"
