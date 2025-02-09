@@ -39,10 +39,11 @@ progress_message "DEBUG: Checking if .distignore exists..."
 ls -l "$PROJECT_PATH/.distignore"
 cat "$PROJECT_PATH/.distignore"
 
-mkdir -p "$DEST_PATH/admin/assets/"
+# create admin/assets/dist directory if it doesn't exist
+mkdir -p "$DEST_PATH/admin/assets/dist"
 
 progress_message "Copying files for production..."
-rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
+rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete
 
 # copy composer.json to build directory from project directory
 rsync -rc "$PROJECT_PATH/composer.json" "$DEST_PATH/composer.json"
