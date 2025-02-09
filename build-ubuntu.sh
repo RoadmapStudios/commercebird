@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
-PLUGIN_SLUG="$(basename $PWD)"
+PLUGIN_SLUG="$(basename "$PROJECT_PATH")"
 PROJECT_PATH=$(pwd)
-BUILD_PATH="${PROJECT_PATH}/build"
-DEST_PATH="$BUILD_PATH"
+BUILD_PATH="$PROJECT_PATH/build"
+DEST_PATH="$BUILD_PATH/$PLUGIN_SLUG"
 
 # Function to display progress messages
 progress_message() {
