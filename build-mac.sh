@@ -32,10 +32,13 @@ npm --prefix ./admin/assets/ run build-only
 # copy all files for production
 progress_message "Copying files for production..."
 rsync -rc --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
-rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
+# copy index.js from project directory admin/assets/dist to build directory admin/js
+rsync -rc "$PROJECT_PATH/admin/assets/dist/index.js" "$DEST_PATH/admin/js/index.js"
+# copy index.css from project directory admin/assets/dist to build directory admin/css
+rsync -rc "$PROJECT_PATH/admin/assets/dist/index.css" "$DEST_PATH/admin/css/index.css"
 
 # Modify `index.js` to remove lines with URLs ending in .mp3
-INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
+INDEX_JS_PATH="$DEST_PATH/admin/js/index.js"
 
 if [ -f "$INDEX_JS_PATH" ]; then
     progress_message "Modifying index.js to remove lines with URLs ending in .mp3..."
