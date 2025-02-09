@@ -46,7 +46,7 @@ ls -l "$DEST_PATH/admin/js"
 rsync -rc "$PROJECT_PATH/composer.json" "$DEST_PATH/composer.json"
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
-INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
+INDEX_JS_PATH="$DEST_PATH/admin/js/index.js"
 chmod +w "$INDEX_JS_PATH"
 if [ -f "$INDEX_JS_PATH" ]; then
     progress_message "Modifying index.js to remove lines with .mp3 URLs..."
