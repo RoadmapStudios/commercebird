@@ -41,13 +41,10 @@ ls -l "$PROJECT_PATH/.distignore"
 mkdir -p "$DEST_PATH/admin/assets/"
 mkdir -p "$DEST_PATH/admin/assets/dist/"
 
-progress_message "DEBUG: Checking if dist folder exists in the source path..."
-ls -l "$PROJECT_PATH/admin/assets/dist"
-
 progress_message "Copying files for production..."
 rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/dist/"
 progress_message "DEBUG: Checking if files are copied to the destination..."
-ls -l "$DEST_PATH/admin/assets/"
+ls -l "$DEST_PATH/admin/assets/dist/"
 # cat "$PROJECT_PATH/.distignore"
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
@@ -61,7 +58,7 @@ fi
 # Install PHP dependencies
 progress_message "Installing PHP dependencies..."
 composer config use-parent-dir true
-cd "$DEST_PATH" && composer install --no-dev
+composer install --working-dir="$DEST_PATH" --no-dev
 rm "$DEST_PATH/composer.lock"
 
 # Remove dev data
