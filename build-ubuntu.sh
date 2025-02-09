@@ -2,7 +2,7 @@
 PLUGIN_SLUG="$(basename $PWD)"
 PROJECT_PATH=$(pwd)
 BUILD_PATH="${PROJECT_PATH}/build"
-DEST_PATH="$BUILD_PATH/$PLUGIN_SLUG"
+DEST_PATH="$BUILD_PATH"
 
 # Function to display progress messages
 progress_message() {
