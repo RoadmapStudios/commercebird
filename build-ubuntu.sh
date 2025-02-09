@@ -40,7 +40,7 @@ ls -l "$PROJECT_PATH/.distignore"
 mkdir -p "$DEST_PATH/admin/assets/"
 
 progress_message "Copying files for production..."
-rsync -av --progress "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
+rsync -av --progress --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
 ls -l "$DEST_PATH/admin/assets/"
 cat "$PROJECT_PATH/.distignore"
 
@@ -53,7 +53,7 @@ fi
 
 # Install PHP dependencies
 progress_message "Installing PHP dependencies..."
-composer install --working-dir="$DEST_PATH" --no-dev
+cd "$DEST_PATH" && composer install --no-dev
 rm "$DEST_PATH/composer.lock"
 
 # Remove dev data
