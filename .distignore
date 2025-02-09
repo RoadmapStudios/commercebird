@@ -29,7 +29,6 @@ build/
 admin/assets
 commercebird.zip
 commercebird
-includes/wc-am-client.php
 build.sh
 build-mac.sh
 build-ubuntu.sh
