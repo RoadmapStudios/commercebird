@@ -36,11 +36,11 @@ progress_message "Building admin template..."
 npm --prefix ./admin/assets/ install
 npm --prefix ./admin/assets/ run build-only
 
-progress_message "DEBUG: Checking if .distignore exists..."
-ls -l "$PROJECT_PATH/.distignore"
+progress_message "DEBUG: Checking if .rsyncignore exists..."
+ls -l "$PROJECT_PATH/.rsyncignore"
 
 progress_message "Copying files for production..."
-rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
+rsync -av --exclude-from="$PROJECT_PATH/.rsyncignore" "$PROJECT_PATH/" "$DEST_PATH/"
 if [ -d "$PROJECT_PATH/admin/assets/dist" ]; then
     progress_message "DEBUG: Source dist folder exists, proceeding with copy..."
     mkdir -p "$DEST_PATH/admin/assets/dist"
