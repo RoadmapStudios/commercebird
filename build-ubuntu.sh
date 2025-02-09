@@ -39,9 +39,12 @@ ls -l "$PROJECT_PATH/.distignore"
 
 mkdir -p "$DEST_PATH/admin/assets/"
 
+progress_message "DEBUG: Checking if dist folder exists in the source path..."
+ls -l "$PROJECT_PATH/admin/assets/dist"
+
 progress_message "Copying files for production..."
-rsync -rc --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
-rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
+rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
+progress_message "DEBUG: Checking if files are copied to the destination..."
 ls -l "$DEST_PATH/admin/assets/"
 # cat "$PROJECT_PATH/.distignore"
 
@@ -60,12 +63,10 @@ rm "$DEST_PATH/composer.lock"
 
 # Remove dev data
 progress_message "Removing dev data..."
-progress_message "DEBUG: Checking if Template.php exists..."
-ls -l "$DEST_PATH/admin/includes/Template.php"
-progress_message "DEBUG: Checking file permissions..."
-stat "$DEST_PATH/admin/includes/Template.php"
 chmod +w "$DEST_PATH/admin/includes/Template.php"
-sed -i -e '74,77d' "$DEST_PATH/admin/includes/Template.php"
+sed -i '74,77d' "$DEST_PATH/admin/includes/Template.php"
+#output the content of Template.php
+cat "$DEST_PATH/admin/includes/Template.php"
 
 # Add index.php to every directory
 progress_message "Adding index.php to every directory..."
