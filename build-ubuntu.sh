@@ -41,11 +41,13 @@ mkdir -p "$DEST_PATH/admin/assets/"
 
 progress_message "Copying files for production..."
 rsync -av --progress --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
+rsync -av --progress "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets/"
 ls -l "$DEST_PATH/admin/assets/"
-cat "$PROJECT_PATH/.distignore"
+# cat "$PROJECT_PATH/.distignore"
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
 INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
+chmod +w "$DEST_PATH/admin/assets/dist/index.js"
 if [ -f "$INDEX_JS_PATH" ]; then
     progress_message "Modifying index.js to remove lines with .mp3 URLs..."
     sed -i 's/n\.src="https:\/\/[^"]*\.mp3"/n.src=""/g' "$INDEX_JS_PATH"
@@ -58,7 +60,11 @@ rm "$DEST_PATH/composer.lock"
 
 # Remove dev data
 progress_message "Removing dev data..."
+progress_message "DEBUG: Checking if Template.php exists..."
 ls -l "$DEST_PATH/admin/includes/Template.php"
+progress_message "DEBUG: Checking file permissions..."
+stat "$DEST_PATH/admin/includes/Template.php"
+chmod +w "$DEST_PATH/admin/includes/Template.php"
 sed -i'' -e '74,77d' "$DEST_PATH/admin/includes/Template.php"
 
 # Add index.php to every directory
