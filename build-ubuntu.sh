@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
-PROJECT_PATH="/home/runner/work/commercebird"
 PLUGIN_SLUG="$(basename "$PROJECT_PATH")"
+PROJECT_PATH=$(pwd)
 BUILD_PATH="$PROJECT_PATH/build"
 DEST_PATH="$BUILD_PATH/$PLUGIN_SLUG"
 
