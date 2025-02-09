@@ -41,6 +41,7 @@ ls -l "$PROJECT_PATH/.distignore"
 
 progress_message "Copying files for production..."
 rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
+rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
 progress_message "DEBUG: Checking if files are copied to the destination..."
 ls -l "$DEST_PATH/admin/assets/dist/"
 # cat "$PROJECT_PATH/.distignore"
