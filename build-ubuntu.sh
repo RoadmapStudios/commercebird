@@ -34,8 +34,8 @@ progress_message "DEBUG: Checking if .distignore exists..."
 ls -l "$PROJECT_PATH/.distignore"
 
 progress_message "Copying files for production..."
-rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
-rsync -av "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
+rsync -av --progress "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
+ls -l "$DEST_PATH/admin/assets/"
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
 INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
@@ -51,6 +51,7 @@ rm "$DEST_PATH/composer.lock"
 
 # Remove dev data
 progress_message "Removing dev data..."
+ls -l "$DEST_PATH/admin/includes/Template.php"
 sed -i'' -e '74,77d' "$DEST_PATH/admin/includes/Template.php"
 
 # Add index.php to every directory
