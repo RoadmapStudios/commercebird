@@ -43,8 +43,9 @@ mkdir -p "$DEST_PATH/admin/assets/dist/"
 
 progress_message "Copying files for production..."
 rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/dist/"
+# copy composer.json to build directory from project directory
+rsync -av "$PROJECT_PATH/composer.json" "$DEST_PATH/composer.json"
 progress_message "DEBUG: Checking if files are copied to the destination..."
-ls -l "$DEST_PATH/admin/assets/dist/"
 # cat "$PROJECT_PATH/.distignore"
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
