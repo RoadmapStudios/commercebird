@@ -60,6 +60,7 @@ fi
 
 # Install PHP dependencies
 progress_message "Installing PHP dependencies..."
+composer config use-parent-dir true
 cd "$DEST_PATH" && composer install --no-dev
 rm "$DEST_PATH/composer.lock"
 
