@@ -43,6 +43,7 @@ progress_message "Copying files for production..."
 rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
 if [ -d "$PROJECT_PATH/admin/assets/dist" ]; then
     progress_message "DEBUG: Source dist folder exists, proceeding with copy..."
+    mkdir -p "$DEST_PATH/admin/assets/dist"
     rsync -rc "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
     progress_message "DEBUG: Checking if files are copied to the destination..."
     ls -l "$DEST_PATH/admin/assets/dist/"
