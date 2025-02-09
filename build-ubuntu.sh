@@ -33,10 +33,10 @@ npm --prefix "$PROJECT_PATH/admin/assets/" run build-only
 
 # Copy all files for production
 progress_message "DEBUG: Listing destination path..."
-ls -l "$DEST_PATH"
+ls -l "$DEST_PATH/admin/"
 
-progress_message "DEBUG: Checking if .distignore exists..."
-ls -l "$PROJECT_PATH"
+progress_message "DEBUG: Checking if assets folder exists..."
+ls -l "$PROJECT_PATH/admin/assets"
 
 # create admin/assets/dist directory if it doesn't exist
 mkdir -p "$DEST_PATH/admin/assets/dist"
