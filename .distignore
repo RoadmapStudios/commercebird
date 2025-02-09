@@ -33,3 +33,6 @@ build.sh
 build-mac.sh
 build-ubuntu.sh
 README.md
+
+!admin/assets/dist/
+!admin/assets/dist/*

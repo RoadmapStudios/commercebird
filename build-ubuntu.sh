@@ -43,9 +43,7 @@ mkdir -p "$DEST_PATH/admin/assets/"
 
 progress_message "Copying files for production..."
 rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
-progress_message "Copying admin assets..."
-mkdir -p "$DEST_PATH/admin/assets/dist"
-rsync -av "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/dist/"
+
 # copy composer.json to build directory from project directory
 rsync -rc "$PROJECT_PATH/composer.json" "$DEST_PATH/composer.json"
 
