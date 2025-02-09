@@ -21,6 +21,10 @@ rm -rf "$BUILD_PATH"
 rm -rf "$PLUGIN_SLUG".zip
 mkdir -p "$DEST_PATH"
 
+echo "PROJECT_PATH: $PROJECT_PATH"
+echo "BUILD_PATH: $BUILD_PATH"
+echo "DEST_PATH: $DEST_PATH"
+
 # Install npm dependencies and build assets
 progress_message "Building admin template..."
 npm --prefix ./admin/assets/ install
