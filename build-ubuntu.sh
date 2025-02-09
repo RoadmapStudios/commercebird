@@ -40,8 +40,8 @@ ls -l "$PROJECT_PATH/.distignore"
 mkdir -p "$DEST_PATH/admin/assets/"
 
 progress_message "Copying files for production..."
-rsync -av --progress --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
-rsync -av --progress "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets/"
+rsync -rc --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete --delete-excluded
+rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
 ls -l "$DEST_PATH/admin/assets/"
 # cat "$PROJECT_PATH/.distignore"
 
@@ -65,7 +65,7 @@ ls -l "$DEST_PATH/admin/includes/Template.php"
 progress_message "DEBUG: Checking file permissions..."
 stat "$DEST_PATH/admin/includes/Template.php"
 chmod +w "$DEST_PATH/admin/includes/Template.php"
-sed -i'' -e '74,77d' "$DEST_PATH/admin/includes/Template.php"
+sed -i -e '74,77d' "$DEST_PATH/admin/includes/Template.php"
 
 # Add index.php to every directory
 progress_message "Adding index.php to every directory..."
