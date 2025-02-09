@@ -33,3 +33,7 @@ build.sh
 build-mac.sh
 build-ubuntu.sh
 README.md
+
+# include the admin/assets/dist folder
+!admin/assets/dist/
+!admin/assets/dist/*
