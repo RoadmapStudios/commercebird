@@ -28,8 +28,8 @@ echo "DEST_PATH: $DEST_PATH"
 
 # Install npm dependencies and build assets
 progress_message "Building admin template..."
-npm --prefix ./admin/assets/ install
-npm --prefix ./admin/assets/ run build-only
+npm --prefix "$PROJECT_PATH/admin/assets/" install
+npm --prefix "$PROJECT_PATH/admin/assets/" run build-only
 
 # Copy all files for production
 progress_message "DEBUG: Listing destination path..."
@@ -37,6 +37,7 @@ ls -l "$DEST_PATH"
 
 progress_message "DEBUG: Checking if .distignore exists..."
 ls -l "$PROJECT_PATH/.distignore"
+cat "$PROJECT_PATH/.distignore"
 
 mkdir -p "$DEST_PATH/admin/assets/"
 mkdir -p "$DEST_PATH/admin/assets/dist/"
