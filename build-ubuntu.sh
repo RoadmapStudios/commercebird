@@ -41,10 +41,16 @@ ls -l "$PROJECT_PATH/.distignore"
 
 progress_message "Copying files for production..."
 rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
-rsync -rc "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets"
-progress_message "DEBUG: Checking if files are copied to the destination..."
-ls -l "$DEST_PATH/admin/assets/dist/"
-# cat "$PROJECT_PATH/.distignore"
+if [ -d "$PROJECT_PATH/admin/assets/dist" ]; then
+    progress_message "DEBUG: Source dist folder exists, proceeding with copy..."
+    rsync -rc "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
+    progress_message "DEBUG: Checking if files are copied to the destination..."
+    ls -l "$DEST_PATH/admin/assets/dist/"
+else
+    progress_message "ERROR: Source dist folder does not exist!"
+    ls -l "$PROJECT_PATH/admin/assets"
+    exit 1
+fi
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
 INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
@@ -63,8 +69,6 @@ rm "$DEST_PATH/composer.lock"
 progress_message "Removing dev data..."
 chmod +w "$DEST_PATH/admin/includes/Template.php"
 sed -i '74,77d' "$DEST_PATH/admin/includes/Template.php"
-#output the content of Template.php
-cat "$DEST_PATH/admin/includes/Template.php"
 
 # Add index.php to every directory
 progress_message "Adding index.php to every directory..."
