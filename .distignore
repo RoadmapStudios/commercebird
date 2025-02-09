@@ -25,6 +25,8 @@ changelog/
 
 # build files
 bin/
+build/
+admin/assets
 commercebird.zip
 commercebird
 includes/wc-am-client.php
