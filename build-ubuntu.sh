@@ -36,8 +36,7 @@ progress_message "DEBUG: Listing destination path..."
 ls -l "$DEST_PATH"
 
 progress_message "DEBUG: Checking if .distignore exists..."
-ls -l "$PROJECT_PATH/.distignore"
-cat "$PROJECT_PATH/.distignore"
+ls -l "$PROJECT_PATH"
 
 # create admin/assets/dist directory if it doesn't exist
 mkdir -p "$DEST_PATH/admin/assets/dist"
