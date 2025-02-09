@@ -26,27 +26,27 @@ echo "PROJECT_PATH: $PROJECT_PATH"
 echo "BUILD_PATH: $BUILD_PATH"
 echo "DEST_PATH: $DEST_PATH"
 
+# cd "$PROJECT_PATH"
+progress_message "DEBUG: Listing project path..."
+cd "$PROJECT_PATH"
+ls -l "$PROJECT_PATH"
+
 # Install npm dependencies and build assets
 progress_message "Building admin template..."
-npm --prefix "$PROJECT_PATH/admin/assets/" install
-npm --prefix "$PROJECT_PATH/admin/assets/" run build-only
+npm --prefix ./admin/assets/ install
+npm --prefix ./admin/assets/ run build-only
+
+progress_message "DEBUG: Checking if .distignore exists..."
+ls -l "$PROJECT_PATH/.distignore"
 
 progress_message "Copying files for production..."
-rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete
-# copy index.js from project directory admin/assets/dist to build directory admin/js
-rsync -rc "$PROJECT_PATH/admin/assets/dist/index.js" "$DEST_PATH/admin/js/index.js"
-# copy index.css from project directory admin/assets/dist to build directory admin/css
-rsync -rc "$PROJECT_PATH/admin/assets/dist/index.css" "$DEST_PATH/admin/css/index.css"
-
-# list the content of the build directory admin/js
-progress_message "Listing the content of the build directory admin/js..."
-ls -l "$DEST_PATH/admin/js"
-
-# copy composer.json to build directory from project directory
-rsync -rc "$PROJECT_PATH/composer.json" "$DEST_PATH/composer.json"
+rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/"
+progress_message "DEBUG: Checking if files are copied to the destination..."
+ls -l "$DEST_PATH/admin/assets/dist/"
+# cat "$PROJECT_PATH/.distignore"
 
 # Modify `index.js` to remove .mp3 URLs (Linux-compatible sed)
-INDEX_JS_PATH="$DEST_PATH/admin/js/index.js"
+INDEX_JS_PATH="$DEST_PATH/admin/assets/dist/index.js"
 chmod +w "$INDEX_JS_PATH"
 if [ -f "$INDEX_JS_PATH" ]; then
     progress_message "Modifying index.js to remove lines with .mp3 URLs..."
