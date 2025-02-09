@@ -46,11 +46,10 @@ jobs:
         run: ./build-ubuntu.sh
 
       - name: Deploy to WordPress.org
-        uses: 10up/action-wordpress-plugin-deploy@master
-        env:
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+        uses: kadirgun/wordpress-deploy-action@v1
         with:
-          path: build/commercebird # Deploy only this directory
-          tag: ${{ env.TAG_NAME }} # Ensure the correct tag is deployed
-          skip_existing: true # Optional, avoids re-deploying existing tags
+          slug: commercebird # Plugin slug
+          svn-username: ${{ secrets.SVN_USERNAME }}
+          svn-password: ${{ secrets.SVN_PASSWORD }}
+          build-dir: build/commercebird # Deploy only this directory
+          version: ${{ env.TAG_NAME }} # Ensure the correct tag is deployed
