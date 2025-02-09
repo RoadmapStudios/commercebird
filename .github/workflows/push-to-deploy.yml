@@ -46,7 +46,7 @@ jobs:
         run: ./build-ubuntu.sh
 
       - name: Deploy to WordPress.org
-        uses: 10up/action-wordpress-plugin-deploy@develop
+        uses: 10up/action-wordpress-plugin-deploy@739c0622552907b728a7b0c8ec79dc1c83f193e6
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
