@@ -31,15 +31,16 @@ progress_message "Building admin template..."
 npm --prefix "$PROJECT_PATH/admin/assets/" install
 npm --prefix "$PROJECT_PATH/admin/assets/" run build-only
 
-# create admin/assets/dist directory if it doesn't exist
-mkdir -p "$DEST_PATH/admin"
-mkdir -p "$DEST_PATH/admin/assets"
-mkdir -p "$DEST_PATH/admin/assets/dist"
-
 progress_message "Copying files for production..."
 rsync -av --exclude-from="$PROJECT_PATH/.distignore" "$PROJECT_PATH/" "$DEST_PATH/" --delete
-# copy admin/assets/dist files to build directory from project directory
-rsync -av "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/dist"
+# copy index.js from project directory admin/assets/dist to build directory admin/js
+rsync -rc "$PROJECT_PATH/admin/assets/dist/index.js" "$DEST_PATH/admin/js/index.js"
+# copy index.css from project directory admin/assets/dist to build directory admin/css
+rsync -rc "$PROJECT_PATH/admin/assets/dist/index.css" "$DEST_PATH/admin/css/index.css"
+
+# list the content of the build directory admin/js
+progress_message "Listing the content of the build directory admin/js..."
+ls -l "$DEST_PATH/admin/js"
 
 # copy composer.json to build directory from project directory
 rsync -rc "$PROJECT_PATH/composer.json" "$DEST_PATH/composer.json"

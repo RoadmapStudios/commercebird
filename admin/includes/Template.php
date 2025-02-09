@@ -75,8 +75,8 @@ final class Template {
 		wp_register_style( self::NAME, 'http://localhost:5000/src/main.css', array(), CMBIRD_VERSION );
 		wp_register_script( self::NAME, 'http://localhost:5000/src/main.js', array(), CMBIRD_VERSION, true );
 		// comment on production
-		wp_register_style( self::NAME, CMBIRD_URL . 'admin/assets/dist/index.css', array(), CMBIRD_VERSION );
-		wp_register_script( self::NAME, CMBIRD_URL . 'admin/assets/dist/index.js', array(), CMBIRD_VERSION, true );
+		wp_register_style( self::NAME, CMBIRD_URL . 'admin/css/index.css', array(), CMBIRD_VERSION );
+		wp_register_script( self::NAME, CMBIRD_URL . 'admin/js/index.js', array(), CMBIRD_VERSION, true );
 		wp_add_inline_style( self::NAME, '#wpcontent, .auto-fold #wpcontent{padding-left: 0px} #wpcontent .notice, #wpcontent #message{display: none} input[type=checkbox]:checked::before{content:unset}' );
 		$active_plugins = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
 		wp_localize_script(

@@ -33,7 +33,3 @@ build.sh
 build-mac.sh
 build-ubuntu.sh
 README.md
-
-# Ignore everything in dist folder
-!admin/assets/dist/
-!admin/assets/dist/*
