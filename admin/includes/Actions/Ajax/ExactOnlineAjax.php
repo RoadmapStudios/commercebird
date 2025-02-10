@@ -2,6 +2,7 @@
 
 namespace CommerceBird\Admin\Actions\Ajax;
 
+use CommerceBird\Admin\Actions\Sync\ExactOnlineSync;
 use CommerceBird\Admin\Connectors\CommerceBird;
 use CommerceBird\Admin\Traits\AjaxRequest;
 use CommerceBird\Admin\Traits\LogWriter;
@@ -42,7 +43,6 @@ final class ExactOnlineAjax {
 		'save_exact_online_cost_unit' => 'cost_unit_save',
 		'save_exact_online_gl_account' => 'gl_account_save',
 		'save_exact_online_payment_status' => 'get_payment_save',
-		'import_exact_online_product' => 'product_import',
 		'map_exact_online_product' => 'product_map',
 		'map_exact_online_customer' => 'customer_map',
 		'map_exact_online_order' => 'order_map',
@@ -260,18 +260,8 @@ final class ExactOnlineAjax {
 		}
 		$chunked = array_chunk( $products['items'], 20 );
 		foreach ( $chunked as $chunked_products ) {
-			$id = as_schedule_single_action(
-				time(),
-				'cmbird_sync_eo',
-				array(
-					'product',
-					wp_json_encode( $chunked_products ),
-					(bool) $this->data['importProducts'],
-				)
-			);
-			if ( empty( $id ) ) {
-				break;
-			}
+			$sync = new ExactOnlineSync();
+			$sync->sync( 'product', $chunked_products, (bool) $this->data['importProducts'] );
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();
@@ -312,18 +302,8 @@ final class ExactOnlineAjax {
 		}
 		$chunked = array_chunk( $customers['customers'], 20 );
 		foreach ( $chunked as $chunked_customers ) {
-			$id = as_schedule_single_action(
-				time(),
-				'cmbird_sync_eo',
-				array(
-					'customer',
-					wp_json_encode( $chunked_customers ),
-					(bool) $this->data['importCustomers'],
-				)
-			);
-			if ( empty( $id ) ) {
-				break;
-			}
+			$sync = new ExactOnlineSync();
+			$sync->sync( 'product', $chunked_customers, (bool) $this->data['importCustomers'] );
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();

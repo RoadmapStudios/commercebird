@@ -18,6 +18,8 @@ const handleClick = () => {
       text: "Please note that all products will be imported as Simple Products only. Still continue?",
     }).then((result) => {
       if (result.isConfirmed) {
+        // set importProducts to true
+        store.importProducts = true;
         store.mapProducts();
       }
     })

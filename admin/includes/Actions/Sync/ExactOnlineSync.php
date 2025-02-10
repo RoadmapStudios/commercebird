@@ -16,16 +16,19 @@ class ExactOnlineSync {
 	 * Sync data from Exact Online.
 	 *
 	 * @param string $type product|customer
-	 * @param string $data to sync from Exact Online
+	 * @param $data to sync from Exact Online
 	 * @param bool $import import or update
 	 * @return mixed
 	 */
-	public static function sync( string $type, string $data, bool $import = false ) {
+	public static function sync( string $type, $data, bool $import = false ) {
 		if ( empty( $type ) ) {
 			return false;
 		}
-		$data = json_decode( $data, true );
-		if ( empty( $data ) ) {
+		// if $data is string then convert it to array
+		if ( is_string( $data ) ) {
+			$data = json_decode( $data, true );
+		}
+		if ( ! is_array( $data ) ) {
 			return false;
 		}
 		foreach ( $data as $item ) {
