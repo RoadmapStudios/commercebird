@@ -303,7 +303,7 @@ final class ExactOnlineAjax {
 		$chunked = array_chunk( $customers['customers'], 20 );
 		foreach ( $chunked as $chunked_customers ) {
 			$sync = new ExactOnlineSync();
-			$sync->sync( 'product', $chunked_customers, (bool) $this->data['importCustomers'] );
+			$sync->sync( 'customer', $chunked_customers, (bool) $this->data['importCustomers'] );
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();
