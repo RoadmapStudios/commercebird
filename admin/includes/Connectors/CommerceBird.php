@@ -3,7 +3,6 @@
 namespace CommerceBird\Admin\Connectors;
 
 use CommerceBird\Admin\Actions\Ajax\ExactOnlineAjax;
-use CommerceBird\Admin\Actions\Ajax\ZohoCRMAjax;
 use CommerceBird\Admin\Traits\LogWriter;
 use WP_Error;
 
@@ -23,7 +22,6 @@ final class CommerceBird {
 	const PAYMENT_STATUS = 'customs/exact/invoice-payment-status';
 	const WEBHOOKS = 'customs/exact/webhooks';
 	const API = 'https://api.commercebird.com';
-	const ZCRMFIELDS = 'customs/zoho/fields';
 
 	public function cost_centers() {
 		return $this->request( self::COST_CENTERS );
@@ -41,19 +39,6 @@ final class CommerceBird {
 	 */
 	public function subscribe_exact_webhooks( array $data ) {
 		$response = $this->request( self::WEBHOOKS, 'POST', $data );
-		return $response['code'] === 200 ? $response['data'] : $response['message'];
-	}
-
-	/**
-	 * Get all Zoho CRM Custom fields
-	 *
-	 * @param
-	 *
-	 * @return array|WP_Error array ( account_id, company_id )
-	 * @throws WP_Error Invalid customer if empty
-	 */
-	public function get_zcrm_fields( $module ) {
-		$response = $this->request( self::ZCRMFIELDS, 'GET', array( 'module' => $module ) );
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
