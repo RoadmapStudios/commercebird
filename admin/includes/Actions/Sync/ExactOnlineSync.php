@@ -73,17 +73,26 @@ class ExactOnlineSync {
 				$endpoint = '/wc/v3/products/batch';
 				$payload = array(
 					'create' => array_map( function ($item) {
+						$images = array();
+						// Skip image import if PictureName is 'placeholder_item'
+						if ( isset( $item['PictureName'] ) && $item['PictureName'] !== 'placeholder_item' ) {
+							$image_id = self::get_existing_image_id( $item['PictureName'] );
+
+							if ( ! $image_id && ! empty( $item['PictureUrl'] ) ) {
+								$image_id = self::upload_image( $item['PictureUrl'], $item['PictureName'] );
+							}
+
+							if ( $image_id ) {
+								$images[] = array( 'id' => $image_id );
+							}
+						}
 						return array(
 							'name' => $item['Description'],
 							'sku' => $item['Code'],
 							'status' => 'publish',
 							'type' => 'simple',
 							'regular_price' => (string) $item['StandardSalesPrice'],
-							'images' => array(
-								array(
-									'src' => $item['PictureUrl'],
-								),
-							),
+							'images' => $images,
 							'meta_data' => array(
 								array(
 									'key' => 'eo_item_id',
@@ -283,5 +292,41 @@ class ExactOnlineSync {
 			$order->update_status( 'on-hold', __( 'Payment not processed in Exact Online', 'commercebird' ) );
 			$order->save();
 		}
+	}
+
+	/**
+	 * Check if the image exists in the media library.
+	 * @param string $picture_name
+	 * @return $ID of the image if it exists, otherwise false
+	 */
+	private static function get_existing_image_id( $picture_name ) {
+		global $wpdb;
+
+		$query = $wpdb->prepare( "
+        SELECT ID FROM {$wpdb->posts}
+        WHERE post_type = 'attachment'
+        AND post_title = %s
+        LIMIT 1
+    	", $picture_name );
+
+		$attachment_id = $wpdb->get_var( $query );
+		return $attachment_id ? $attachment_id : false;
+	}
+
+	/**
+	 * Upload the product image from Exact Online.
+	 * @param string $product_id
+	 * @param string $picture_name
+	 * @return $attachment_id of the uploaded image if successful, otherwise false
+	 */
+	private static function upload_image( $picture_url, $picture_name ) {
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+
+		// Upload the image and return the media ID
+		$attachment_id = media_sideload_image( $picture_url, 0, $picture_name, 'id' );
+
+		return is_wp_error( $attachment_id ) ? false : $attachment_id;
 	}
 }
