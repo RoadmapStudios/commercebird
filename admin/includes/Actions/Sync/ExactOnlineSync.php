@@ -16,25 +16,18 @@ class ExactOnlineSync {
 	 * Sync data from Exact Online.
 	 *
 	 * @param string $type product|customer
-	 * @param $data to sync from Exact Online
+	 * @param array $data to sync from Exact Online
 	 * @param bool $import import or update
 	 * @return mixed
 	 */
-	public static function sync( string $type, $data, bool $import = false ) {
+	public static function sync( string $type, array $data, bool $import = false ) {
 		if ( empty( $type ) ) {
 			return false;
 		}
-		// if $data is string then convert it to array
-		if ( is_string( $data ) ) {
-			$data = json_decode( $data, true );
-		}
-		if ( ! is_array( $data ) ) {
-			return false;
-		}
-		foreach ( $data as $item ) {
-			if ( $import ) {
-				self::import( $type, $item );
-			} else {
+		if ( $import ) {
+			self::import( $type, $data );
+		} else {
+			foreach ( $data as $item ) {
 				self::update( $type, $item );
 			}
 		}
@@ -74,88 +67,97 @@ class ExactOnlineSync {
 	public static function import( string $type, array $data ) {
 		$endpoint = '';
 		$payload = array();
+
 		switch ( $type ) {
 			case 'product':
-				$endpoint = '/wc/v3/products';
+				$endpoint = '/wc/v3/products/batch';
 				$payload = array(
-					'name' => $data['Description'],
-					'sku' => $data['Code'],
-					'status' => 'publish',
-					'type' => 'simple',
-					'regular_price' => (string) $data['StandardSalesPrice'],
-					// 'stock_quantity' => (string) $data['Stock'],
-					'images' => array(
-						array(
-							'src' => $data['PictureUrl'],
-						),
-					),
-					'meta_data' => array(
-						array(
-							'key' => 'eo_item_id',
-
-							'value' => $data['ID'],
-						),
-						array(
-							'key' => '_cost_price',
-							'value' => $data['CostPriceStandard'],
-						),
-						array(
-							'key' => 'eo_unit',
-							'value' => $data['Unit'],
-						),
-					),
-
+					'create' => array_map( function ($item) {
+						return array(
+							'name' => $item['Description'],
+							'sku' => $item['Code'],
+							'status' => 'publish',
+							'type' => 'simple',
+							'regular_price' => (string) $item['StandardSalesPrice'],
+							'images' => array(
+								array(
+									'src' => $item['PictureUrl'],
+								),
+							),
+							'meta_data' => array(
+								array(
+									'key' => 'eo_item_id',
+									'value' => $item['ID'],
+								),
+								array(
+									'key' => '_cost_price',
+									'value' => $item['CostPriceStandard'],
+								),
+								array(
+									'key' => 'eo_unit',
+									'value' => $item['Unit'],
+								),
+							),
+						);
+					}, $data )
 				);
 				break;
+
 			case 'customer':
-				if ( empty( $data['Email'] ) ) {
-					break;
-				}
-				$endpoint = '/wc/v3/customers';
-				$names = explode( ' ', $data['Name'] );
-				$first_name = $names[0] ?? '';
-				$last_name = $names[1] ?? '';
-				$address = array(
-					'first_name' => $first_name,
-					'last_name' => $last_name,
-					'address_1' => $data['AddressLine1'] ?? '',
-					'address_2' => $data['AddressLine2'] ?? '',
-					'city' => $data['City'],
-					'country' => $data['Country'],
-					'postcode' => $data['Postcode'],
-					'phone' => $data['Phone'] ?? '',
-					'email' => $data['Email'],
-				);
+				$endpoint = '/wc/v3/customers/batch';
 				$payload = array(
-					'email' => $data['Email'],
-					'first_name' => $first_name,
-					'last_name' => $last_name,
-					'billing' => $address,
-					'shipping' => $address,
-					'meta_data' => array(
-						array(
-							'key' => 'eo_account_id',
-							'value' => $data['ID'],
-						),
-						array(
-							'key' => 'eo_contact_id',
-							'value' => $data['MainContact'] ?? '',
-						),
-					),
+					'create' => array_map( function ($item) {
+						if ( empty( $item['Email'] ) ) {
+							return null;
+						}
+						$names = explode( ' ', $item['Name'] );
+						$first_name = $names[0] ?? '';
+						$last_name = $names[1] ?? '';
+						$address = array(
+							'first_name' => $first_name,
+							'last_name' => $last_name,
+							'address_1' => $item['AddressLine1'] ?? '',
+							'address_2' => $item['AddressLine2'] ?? '',
+							'city' => $item['City'],
+							'country' => $item['Country'],
+							'postcode' => $item['Postcode'],
+							'phone' => $item['Phone'] ?? '',
+							'email' => $item['Email'],
+						);
+						return array(
+							'email' => $item['Email'],
+							'first_name' => $first_name,
+							'last_name' => $last_name,
+							'billing' => $address,
+							'shipping' => $address,
+							'meta_data' => array(
+								array(
+									'key' => 'eo_account_id',
+									'value' => $item['ID'],
+								),
+								array(
+									'key' => 'eo_contact_id',
+									'value' => $item['MainContact'] ?? '',
+								),
+							),
+						);
+					}, array_filter( $data, fn( $item ) => ! empty( $item['Email'] ) ) )
 				);
 				break;
+
 			default:
-				break;
+				return false;
 		}
 
-		if ( empty( $endpoint ) || empty( $payload ) ) {
+		if ( empty( $endpoint ) || empty( $payload['create'] ) ) {
 			return false;
 		}
 
 		$request = new \WP_REST_Request( 'POST', $endpoint );
 		$request->set_body_params( $payload );
-		rest_do_request( $request );
+		return rest_do_request( $request );
 	}
+
 	/**
 	 * Update data based on Exact Online.
 	 * @param string $type of provided data

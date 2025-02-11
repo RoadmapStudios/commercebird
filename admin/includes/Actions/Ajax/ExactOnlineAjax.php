@@ -258,7 +258,7 @@ final class ExactOnlineAjax {
 			);
 			$this->serve();
 		}
-		$chunked = array_chunk( $products['items'], 20 );
+		$chunked = array_chunk( $products['items'], 100 );
 		foreach ( $chunked as $chunked_products ) {
 			$sync = new ExactOnlineSync();
 			$sync->sync( 'product', $chunked_products, (bool) $this->data['importProducts'] );
@@ -300,7 +300,7 @@ final class ExactOnlineAjax {
 			);
 			$this->serve();
 		}
-		$chunked = array_chunk( $customers['customers'], 20 );
+		$chunked = array_chunk( $customers['customers'], 100 );
 		foreach ( $chunked as $chunked_customers ) {
 			$sync = new ExactOnlineSync();
 			$sync->sync( 'customer', $chunked_customers, (bool) $this->data['importCustomers'] );
