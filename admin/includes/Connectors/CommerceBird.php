@@ -81,9 +81,7 @@ final class CommerceBird {
 	 * @return array|WP_Error The ID of the item or an error object.
 	 */
 	public function products() {
-
 		$response = $this->request( self::ITEM );
-
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
@@ -106,7 +104,7 @@ final class CommerceBird {
 	/**
 	 * Generate request URL
 	 */
-	private function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
+	public function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
 		$token = ExactOnlineAjax::instance()->get_token();
 		$token = ! empty( $token ) ? $token : '';
 		$url = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
