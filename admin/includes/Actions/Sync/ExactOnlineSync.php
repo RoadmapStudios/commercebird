@@ -200,7 +200,7 @@ class ExactOnlineSync {
 		$response = rest_do_request( $request );
 		// error_log the message if response is error
 		if ( is_wp_error( $response ) ) {
-			error_log( 'Error importing data: ' . $response->get_error_message() );
+			error_log( 'Error ExactOnline Import: ' . $response->get_error_message() );
 		}
 		return $response;
 	}
@@ -319,7 +319,7 @@ class ExactOnlineSync {
 		$response = rest_do_request( $request );
 		// error_log the message if response is error
 		if ( is_wp_error( $response ) ) {
-			error_log( 'Error importing data: ' . $response->get_error_message() );
+			error_log( 'Error ExactOnline Update: ' . $response->get_error_message() );
 		}
 		// fwrite( $fd, print_r( $response, true ) );
 		// fclose( $fd );
@@ -401,6 +401,9 @@ class ExactOnlineSync {
 	 */
 	private static function get_existing_image_id( $picture_name ) {
 		global $wpdb;
+
+		// sanitize the picture name
+		$picture_name = sanitize_file_name( $picture_name );
 
 		$query = $wpdb->prepare( "
         SELECT ID FROM {$wpdb->posts}
