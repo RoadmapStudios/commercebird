@@ -217,7 +217,7 @@ final class ZohoInventoryAjax {
 					'Accept' => 'application/json',
 					'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
 				),
-				'timeout' => 15,
+				'timeout' => 30,
 			),
 		);
 
