@@ -4,7 +4,7 @@
  * Plugin URI:  https://commercebird.com
  * Author:      CommerceBird
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho Inventory, Zoho CRM, Exact Online and more. Requires a subscription at CommerceBird.com.
- * Version: 2.2.16
+ * Version: 2.2.17
  * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  * Requires at least: 6.5
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'CMBIRD_VERSION' ) ) {
-	define( 'CMBIRD_VERSION', '2.2.16' );
+	define( 'CMBIRD_VERSION', '2.2.17' );
 }
 if ( ! defined( 'CMBIRD_PATH' ) ) {
 	define( 'CMBIRD_PATH', plugin_dir_path( __FILE__ ) );
@@ -131,6 +131,42 @@ add_action( 'cmbird_common', array( CMBIRD_Common_Functions::class, 'set_zoho_ra
 add_action( 'cmbird_sync_eo', array( ExactOnlineSync::class, 'sync' ), 10, 3 );
 add_action( 'cmbird_payment_status', array( ExactOnlineSync::class, 'cmbird_payment_status' ), 10, 1 );
 add_action( 'cmbird_eo_get_payment_statuses', array( ExactOnlineSync::class, 'get_payment_status_via_cron' ) );
+// Callback functions for scheduled action to process product or customer chunk
+add_action( 'cmbird_process_product_chunk', function ($args) {
+	if ( ! is_array( $args ) || empty( $args['transient_key'] ) ) {
+		return;
+	}
+
+	$transient_key = $args['transient_key'];
+	$import_products = $args['import_products'] ?? false;
+
+	$chunked_products = get_transient( $transient_key );
+
+	if ( $chunked_products ) {
+		$sync = new ExactOnlineSync();
+		$sync->sync( 'product', $chunked_products, (bool) $import_products );
+
+		// Remove transient after processing
+		delete_transient( $transient_key );
+	}
+}, 10, 1 );
+add_action( 'cmbird_process_customer_chunk', function ($args) {
+	if ( ! is_array( $args ) || empty( $args['transient_key'] ) ) {
+		return;
+	}
+	$transient_key = $args['transient_key'];
+	$import_customers = $args['import_customers'] ?? false;
+
+	$chunked_customers = get_transient( $transient_key );
+
+	if ( $chunked_customers ) {
+		$sync = new ExactOnlineSync();
+		$sync->sync( 'customer', $chunked_customers, (bool) $import_customers );
+
+		// Remove transient after processing
+		delete_transient( $transient_key );
+	}
+}, 10, 1 );
 // Zoho CRM Hooks
 add_action( 'init', array( ZohoCRMSync::class, 'refresh_token' ) );
 

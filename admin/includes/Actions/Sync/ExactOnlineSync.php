@@ -16,24 +16,18 @@ class ExactOnlineSync {
 	 * Sync data from Exact Online.
 	 *
 	 * @param string $type product|customer
-	 * @param string $data to sync from Exact Online
+	 * @param array $data to sync from Exact Online
 	 * @param bool $import import or update
 	 * @return mixed
 	 */
-	public static function sync( string $type, string $data, bool $import = false ) {
+	public static function sync( string $type, array $data, bool $import = false ) {
 		if ( empty( $type ) ) {
 			return false;
 		}
-		$data = json_decode( $data, true );
-		if ( empty( $data ) ) {
-			return false;
-		}
-		foreach ( $data as $item ) {
-			if ( $import ) {
-				self::import( $type, $item );
-			} else {
-				self::update( $type, $item );
-			}
+		if ( $import ) {
+			self::import( $type, $data );
+		} else {
+			self::update( $type, $data );
 		}
 	}
 	/**
@@ -69,147 +63,267 @@ class ExactOnlineSync {
 	 * @return mixed
 	 */
 	public static function import( string $type, array $data ) {
+		// add logging
+		// $fd = fopen( __DIR__ . '/import.txt', 'w+' );
 		$endpoint = '';
 		$payload = array();
+
 		switch ( $type ) {
 			case 'product':
-				$endpoint = '/wc/v3/products';
+				$endpoint = '/wc/v3/products/batch';
+				$filtered_data = array_filter( $data, function ($item) {
+					// Exclude item if product already exists via SKU
+					return ! wc_get_product_id_by_sku( $item['Code'] );
+				} );
 				$payload = array(
-					'name' => $data['Description'],
-					'sku' => $data['Code'],
-					'status' => 'publish',
-					'type' => 'simple',
-					'regular_price' => (string) $data['StandardSalesPrice'],
-					// 'stock_quantity' => (string) $data['Stock'],
-					'images' => array(
-						array(
-							'src' => $data['PictureUrl'],
-						),
-					),
-					'meta_data' => array(
-						array(
-							'key' => 'eo_item_id',
-
-							'value' => $data['ID'],
-						),
-						array(
-							'key' => '_cost_price',
-							'value' => $data['CostPriceStandard'],
-						),
-						array(
-							'key' => 'eo_unit',
-							'value' => $data['Unit'],
-						),
-					),
-
+					'create' => array_map( function ($item) {
+						// Skip image import if PictureName is 'placeholder_item'
+						if ( isset( $item['PictureName'] ) && $item['PictureName'] !== 'placeholder_item' ) {
+							$images = array();
+							$image_id = self::get_existing_image_id( $item['PictureName'] );
+							// If image exists, add it to the images array, else upload the image and add it to the images array
+							if ( $image_id ) {
+								$images[] = array( 'id' => $image_id );
+							} else {
+								$image_id = self::upload_image( $item['PictureUrl'], $item['PictureName'] );
+								// If image upload is successful, add it to the images array
+								if ( $image_id ) {
+									$images[] = array( 'id' => $image_id );
+								}
+							}
+						}
+						// Check if category exists with $item['ItemGroupDescription'], else create it and get the ID
+						if ( isset( $item['ItemGroupDescription'] ) ) {
+							$term = get_term_by( 'name', $item['ItemGroupDescription'], 'product_cat' );
+							$term_id = $term->term_id;
+							if ( empty( $term_id ) ) {
+								$term = wp_insert_term(
+									$item['ItemGroupDescription'],
+									'product_cat',
+									array(
+										'parent' => 0,
+									)
+								);
+								$term_id = $term['term_id'];
+							}
+						} else {
+							$term_id = 0;
+						}
+						return array(
+							'name' => $item['Description'],
+							'sku' => $item['Code'],
+							'status' => 'publish',
+							'type' => 'simple',
+							'regular_price' => (string) $item['StandardSalesPrice'],
+							'images' => $images,
+							'categories' => array(
+								array(
+									'id' => $term_id,
+								),
+							),
+							'meta_data' => array(
+								array(
+									'key' => 'eo_item_id',
+									'value' => $item['ID'],
+								),
+								array(
+									'key' => '_cost_price',
+									'value' => $item['CostPriceStandard'],
+								),
+								array(
+									'key' => 'eo_unit',
+									'value' => $item['Unit'],
+								),
+							),
+						);
+					}, $filtered_data )
 				);
 				break;
+
 			case 'customer':
-				if ( empty( $data['Email'] ) ) {
-					break;
-				}
-				$endpoint = '/wc/v3/customers';
-				$names = explode( ' ', $data['Name'] );
-				$first_name = $names[0] ?? '';
-				$last_name = $names[1] ?? '';
-				$address = array(
-					'first_name' => $first_name,
-					'last_name' => $last_name,
-					'address_1' => $data['AddressLine1'] ?? '',
-					'address_2' => $data['AddressLine2'] ?? '',
-					'city' => $data['City'],
-					'country' => $data['Country'],
-					'postcode' => $data['Postcode'],
-					'phone' => $data['Phone'] ?? '',
-					'email' => $data['Email'],
-				);
+				$endpoint = '/wc/v3/customers/batch';
+				$filtered_data = array_filter( $data, function ($item) {
+					// Exclude item if customer already exists via email
+					return ! get_user_by( 'email', $item['Email'] );
+				} );
 				$payload = array(
-					'email' => $data['Email'],
-					'first_name' => $first_name,
-					'last_name' => $last_name,
-					'billing' => $address,
-					'shipping' => $address,
-					'meta_data' => array(
-						array(
-							'key' => 'eo_account_id',
-							'value' => $data['ID'],
-						),
-						array(
-							'key' => 'eo_contact_id',
-							'value' => $data['MainContact'] ?? '',
-						),
-					),
+					'create' => array_map( function ($item) {
+						if ( empty( $item['Email'] ) ) {
+							return null;
+						}
+						$names = explode( ' ', $item['Name'] );
+						$first_name = $names[0] ?? '';
+						$last_name = $names[1] ?? '';
+						$address = array(
+							'first_name' => $first_name,
+							'last_name' => $last_name,
+							'address_1' => $item['AddressLine1'] ?? '',
+							'address_2' => $item['AddressLine2'] ?? '',
+							'city' => $item['City'] ?? '',
+							'country' => $item['Country'] ?? '',
+							'postcode' => $item['Postcode'] ?? '',
+							'phone' => $item['Phone'] ?? '',
+							'email' => $item['Email'],
+						);
+						return array(
+							'email' => $item['Email'],
+							'first_name' => $first_name,
+							'last_name' => $last_name,
+							'billing' => $address,
+							'shipping' => $address,
+							'meta_data' => array(
+								array(
+									'key' => 'eo_account_id',
+									'value' => $item['ID'],
+								),
+								array(
+									'key' => 'eo_contact_id',
+									'value' => $item['MainContact'] ?? '',
+								),
+							),
+						);
+					}, array_filter( $filtered_data, fn( $item ) => ! empty( $item['Email'] ) ) )
 				);
 				break;
+
 			default:
-				break;
+				return false;
 		}
 
-		if ( empty( $endpoint ) || empty( $payload ) ) {
+		if ( empty( $endpoint ) || empty( $payload['create'] ) ) {
 			return false;
 		}
-
+		// log the payload
+		// fwrite( $fd, print_r( $payload, true ) );
 		$request = new \WP_REST_Request( 'POST', $endpoint );
 		$request->set_body_params( $payload );
-		rest_do_request( $request );
+		$response = rest_do_request( $request );
+		// error_log the message if response is error
+		if ( is_wp_error( $response ) ) {
+			error_log( 'Error ExactOnline Import: ' . $response->get_error_message() );
+		}
+		return $response;
 	}
+
 	/**
 	 * Update data based on Exact Online.
 	 * @param string $type of provided data
-	 * @param array $data to match
-	 * @return void
+	 * @return mixed
 	 */
 	public static function update( string $type, array $data ) {
+		// $fd = fopen( __DIR__ . '/update.txt', 'w+' );
+		$endpoint = '';
+		$payload = array();
+
 		switch ( $type ) {
 			case 'product':
-				$wc_product_id = wc_get_product_id_by_sku( $data['Code'] );
-				if ( empty( $wc_product_id ) ) {
-					$wc_product_id = self::get_product_id_by_title( $data['Description'] );
-				}
-				if ( ! empty( $wc_product_id ) ) {
-					update_post_meta( $wc_product_id, 'eo_item_id', $data['ID'] );
-					update_post_meta( $wc_product_id, '_cost_price', $data['CostPriceStandard'] );
-					update_post_meta( $wc_product_id, 'eo_unit', $data['Unit'] );
-					$wc_product = wc_get_product( $wc_product_id );
-					$wc_product->set_regular_price( $data['StandardSalesPrice'] );
-					$stock = $data['Stock'];
-					if ( is_numeric( $stock ) ) {
-						$wc_product->set_manage_stock( true );
-						$wc_product->set_stock_quantity( $data['Stock'] );
-						if ( $stock > 0 ) {
-							$wc_product->set_stock_status( 'instock' );
-						} else {
-							$backorder_status = $wc_product->backorders_allowed();
-							$status = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
-							$wc_product->set_stock_status( $status );
+				$filtered_data = array_filter( $data, function ($item) {
+					// Exclude item if product does not exists via SKU
+					return wc_get_product_id_by_sku( $item['Code'] );
+				} );
+				$endpoint = '/wc/v3/products/batch';
+				$payload = array(
+					'update' => array_map( function ($item) {
+						// Check if product exists via SKU, else get the product ID by title
+						$product_id = wc_get_product_id_by_sku( $item['Code'] ) ?: self::get_product_id_by_title( $item['Description'] );
+						// Featured image
+						if ( isset( $item['PictureName'] ) && $item['PictureName'] !== 'placeholder_item' ) {
+							$image_id = self::get_existing_image_id( $item['PictureName'] );
+							// If image exists, add it to the images array, else upload the image and add it to the images array
+							if ( $image_id ) {
+								set_post_thumbnail( $product_id, $image_id );
+								update_post_meta( $image_id, '_wp_attachment_image_alt', $item['Description'] );
+								update_post_meta( $product_id, '_thumbnail_id', $image_id );
+								wp_update_image_subsizes( $image_id );
+							} else {
+								$image_id = self::upload_image( $item['PictureUrl'], $item['PictureName'] );
+								// If image upload is successful, add it to the images array
+								if ( $image_id ) {
+									set_post_thumbnail( $product_id, $image_id );
+									update_post_meta( $image_id, '_wp_attachment_image_alt', $item['Description'] );
+									update_post_meta( $product_id, '_thumbnail_id', $image_id );
+									wp_update_image_subsizes( $image_id );
+								}
+							}
 						}
-					}
-					$wc_product->save();
-				}
+						if ( isset( $item['ItemGroupDescription'] ) ) {
+							// Check if term exists by name
+							$term = get_term_by( 'name', $item['ItemGroupDescription'], 'product_cat' );
+							$term_id = $term->term_id;
+							if ( empty( $term_id ) ) {
+								$term = wp_insert_term(
+									$item['ItemGroupDescription'],
+									'product_cat',
+									array(
+										'parent' => 0,
+									)
+								);
+								$term_id = $term['term_id'];
+							}
+							// update product category directly
+							wp_set_object_terms( $product_id, $term_id, 'product_cat' );
+						}
+						return array(
+							'id' => $product_id,
+							'regular_price' => (string) $item['StandardSalesPrice'],
+							'meta_data' => array(
+								array( 'key' => 'eo_item_id', 'value' => $item['ID'] ),
+								array( 'key' => '_cost_price', 'value' => $item['CostPriceStandard'] ),
+								array( 'key' => 'eo_unit', 'value' => $item['Unit'] ),
+							),
+						);
+					}, $filtered_data )
+				);
 				break;
+
 			case 'customer':
-				$user = get_user_by( 'email', $data['Email'] );
-				if ( empty( $user ) ) {
-					break;
-				}
-				$user_id = $user->ID;
-				update_user_meta( $user_id, 'eo_account_id', $data['ID'] );
-				if ( ! empty( $data['MainContact'] ) ) {
-					update_user_meta( $user_id, 'eo_contact_id', $data['MainContact'] );
-				}
+				$endpoint = '/wc/v3/customers/batch';
+				$payload = array(
+					'update' => array_map( function ($item) {
+						$user = get_user_by( 'email', $item['Email'] );
+						return $user ? array(
+							'id' => $user->ID,
+							'meta_data' => array(
+								array( 'key' => 'eo_account_id', 'value' => $item['ID'] ),
+								array( 'key' => 'eo_contact_id', 'value' => $item['MainContact'] ?? '' ),
+							),
+						) : null;
+					}, array_filter( $data, fn( $item ) => get_user_by( 'email', $item['Email'] ) ) )
+				);
 				break;
+
 			case 'orders':
-				$order = wc_get_order( $data['Description'] );
-				if ( empty( $order ) ) {
-					break;
-				}
-				$order->update_meta_data( 'eo_order_id', $data['OrderID'] );
-				$order->update_meta_data( 'eo_order_number', $data['OrderNumber'] );
-				$order->save();
+				$endpoint = '/wc/v3/orders/batch';
+				$payload = array(
+					'update' => array_map( function ($item) {
+						return array(
+							'id' => $item['Description'],
+							'meta_data' => array(
+								array( 'key' => 'eo_order_id', 'value' => $item['OrderID'] ),
+								array( 'key' => 'eo_order_number', 'value' => $item['OrderNumber'] ),
+							),
+						);
+					}, $data )
+				);
 				break;
+
 			default:
-				break;
+				return false;
 		}
+		// fwrite( $fd, print_r( $payload, true ) );
+		if ( empty( $endpoint ) || empty( $payload['update'] ) ) {
+			return false;
+		}
+		$request = new \WP_REST_Request( 'POST', $endpoint );
+		$request->set_body_params( $payload );
+		$response = rest_do_request( $request );
+		// error_log the message if response is error
+		if ( is_wp_error( $response ) ) {
+			error_log( 'Error ExactOnline Update: ' . $response->get_error_message() );
+		}
+		// fwrite( $fd, print_r( $response, true ) );
+		// fclose( $fd );
+		return $response;
 	}
 
 	private static function get_product_id_by_title( string $product_title ) {
@@ -278,5 +392,84 @@ class ExactOnlineSync {
 			$order->update_status( 'on-hold', __( 'Payment not processed in Exact Online', 'commercebird' ) );
 			$order->save();
 		}
+	}
+
+	/**
+	 * Check if the image exists in the media library.
+	 * @param string $picture_name
+	 * @return $ID of the image if it exists, otherwise false
+	 */
+	private static function get_existing_image_id( $picture_name ) {
+		global $wpdb;
+
+		// sanitize the picture name
+		$picture_name = sanitize_file_name( $picture_name );
+
+		$query = $wpdb->prepare( "
+        SELECT ID FROM {$wpdb->posts}
+        WHERE post_type = 'attachment'
+        AND post_title = %s
+        LIMIT 1
+    	", $picture_name );
+
+		$attachment_id = $wpdb->get_var( $query );
+		return $attachment_id ? $attachment_id : false;
+	}
+
+	/**
+	 * Upload the product image from Exact Online.
+	 * @param string $product_id
+	 * @param string $picture_name
+	 * @return $attachment_id of the uploaded image if successful, otherwise false
+	 */
+	private static function upload_image( $picture_url, $picture_name ) {
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+
+		// Fetch image content
+		$response = wp_safe_remote_get( $picture_url, array( 'timeout' => 10 ) );
+
+		if ( is_wp_error( $response ) ) {
+			error_log( 'Error fetching image: ' . $response->get_error_message() );
+			return false;
+		}
+
+		$image_data = wp_remote_retrieve_body( $response );
+		if ( empty( $image_data ) ) {
+			return false;
+		}
+
+		// Generate filename
+		$upload_dir = wp_upload_dir();
+		$filename = sanitize_file_name( $picture_name );
+		$file_path = $upload_dir['path'] . '/' . $filename;
+
+		// Save the file
+		file_put_contents( $file_path, $image_data );
+
+		// Check if file was saved correctly
+		if ( ! file_exists( $file_path ) ) {
+			return false;
+		}
+
+		// Prepare file array for WordPress
+		$file = array(
+			'name' => $filename,
+			'type' => mime_content_type( $file_path ),
+			'tmp_name' => $file_path,
+			'size' => filesize( $file_path ),
+		);
+
+		// Upload to WordPress Media Library
+		$attachment_id = media_handle_sideload( $file, 0 );
+
+		// Check for errors
+		if ( is_wp_error( $attachment_id ) ) {
+			error_log( 'Error attaching image: ' . $attachment_id->get_error_message() );
+			return false;
+		}
+
+		return $attachment_id;
 	}
 }

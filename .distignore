@@ -10,6 +10,7 @@
 .turbo/
 .vscode
 .DS_Store
+.rsyncignore
 tsconfig.json
 composer.lock
 package-lock.json
@@ -30,4 +31,5 @@ commercebird
 build.sh
 build-mac.sh
 build-ubuntu.sh
+build-windows.sh
 README.md

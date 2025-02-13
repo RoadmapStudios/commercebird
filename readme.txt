@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 2.2.16
+Stable tag: 2.2.17
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Elevate WooCommerce to the next level by turning it into a full ERP system.
@@ -83,6 +83,11 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.17 - February 13th 2025
+* Improvement: Exact Online Import will now handle large data sets
+* Improvement: Exact Online Featured image and Category during import
+* Tweak: Reduced plugin size by removing unused JS files
+
 = 2.2.16 - February 9th 2025
 * Fix: JS files not found due to build script not optimized for linux
 

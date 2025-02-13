@@ -46,6 +46,7 @@ if [ -d "$PROJECT_PATH/admin/assets/dist" ]; then
     mkdir -p "$DEST_PATH/admin/assets/dist"
     # rsync -av --progress "$PROJECT_PATH/admin/assets/dist/" "$DEST_PATH/admin/assets/"
     cp -r "$PROJECT_PATH/admin/assets/dist" "$DEST_PATH/admin/assets/"
+    find "$DEST_PATH/admin/assets/dist" -type f ! -name 'index.*' -delete
     progress_message "DEBUG: Checking if files are copied to the destination..."
     ls -l "$DEST_PATH/admin/assets/dist/"
 else

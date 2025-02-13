@@ -3,7 +3,6 @@
 namespace CommerceBird\Admin\Connectors;
 
 use CommerceBird\Admin\Actions\Ajax\ExactOnlineAjax;
-use CommerceBird\Admin\Actions\Ajax\ZohoCRMAjax;
 use CommerceBird\Admin\Traits\LogWriter;
 use WP_Error;
 
@@ -23,7 +22,6 @@ final class CommerceBird {
 	const PAYMENT_STATUS = 'customs/exact/invoice-payment-status';
 	const WEBHOOKS = 'customs/exact/webhooks';
 	const API = 'https://api.commercebird.com';
-	const ZCRMFIELDS = 'customs/zoho/fields';
 
 	public function cost_centers() {
 		return $this->request( self::COST_CENTERS );
@@ -41,19 +39,6 @@ final class CommerceBird {
 	 */
 	public function subscribe_exact_webhooks( array $data ) {
 		$response = $this->request( self::WEBHOOKS, 'POST', $data );
-		return $response['code'] === 200 ? $response['data'] : $response['message'];
-	}
-
-	/**
-	 * Get all Zoho CRM Custom fields
-	 *
-	 * @param
-	 *
-	 * @return array|WP_Error array ( account_id, company_id )
-	 * @throws WP_Error Invalid customer if empty
-	 */
-	public function get_zcrm_fields( $module ) {
-		$response = $this->request( self::ZCRMFIELDS, 'GET', array( 'module' => $module ) );
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
@@ -96,9 +81,7 @@ final class CommerceBird {
 	 * @return array|WP_Error The ID of the item or an error object.
 	 */
 	public function products() {
-
 		$response = $this->request( self::ITEM );
-
 		return $response['code'] === 200 ? $response['data'] : $response['message'];
 	}
 
@@ -121,8 +104,9 @@ final class CommerceBird {
 	/**
 	 * Generate request URL
 	 */
-	private function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
-		$token = ! empty( ExactOnlineAjax::instance()->get_token() ) ? ExactOnlineAjax::instance()->get_token() : ZohoCRMAjax::instance()->get_token();
+	public function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
+		$token = ExactOnlineAjax::instance()->get_token();
+		$token = ! empty( $token ) ? $token : '';
 		$url = sprintf( '%s/%s?token=%s', self::API, $endpoint, $token );
 		if ( ! empty( $params ) ) {
 			$url .= '&' . http_build_query( $params );

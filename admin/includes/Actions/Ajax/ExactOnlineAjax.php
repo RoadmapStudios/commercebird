@@ -2,6 +2,7 @@
 
 namespace CommerceBird\Admin\Actions\Ajax;
 
+use CommerceBird\Admin\Actions\Sync\ExactOnlineSync;
 use CommerceBird\Admin\Connectors\CommerceBird;
 use CommerceBird\Admin\Traits\AjaxRequest;
 use CommerceBird\Admin\Traits\LogWriter;
@@ -42,7 +43,6 @@ final class ExactOnlineAjax {
 		'save_exact_online_cost_unit' => 'cost_unit_save',
 		'save_exact_online_gl_account' => 'gl_account_save',
 		'save_exact_online_payment_status' => 'get_payment_save',
-		'import_exact_online_product' => 'product_import',
 		'map_exact_online_product' => 'product_map',
 		'map_exact_online_customer' => 'customer_map',
 		'map_exact_online_order' => 'order_map',
@@ -258,50 +258,83 @@ final class ExactOnlineAjax {
 			);
 			$this->serve();
 		}
-		$chunked = array_chunk( $products['items'], 20 );
-		foreach ( $chunked as $chunked_products ) {
-			$id = as_schedule_single_action(
-				time(),
-				'cmbird_sync_eo',
-				array(
-					'product',
-					wp_json_encode( $chunked_products ),
-					(bool) $this->data['importProducts'],
-				)
-			);
-			if ( empty( $id ) ) {
-				break;
-			}
+		$chunked = array_chunk( $products['items'], 100 );
+		foreach ( $chunked as $index => $chunked_products ) {
+			$transient_key = 'cmbird_product_chunk_' . time() . '_' . $index;
+			set_transient( $transient_key, $chunked_products, HOUR_IN_SECONDS );
+			// Wrap the arguments in an array
+			as_schedule_single_action( time(), 'cmbird_process_product_chunk', array( array(
+				'transient_key' => $transient_key,
+				'import_products' => (bool) $this->data['importProducts']
+			) ) );
 		}
-		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
+		// handle more pages if response contains next_page_url
+		if( ! empty( $products['next_page_url'] ) ) {
+			$next_page = $products['next_page_url'];
+			$this->handle_more_pages( $next_page, 'product', 'customs/exact/bulk-items' );
+		}
+		$this->response['message'] = __( 'Items are being mapped in the background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();
+	}
+
+	private function handle_more_pages( $next_page, $type, $endpoint, $params = array() ) {
+		while ( $next_page ) {
+			// add next_page to params array to get next page
+			$params['__next'] = $next_page;
+			$response = ( new CommerceBird() )->request( $endpoint, 'GET', $params );
+			if ( is_string( $response ) ) {
+				$this->response = array(
+					'success' => false,
+					'message' => $response,
+				);
+				$this->serve();
+			}
+			switch($type) {
+				case 'product':
+					// return if no products found
+					if ( empty( $response['items'] ) ) {
+						$this->response = array(
+							'success' => false,
+							'message' => __( 'No products found', 'commercebird' ),
+						);
+						$this->serve();
+					}
+					$chunked = array_chunk( $response['items'], 100 );
+					foreach ( $chunked as $index => $chunked_products ) {
+						$transient_key = 'cb_product_chunk_' . time() . '_' . $index;
+						set_transient( $transient_key, $chunked_products, HOUR_IN_SECONDS ); // Store chunk
+						// Schedule action with only transient key
+						as_schedule_single_action( time() + 10, 'cmbird_process_product_chunk', array( $transient_key ) );
+					}
+					break;
+				case 'customer':
+					// return if no customers found
+					if ( empty( $response['customers'] ) ) {
+						$this->response = array(
+							'success' => false,
+							'message' => __( 'No customers found', 'commercebird' ),
+						);
+						$this->serve();
+					}
+					$chunked = array_chunk( $response['customers'], 100 );
+					foreach ( $chunked as $index => $chunked_customers ) {
+						$transient_key = 'cb_customer_chunk_' . time() . '_' . $index;
+						set_transient( $transient_key, $chunked_customers, HOUR_IN_SECONDS ); // Store chunk
+						// Schedule action with only transient key
+						as_schedule_single_action( time() + 10, 'cmbird_process_customer_chunk', array( $transient_key ) );
+					}
+					break;
+				case 'order':
+					$sync = new ExactOnlineSync();
+					$sync->sync( 'order', $response['orders'], (bool) $this->data['importOrders'] );
+					break;
+			}
+			$next_page = $response['next_page_url'];
+		}
 	}
 
 	public function customer_map() {
 		$this->verify( self::FORMS['customer'] );
-		// get all customers that have a meta key eo_gl_account.
-		/*
-						  $customers = get_users(
-							  array(
-								  'meta_query' => array(
-									  array(
-										  'key' => 'eo_gl_account',
-										  'compare' => 'EXISTS',
-									  ),
-								  ),
-							  )
-						  );
-						  // update each customer by adding "test" to biography of each customer.
-						  foreach ( $customers as $customer ) {
-							  // use wp_update_user() function to update the user.
-							  wp_update_user(
-								  array(
-									  'ID' => $customer->ID,
-									  'description' => 'test',
-								  )
-							  );
-						  }
-						  */
 		$customers = ( new CommerceBird() )->customer();
 		if ( is_string( $customers ) ) {
 			$this->response = array(
@@ -310,20 +343,20 @@ final class ExactOnlineAjax {
 			);
 			$this->serve();
 		}
-		$chunked = array_chunk( $customers['customers'], 20 );
-		foreach ( $chunked as $chunked_customers ) {
-			$id = as_schedule_single_action(
-				time(),
-				'cmbird_sync_eo',
-				array(
-					'customer',
-					wp_json_encode( $chunked_customers ),
-					(bool) $this->data['importCustomers'],
-				)
-			);
-			if ( empty( $id ) ) {
-				break;
-			}
+		$chunked = array_chunk( $customers['customers'], 100 );
+		foreach ( $chunked as $index => $chunked_customers ) {
+			$transient_key = 'cmbird_customer_chunk_' . time() . '_' . $index;
+			set_transient( $transient_key, $chunked_customers, HOUR_IN_SECONDS );
+			// Wrap the arguments in an array
+			as_schedule_single_action( time(), 'cmbird_process_customer_chunk', array( array(
+				'transient_key' => $transient_key,
+				'import_customers' => (bool) $this->data['importCustomers']
+			) ) );
+		}
+		// handle more pages if response meta contains next
+		if( ! empty( $customers['next_page_url'] ) ) {
+			$next_page = $customers['next_page_url'];
+			$this->handle_more_pages( $next_page, 'customer', 'customs/exact/bulk-customers' );
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
 		$this->serve();
