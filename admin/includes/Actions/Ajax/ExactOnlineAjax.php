@@ -289,11 +289,11 @@ final class ExactOnlineAjax {
 				);
 				$this->serve();
 			}
-			$response['code'] === 200 ? $response['data'] : $response['message'];
+			$result = $response['code'] === 200 ? $response['data'] : $response['message'];
 			switch($type) {
 				case 'product':
 					// return if no products found
-					if ( empty( $response ) ) {
+					if ( empty( $result ) ) {
 						$this->response = array(
 							'success' => false,
 							'message' => __( 'No more products found', 'commercebird' ),
@@ -301,17 +301,20 @@ final class ExactOnlineAjax {
 						$this->serve();
 						break;
 					}
-					$chunked = array_chunk( $response['items'], 100 );
+					$chunked = array_chunk( $result['items'], 100 );
 					foreach ( $chunked as $index => $chunked_products ) {
-						$transient_key = 'cb_product_chunk_' . time() . '_' . $index;
-						set_transient( $transient_key, $chunked_products, HOUR_IN_SECONDS ); // Store chunk
-						// Schedule action with only transient key
-						as_schedule_single_action( time() + 10, 'cmbird_process_product_chunk', array( $transient_key ) );
+						$transient_key = 'cmbird_product_chunk_' . time() . '_' . $index;
+						set_transient( $transient_key, $chunked_products, HOUR_IN_SECONDS );
+						// Wrap the arguments in an array
+						as_schedule_single_action( time() + 10, 'cmbird_process_product_chunk', array( array(
+							'transient_key' => $transient_key,
+							'import_products' => (bool) $this->data['importProducts']
+						) ) );
 					}
 					break;
 				case 'customer':
 					// return if no customers found
-					if ( empty( $response ) ) {
+					if ( empty( $result ) ) {
 						$this->response = array(
 							'success' => false,
 							'message' => __( 'No more customers found', 'commercebird' ),
@@ -319,17 +322,20 @@ final class ExactOnlineAjax {
 						$this->serve();
 						break;
 					}
-					$chunked = array_chunk( $response['customers'], 100 );
+					$chunked = array_chunk( $result['customers'], 100 );
 					foreach ( $chunked as $index => $chunked_customers ) {
-						$transient_key = 'cb_customer_chunk_' . time() . '_' . $index;
-						set_transient( $transient_key, $chunked_customers, HOUR_IN_SECONDS ); // Store chunk
-						// Schedule action with only transient key
-						as_schedule_single_action( time() + 10, 'cmbird_process_customer_chunk', array( $transient_key ) );
+						$transient_key = 'cmbird_customer_chunk_' . time() . '_' . $index;
+						set_transient( $transient_key, $chunked_customers, HOUR_IN_SECONDS );
+						// Wrap the arguments in an array
+						as_schedule_single_action( time() + 10, 'cmbird_process_customer_chunk', array( array(
+							'transient_key' => $transient_key,
+							'import_customers' => (bool) $this->data['importCustomers']
+						) ) );
 					}
 					break;
 				case 'order':
 					$sync = new ExactOnlineSync();
-					$sync->sync( 'order', $response['orders'], (bool) $this->data['importOrders'] );
+					$sync->sync( 'order', $result['orders'], (bool) $this->data['importOrders'] );
 					break;
 			}
 			$next_page = $response['next_page_url'];
