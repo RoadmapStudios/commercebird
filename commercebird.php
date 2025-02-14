@@ -136,16 +136,12 @@ add_action( 'cmbird_process_product_chunk', function ($args) {
 	if ( ! is_array( $args ) || empty( $args['transient_key'] ) ) {
 		return;
 	}
-
 	$transient_key = $args['transient_key'];
 	$import_products = $args['import_products'] ?? false;
-
 	$chunked_products = get_transient( $transient_key );
-
 	if ( $chunked_products ) {
 		$sync = new ExactOnlineSync();
 		$sync->sync( 'product', $chunked_products, (bool) $import_products );
-
 		// Remove transient after processing
 		delete_transient( $transient_key );
 	}
@@ -156,13 +152,10 @@ add_action( 'cmbird_process_customer_chunk', function ($args) {
 	}
 	$transient_key = $args['transient_key'];
 	$import_customers = $args['import_customers'] ?? false;
-
 	$chunked_customers = get_transient( $transient_key );
-
 	if ( $chunked_customers ) {
 		$sync = new ExactOnlineSync();
 		$sync->sync( 'customer', $chunked_customers, (bool) $import_customers );
-
 		// Remove transient after processing
 		delete_transient( $transient_key );
 	}
