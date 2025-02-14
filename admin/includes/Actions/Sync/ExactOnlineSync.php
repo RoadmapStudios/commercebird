@@ -202,6 +202,8 @@ class ExactOnlineSync {
 		if ( is_wp_error( $response ) ) {
 			error_log( 'Error ExactOnline Import: ' . $response->get_error_message() );
 		}
+		// fwrite( $fd, print_r( $response, true ) );
+		// fclose( stream: $fd );
 		return $response;
 	}
 
