@@ -103,6 +103,11 @@ final class CommerceBird {
 
 	/**
 	 * Generate request URL
+	 * @param string $endpoint
+	 * @param string $method
+	 * @param array $data
+	 * @param array $params
+	 * @return array|WP_Error
 	 */
 	public function request( string $endpoint, string $method = 'GET', array $data = array(), array $params = array() ) {
 		$token = ExactOnlineAjax::instance()->get_token();
