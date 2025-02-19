@@ -57,6 +57,7 @@ use CommerceBird\API\CreateOrderWebhook;
 use CommerceBird\API\ShippingWebhook;
 use CommerceBird\API\Zoho;
 use CommerceBird\API\Exact;
+use CommerceBird\API\CMBird_APIs;
 
 /*
 |--------------------------------------------------------------------------
@@ -172,6 +173,7 @@ add_action(
 		new ProductWebhook();
 		new ShippingWebhook();
 		new CreateOrderWebhook();
+		new CMBird_APIs();
 		$po_controller = new CMBIRD_REST_Shop_Purchase_Controller();
 		$po_controller->register_routes();
 	}
