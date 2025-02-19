@@ -21,6 +21,14 @@ class CMBIRD_Products_ZI {
 	private $wc_price_decimal_separator;
 
 	public function __construct() {
+		add_action( 'init', [ $this, 'initialize_config' ] );
+	}
+
+	public function initialize_config() {
+		if ( ! function_exists( 'wc_get_price_decimal_separator' ) ) {
+			return; // Prevents error if WooCommerce is not active
+		}
+
 		$this->config = array(
 			'ProductZI' => array(
 				'OID' => get_option( 'cmbird_zoho_inventory_oid' ),
@@ -36,24 +44,22 @@ class CMBIRD_Products_ZI {
 				'zoho_warehouse_id' => get_option( 'cmbird_zoho_warehouse_id_status' ),
 				'disable_image' => get_option( 'cmbird_zoho_disable_image_sync_status' ),
 			),
-			// get woocommerce settings
+			// Get WooCommerce settings
 			'WooCommerce' => array(
 				'decimal_separator' => wc_get_price_decimal_separator(),
 				'thousand_separator' => wc_get_price_thousand_separator(),
 				'price_decimal_separator' => wc_get_price_decimals(),
+				'tax_enabled' => 'yes' === get_option( 'woocommerce_calc_taxes' ),
 			),
 		);
+
 		// Check if WooCommerce taxes are enabled and store the result
-		$this->is_tax_enabled = 'yes' === get_option( 'woocommerce_calc_taxes' );
+		$this->is_tax_enabled = $this->config['WooCommerce']['tax_enabled'];
+
 		// Check the WooCommerce settings for decimal and thousand separators
 		$this->wc_decimal_separator = $this->config['WooCommerce']['decimal_separator'];
 		$this->wc_thousand_separator = $this->config['WooCommerce']['thousand_separator'];
 		$this->wc_price_decimal_separator = $this->config['WooCommerce']['price_decimal_separator'];
-	}
-
-	// Method to use the tax check across the class
-	public function is_tax_enabled(): bool {
-		return $this->is_tax_enabled;
 	}
 
 	/**
@@ -74,6 +80,8 @@ class CMBIRD_Products_ZI {
 		$wc_decimal_separator = $this->wc_decimal_separator;
 		$wc_thousand_separator = $this->wc_thousand_separator;
 		$wc_price_decimal_separator = $this->wc_price_decimal_separator;
+
+		$is_tax_enabled = $this->is_tax_enabled;
 
 		// $message = $json->message;
 		// fwrite($fd, PHP_EOL . '$json->item : ' . print_r($json, true));
@@ -175,7 +183,7 @@ class CMBIRD_Products_ZI {
 							}
 						}
 
-						if ( ! empty( $arr->tax_id ) && ! $this->is_tax_enabled() ) {
+						if ( ! empty( $arr->tax_id ) && ! $is_tax_enabled ) {
 							$zi_common_class = new CMBIRD_Common_Functions();
 							$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $arr->tax_percentage );
 							$product->set_tax_status( 'taxable' );
@@ -1066,6 +1074,8 @@ class CMBIRD_Products_ZI {
 		// Stock mode check
 		$zi_disable_stock_sync = $this->config['Settings']['disable_stock'];
 		$accounting_stock = $this->config['Settings']['enable_accounting_stock'];
+		$is_tax_enabled = $this->is_tax_enabled;
+
 		if ( $accounting_stock ) {
 			$stock = $item->available_stock;
 		} else {
@@ -1118,7 +1128,7 @@ class CMBIRD_Products_ZI {
 				}
 				$variation->set_regular_price( $item->rate );
 				// Set Tax Class
-				if ( $item->tax_id && ! $this->is_tax_enabled() ) {
+				if ( $item->tax_id && ! $is_tax_enabled ) {
 					$zi_common_class = new CMBIRD_Common_Functions();
 					$woo_tax_class = $zi_common_class->get_tax_class_by_percentage( $item->tax_percentage );
 					$variation->set_tax_status( 'taxable' );
