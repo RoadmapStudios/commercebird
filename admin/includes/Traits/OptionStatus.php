@@ -17,7 +17,7 @@ trait OptionStatus {
 	 */
 	private function option_status_update( array $form, $source = '' ): bool {
 		foreach ( $form as $key => $value ) {
-			update_option( $this->get_name( $key, $source ), $value ?? '' );
+			update_option( $this->get_name( $key, $source ), $value ?? '', false );
 		}
 
 		return true;
