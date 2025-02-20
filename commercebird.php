@@ -4,11 +4,11 @@
  * Plugin URI:  https://commercebird.com
  * Author:      CommerceBird
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho Inventory, Zoho CRM, Exact Online and more. Requires a subscription at CommerceBird.com.
- * Version: 2.2.17
+ * Version: 2.2.18
  * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  * Requires at least: 6.5
- * Tested up to: 6.7.1
+ * Tested up to: 6.7.2
  * Text Domain: commercebird
  * Domain Path: /languages
  *
@@ -22,7 +22,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.html GPL-3.0-or-later
  *
  * WC requires at least: 9.4.0
- * WC tested up to: 9.6.1
+ * WC tested up to: 9.6.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'CMBIRD_VERSION' ) ) {
-	define( 'CMBIRD_VERSION', '2.2.17' );
+	define( 'CMBIRD_VERSION', '2.2.18' );
 }
 if ( ! defined( 'CMBIRD_PATH' ) ) {
 	define( 'CMBIRD_PATH', plugin_dir_path( __FILE__ ) );
@@ -57,6 +57,7 @@ use CommerceBird\API\CreateOrderWebhook;
 use CommerceBird\API\ShippingWebhook;
 use CommerceBird\API\Zoho;
 use CommerceBird\API\Exact;
+use CommerceBird\API\CMBird_APIs;
 
 /*
 |--------------------------------------------------------------------------
@@ -136,16 +137,12 @@ add_action( 'cmbird_process_product_chunk', function ($args) {
 	if ( ! is_array( $args ) || empty( $args['transient_key'] ) ) {
 		return;
 	}
-
 	$transient_key = $args['transient_key'];
 	$import_products = $args['import_products'] ?? false;
-
 	$chunked_products = get_transient( $transient_key );
-
 	if ( $chunked_products ) {
 		$sync = new ExactOnlineSync();
 		$sync->sync( 'product', $chunked_products, (bool) $import_products );
-
 		// Remove transient after processing
 		delete_transient( $transient_key );
 	}
@@ -156,13 +153,10 @@ add_action( 'cmbird_process_customer_chunk', function ($args) {
 	}
 	$transient_key = $args['transient_key'];
 	$import_customers = $args['import_customers'] ?? false;
-
 	$chunked_customers = get_transient( $transient_key );
-
 	if ( $chunked_customers ) {
 		$sync = new ExactOnlineSync();
 		$sync->sync( 'customer', $chunked_customers, (bool) $import_customers );
-
 		// Remove transient after processing
 		delete_transient( $transient_key );
 	}
@@ -179,6 +173,7 @@ add_action(
 		new ProductWebhook();
 		new ShippingWebhook();
 		new CreateOrderWebhook();
+		new CMBird_APIs();
 		$po_controller = new CMBIRD_REST_Shop_Purchase_Controller();
 		$po_controller->register_routes();
 	}

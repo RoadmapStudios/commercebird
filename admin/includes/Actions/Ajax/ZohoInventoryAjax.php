@@ -211,13 +211,13 @@ final class ZohoInventoryAjax {
 		}
 
 		$response = wp_safe_remote_get(
-			sprintf( 'https://commercebird.com/wp-json/wc/v3/subscriptions/%s', $subscription_id ),
+			'https://commercebird.com/wp-json/app/v1/subscription/?subscription_id=' . urlencode( $subscription_id ),
 			array(
 				'headers' => array(
 					'Accept' => 'application/json',
 					'Authorization' => 'Basic Y2tfYjAzMDViODhmNmQ1ZDI2ZTY0MjNjMDczZjZmOTVkZTExOWNjOWU1NTpjc182MDljMTNmMjgxODE2YjkzNzQ5OWIyYTAwNTJlMTE0NTc0NWFjZGMz',
 				),
-				'timeout' => 15,
+				'timeout' => 30,
 			),
 		);
 

@@ -18,6 +18,8 @@ const handleClick = () => {
       text: "Are you sure, you want to import customers?",
     }).then((result) => {
       if (result.isConfirmed) {
+        // set importCustomers to true
+        store.importCustomers = true;
         store.mapCustomers();
       }
     })

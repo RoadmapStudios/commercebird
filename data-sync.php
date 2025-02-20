@@ -321,7 +321,6 @@ function cmbird_sync_composite_item_to_zoho() {
 	$response = array();
 	$response['message'] = 'Sync Started';
 	$response['code'] = 200;
-	echo wp_json_encode( $response );
-
-	exit();
+	wp_send_json_success( $response );
+	wp_die();
 }

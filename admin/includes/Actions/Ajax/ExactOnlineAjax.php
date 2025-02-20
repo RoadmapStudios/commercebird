@@ -281,7 +281,7 @@ final class ExactOnlineAjax {
 		while ( $next_page ) {
 			// add next_page to params array to get next page
 			$params['__next'] = $next_page;
-			$response = ( new CommerceBird() )->request( $endpoint, 'GET', $params );
+			$response = ( new CommerceBird() )->request( $endpoint, 'GET', array(), $params );
 			if ( is_string( $response ) ) {
 				$this->response = array(
 					'success' => false,
@@ -289,44 +289,53 @@ final class ExactOnlineAjax {
 				);
 				$this->serve();
 			}
+			$result = $response['code'] === 200 ? $response['data'] : $response['message'];
 			switch($type) {
 				case 'product':
 					// return if no products found
-					if ( empty( $response['items'] ) ) {
+					if ( empty( $result ) ) {
 						$this->response = array(
 							'success' => false,
-							'message' => __( 'No products found', 'commercebird' ),
+							'message' => __( 'No more products found', 'commercebird' ),
 						);
 						$this->serve();
+						break;
 					}
-					$chunked = array_chunk( $response['items'], 100 );
+					$chunked = array_chunk( $result['items'], 100 );
 					foreach ( $chunked as $index => $chunked_products ) {
-						$transient_key = 'cb_product_chunk_' . time() . '_' . $index;
-						set_transient( $transient_key, $chunked_products, HOUR_IN_SECONDS ); // Store chunk
-						// Schedule action with only transient key
-						as_schedule_single_action( time() + 10, 'cmbird_process_product_chunk', array( $transient_key ) );
+						$transient_key = 'cmbird_product_chunk_' . time() . '_' . $index;
+						set_transient( $transient_key, $chunked_products, HOUR_IN_SECONDS );
+						// Wrap the arguments in an array
+						as_schedule_single_action( time() + 10, 'cmbird_process_product_chunk', array( array(
+							'transient_key' => $transient_key,
+							'import_products' => (bool) $this->data['importProducts']
+						) ) );
 					}
 					break;
 				case 'customer':
 					// return if no customers found
-					if ( empty( $response['customers'] ) ) {
+					if ( empty( $result ) ) {
 						$this->response = array(
 							'success' => false,
-							'message' => __( 'No customers found', 'commercebird' ),
+							'message' => __( 'No more customers found', 'commercebird' ),
 						);
 						$this->serve();
+						break;
 					}
-					$chunked = array_chunk( $response['customers'], 100 );
+					$chunked = array_chunk( $result['customers'], 100 );
 					foreach ( $chunked as $index => $chunked_customers ) {
-						$transient_key = 'cb_customer_chunk_' . time() . '_' . $index;
-						set_transient( $transient_key, $chunked_customers, HOUR_IN_SECONDS ); // Store chunk
-						// Schedule action with only transient key
-						as_schedule_single_action( time() + 10, 'cmbird_process_customer_chunk', array( $transient_key ) );
+						$transient_key = 'cmbird_customer_chunk_' . time() . '_' . $index;
+						set_transient( $transient_key, $chunked_customers, HOUR_IN_SECONDS );
+						// Wrap the arguments in an array
+						as_schedule_single_action( time() + 10, 'cmbird_process_customer_chunk', array( array(
+							'transient_key' => $transient_key,
+							'import_customers' => (bool) $this->data['importCustomers']
+						) ) );
 					}
 					break;
 				case 'order':
 					$sync = new ExactOnlineSync();
-					$sync->sync( 'order', $response['orders'], (bool) $this->data['importOrders'] );
+					$sync->sync( 'order', $result['orders'], (bool) $this->data['importOrders'] );
 					break;
 			}
 			$next_page = $response['next_page_url'];
@@ -335,15 +344,15 @@ final class ExactOnlineAjax {
 
 	public function customer_map() {
 		$this->verify( self::FORMS['customer'] );
-		$customers = ( new CommerceBird() )->customer();
-		if ( is_string( $customers ) ) {
+		$response = ( new CommerceBird() )->customer();
+		if ( is_string( $response ) ) {
 			$this->response = array(
 				'success' => false,
-				'message' => $customers,
+				'message' => $response,
 			);
 			$this->serve();
 		}
-		$chunked = array_chunk( $customers['customers'], 100 );
+		$chunked = array_chunk( $response['customers'], 100 );
 		foreach ( $chunked as $index => $chunked_customers ) {
 			$transient_key = 'cmbird_customer_chunk_' . time() . '_' . $index;
 			set_transient( $transient_key, $chunked_customers, HOUR_IN_SECONDS );
@@ -354,8 +363,8 @@ final class ExactOnlineAjax {
 			) ) );
 		}
 		// handle more pages if response meta contains next
-		if( ! empty( $customers['next_page_url'] ) ) {
-			$next_page = $customers['next_page_url'];
+		if( ! empty( $response['next_page_url'] ) ) {
+			$next_page = $response['next_page_url'];
 			$this->handle_more_pages( $next_page, 'customer', 'customs/exact/bulk-customers' );
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
