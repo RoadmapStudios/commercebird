@@ -25,6 +25,7 @@ return array(
     'CMBIRD_REST_Shop_Purchase_Controller' => $baseDir . '/includes/classes/purchase-orders/class-cmbird-rest-shop-purchase-controller.php',
     'CMBIRD_Webhook_Modify' => $baseDir . '/includes/classes/class-webhook-modify.php',
     'CommerceBird\\API\\Api' => $baseDir . '/includes/classes/apis/trait-api-permission.php',
+    'CommerceBird\\API\\CMBird_APIs' => $baseDir . '/includes/classes/apis/class-api-for-cmbird.php',
     'CommerceBird\\API\\CreateOrderWebhook' => $baseDir . '/includes/classes/apis/class-api-for-woo-order.php',
     'CommerceBird\\API\\Exact' => $baseDir . '/includes/classes/apis/class-api-for-exact-webhooks.php',
     'CommerceBird\\API\\ProductWebhook' => $baseDir . '/includes/classes/apis/class-api-for-product-webhook.php',

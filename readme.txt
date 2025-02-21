@@ -83,6 +83,12 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.18 - February 20 2025 =
+* Fix: Stock update via webhook
+* Fix: Exact Online Customer Import
+* Fix: Decimal separators in stock update
+* Tweak: custom endpoint to get subscription data in 1ms instead of 10 seconds
+
 = 2.2.17 - February 13th 2025 =
 * Improvement: Exact Online Import will now handle large data sets
 * Improvement: Exact Online Featured image and Category during import
