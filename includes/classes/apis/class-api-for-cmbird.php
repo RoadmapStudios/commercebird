@@ -12,8 +12,6 @@ use WP_REST_Controller;
 
 class CMBird_APIs extends WP_REST_Controller {
 
-	use Api;
-	
 	protected $prefix = 'wc/v3';
 	protected $rest_base = 'cmbird';
 
