@@ -13,7 +13,6 @@ use WP_REST_Controller;
 
 class Zoho extends WP_REST_Controller {
 
-	use Api;
 	protected $prefix = 'wc/v3';
 	protected $rest_base = 'zoho-inventory';
 

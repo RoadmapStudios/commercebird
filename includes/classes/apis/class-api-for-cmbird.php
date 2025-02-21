@@ -12,8 +12,6 @@ use WP_REST_Controller;
 
 class CMBird_APIs extends WP_REST_Controller {
 
-	use Api;
-	
 	protected $prefix = 'wc/v3';
 	protected $rest_base = 'cmbird';
 
@@ -31,8 +29,6 @@ class CMBird_APIs extends WP_REST_Controller {
 
 	/**
 	 * Check if a given request has access to get items.
-	 *
-	 * @return WP_Error|bool
 	 */
 	public function permission_check() {
 		return current_user_can( 'manage_woocommerce' );
@@ -47,7 +43,7 @@ class CMBird_APIs extends WP_REST_Controller {
 
 		// Query to fetch product IDs and SKUs directly from the database
 		$results = $wpdb->get_results( "
-        SELECT p.ID as product_id, pm.meta_value as sku
+        SELECT p.ID as product_id, pm.meta_value as sku, p.post_type as product_type
         FROM {$wpdb->posts} p
         LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_sku'
         WHERE p.post_type = 'product' AND p.post_status = 'publish'
