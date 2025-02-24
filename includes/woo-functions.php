@@ -284,7 +284,7 @@ function cmbird_product_metabox_callback( $post ) {
 	}
 	// make api call to get the zoho item details
 	$zi_item_id = get_post_meta( $post->ID, 'zi_item_id', true );
-	if ( $zi_item_id ) {
+	if ( $zi_item_id && is_admin() ) {
 		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_organization_id' );
 		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$urlitem = "{$zoho_inventory_url}inventory/v1/items/{$zi_item_id}?organization_id=$zoho_inventory_oid";
@@ -587,3 +587,39 @@ add_filter(
 		return $statuses;
 	}
 );
+
+/**
+ * Modify the Products API to include brands.
+ *
+ * TODO: This is a temporary solution. We need to find a better way to include brands in the API response.
+ *
+ * @param $response The response object.
+ * @param $post The post object.
+ * @param $request The request object.
+ * @return mixed
+ */
+add_filter( 'woocommerce_rest_prepare_product_object', 'cmbird_rest_api_prepare_brands_tax', 10, 3 );
+function cmbird_rest_api_prepare_brands_tax( $response, $object, $request ) {
+	$product_id = $object->get_id();
+	if ( empty( $response->data['product_brands'] ) ) {
+		$terms = [];
+		foreach ( wp_get_post_terms( $product_id, 'product_brands' ) as $term ) {
+			$terms[] = [
+				'id' => $term->term_id,
+				'name' => $term->name,
+				'slug' => $term->slug,
+			];
+		}
+		$response->data['product_brands'] = $terms;
+	}
+	return $response;
+}
+
+
+function cmbird_prepare_insert_product( $product, $request ) {
+	if ( isset( $request['product_brands'] ) ) {
+		wp_set_post_terms( $request['id'], $request['product_brands'], 'product_brands', false );
+	}
+	return $product;
+}
+add_filter( 'woocommerce_rest_pre_insert_product_object', 'cmbird_prepare_insert_product', 10, 2 );
