@@ -55,7 +55,11 @@ const accountDomains = {
   com: "com",
   eu: "eu",
   in: "in",
-  "com.au": "com.au",
+  au: "com.au",
+  cn: "com.cn",
+  jp: "jp",
+  ca: "ca",
+  sa: "sa",
 };
 
 const store = useZohoInventoryStore();
