@@ -3,9 +3,9 @@ Contributors: fawadinho
 Author link: https://commercebird.com
 Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
-Tested up to: 6.7.1
+Tested up to: 6.7.2
 Requires PHP: 7.4
-Stable tag: 2.2.18
+Stable tag: 2.2.19
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Elevate WooCommerce to the next level by turning it into a full ERP system.
@@ -83,6 +83,12 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.2.19 - February 25 2025 =
+* New: Unmap all data for Exact Online
+* New: Support for Zoho DC China, Japan, Canada and Saudi-Arabia
+* Fix: Excessive api usage due to product page
+* Fix: Brands update during Product update via CommerceBird App
+
 = 2.2.18 - February 21 2025 =
 * Fix: Stock update via webhook
 * Fix: Exact Online Customer Import

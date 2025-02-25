@@ -5,6 +5,7 @@ import { useStorage } from "@/composable/storage";
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { Toast, eo_sync, notify, site_url } from "@/composable/helpers";
+import Swal from "sweetalert2";
 import type { ExactWebhookSettings } from "@/types";
 
 const actionKey = backendAction.exactOnline;
@@ -227,10 +228,10 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
     loader.clearLoading(action);
   };
 
-  const handleReset = async (action: string) => {
-    let response: any = false;
+  const handleReset = async (action: string, resetAll: boolean = false) => {
     if (loader.isLoading(action)) return;
     loader.setLoading(action);
+
     let store: string = "";
     switch (action) {
       case actionKey.connect.reset:
@@ -239,20 +240,37 @@ export const useExactOnlineStore = defineStore("exactOnline", () => {
       default:
         break;
     }
-    response = await resetData(action, store);
+
+    // Show confirmation dialog for Reset All
+    if (resetAll) {
+      const confirmation = await Swal.fire({
+        icon: "warning",
+        title: "Reset All",
+        text: "This will unmap all products and customers, continue?",
+        showCancelButton: true,
+        confirmButtonText: "Yes, reset all",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#d33",
+      });
+
+      if (!confirmation.isConfirmed) {
+        loader.clearLoading(action);
+        return;
+      }
+    }
+
+    // Send resetAll as part of the request
+    const response = await resetData(action, store, { reset: resetAll });
+
     if (response) {
       storage.remove(store);
       notify.success(response.message);
-      switch (action) {
-        case actionKey.connect.reset:
-          connection.token = "";
-          connection.site = site_url;
-          break;
-
-        default:
-          break;
+      if (action === actionKey.connect.reset && !resetAll) {
+        connection.token = "";
+        connection.site = site_url;
       }
     }
+
     loader.clearLoading(action);
   };
   return {

@@ -38,7 +38,6 @@ class ComposerStaticInit6cc35eb22754518bdbc6ea461160a75a
         'CMBIRD_Products_ZI_Export' => __DIR__ . '/../..' . '/includes/classes/zoho-inventory/class-product.php',
         'CMBIRD_Purchase_Order' => __DIR__ . '/../..' . '/includes/classes/purchase-orders/class-cmbird-purchase-order.php',
         'CMBIRD_REST_Shop_Purchase_Controller' => __DIR__ . '/../..' . '/includes/classes/purchase-orders/class-cmbird-rest-shop-purchase-controller.php',
-        'CMBIRD_Webhook_Modify' => __DIR__ . '/../..' . '/includes/classes/class-webhook-modify.php',
         'CommerceBird\\API\\Api' => __DIR__ . '/../..' . '/includes/classes/apis/trait-api-permission.php',
         'CommerceBird\\API\\CMBird_APIs' => __DIR__ . '/../..' . '/includes/classes/apis/class-api-for-cmbird.php',
         'CommerceBird\\API\\CreateOrderWebhook' => __DIR__ . '/../..' . '/includes/classes/apis/class-api-for-woo-order.php',

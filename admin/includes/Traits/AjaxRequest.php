@@ -47,32 +47,23 @@ trait AjaxRequest {
 	private function verify( array $keys = array() ): void {
 		check_ajax_referer( Template::NAME, 'security_token' );
 
-		// Initialize the response and errors
-		$this->response = array(
-			'success' => true,
-		);
+		// Initialize response and errors
+		$this->response = array( 'success' => true );
 		$this->errors = array();
 		$this->request = array_map( 'sanitize_text_field', wp_unslash( $_REQUEST ) );
 
-		// Try to detect JSON content in the request if specific data key is not used
-		$json_data = null;
-
+		// Attempt to retrieve JSON if POST is empty
 		if ( empty( $_POST ) ) {
-			// Attempt to retrieve raw JSON content if POST is empty
 			$contents = trim( file_get_contents( 'php://input' ) ); // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 
-			// Check if contents contain valid JSON
 			if ( $this->is_json( $contents ) ) {
-				$json_data = sanitize_text_field( $contents );
-			}
-		}
+				$json_data = json_decode( $contents, true );
 
-		// Decode JSON if found, then extract data
-		if ( $json_data ) {
-			$decode = json_decode( $json_data, true );
-			if ( ! empty( $decode ) ) {
-				$data = $this->extract_data( $decode, $keys );
-				$this->data = ! empty( $data ) ? $data : array();
+				if ( ! empty( $json_data ) ) {
+					// Sanitize each value, but do not sanitize entire JSON string
+					$sanitized_data = array_map( 'sanitize_text_field', wp_unslash( $json_data ) );
+					$this->data = empty( $keys ) ? $sanitized_data : $this->extract_data( $sanitized_data, $keys );
+				}
 			}
 		}
 	}
