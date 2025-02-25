@@ -102,12 +102,6 @@ function cmbird_zi_product_sync_class( $product_id ) {
 	if ( ! $cmbird_zi_product_sync ) {
 		$product_handler = new CMBIRD_Products_ZI_Export();
 		$product_handler->cmbird_zi_product_sync( $product_id );
-	} else {
-		$zi_item_id = get_post_meta( $product_id, 'zi_item_id', true );
-		if ( ! empty( $zi_item_id ) ) {
-			$product_handler = new CMBIRD_Products_ZI_Export();
-			$product_handler->cmbird_zi_product_put( $product_id, $zi_item_id );
-		}
 	}
 	// if its variable product but without variations, then sync it.
 	$product = wc_get_product( $product_id );
