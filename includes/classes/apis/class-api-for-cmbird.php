@@ -46,7 +46,7 @@ class CMBird_APIs extends WP_REST_Controller {
         SELECT p.ID as product_id, pm.meta_value as sku, p.post_type as product_type
         FROM {$wpdb->posts} p
         LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_sku'
-        WHERE p.post_type = 'product' AND p.post_status = 'publish'
+        WHERE p.post_type IN ('product', 'product_variation') AND p.post_status = 'publish'
     " );
 
 		$rest_response->set_data( $results );
