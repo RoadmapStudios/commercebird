@@ -50,6 +50,7 @@ class Plugin {
 			'zi_salesorder_id',
 			'zi_category_id',
 			'_cost_price',
+			'eo_item_id',
 		);
 		$user_meta_keys = array(
 			'zi_contact_id',
@@ -61,6 +62,9 @@ class Plugin {
 			'zi_contact_persons_id',
 			'zi_currency_id',
 			'zi_currency_code',
+			'eo_contact_id',
+			'eo_account_id',
+			'eo_gl_account',
 		);
 		$zi_option_keys = array(
 			'cmbird_zi_webhook_password',
@@ -105,10 +109,14 @@ class Plugin {
 			delete_post_meta_by_key( $post_key );
 		}
 
-		$users = get_users();
-		foreach ( $users as $user ) {
+		$users = get_users(
+			array(
+				'fields' => array( 'ID' ),
+			)
+		);
+		foreach ( $users as $user_id ) {
 			foreach ( $user_meta_keys as $user_key ) {
-				delete_user_meta( $user->ID, $user_key );
+				delete_user_meta( $user_id, $user_key );
 			}
 		}
 		// deleting mapped categories
@@ -169,6 +177,5 @@ class Plugin {
 			Cmbird_Acf::instance();
 		}
 		new Cmbird_WC_API();
-		// CMBIRD_Webhook_Modify::instance();
 	}
 }

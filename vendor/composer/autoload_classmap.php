@@ -23,7 +23,6 @@ return array(
     'CMBIRD_Products_ZI_Export' => $baseDir . '/includes/classes/zoho-inventory/class-product.php',
     'CMBIRD_Purchase_Order' => $baseDir . '/includes/classes/purchase-orders/class-cmbird-purchase-order.php',
     'CMBIRD_REST_Shop_Purchase_Controller' => $baseDir . '/includes/classes/purchase-orders/class-cmbird-rest-shop-purchase-controller.php',
-    'CMBIRD_Webhook_Modify' => $baseDir . '/includes/classes/class-webhook-modify.php',
     'CommerceBird\\API\\Api' => $baseDir . '/includes/classes/apis/trait-api-permission.php',
     'CommerceBird\\API\\CMBird_APIs' => $baseDir . '/includes/classes/apis/class-api-for-cmbird.php',
     'CommerceBird\\API\\CreateOrderWebhook' => $baseDir . '/includes/classes/apis/class-api-for-woo-order.php',

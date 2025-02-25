@@ -49,6 +49,7 @@ final class ExactOnlineAjax {
 		'export_exact_online_order' => 'order_export',
 		'get_exact_online_webhooks' => 'webhooks_get',
 		'save_exact_online_webhooks' => 'webhooks_save',
+		'reset_exact_online_connect' => 'reset_mapping',
 	);
 	private const OPTIONS = array(
 		'connect' => array(
@@ -269,7 +270,7 @@ final class ExactOnlineAjax {
 			) ) );
 		}
 		// handle more pages if response contains next_page_url
-		if( ! empty( $products['next_page_url'] ) ) {
+		if ( ! empty( $products['next_page_url'] ) ) {
 			$next_page = $products['next_page_url'];
 			$this->handle_more_pages( $next_page, 'product', 'customs/exact/bulk-items' );
 		}
@@ -290,7 +291,7 @@ final class ExactOnlineAjax {
 				$this->serve();
 			}
 			$result = $response['code'] === 200 ? $response['data'] : $response['message'];
-			switch($type) {
+			switch ( $type ) {
 				case 'product':
 					// return if no products found
 					if ( empty( $result ) ) {
@@ -363,11 +364,39 @@ final class ExactOnlineAjax {
 			) ) );
 		}
 		// handle more pages if response meta contains next
-		if( ! empty( $response['next_page_url'] ) ) {
+		if ( ! empty( $response['next_page_url'] ) ) {
 			$next_page = $response['next_page_url'];
 			$this->handle_more_pages( $next_page, 'customer', 'customs/exact/bulk-customers' );
 		}
 		$this->response['message'] = __( 'Items are being mapped in background. You can visit other tabs :).', 'commercebird' );
+		$this->serve();
+	}
+
+	public function reset_mapping() {
+		$this->verify();
+		// Check if resetAll is true (sent from Vue)
+		$reset_all = isset( $this->data['reset'] ) && $this->data['reset'] == 1;
+		if ( ! $reset_all ) {
+			delete_option( self::OPTIONS['connect']['token'] );
+			$this->response['message'] = __( 'Token removed', 'commercebird' );
+			$this->serve();
+		}
+		global $wpdb;
+		// Delete all transients related to products and customers
+		$transients = [ 'cmbird_product_chunk_', 'cmbird_customer_chunk_' ];
+		foreach ( $transients as $transient ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+					$transient . '%'
+				)
+			);
+		}
+		// Delete all product and customer meta keys
+		$wpdb->query( "DELETE FROM {$wpdb->prefix}postmeta WHERE meta_key = 'eo_item_id'" );
+		$wpdb->query( "DELETE FROM {$wpdb->prefix}usermeta WHERE meta_key IN ('eo_account_id', 'eo_contact_id', 'eo_gl_account')" );
+		// return response.
+		$this->response['message'] = __( 'Mapping reset completed', 'commercebird' );
 		$this->serve();
 	}
 
