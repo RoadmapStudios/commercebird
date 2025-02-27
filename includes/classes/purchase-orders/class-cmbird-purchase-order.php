@@ -410,3 +410,28 @@ function cmbird_customize_purchase_order_email_heading( $heading, $email ) {
 	return $heading;
 }
 add_filter( 'woocommerce_email_heading_new_order', 'cmbird_customize_purchase_order_email_heading', 10, 2 );
+
+function cmbird_remove_order_totals_for_shop_purchase( $totals, $order ) {
+	if ( $order->get_type() === 'shop_purchase' ) {
+		// Remove pricing-related rows
+		unset( $totals['cart_subtotal'] );
+		unset( $totals['discount'] );
+		unset( $totals['shipping'] );
+		unset( $totals['payment_method'] );
+		unset( $totals['order_total'] );
+	}
+	return $totals;
+}
+add_filter( 'woocommerce_get_order_item_totals', 'cmbird_remove_order_totals_for_shop_purchase', 10, 2 );
+
+function cmbird_remove_item_prices_for_shop_purchase( $items, $order ) {
+	if ( $order instanceof WC_Order && $order->get_type() === 'shop_purchase' ) {
+		foreach ( $items as $item_id => $item ) {
+			// Set subtotal and total to zero
+			$item->set_subtotal( 0 );
+			$item->set_total( 0 );
+		}
+	}
+	return $items;
+}
+add_filter( 'woocommerce_order_get_items', 'cmbird_remove_item_prices_for_shop_purchase', 10, 2 );
