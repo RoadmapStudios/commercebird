@@ -256,7 +256,7 @@ function cmbird_sync_composite_item_from_zoho() {
 	$item_add_resp = array();
 	foreach ( $opt_category as $category_id ) {
 		$product_class = new CMBIRD_Products_ZI();
-		$response = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id, 'sync' );
+		$response = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id );
 		$item_add_resp = array_merge( $item_add_resp, $response );
 	}
 	cmbird_send_log_message_to_admin( $item_add_resp, 'Log Message for manual sync', 'Composite item sync from zoho' );

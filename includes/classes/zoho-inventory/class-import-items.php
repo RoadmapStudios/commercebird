@@ -1411,10 +1411,9 @@ class CMBIRD_Products_ZI {
 	 *
 	 * @param integer $page - Page number of composite item data.
 	 * @param string $category - Category id of composite data.
-	 * @param string $source - Source of calling function.
 	 * @return mixed - mostly array of response message.
 	 */
-	public function recursively_sync_composite_item_from_zoho( $page, $category, $source ) {
+	public function recursively_sync_composite_item_from_zoho( $page, $category ) {
 		// Start logging
 		// $fd = fopen( __DIR__ . '/recursively_sync_composite_item_from_zoho.txt', 'a+' );
 
@@ -1455,16 +1454,16 @@ class CMBIRD_Products_ZI {
 					foreach ( $warehouses as $warehouse ) {
 						if ( $warehouse->warehouse_id === $warehouse_id ) {
 							if ( $accounting_stock ) {
-								$stock = $warehouse->warehouse_available_stock;
+								$stock = $warehouse->warehouse_available_for_sale_stock;
 							} else {
-								$stock = $warehouse->warehouse_actual_available_stock;
+								$stock = $warehouse->warehouse_actual_available_for_sale_stock;
 							}
 						}
 					}
 				} elseif ( $accounting_stock ) {
-					$stock = $comp_item->available_stock;
+					$stock = $comp_item->available_for_sale_stock;
 				} else {
-					$stock = $comp_item->actual_available_stock;
+					$stock = $comp_item->actual_available_for_sale_stock;
 				}
 
 				// ----------------- Create composite item in woocommerce--------------.
@@ -1643,7 +1642,7 @@ class CMBIRD_Products_ZI {
 
 			if ( $json->page_context->has_more_page ) {
 				++$page;
-				$this->recursively_sync_composite_item_from_zoho( $page, $category, $source );
+				$this->recursively_sync_composite_item_from_zoho( $page, $category );
 			}
 		} else {
 			array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
