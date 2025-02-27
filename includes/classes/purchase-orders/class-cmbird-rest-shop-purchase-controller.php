@@ -40,6 +40,24 @@ class CMBIRD_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
 			)
 		);
+		// register route to send purchase order details
+		register_rest_route(
+			$this->namespace,
+			"/{$this->rest_base}/(?P<id>\d+)/send-details",
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => array( $this, 'cmbird_send_purchase_order_details' ),
+				'permission_callback' => array( $this, 'cmbird_rest_api_permissions_check' ),
+				'args' => array(
+					'id' => array(
+						'required' => true,
+						'validate_callback' => function ($param) {
+							return is_numeric( $param );
+						},
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -151,5 +169,29 @@ class CMBIRD_REST_Shop_Purchase_Controller extends WC_REST_Orders_Controller {
 
 		// Return the updated warehouse data as the API response
 		return new WP_REST_Response( array( 'message' => 'Warehouse data updated' ), 200 );
+	}
+
+	/**
+	 * Send purchase order details via email/API
+	 */
+	public function cmbird_send_purchase_order_details( $request ) {
+		$order_id = absint( $request['id'] );
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order || $order->get_type() !== 'shop_purchase' ) {
+			return new WP_Error( 'invalid_order', __( 'Invalid purchase order.', 'commercebird' ), array( 'status' => 400 ) );
+		}
+
+		// Trigger email sending
+		$email_trigger = new CMBIRD_Email_Purchase_Order();
+		$email_trigger->trigger( $order_id, $order );
+
+		// Return response
+		return rest_ensure_response(
+			array(
+				'message' => __( 'Purchase order details sent successfully.', 'commercebird' ),
+				'order_id' => $order_id,
+			)
+		);
 	}
 }
