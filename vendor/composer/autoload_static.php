@@ -26,6 +26,7 @@ class ComposerStaticInit6cc35eb22754518bdbc6ea461160a75a
         'CMBIRD_Categories_ZI' => __DIR__ . '/../..' . '/includes/classes/zoho-inventory/class-categories.php',
         'CMBIRD_Common_Functions' => __DIR__ . '/../..' . '/includes/classes/class-common.php',
         'CMBIRD_Contact_ZI' => __DIR__ . '/../..' . '/includes/classes/zoho-inventory/class-users-contact.php',
+        'CMBIRD_Email_Purchase_Order' => __DIR__ . '/../..' . '/includes/classes/purchase-orders/class-cmbird-purchase-order-email.php',
         'CMBIRD_Image_ZI' => __DIR__ . '/../..' . '/includes/classes/zoho-inventory/class-import-image.php',
         'CMBIRD_List_Items_API_Controller' => __DIR__ . '/../..' . '/includes/classes/apis/class-commercebird-list-items-api-controller.php',
         'CMBIRD_Media_API_Controller' => __DIR__ . '/../..' . '/includes/classes/apis/class-commercebird-media-api-controller.php',

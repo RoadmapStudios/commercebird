@@ -11,6 +11,7 @@ return array(
     'CMBIRD_Categories_ZI' => $baseDir . '/includes/classes/zoho-inventory/class-categories.php',
     'CMBIRD_Common_Functions' => $baseDir . '/includes/classes/class-common.php',
     'CMBIRD_Contact_ZI' => $baseDir . '/includes/classes/zoho-inventory/class-users-contact.php',
+    'CMBIRD_Email_Purchase_Order' => $baseDir . '/includes/classes/purchase-orders/class-cmbird-purchase-order-email.php',
     'CMBIRD_Image_ZI' => $baseDir . '/includes/classes/zoho-inventory/class-import-image.php',
     'CMBIRD_List_Items_API_Controller' => $baseDir . '/includes/classes/apis/class-commercebird-list-items-api-controller.php',
     'CMBIRD_Media_API_Controller' => $baseDir . '/includes/classes/apis/class-commercebird-media-api-controller.php',
