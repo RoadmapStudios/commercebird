@@ -427,9 +427,11 @@ add_filter( 'woocommerce_get_order_item_totals', 'cmbird_remove_order_totals_for
 function cmbird_remove_item_prices_for_shop_purchase( $items, $order ) {
 	if ( $order instanceof WC_Order && $order->get_type() === 'shop_purchase' ) {
 		foreach ( $items as $item_id => $item ) {
-			// Set subtotal and total to zero
-			$item->set_subtotal( 0 );
-			$item->set_total( 0 );
+			// Ensure that only product items are modified
+			if ( $item instanceof WC_Order_Item_Product ) {
+				$item->set_subtotal( value: 0 );
+				$item->set_total( 0 );
+			}
 		}
 	}
 	return $items;
