@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Alert :message="message" target="_blank" />
     <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
       <div class="grid grid-cols-2 gap-4 my-4">
         <InputGroup label="Import from Zoho Inventory" type="toggle">
@@ -51,19 +50,8 @@ import Toggle from '@/components/ui/inputs/Toggle.vue';
 import { backendAction } from '@/keys';
 import { useLoadingStore } from '@/stores/loading';
 import { useZohoInventoryStore } from '@/stores/zohoInventory';
-import type { Message } from '@/types';
-import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import Alert from "@/components/ui/Alert.vue";
-
 
 const action = backendAction.zohoInventory.product;
 const store = useZohoInventoryStore();
 const loader = useLoadingStore();
-const message = <Message>{
-  icon: ExclamationCircleIcon,
-  message:
-    "To sync categories from WooCommerce to Zoho and vice versa, you need to enable it in zoho. <strong>PLEASE DO THIS FIRST!<strong/>",
-  link: `https://inventory.zoho.${store.connection.account_domain}`,
-  linkText: "Visit Here",
-};
 </script>

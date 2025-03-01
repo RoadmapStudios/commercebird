@@ -19,10 +19,10 @@
         <TextInput v-model="store.connection.organization_id" />
       </InputGroup>
       <InputGroup label="Client ID">
-        <TextInput v-model="store.connection.client_id" />
+        <TextInput v-model="formattedClientId" />
       </InputGroup>
       <InputGroup label="Client Secret">
-        <TextInput v-model="store.connection.client_secret" />
+        <TextInput v-model="formattedClientSecret" />
       </InputGroup>
       <CopyableInput :value="store.connection.redirect_uri" />
     </BaseForm>
@@ -123,6 +123,15 @@ const apiUsageRemainingPercentage = computed(() => {
     : 0;
 });
 
+// Function to mask client_secret (showing only last 5 characters)
+function formatString(keyValue: string): string {
+  if (!keyValue) return ''; // Return empty string if clientSecret is undefined or null
+  if (keyValue.length > 5) {
+    return `${'*'.repeat(keyValue.length - 5)}${keyValue.slice(-5)}`;
+  }
+  return keyValue; // In case the string length is 5 or less
+}
+
 onBeforeMount(async () => {
   const response = await loader.loadData(
     storeKey.zohoInventory.connected,
@@ -144,4 +153,7 @@ onBeforeMount(async () => {
     };
   }
 });
+// Computed properties to display formatted client_id and client_secret
+const formattedClientId = computed(() => formatString(store.connection.client_id || ""));
+const formattedClientSecret = computed(() => formatString(store.connection.client_secret || ""));
 </script>

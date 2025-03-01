@@ -68,7 +68,6 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         if (loader.isLoading(connected)) return;
         loader.setLoading(connected);
         isConnected.value = await fetchData(connected, keys.connected);
-        console.log("isConnected: ", isConnected.value);
         loader.clearLoading(connected);
     };
 
