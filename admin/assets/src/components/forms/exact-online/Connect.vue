@@ -54,7 +54,6 @@ const handleClick = () => {
         </BaseLink>
       </InputGroup>
     </BaseForm>
-    <!-- Manually aligning buttons -->
     <div class="flex items-center gap-2 mt-4">
       <!-- This is where BaseForm normally renders its Reset button -->
       <button type="button" @click="store.handleReset(action.reset, true)"

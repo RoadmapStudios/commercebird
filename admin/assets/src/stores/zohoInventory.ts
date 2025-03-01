@@ -19,15 +19,28 @@ import { extractOptions, notify, redirect_uri, wcb2b_enabled } from "@/composabl
 import { backendAction, storeKey } from "@/keys";
 import { fetchData, resetData, sendData } from "@/composable/http";
 import { useStorage } from "@/composable/storage";
+import Swal from 'sweetalert2';
 
 const actions = backendAction.zohoInventory;
 const keys = storeKey.zohoInventory;
+
+interface IsConnected {
+    total_api_count: number;
+    maximum_api_count: number;
+    remaining_api_count: number;
+    [key: string]: any;
+}
 
 export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const loader = useLoadingStore();
     const storage = useStorage();
     const notSubscribed = ref(false);
-    const isConnected = ref(false);
+
+      const isConnected = ref<IsConnected>({
+        total_api_count: 0,
+        maximum_api_count: 0,
+        remaining_api_count: 0,
+      });
     /*
      * -----------------------------------------------------------------------------------------------------------------
      *  Tab Settings
@@ -55,6 +68,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         if (loader.isLoading(connected)) return;
         loader.setLoading(connected);
         isConnected.value = await fetchData(connected, keys.connected);
+        console.log("isConnected: ", isConnected.value);
         loader.clearLoading(connected);
     };
 
@@ -411,13 +425,32 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         loader.clearLoading(action);
     };
 
-    const handleReset = async (action: string) => {
+    const handleReset = async (action: string, resetAll: boolean = false) => {
         let response: any = false;
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
+
+        // Show confirmation dialog for Reset All
+        if (resetAll) {
+            const confirmation = await Swal.fire({
+                icon: "warning",
+                title: "Reset All",
+                text: "This will unmap all products and customers, continue?",
+                showCancelButton: true,
+                confirmButtonText: "Yes, reset all",
+                cancelButtonText: "Cancel",
+                confirmButtonColor: "#d33",
+            });
+
+            if (!confirmation.isConfirmed) {
+                loader.clearLoading(action);
+                return;
+            }
+        }
+
         switch (action) {
             case actions.connect.reset:
-                response = await resetData(action, keys.connect);
+                response = await resetData(action, keys.connect, { reset: resetAll });
                 storage.remove(keys.connect);
                 break;
             case actions.tax.reset:
