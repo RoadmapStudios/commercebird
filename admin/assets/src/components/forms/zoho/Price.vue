@@ -1,17 +1,17 @@
 <template>
   <div>
-    <Alert v-if="!((b2b_enabled || wcb2b_enabled) && homePafe.isPremiumSubscription)" :message="message"
+    <Alert v-if="!((helpers.b2b_enabled || helpers.wcb2b_enabled) && homePafe.isPremiumSubscription)" :message="message"
       target="_blank" />
-    <div class="pt-4 pb-2 flex justify-between items-center   tracking-tight border-b">
+    <div class="flex items-center justify-between pt-4 pb-2 tracking-tight border-b">
       <h1 class="text-xl font-bold">Price List Mapping</h1>
       <BaseButton @click="store.addGroup()">Add Item</BaseButton>
     </div>
-    <BaseForm v-if="b2b_enabled && homePafe.isPremiumSubscription" :keys="action"
+    <BaseForm v-if="helpers.b2b_enabled && homePafe.isPremiumSubscription" :keys="action"
       @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
       <InputGroup label="Zoho Price List">
         <SelectInput v-model="store.price_settings.zoho_inventory_pricelist" :options="store.zoho_prices" />
       </InputGroup>
-      <InputGroup v-if="Object.keys(roles).length && b2b_enabled" label="Users Role">
+      <InputGroup v-if="Object.keys(roles).length && helpers.b2b_enabled" label="Users Role">
         <SelectInput v-model="store.price_settings.wp_user_role" :options="roles" />
       </InputGroup>
     </BaseForm>
@@ -30,7 +30,6 @@
     </BaseForm>
   </div>
 </template>
-
 <script lang="ts" setup>
 import { b2b_enabled, roles, wcb2b_enabled, wcb2b_groups } from "@/composable/helpers";
 import { ExclamationCircleIcon } from "@heroicons/vue/24/outline";
@@ -53,4 +52,12 @@ const message: Message = {
 };
 const store = useZohoInventoryStore();
 const homePafe = useHomepageStore();
+
+// load helpers for the component like b2b_enabled, roles, wcb2b_enabled, wcb2b_groups
+const helpers = {
+  b2b_enabled,
+  roles,
+  wcb2b_enabled,
+  wcb2b_groups,
+};
 </script>

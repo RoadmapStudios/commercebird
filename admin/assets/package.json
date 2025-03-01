@@ -18,6 +18,7 @@
     "sweetalert2": "^11.15.9",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
+    "vue-select": "^4.0.0-beta.6",
     "vue-tailwind-datepicker": "^1.7.3"
   },
   "devDependencies": {

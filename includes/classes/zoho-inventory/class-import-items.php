@@ -21,6 +21,7 @@ class CMBIRD_Products_ZI {
 	private $wc_price_decimal_separator;
 
 	public function __construct() {
+		$this->initialize_config();
 		add_action( 'init', [ $this, 'initialize_config' ] );
 	}
 

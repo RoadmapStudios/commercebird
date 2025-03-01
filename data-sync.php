@@ -49,23 +49,28 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 	$zi_common_class = new CMBIRD_Common_Functions();
 	$zi_common_class->clear_orphan_data();
 
-	// get category to filter by category
-	$opt_category = get_option( 'cmbird_zoho_item_category' );
+	// check if a category is selected
+	$selected_category = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : null;
 
-	if ( $opt_category ) {
-		$opt_category = maybe_unserialize( $opt_category );
+	if ( $selected_category ) {
+		$categories = [ $selected_category ]; // Only sync the selected category
 	} else {
-		$opt_category = array();
+		// get category to filter by category
+		$opt_category = get_option( 'cmbird_zoho_item_category' );
+		if ( $opt_category ) {
+			// convert serialized string to array
+			$categories = maybe_unserialize( $opt_category );
+			if ( ! is_array( $categories ) ) {
+				$categories = array();
+			}
+		} else {
+			$categories = array();
+		}
 	}
 
-	// Retrieve the last synced category index from the previous run
-	$last_synced_category_index = get_option( 'cmbird_last_synced_category_index_groupitems', 0 );
-
 	// Slice the category array to start from the last synced category index
-	$opt_category = array_slice( $opt_category, $last_synced_category_index );
-	$category_index = 0;
-	if ( ! empty( $opt_category ) ) {
-		foreach ( $opt_category as $category_index => $category_id ) {
+	if ( ! empty( $categories ) ) {
+		foreach ( $categories as $category_index => $category_id ) {
 			// get last backed up page number for particular category Id.
 			// And start syncing from the last synced page.
 			// If no page number available, it will start from zero.
@@ -83,16 +88,6 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 				as_schedule_single_action( time(), 'import_group_items_cron', $data );
 			}
 
-			// Update the last synced category index in the options
-			update_option( 'cmbird_last_synced_category_index_groupitems', $last_synced_category_index + $category_index + 1 );
-		}
-		// Check if all categories have been imported or passed to the loop
-		$total_categories = count( $opt_category );
-		$processed_categories = $last_synced_category_index + $category_index + 1;
-
-		if ( $processed_categories >= $total_categories ) {
-			// Reset the last synced category index
-			update_option( 'cmbird_last_synced_category_index_groupitems', 0 );
 		}
 	}
 
@@ -114,15 +109,22 @@ function cmbird_ajax_call_item_from_zoho_func() {
 	$zi_common_class = new CMBIRD_Common_Functions();
 	$zi_common_class->clear_orphan_data();
 
-	$zoho_item_category = get_option( 'cmbird_zoho_item_category' );
-	$last_synced_category_index = get_option( 'cmbird_last_synced_category_index', 0 );
+	// Check if a category is selected
+	$selected_category = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : null;
 
-	if ( $zoho_item_category ) {
-		// convert serialized string to array
-		$categories = maybe_unserialize( $zoho_item_category );
-		$categories = array_slice( $categories, $last_synced_category_index );
+	if ( $selected_category ) {
+		$categories = [ $selected_category ]; // Only sync the selected category
 	} else {
-		$categories = array();
+		$zoho_item_category = get_option( 'cmbird_zoho_item_category' );
+		if ( $zoho_item_category ) {
+			// convert serialized string to array
+			$categories = maybe_unserialize( $zoho_item_category );
+			if ( ! is_array( $categories ) ) {
+				$categories = array();
+			}
+		} else {
+			$categories = array();
+		}
 	}
 
 	if ( empty( $categories ) ) {
@@ -141,14 +143,6 @@ function cmbird_ajax_call_item_from_zoho_func() {
 			if ( ! $existing_schedule ) {
 				as_schedule_single_action( time(), 'import_simple_items_cron', $data );
 			}
-			update_option( 'cmbird_last_synced_category_index', $last_synced_category_index + $index + 1 );
-		}
-
-		$total_categories = count( $categories );
-		$processed_categories = $last_synced_category_index + $index + 1;
-
-		if ( $processed_categories >= $total_categories ) {
-			update_option( 'cmbird_last_synced_category_index', 0 );
 		}
 	}
 	wp_send_json_success( array( 'message' => __( 'Items are being imported in background. You can visit other tabs :).', 'commercebird' ) ) );
@@ -246,15 +240,30 @@ function cmbird_zoho_contacts_import( $page = '' ) {
 add_action( 'wp_ajax_zoho_ajax_call_composite_item_from_zoho', 'cmbird_sync_composite_item_from_zoho' );
 function cmbird_sync_composite_item_from_zoho() {
 
-	$opt_category = get_option( 'cmbird_zoho_item_category' );
-	if ( $opt_category ) {
-		$opt_category = maybe_unserialize( $opt_category );
+	// Clear Orphan data.
+	$zi_common_class = new CMBIRD_Common_Functions();
+	$zi_common_class->clear_orphan_data();
+
+	// check if a category is selected
+	$selected_category = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : null;
+	if( $selected_category ) {
+		$categories = [ $selected_category ]; // Only sync the selected category
 	} else {
-		$opt_category = array();
+		// get category to filter by category
+		$opt_category = get_option( 'cmbird_zoho_item_category' );
+		if ( $opt_category ) {
+			// convert serialized string to array
+			$categories = maybe_unserialize( $opt_category );
+			if ( ! is_array( $categories ) ) {
+				$categories = array();
+			}
+		} else {
+			$categories = array();
+		}
 	}
 
 	$item_add_resp = array();
-	foreach ( $opt_category as $category_id ) {
+	foreach ( $categories as $category_id ) {
 		$product_class = new CMBIRD_Products_ZI();
 		$response = $product_class->recursively_sync_composite_item_from_zoho( 1, $category_id );
 		$item_add_resp = array_merge( $item_add_resp, $response );

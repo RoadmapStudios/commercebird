@@ -36,11 +36,11 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
     const storage = useStorage();
     const notSubscribed = ref(false);
 
-      const isConnected = ref<IsConnected>({
+    const isConnected = ref<IsConnected>({
         total_api_count: 0,
         maximum_api_count: 0,
         remaining_api_count: 0,
-      });
+    });
     /*
      * -----------------------------------------------------------------------------------------------------------------
      *  Tab Settings
@@ -132,6 +132,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
      * -----------------------------------------------------------------------------------------------------------------
      */
     const syncResponse = ref<any>([]);
+
     const product_settings = reactive(<ProductSettings>{
         item_from_zoho: false,
         disable_stock_sync: false,
@@ -139,17 +140,20 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
         enable_accounting_stock: false,
     });
 
-    const sync = async (action: string) => {
+    const sync = async (action: string, selectedCategory: { label: string; value: string } | null) => {
         if (loader.isLoading(action)) return;
         loader.setLoading(action);
         let url = `${window.commercebird_admin.url}?action=zoho_ajax_call_${action}`;
+        // Append the selected category if one is chosen
         if (
             product_settings.item_from_zoho &&
-            (action === "variable_item" ||
-                action === "item" ||
-                action === "composite_item")
+            (action === "variable_item" || action === "item" || action === "composite_item")
         ) {
             url = `${url}_from_zoho`;
+            // Append selected category only if from Zoho and a category is selected
+            if (selectedCategory?.value) {
+                url += `&category=${encodeURIComponent(selectedCategory.value)}`;
+            }
         }
         syncResponse.value = [];
         await fetch(url)
@@ -157,14 +161,13 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
             .then((response) => {
                 if (!response) return;
                 if (response.success) {
-                    notify.success(response.data.message)
+                    notify.success(response.data.message);
                     return;
                 } else {
-                    notify.error(response.data.message)
+                    notify.error(response.data.message);
                     return;
                 }
                 syncResponse.value = response;
-
             })
             .finally(() => {
                 loader.clearLoading(action);

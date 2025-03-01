@@ -2,11 +2,7 @@
   <div>
     <Alert :message="hints" target="_blank"/>
     <Alert v-if="!taxEnabled" :message="enableTax" target="_self"/>
-    <Alert
-        v-if="!Object.keys(store.zoho_taxes).length"
-        :message="addZohoTax"
-        target="_self"
-    />
+    <Alert v-if="!Object.keys(store.zoho_taxes).length" :message="addZohoTax" target="_self"/>
     <Alert
         v-if="!Object.keys(store.wc_taxes).length"
         :message="addWCTax"

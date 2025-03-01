@@ -10,10 +10,13 @@ import { useLoadingStore } from '@/stores/loading';
 import type { Message } from '@/types';
 import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
 import Alert from "@/components/ui/Alert.vue";
+import { ref } from "vue";
 
 const action = backendAction.zohoInventory.cron;
 const store = useZohoInventoryStore();
 const loader = useLoadingStore();
+
+const selectedCategory = ref<{ label: string; value: string } | null>(null);
 
 const message = <Message>{
   icon: ExclamationCircleIcon,
@@ -28,10 +31,10 @@ const message = <Message>{
     <Alert :message="message" target="_blank" />
     <div class="flex flex-wrap gap-4 py-4 border-b border-gray-200">
       <BaseButton :disabled="loader.isLoading('category')" :loading="loader.isLoading('category')"
-        @click.prevent="store.sync('category')">Categories Sync
+        @click.prevent="store.sync('category', selectedCategory)">Categories Sync
       </BaseButton>
       <BaseButton :disabled="loader.isLoading('subcategory')" :loading="loader.isLoading('subcategory')"
-        @click.prevent="store.sync('subcategory')">Sub Categories Sync
+        @click.prevent="store.sync('subcategory', selectedCategory)">Sub Categories Sync
       </BaseButton>
     </div>
 
