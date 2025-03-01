@@ -578,6 +578,7 @@ export const useZohoInventoryStore = defineStore("zohoInventory", () => {
                 }
                 break;
             case "product":
+                await get_zoho_categories();
                 response = await loader.loadData(keys.product, actions.product.get);
                 if (response) {
                     product_settings.item_from_zoho = response.item_from_zoho;
