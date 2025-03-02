@@ -617,15 +617,17 @@ final class ZohoInventoryAjax {
 		$this->verify();
 		$zoho_inventory_url = get_option( 'cmbird_zoho_inventory_url' );
 		$zoho_inventory_oid = get_option( 'cmbird_zoho_inventory_oid' );
-		$url = $zoho_inventory_url . 'inventory/v1/organizations/?organization_id=' . $zoho_inventory_oid;
+		$url = $zoho_inventory_url . 'inventory/v1/apiusagereport/dashboard?version=all&organization_id=' . $zoho_inventory_oid;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
+		$api_usage = $json->data->api_usage;
 		if ( is_wp_error( $json ) ) {
 			$this->errors = array( 'message' => $json->get_error_message() );
 		} elseif ( empty( $json ) ) {
 			$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
 		} else {
-			$this->response = $json->organizations;
+			// Convert stdClass of json->api_usage to an array to ensure JSON encoding works properly.
+			$this->response = json_decode( wp_json_encode( $api_usage ), true );
 		}
 		$this->serve();
 	}
@@ -779,18 +781,29 @@ final class ZohoInventoryAjax {
 	public function connection_reset(): void {
 		$this->verify();
 		try {
-			$options = array(
-				'cmbird_zoho_inventory_domain',
-				'cmbird_zoho_inventory_oid',
-				'cmbird_zoho_inventory_cid',
-				'cmbird_zoho_inventory_cs',
-				'cmbird_zoho_inventory_url',
-				'cmbird_zoho_inventory_access_token',
-			);
-			foreach ( $options as $zi_option ) {
-				delete_option( $zi_option );
+			// Check if resetAll is true (sent from Vue)
+			$reset_all = isset( $this->data['reset'] ) && $this->data['reset'] == 1;
+			if ( ! $reset_all ) {
+				$options = array(
+					'cmbird_zoho_inventory_domain',
+					'cmbird_zoho_inventory_oid',
+					'cmbird_zoho_inventory_cid',
+					'cmbird_zoho_inventory_cs',
+					'cmbird_zoho_inventory_url',
+					'cmbird_zoho_inventory_access_token',
+				);
+				foreach ( $options as $zi_option ) {
+					delete_option( $zi_option );
+				}
+				$this->response = array( 'message' => 'Reset successfully!' );
+			} else {
+				global $wpdb;
+				// Delete all product and customer meta keys
+				$wpdb->query( "DELETE FROM {$wpdb->prefix}postmeta WHERE meta_key IN ('zi_item_id', 'zi_category_id')" );
+				$wpdb->query( "DELETE FROM {$wpdb->prefix}usermeta WHERE meta_key IN ('zi_contact_id', 'zi_primary_contact_id', 'zi_billing_address_id', 'zi_shipping_address_id', 'zi_contact_persons_id')" );
+				$this->response['message'] = __( 'Mapping reset completed', 'commercebird' );
 			}
-			$this->response = array( 'message' => 'Reset successfully!' );
+
 		} catch (Throwable $throwable) {
 			$this->errors = array( 'message' => $throwable->getMessage() );
 		}

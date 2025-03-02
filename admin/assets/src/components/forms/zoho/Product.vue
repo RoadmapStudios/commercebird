@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Alert :message="message" target="_blank" />
     <BaseForm :keys="action" @reset="store.handleReset(action.reset)" @submit="store.handleSubmit(action.save)">
       <div class="grid grid-cols-2 gap-4 my-4">
         <InputGroup label="Import from Zoho Inventory" type="toggle">
@@ -30,14 +29,23 @@
 
     <div class="flex flex-wrap gap-4 py-4">
       <BaseButton :disabled="loader.isLoading('item')" :loading="loader.isLoading('item')"
-        @click.prevent="store.sync('item')">Items Sync
+        @click.prevent="store.sync('item', selectedCategory)">
+        Items Sync
       </BaseButton>
       <BaseButton :disabled="loader.isLoading('variable_item')" :loading="loader.isLoading('variable_item')"
-        @click.prevent="store.sync('variable_item')">Item Groups Sync
+        @click.prevent="store.sync('variable_item', selectedCategory)">
+        Item Groups Sync
       </BaseButton>
+
       <BaseButton :disabled="loader.isLoading('composite_item')" :loading="loader.isLoading('composite_item')"
-        @click.prevent="store.sync('composite_item')">Composite Items Sync
+        @click.prevent="store.sync('composite_item', selectedCategory)">
+        Composite Items Sync
       </BaseButton>
+      <!-- Category selection dropdown -->
+      <div class="w-full mt-4">
+        <v-select v-model="selectedCategory" :options="categoryOptions" label="label" :clearable="true"
+          placeholder="Select a category for Testing (optional)" :filterable="true" />
+      </div>
     </div>
     <Table :rows="store.syncResponse"></Table>
   </div>
@@ -51,19 +59,24 @@ import Toggle from '@/components/ui/inputs/Toggle.vue';
 import { backendAction } from '@/keys';
 import { useLoadingStore } from '@/stores/loading';
 import { useZohoInventoryStore } from '@/stores/zohoInventory';
-import type { Message } from '@/types';
-import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import Alert from "@/components/ui/Alert.vue";
-
+import type { ZohoCategory } from '@/types';
+import { ref, computed } from 'vue';
+import vSelect from 'vue-select';
 
 const action = backendAction.zohoInventory.product;
 const store = useZohoInventoryStore();
 const loader = useLoadingStore();
-const message = <Message>{
-  icon: ExclamationCircleIcon,
-  message:
-    "To sync categories from WooCommerce to Zoho and vice versa, you need to enable it in zoho. <strong>PLEASE DO THIS FIRST!<strong/>",
-  link: `https://inventory.zoho.${store.connection.account_domain}`,
-  linkText: "Visit Here",
-};
+
+const selectedCategory = ref<{ label: string; value: string } | null>(null);
+
+// Prepare categories for the dropdown
+const categoryOptions = computed(() => {
+  return store.zoho_categories.map((category: ZohoCategory) => ({
+    label: category.label,
+    value: category.id,
+  }));
+});
 </script>
+<style>
+@import "vue-select/dist/vue-select.css";
+</style>

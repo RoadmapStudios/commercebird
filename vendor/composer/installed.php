@@ -3,7 +3,7 @@
         'name' => 'commercebird/commercebird',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '346adcdd6746d68f10379f45ea268ffe95eb9bf6',
+        'reference' => 'dae55ebafde52b8f8ac1f9674e5fd06f73e225c8',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'commercebird/commercebird' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '346adcdd6746d68f10379f45ea268ffe95eb9bf6',
+            'reference' => 'dae55ebafde52b8f8ac1f9674e5fd06f73e225c8',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

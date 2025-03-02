@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.7.2
 Requires PHP: 7.4
-Stable tag: 2.2.19
+Stable tag: 2.3.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Elevate WooCommerce to the next level by turning it into a full ERP system.
@@ -83,6 +83,13 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.3.0 - March 2nd 2025 =
+* New: Zoho API usage on connect tab
+* New: Single category selection for testing on Product tab
+* New: Purchase Orders Email Template
+* Fix: Cron sync for Zoho Items
+* Fix: Disable Product Sync to Zoho was getting triggered
+
 = 2.2.19 - February 25 2025 =
 * New: Unmap all data for Exact Online
 * New: Support for Zoho DC China, Japan, Canada and Saudi-Arabia

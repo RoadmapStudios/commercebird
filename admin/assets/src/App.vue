@@ -14,5 +14,4 @@
 <script lang="ts" setup>
 import PageMenu from "@/components/parts/PageMenu.vue";
 import { useRouter } from "vue-router";
-
 </script>

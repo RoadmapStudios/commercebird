@@ -7,29 +7,34 @@ import SelectInput from "@/components/ui/inputs/SelectInput.vue";
 import BaseForm from "@/components/ui/BaseForm.vue";
 import BaseButton from '@/components/ui/BaseButton.vue';
 import { useLoadingStore } from '@/stores/loading';
+import type { Message } from '@/types';
+import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
+import Alert from "@/components/ui/Alert.vue";
+import { ref } from "vue";
 
 const action = backendAction.zohoInventory.cron;
 const store = useZohoInventoryStore();
 const loader = useLoadingStore();
+
+const selectedCategory = ref<{ label: string; value: string } | null>(null);
+
+const message = <Message>{
+  icon: ExclamationCircleIcon,
+  message:
+    "To sync categories from WooCommerce to Zoho and vice versa, you need to enable it in zoho. <strong>PLEASE DO THIS FIRST!<strong/>",
+  link: `https://inventory.zoho.${store.connection.account_domain}`,
+  linkText: "Visit Here",
+};
 </script>
 <template>
   <div>
-
-    <!-- <div class="relative"> -->
-    <!-- <div aria-hidden="true" class="absolute inset-0 flex items-center">
-        <div class="w-full border-t border-gray-300"></div>
-      </div> -->
-    <!-- <div class="relative flex justify-center">
-        <span class="px-3 text-lg font-medium text-gray-900 bg-white">Sync Actions</span>
-      </div> -->
-    <!-- </div> -->
-
+    <Alert :message="message" target="_blank" />
     <div class="flex flex-wrap gap-4 py-4 border-b border-gray-200">
       <BaseButton :disabled="loader.isLoading('category')" :loading="loader.isLoading('category')"
-        @click.prevent="store.sync('category')">Categories Sync
+        @click.prevent="store.sync('category', selectedCategory)">Categories Sync
       </BaseButton>
       <BaseButton :disabled="loader.isLoading('subcategory')" :loading="loader.isLoading('subcategory')"
-        @click.prevent="store.sync('subcategory')">Sub Categories Sync
+        @click.prevent="store.sync('subcategory', selectedCategory)">Sub Categories Sync
       </BaseButton>
     </div>
 

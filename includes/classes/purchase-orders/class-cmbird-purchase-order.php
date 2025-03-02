@@ -353,3 +353,87 @@ function cmbird_change_user_role_to_vendor( $user_data, $request, $creating ) {
 	return $user_data;
 }
 add_action( 'woocommerce_rest_insert_customer', 'cmbird_change_user_role_to_vendor', 10, 3 );
+
+/**
+ * Register the custom email class for Purchase Orders
+ * @param array $email_classes
+ * @return array
+ */
+function cmbird_register_purchase_order_email( $email_classes ) {
+	require_once 'class-cmbird-purchase-order-email.php';
+	$email_classes['CMBIRD_Email_Purchase_Order'] = new CMBIRD_Email_Purchase_Order();
+	return $email_classes;
+}
+add_action( 'woocommerce_email_classes', 'cmbird_register_purchase_order_email' );
+
+function cmbird_format_purchase_order_number( $order_number, $order ) {
+	if ( 'shop_purchase' === $order->get_type() ) {
+		return 'PO-' . $order_number;
+	}
+	return $order_number;
+}
+add_filter( 'woocommerce_order_number', 'cmbird_format_purchase_order_number', 10, 2 );
+
+function cmbird_set_vendor_email_recipient( $recipient, $order ) {
+	if ( ! $order || ! is_a( $order, 'WC_Order' ) ) {
+		return $recipient;
+	}
+
+	if ( 'shop_purchase' === $order->get_type() ) {
+		$vendor_id = $order->get_customer_id();
+		$vendor = get_userdata( $vendor_id );
+
+		if ( $vendor && in_array( 'vendor', (array) $vendor->roles ) ) {
+			$recipient = $vendor->user_email;
+		}
+	}
+	return $recipient;
+}
+add_filter( 'woocommerce_email_recipient_new_order', 'cmbird_set_vendor_email_recipient', 10, 2 );
+
+function cmbird_customize_purchase_order_email_subject( $subject, $order ) {
+	if ( ! $order || ! is_a( $order, 'WC_Order' ) ) {
+		return $subject;
+	}
+
+	if ( 'shop_purchase' === $order->get_type() ) {
+		$subject = sprintf( __( 'New Purchase Order: PO-%s', 'commercebird' ), $order->get_id() );
+	}
+	return $subject;
+}
+add_filter( 'woocommerce_email_subject_new_order', 'cmbird_customize_purchase_order_email_subject', 10, 2 );
+
+function cmbird_customize_purchase_order_email_heading( $heading, $email ) {
+	if ( isset( $email->object ) && is_a( $email->object, 'WC_Order' ) && 'shop_purchase' === $email->object->get_type() ) {
+		$heading = __( 'You Have a New Purchase Order', 'commercebird' );
+	}
+	return $heading;
+}
+add_filter( 'woocommerce_email_heading_new_order', 'cmbird_customize_purchase_order_email_heading', 10, 2 );
+
+function cmbird_remove_order_totals_for_shop_purchase( $totals, $order ) {
+	if ( $order->get_type() === 'shop_purchase' ) {
+		// Remove pricing-related rows
+		unset( $totals['cart_subtotal'] );
+		unset( $totals['discount'] );
+		unset( $totals['shipping'] );
+		unset( $totals['payment_method'] );
+		unset( $totals['order_total'] );
+	}
+	return $totals;
+}
+add_filter( 'woocommerce_get_order_item_totals', 'cmbird_remove_order_totals_for_shop_purchase', 10, 2 );
+
+function cmbird_remove_item_prices_for_shop_purchase( $items, $order ) {
+	if ( $order instanceof WC_Order && $order->get_type() === 'shop_purchase' ) {
+		foreach ( $items as $item_id => $item ) {
+			// Ensure that only product items are modified
+			if ( $item instanceof WC_Order_Item_Product ) {
+				$item->set_subtotal( value: 0 );
+				$item->set_total( 0 );
+			}
+		}
+	}
+	return $items;
+}
+add_filter( 'woocommerce_order_get_items', 'cmbird_remove_item_prices_for_shop_purchase', 10, 2 );
