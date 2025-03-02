@@ -19,12 +19,12 @@
         <TextInput v-model="store.connection.organization_id" />
       </InputGroup>
       <InputGroup label="Client ID">
-        <TextInput v-model="displayedClientId" @focus="showFullClientId = true" @blur="showFullClientId = false" />
+        <TextInput v-model="displayedClientId" @focus="handleFocus('client_id')" @blur="handleBlur('client_id')"
+          @input="handleInput($event, 'client_id')" />
       </InputGroup>
-
       <InputGroup label="Client Secret">
-        <TextInput v-model="displayedClientSecret" @focus="showFullClientSecret = true"
-          @blur="showFullClientSecret = false" />
+        <TextInput v-model="displayedClientSecret" @focus="handleFocus('client_secret')"
+          @blur="handleBlur('client_secret')" @input="handleInput($event, 'client_secret')" />
       </InputGroup>
       <CopyableInput :value="store.connection.redirect_uri" />
     </BaseForm>
@@ -133,23 +133,46 @@ const maskString = (keyValue: string): string => {
   return `${'*'.repeat(keyValue.length - 5)}${keyValue.slice(-5)}`;
 };
 
-// Watch store values and update displayed values dynamically
+// Watch store values and initialize displayed values
 watch(() => store.connection.client_id, (newValue) => {
-  displayedClientId.value = maskString(newValue);
+  displayedClientId.value = newValue ? maskString(newValue) : '';
 });
 
 watch(() => store.connection.client_secret, (newValue) => {
-  displayedClientSecret.value = maskString(newValue);
+  displayedClientSecret.value = newValue ? maskString(newValue) : '';
 });
 
-// Toggle full/masked values on focus/blur
-watch(showFullClientId, (newVal) => {
-  displayedClientId.value = newVal ? store.connection.client_id : maskString(store.connection.client_id);
-});
+// Handle focus (show full value)
+const handleFocus = (field: 'client_id' | 'client_secret') => {
+  if (field === 'client_id') {
+    showFullClientId.value = true;
+    displayedClientId.value = store.connection.client_id;
+  } else {
+    showFullClientSecret.value = true;
+    displayedClientSecret.value = store.connection.client_secret;
+  }
+};
 
-watch(showFullClientSecret, (newVal) => {
-  displayedClientSecret.value = newVal ? store.connection.client_secret : maskString(store.connection.client_secret);
-});
+// Handle blur (mask value again)
+const handleBlur = (field: 'client_id' | 'client_secret') => {
+  if (field === 'client_id') {
+    showFullClientId.value = false;
+    displayedClientId.value = maskString(store.connection.client_id);
+  } else {
+    showFullClientSecret.value = false;
+    displayedClientSecret.value = maskString(store.connection.client_secret);
+  }
+};
+
+// Handle input (update actual value)
+const handleInput = (event: Event, field: 'client_id' | 'client_secret') => {
+  const inputValue = (event.target as HTMLInputElement).value;
+  if (field === 'client_id') {
+    store.connection.client_id = inputValue;
+  } else {
+    store.connection.client_secret = inputValue;
+  }
+};
 
 onBeforeMount(async () => {
   const response = await loader.loadData(
