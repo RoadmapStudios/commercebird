@@ -26,6 +26,7 @@ changelog/
 # build files
 bin/
 build/
+svn-tags/
 admin/assets
 commercebird.zip
 commercebird

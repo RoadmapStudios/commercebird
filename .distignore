@@ -26,6 +26,7 @@ changelog/
 
 # build files
 bin/
+svn-tags/
 commercebird.zip
 commercebird
 build.sh
