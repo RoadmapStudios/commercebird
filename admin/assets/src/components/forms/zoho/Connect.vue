@@ -106,10 +106,7 @@ const accountDomains = {
   sa: "sa",
 };
 
-const action = {
-  save: backendAction.zohoInventory.connection,
-  reset: backendAction.zohoInventory.connect.reset,
-};
+const action = backendAction.zohoInventory.connect;
 
 const apiUsageUsedPercentage = computed(() => {
   return store.isConnected?.maximum_api_count
