@@ -19,10 +19,12 @@
         <TextInput v-model="store.connection.organization_id" />
       </InputGroup>
       <InputGroup label="Client ID">
-        <TextInput v-model="formattedClientId" />
+        <TextInput v-model="displayedClientId" @focus="showFullClientId = true" @blur="showFullClientId = false" />
       </InputGroup>
+
       <InputGroup label="Client Secret">
-        <TextInput v-model="formattedClientSecret" />
+        <TextInput v-model="displayedClientSecret" @focus="showFullClientSecret = true"
+          @blur="showFullClientSecret = false" />
       </InputGroup>
       <CopyableInput :value="store.connection.redirect_uri" />
     </BaseForm>
@@ -76,7 +78,7 @@ import TextInput from "../../ui/inputs/TextInput.vue";
 import SelectInput from "../../ui/inputs/SelectInput.vue";
 import Alert from "@/components/ui/Alert.vue";
 import { redirect_uri } from "@/composable/helpers";
-import { onBeforeMount, computed } from "vue";
+import { onBeforeMount, computed, ref, watch } from "vue";
 import CopyableInput from "@/components/ui/inputs/CopyableInput.vue";
 import { backendAction, storeKey } from "@/keys";
 import BaseLink from "@/components/ui/BaseLink.vue";
@@ -120,14 +122,34 @@ const apiUsageRemainingPercentage = computed(() => {
     : 0;
 });
 
-// Function to mask client_secret (showing only last 5 characters)
-function formatString(keyValue: string): string {
-  if (!keyValue) return ''; // Return empty string if clientSecret is undefined or null
-  if (keyValue.length > 5) {
-    return `${'*'.repeat(keyValue.length - 5)}${keyValue.slice(-5)}`;
-  }
-  return keyValue; // In case the string length is 5 or less
-}
+const showFullClientId = ref(false);
+const showFullClientSecret = ref(false);
+
+const displayedClientId = ref('');
+const displayedClientSecret = ref('');
+
+const maskString = (keyValue: string): string => {
+  if (!keyValue) return '';
+  return `${'*'.repeat(keyValue.length - 5)}${keyValue.slice(-5)}`;
+};
+
+// Watch store values and update displayed values dynamically
+watch(() => store.connection.client_id, (newValue) => {
+  displayedClientId.value = maskString(newValue);
+});
+
+watch(() => store.connection.client_secret, (newValue) => {
+  displayedClientSecret.value = maskString(newValue);
+});
+
+// Toggle full/masked values on focus/blur
+watch(showFullClientId, (newVal) => {
+  displayedClientId.value = newVal ? store.connection.client_id : maskString(store.connection.client_id);
+});
+
+watch(showFullClientSecret, (newVal) => {
+  displayedClientSecret.value = newVal ? store.connection.client_secret : maskString(store.connection.client_secret);
+});
 
 onBeforeMount(async () => {
   const response = await loader.loadData(
@@ -150,7 +172,4 @@ onBeforeMount(async () => {
     };
   }
 });
-// Computed properties to display formatted client_id and client_secret
-const formattedClientId = computed(() => formatString(store.connection.client_id || ""));
-const formattedClientSecret = computed(() => formatString(store.connection.client_secret || ""));
 </script>
