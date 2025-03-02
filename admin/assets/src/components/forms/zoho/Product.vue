@@ -72,7 +72,7 @@ const selectedCategory = ref<{ label: string; value: string } | null>(null);
 // Prepare categories for the dropdown
 const categoryOptions = computed(() => {
   return store.zoho_categories.map((category: ZohoCategory) => ({
-    label: category.label,
+    label: category.label.replace(/<[^>]*>/g, ''), // Remove HTML tags
     value: category.id,
   }));
 });
