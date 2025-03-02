@@ -424,16 +424,16 @@ function cmbird_remove_order_totals_for_shop_purchase( $totals, $order ) {
 }
 add_filter( 'woocommerce_get_order_item_totals', 'cmbird_remove_order_totals_for_shop_purchase', 10, 2 );
 
-function cmbird_remove_item_prices_for_shop_purchase( $items, $order ) {
-	if ( $order instanceof WC_Order && $order->get_type() === 'shop_purchase' ) {
-		foreach ( $items as $item_id => $item ) {
-			// Ensure that only product items are modified
-			if ( $item instanceof WC_Order_Item_Product ) {
-				$item->set_subtotal( value: 0 );
-				$item->set_total( 0 );
-			}
-		}
-	}
-	return $items;
-}
-add_filter( 'woocommerce_order_get_items', 'cmbird_remove_item_prices_for_shop_purchase', 10, 2 );
+// function cmbird_remove_item_prices_for_shop_purchase( $items, $order ) {
+// 	if ( $order instanceof WC_Order && $order->get_type() === 'shop_purchase' ) {
+// 		foreach ( $items as $item_id => $item ) {
+// 			// Ensure that only product items are modified
+// 			if ( $item instanceof WC_Order_Item_Product ) {
+// 				$item->set_subtotal( value: 0 );
+// 				$item->set_total( 0 );
+// 			}
+// 		}
+// 	}
+// 	return $items;
+// }
+// add_filter( 'woocommerce_order_get_items', 'cmbird_remove_item_prices_for_shop_purchase', 10, 2 );
