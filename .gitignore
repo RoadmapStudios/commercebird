@@ -13,3 +13,4 @@ vendor/*
 !vendor/composer/
 !vendor/composer/*
 !vendor/autoload.php
+/svn-tags
