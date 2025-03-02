@@ -69,10 +69,15 @@ const loader = useLoadingStore();
 
 const selectedCategory = ref<{ label: string; value: string } | null>(null);
 
+const stripHtml = (html: string): string => {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+};
+
 // Prepare categories for the dropdown
 const categoryOptions = computed(() => {
   return store.zoho_categories.map((category: ZohoCategory) => ({
-    label: category.label.replace(/<[^>]*>/g, ''), // Remove HTML tags
+    label: stripHtml(category.label),
     value: category.id,
   }));
 });
