@@ -62,6 +62,7 @@ import { useZohoInventoryStore } from '@/stores/zohoInventory';
 import type { ZohoCategory } from '@/types';
 import { ref, computed } from 'vue';
 import vSelect from 'vue-select';
+import sanitizeHtml from "sanitize-html";
 
 const action = backendAction.zohoInventory.product;
 const store = useZohoInventoryStore();
@@ -69,15 +70,17 @@ const loader = useLoadingStore();
 
 const selectedCategory = ref<{ label: string; value: string } | null>(null);
 
-const stripHtml = (html: string): string => {
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  return doc.body.textContent || "";
+const sanitizeLabel = (html: string): string => {
+  return sanitizeHtml(html, {
+    allowedTags: [], // Remove all HTML tags
+    allowedAttributes: {} // Remove all attributes
+  });
 };
 
 // Prepare categories for the dropdown
 const categoryOptions = computed(() => {
   return store.zoho_categories.map((category: ZohoCategory) => ({
-    label: stripHtml(category.label),
+    label: sanitizeLabel(category.label),
     value: category.id,
   }));
 });
