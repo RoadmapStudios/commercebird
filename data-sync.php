@@ -71,15 +71,8 @@ function cmbird_ajax_call_variable_item_from_zoho() {
 	// Slice the category array to start from the last synced category index
 	if ( ! empty( $categories ) ) {
 		foreach ( $categories as $category_index => $category_id ) {
-			// get last backed up page number for particular category Id.
-			// And start syncing from the last synced page.
-			// If no page number available, it will start from zero.
-			$last_synced_page = get_option( 'cmbird_group_item_sync_page_cat_id_' . $category_id );
-			if ( ! intval( $last_synced_page ) ) {
-				$last_synced_page = 1;
-			}
 			$data = array(
-				'page' => $last_synced_page,
+				'page' => 1,
 				'category' => $category_id,
 			);
 			$existing_schedule = as_has_scheduled_action( 'import_group_items_cron', $data );
@@ -131,12 +124,8 @@ function cmbird_ajax_call_item_from_zoho_func() {
 		wp_send_json_error( array( 'message' => __( 'Please select at least one category from cron tab', 'commercebird' ) ) );
 	} else {
 		foreach ( $categories as $index => $category_id ) {
-			$last_synced_page = get_option( 'cmbird_simple_item_sync_page_cat_id_' . $category_id );
-			if ( ! intval( $last_synced_page ) ) {
-				$last_synced_page = 1;
-			}
 			$data = array(
-				'page' => $last_synced_page,
+				'page' => 1,
 				'category' => $category_id,
 			);
 			$existing_schedule = as_has_scheduled_action( 'import_simple_items_cron', $data );
