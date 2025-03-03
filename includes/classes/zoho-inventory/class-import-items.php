@@ -237,9 +237,6 @@ class CMBIRD_Products_ZI {
 			return;
 		}
 
-		// Keep backup of current syncing page of particular category.
-		update_option( 'cmbird_simple_item_sync_page_cat_id_' . $category, $page );
-
 		$zoho_inventory_oid = $this->config['ProductZI']['OID'];
 		$zoho_inventory_url = $this->config['ProductZI']['APIURL'];
 		$urlitem = $zoho_inventory_url . 'inventory/v1/items?organization_id=' . $zoho_inventory_oid . '&category_id=' . $category . '&page=' . $page . '&per_page=100&sort_column=last_modified_time';
@@ -382,10 +379,6 @@ class CMBIRD_Products_ZI {
 						as_schedule_single_action( time(), 'import_simple_items_cron', array( $data ) );
 						// fwrite( $fd, PHP_EOL . 'Scheduled' );
 					}
-				} else {
-					// If there is no more page to sync last backup page will be starting from 1.
-					// This we have used because in shared hosting only 1000 records are syncing.
-					update_option( 'cmbird_simple_item_sync_page_cat_id_' . $category, 1 );
 				}
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
@@ -455,9 +448,6 @@ class CMBIRD_Products_ZI {
 			} else {
 				return;
 			}
-
-			// Keep backup of current syncing page of particular category.
-			update_option( 'cmbird_group_item_sync_page_cat_id_' . $category, $page );
 
 			// fwrite($fd, PHP_EOL . 'Test name Update ' . print_r($data, true));
 			global $wpdb;
@@ -596,10 +586,6 @@ class CMBIRD_Products_ZI {
 					if ( ! $existing_schedule ) {
 						as_schedule_single_action( time(), 'import_group_items_cron', $data );
 					}
-				} else {
-					// If there is no more page to sync last backup page will be starting from 1.
-					// This we have used because in shared hosting only 1000 records are syncing.
-					update_option( 'cmbird_group_item_sync_page_cat_id_' . $category, 1 );
 				}
 				array_push( $response_msg, $this->zi_response_message( $code, $json->message ) );
 			}
