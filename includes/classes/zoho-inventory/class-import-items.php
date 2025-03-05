@@ -173,7 +173,7 @@ class CMBIRD_Products_ZI {
 
 							if ( is_numeric( $stock ) ) {
 								$product->set_manage_stock( true );
-								$product->set_stock_quantity( number_format( $stock, $wc_price_decimal_separator, $wc_decimal_separator, $wc_thousand_separator ) );
+								$product->set_stock_quantity( $stock );
 								if ( $stock > 0 ) {
 									$product->set_stock_status( 'instock' );
 								} else {
