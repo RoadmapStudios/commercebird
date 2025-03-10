@@ -801,7 +801,9 @@ final class ZohoInventoryAjax {
 				// Delete all product and customer meta keys
 				$wpdb->query( "DELETE FROM {$wpdb->prefix}postmeta WHERE meta_key IN ('zi_item_id', 'zi_category_id')" );
 				$wpdb->query( "DELETE FROM {$wpdb->prefix}usermeta WHERE meta_key IN ('zi_contact_id', 'zi_primary_contact_id', 'zi_billing_address_id', 'zi_shipping_address_id', 'zi_contact_persons_id')" );
-				$this->response['message'] = __( 'Mapping reset completed', 'commercebird' );
+				// reset every option that starts with cmbird_
+				$wpdb->query( "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE 'cmbird_%'" );
+				$this->response['message'] = __( 'All settings are reset successfully', 'commercebird' );
 			}
 
 		} catch (Throwable $throwable) {
