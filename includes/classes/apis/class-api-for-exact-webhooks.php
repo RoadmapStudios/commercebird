@@ -100,9 +100,26 @@ class Exact extends WP_REST_Controller {
 						$query->the_post();
 						$product_id = get_the_ID();
 						$product = wc_get_product( $product_id );
-						$product->set_stock_quantity( $data['FreeStock'] );
-						$product->save();
+
+						if ( $product ) {
+							$product->set_manage_stock( true );
+							$product->set_stock_quantity( intval( $data['FreeStock'] ) );
+							$product->save();
+							// get new product instance
+							$product = wc_get_product( $product_id );
+							// get stock quantity of product, if its 0, set stock status to outofstock
+							if ( $product->get_stock_quantity() <= 0 ) {
+								$product->set_stock_status( 'outofstock' );
+							} else {
+								$stock_status = $product->backorders_allowed() ? 'onbackorder' : 'outofstock';
+								$product->set_stock_status( $stock_status );
+							}
+							$product->save();
+							// Clear cache
+							wc_delete_product_transients( $product_id );
+						}
 					}
+					wp_reset_postdata();
 				}
 				break;
 			default:
