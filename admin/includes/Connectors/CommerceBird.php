@@ -152,7 +152,7 @@ final class CommerceBird {
 
 		if ( is_wp_error( $response ) ) {
 			$this->write_log( $response->get_error_message(), 'commercebird-connector' );
-			return;
+			return new WP_Error( 'request_failed', $response->get_error_message() );
 		}
 		$response = wp_remote_retrieve_body( $response );
 		return json_decode( $response, true );

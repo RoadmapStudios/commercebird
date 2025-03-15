@@ -62,6 +62,11 @@ final class ExactOnlineAjax {
 
 	private const SOURCE = 'exact';
 
+	public function __construct() {
+		$this->load_actions();
+		add_action( 'cmbird_exact_online_sync_orders', array( $this, 'sync_via_cron' ) );
+	}
+
 	/**
 	 * Sync orders from Exact Online.
 	 *
@@ -530,11 +535,6 @@ final class ExactOnlineAjax {
 		if ( $continue ) {
 			$this->export_order( $start_date, $end_date );
 		}
-	}
-
-	public function __construct() {
-		$this->load_actions();
-		add_action( 'cmbird_exact_online_sync_orders', array( $this, 'sync_via_cron' ) );
 	}
 
 	public function connect_save() {

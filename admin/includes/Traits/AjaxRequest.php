@@ -60,9 +60,7 @@ trait AjaxRequest {
 				$json_data = json_decode( $contents, true );
 
 				if ( ! empty( $json_data ) ) {
-					// Sanitize each value, but do not sanitize entire JSON string
-					$sanitized_data = array_map( 'sanitize_text_field', wp_unslash( $json_data ) );
-					$this->data = empty( $keys ) ? $sanitized_data : $this->extract_data( $sanitized_data, $keys );
+					$this->data = empty( $keys ) ? $json_data : $this->extract_data( $json_data, $keys );
 				}
 			}
 		}

@@ -151,12 +151,21 @@ class ExactOnlineSync {
 						if ( empty( $item['Email'] ) ) {
 							return null;
 						}
-						$names = explode( ' ', $item['Name'] );
-						$first_name = $names[0] ?? '';
-						$last_name = $names[1] ?? '';
+						if ( ! empty( $item['VATNumber'] ) ) {
+							$first_name = '';
+							$last_name = '';
+							$company = $item['Name'];
+						} else {
+							$names = explode( ' ', $item['Name'] );
+							$first_name = array_shift( $names ); // Take the first word as first name
+							$last_name = implode( ' ', $names ); // Join the rest as last name
+						}
+						// generate username based on email
+						$username = explode( '@', $item['Email'] )[0];
 						$address = array(
 							'first_name' => $first_name,
 							'last_name' => $last_name,
+							'company' => $company ?? '',
 							'address_1' => $item['AddressLine1'] ?? '',
 							'address_2' => $item['AddressLine2'] ?? '',
 							'city' => $item['City'] ?? '',
@@ -169,6 +178,7 @@ class ExactOnlineSync {
 							'email' => $item['Email'],
 							'first_name' => $first_name,
 							'last_name' => $last_name,
+							'username' => $username,
 							'billing' => $address,
 							'shipping' => $address,
 							'meta_data' => array(
@@ -216,6 +226,8 @@ class ExactOnlineSync {
 		// $fd = fopen( __DIR__ . '/update.txt', 'w+' );
 		$endpoint = '';
 		$payload = array();
+		// log data
+		// fwrite( $fd, print_r( $data, true ) );
 
 		switch ( $type ) {
 			case 'product':
@@ -248,6 +260,7 @@ class ExactOnlineSync {
 								}
 							}
 						}
+						// update product category
 						if ( isset( $item['ItemGroupDescription'] ) ) {
 							// Check if term exists by name
 							$term = get_term_by( 'name', $item['ItemGroupDescription'], 'product_cat' );
@@ -265,14 +278,23 @@ class ExactOnlineSync {
 							// update product category directly
 							wp_set_object_terms( $product_id, $term_id, 'product_cat' );
 						}
+						// update product name and slug if its different from current one
+						$product = wc_get_product( $product_id );
+						if ( $product->get_name() !== $item['Description'] ) {
+							$product->set_name( $item['Description'] );
+							$product->set_slug( sanitize_title( $item['Description'] ) );
+							$product->save();
+						}
+						// create meta_data array if product does not contain eo_item_id meta
+						$meta_data = get_post_meta( $product_id, 'eo_item_id', true );
+						if ( empty( $meta_data ) ) {
+							update_post_meta( $product_id, 'eo_item_id', $item['ID'] );
+							update_post_meta( $product_id, '_cost_price', $item['CostPriceStandard'] );
+							update_post_meta( $product_id, 'eo_unit', $item['Unit'] );
+						}
 						return array(
 							'id' => $product_id,
 							'regular_price' => (string) $item['StandardSalesPrice'],
-							'meta_data' => array(
-								array( 'key' => 'eo_item_id', 'value' => $item['ID'] ),
-								array( 'key' => '_cost_price', 'value' => $item['CostPriceStandard'] ),
-								array( 'key' => 'eo_unit', 'value' => $item['Unit'] ),
-							),
 						);
 					}, $filtered_data )
 				);
@@ -289,6 +311,10 @@ class ExactOnlineSync {
 								array( 'key' => 'eo_account_id', 'value' => $item['ID'] ),
 								array( 'key' => 'eo_contact_id', 'value' => $item['MainContact'] ?? '' ),
 							),
+							// if $item['VATNumber'] is not empty then update the billing company name
+							'billing' => ! empty( $item['VATNumber'] ) ? array(
+								'company' => $item['Name'],
+							) : null,
 						) : null;
 					}, array_filter( $data, fn( $item ) => get_user_by( 'email', $item['Email'] ) ) )
 				);
@@ -323,7 +349,7 @@ class ExactOnlineSync {
 		if ( is_wp_error( $response ) ) {
 			error_log( 'Error ExactOnline Update: ' . $response->get_error_message() );
 		}
-		// fwrite( $fd, print_r( $response, true ) );
+		// fwrite( $fd, 'response: ' . print_r( $response, true ) );
 		// fclose( $fd );
 		return $response;
 	}
