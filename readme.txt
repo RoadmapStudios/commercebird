@@ -5,7 +5,7 @@ Tags: shop,store,ecommerce,commerce,e-commerce
 Requires at least: 6.5
 Tested up to: 6.7.2
 Requires PHP: 7.4
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Elevate WooCommerce to the next level by turning it into a full ERP system.
@@ -83,6 +83,11 @@ A: Please fork the repository first on [Github](https://github.com/RoadmapStudio
 
 
 == Changelog ==
+= 2.3.3 - March 15 2025 =
+* Fix: Removed double sanitize to avoid empty data
+* Fix: Stock status onbackorder of composite items import
+* Fix: Exact Online StockPositions and Customers import
+
 = 2.3.2 - March 5 2025 =
 * Fix: Stock update of simple items
 * Fix: Connecting to AU and CN domains
