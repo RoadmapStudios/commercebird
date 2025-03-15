@@ -1280,7 +1280,7 @@ class CMBIRD_Products_ZI {
 	 * @param string $zi_url - zoho api url.
 	 * @param string $zi_key - zoho access token.
 	 * @param string $zi_org_id - zoho organization id.
-	 * @return array of child id and metadata if child item already synced else will return false.
+	 * @return array | bool of child id and metadata if child item already synced else will return false.
 	 */
 	public function zi_check_if_child_synced_already( $composite_zoho_id, $zi_url, $zi_org_id, $prod_id ) {
 		if ( $prod_id ) {
@@ -1309,12 +1309,19 @@ class CMBIRD_Products_ZI {
 				if ( ! empty( $prod_meta->post_id ) ) {
 
 					$allow_sync = true;
+					$product = wc_get_product( $prod_meta->post_id );
+					$stock_status = 'out_of_stock';
+					if ( $child_item->stock_on_hand > 0 ) {
+						$stock_status = 'in_stock';
+					} elseif ( $product && $product->backorders_allowed() ) {
+						$stock_status = 'onbackorder';
+					}
 					$prod_obj = (object) array(
 						'prod_id' => $prod_meta->post_id,
 						'metadata' => (object) array(
 							'quantity_min' => max( 1, $child_item->quantity ),
 							'quantity_max' => max( 1, $child_item->quantity ),
-							'stock_status' => ( $child_item->stock_on_hand ) ? 'in_stock' : 'out_of_stock',
+							'stock_status' => $stock_status,
 							'max_stock' => $child_item->stock_on_hand,
 						),
 					);
@@ -1547,8 +1554,8 @@ class CMBIRD_Products_ZI {
 									if ( $stock_quantity > 0 ) {
 										$status = 'instock';
 									} else {
-										$backorder_status = get_post_meta( $com_prod_id, '_backorders', true );
-										$status = ( $backorder_status === 'yes' ) ? 'onbackorder' : 'outofstock';
+										$backorder_status = $product->backorders_allowed();
+										$status = $backorder_status ? 'onbackorder' : 'outofstock';
 									}
 									$product->set_stock_status( $status );
 									update_post_meta( $com_prod_id, '_wc_pb_bundled_items_stock_status', $status );
