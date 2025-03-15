@@ -60,9 +60,6 @@ A: Yes, as a matter of fact, we save 0 data in our own server as the app is full
 == Q: Where can I see the documentation and contact support?
 A: Please visit the [Support site](https://support.commercebird.com) to read the docs and open support ticket
 
-== Q: How can I contribute as a developer?
-A: Please fork the repository first on [Github](https://github.com/RoadmapStudios/commercebird) and then create a PR.
-
 == Installation ==
 
 **To install CommerceBird, follow these steps:**
