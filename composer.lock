@@ -4,8 +4,57 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6cc35eb22754518bdbc6ea461160a75a",
-    "packages": [],
+    "content-hash": "759f717100736528b2430c79b3cbb284",
+    "packages": [
+        {
+            "name": "zohocrm/php-sdk-7.0",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zoho/zohocrm-php-sdk-7.0.git",
+                "reference": "7b5af10769acc38c2aaca277aa19f5f190d39bbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zoho/zohocrm-php-sdk-7.0/zipball/7b5af10769acc38c2aaca277aa19f5f190d39bbc",
+                "reference": "7b5af10769acc38c2aaca277aa19f5f190d39bbc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=5.7"
+            },
+            "type": "sdk",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Zoho CRM API Team",
+                    "email": "support@zohocrm.com",
+                    "homepage": "https://www.zoho.com/crm/help/customer-support.html",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Zoho CRM API SDK for PHP",
+            "homepage": "https://github.com/zoho/zohocrm-php-sdk-7.0",
+            "support": {
+                "issues": "https://github.com/zoho/zohocrm-php-sdk-7.0/issues",
+                "source": "https://github.com/zoho/zohocrm-php-sdk-7.0/tree/3.1.0"
+            },
+            "time": "2024-12-31T11:33:38+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
