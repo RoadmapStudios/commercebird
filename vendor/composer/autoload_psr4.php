@@ -13,5 +13,4 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => array($vendorDir . '/dealerdirect/phpcodesniffer-composer-installer/src'),
     'CommerceBird\\Admin\\' => array($baseDir . '/admin/includes'),
-    '' => array($vendorDir . '/zohocrm/php-sdk-7.0/src'),
 );

@@ -3,7 +3,7 @@
         'name' => 'commercebird/commercebird',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b7d9580eebda94d6b110eaa13965d8e27dcf38ca',
+        'reference' => 'd43ecf77a72630832a441c4d461f2fbb6bd760e5',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'commercebird/commercebird' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b7d9580eebda94d6b110eaa13965d8e27dcf38ca',
+            'reference' => 'd43ecf77a72630832a441c4d461f2fbb6bd760e5',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -123,15 +123,6 @@
             'install_path' => __DIR__ . '/../wp-coding-standards/wpcs',
             'aliases' => array(),
             'dev_requirement' => true,
-        ),
-        'zohocrm/php-sdk-7.0' => array(
-            'pretty_version' => '3.1.0',
-            'version' => '3.1.0.0',
-            'reference' => '7b5af10769acc38c2aaca277aa19f5f190d39bbc',
-            'type' => 'sdk',
-            'install_path' => __DIR__ . '/../zohocrm/php-sdk-7.0',
-            'aliases' => array(),
-            'dev_requirement' => false,
         ),
     ),
 );
