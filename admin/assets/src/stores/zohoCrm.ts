@@ -16,11 +16,23 @@ import type { ConnectionSettings } from "@/types";
 const actions = backendAction.zohoCrm;
 const keys = storeKey.zohoCrm;
 
+interface IsConnected {
+  type: string;
+  company_name: string;
+  primary_email: string;
+  [key: string]: any;
+}
+
 export const useZohoCrmStore = defineStore("zohoCrm", () => {
   const loader = useLoadingStore();
   const storage = useStorage();
   const notSubscribed = ref(false);
-  const isConnected = ref(false);
+
+  const isConnected = ref<IsConnected>({
+    type: '',
+    company_name: '',
+    primary_email: '',
+  });
 
   /*
    * -----------------------------------------------------------------------------------------------------------------
@@ -39,8 +51,7 @@ export const useZohoCrmStore = defineStore("zohoCrm", () => {
     const connected = actions.connection;
     if (loader.isLoading(connected)) return;
     loader.setLoading(connected);
-    const result = await fetchData(connected, keys.connected);
-    isConnected.value = result;
+    isConnected.value = await fetchData(connected, keys.connected);
     loader.clearLoading(connected);
   };
 
