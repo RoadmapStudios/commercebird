@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use CMBIRD_API_Handler_Zoho;
 
-class ZCRM_Custom_Fields {
+class CMBIRD_ZCRM_Modules {
 
 	/**
 	 * create API Get call to Zoho CRM to get all custom fields
@@ -16,9 +16,9 @@ class ZCRM_Custom_Fields {
 	 * @param module $module - module name
 	 * @return array | \WP_Error
 	 */
-	public function cmbird_get_custom_fields( $module ) {
+	public function cmbird_get_module( $module ) {
 		$zoho_crm_url = get_option( 'cmbird_zoho_crm_url' );
-		$url = $zoho_crm_url . 'crm/v6/settings/fields?module=' . $module;
+		$url = $zoho_crm_url . 'crm/v7/settings/fields?module=' . $module;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {

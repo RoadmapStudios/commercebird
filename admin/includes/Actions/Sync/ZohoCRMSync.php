@@ -19,7 +19,7 @@ class ZohoCRMSync {
 	 */
 	public static function get_custom_fields( $module ) {
 		$zoho_crm_url = get_option( 'cmbird_zoho_crm_url' );
-		$url = $zoho_crm_url . 'crm/v6/settings/fields?module=' . $module;
+		$url = $zoho_crm_url . 'crm/v7/settings/fields?module=' . $module;
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {
