@@ -1,5 +1,5 @@
 <template>
-  <Card title="Need a Hand?">
+  <Card title="Need a Hand?" class="my-4">
     <div class="p-4">
       <ul class="divide-y divide-gray-200" role="list">
         <li v-for="(link, name) in links" :key="name" class="py-2 space-y-4">
