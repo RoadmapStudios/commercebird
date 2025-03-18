@@ -20,6 +20,13 @@
             </InputGroup>
             <CopyableInput :value="store.connection.redirect_uri" />
         </BaseForm>
+        <!-- New Section for Connected Zoho Organisation -->
+         <div v-if="store.isConnected" class="p-4 mt-6 bg-gray-100 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-800">Connected Zoho Organization</h3>
+            <p class="text-sm text-gray-600">Type: {{ store.isConnected.type }}</p>
+            <p class="text-sm text-gray-600">Company Name: {{ store.isConnected.company_name }}</p>
+            <p class="text-sm text-gray-600">Primary Email: {{ store.isConnected.primary_email }}</p>
+        </div>
     </div>
 </template>
 <script lang="ts" setup>
@@ -34,15 +41,15 @@ import { backendAction, storeKey } from "@/keys";
 import {redirect_uri} from "@/composable/helpers";
 import { useZohoCrmStore } from "@/stores/zohoCrm";
 import { useLoadingStore } from "@/stores/loading";
-import { computed, onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 
 const accountDomains = {
     com: "com",
     eu: "eu",
     in: "in",
     jp: "jp",
-    au: "com.au",
-    cn: "com.cn",
+    "com.au": "com.au",
+    "com.cn": "com.cn",
 };
 
 const store = useZohoCrmStore();
@@ -70,8 +77,15 @@ onBeforeMount(async () => {
     store.connection.client_secret = response.client_secret;
     store.connection.redirect_uri = redirect_uri;
     store.connection.account_domain = response.account_domain;
+
+    // ✅ Connected Zoho CRM Organization in store.isConnected
+    store.isConnected.value = {
+      ...store.isConnected.value,
+      type: response.type || '',
+      company_name: response.company_name || '',
+      primary_email: response.primary_email || '',
+    };
   }
-  await store.isConnectionValid();
 });
 
 </script>

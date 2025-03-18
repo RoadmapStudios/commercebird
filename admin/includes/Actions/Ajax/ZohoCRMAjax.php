@@ -184,7 +184,7 @@ final class ZohoCRMAjax {
 	public function connection_done() {
 		$this->verify();
 		$zoho_crm_url = get_option( 'cmbird_zoho_crm_url' );
-		$url = $zoho_crm_url . 'crm/v6/org';
+		$url = $zoho_crm_url . 'crm/v7/org';
 		$execute_curl_call_handle = new CMBIRD_API_Handler_Zoho();
 		$json = $execute_curl_call_handle->execute_curl_call_get( $url );
 		if ( is_wp_error( $json ) ) {
@@ -192,7 +192,7 @@ final class ZohoCRMAjax {
 		} elseif ( empty( $json ) ) {
 			$this->errors = array( 'message' => 'We lost connection with zoho. please refresh page.' );
 		} else {
-			$this->response = $json->org;
+			$this->response = ! empty( $json->org ) ? (array) $json->org[0] : [];
 			// schedule a wp cron to refresh the token after one hour from now.
 			if ( ! wp_next_scheduled( 'zcrm_refresh_token' ) ) {
 				wp_schedule_event( time() + 3600, 'hourly', 'zcrm_refresh_token' );
