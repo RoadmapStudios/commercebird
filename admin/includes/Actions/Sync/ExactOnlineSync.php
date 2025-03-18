@@ -109,6 +109,8 @@ class ExactOnlineSync {
 						} else {
 							$term_id = 0;
 						}
+						// if stock exists then set manage_stock to true
+						$manage_stock = isset( $item['Stock'] ) ? true : false;
 						return array(
 							'name' => $item['Description'],
 							'sku' => $item['Code'],
@@ -116,6 +118,8 @@ class ExactOnlineSync {
 							'type' => 'simple',
 							'regular_price' => (string) $item['StandardSalesPrice'],
 							'images' => $images,
+							'stock_quantity' => $item['Stock'],
+							'manage_stock' => $manage_stock,
 							'categories' => array(
 								array(
 									'id' => $term_id,
@@ -436,7 +440,7 @@ class ExactOnlineSync {
 		$query = $wpdb->prepare( "
         SELECT ID FROM {$wpdb->posts}
         WHERE post_type = 'attachment'
-        AND post_title = %s
+        AND post_title LIKE %s
         LIMIT 1
     	", $picture_name );
 
