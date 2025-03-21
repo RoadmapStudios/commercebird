@@ -29,7 +29,7 @@
     </Card>
   </template>
 
-  <script lang="ts" setup>
+<script lang="ts" setup>
   import Card from "@/components/ui/Card.vue";
   import { DotLottieVue } from "@lottiefiles/dotlottie-vue";
   import { CheckCircleIcon } from "@heroicons/vue/24/solid";
@@ -51,5 +51,8 @@
   };
 
   // Correct path to Lottie file
-  const lottiePath = new URL("../../assets/web-building.lottie", import.meta.url).href;
-  </script>
+  const isDev = import.meta.env.MODE === "development";
+  const lottiePath = isDev
+  ? new URL("../../assets/web-building.lottie", import.meta.url).href
+  : new URL("web-building.lottie", import.meta.url).href;
+</script>
