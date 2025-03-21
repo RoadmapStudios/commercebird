@@ -197,7 +197,7 @@ final class ZohoInventoryAjax {
 
 		$data = $this->get_subscription_data_from_api();
 
-		if ( ! empty( $data ) ) {
+		if ( ! empty( $data ) && array_key_exists( 'status', $data ) && $data['status'] !== 'error' ) {
 			set_transient( 'zoho_subscription', $data, WEEK_IN_SECONDS );
 		}
 
@@ -223,6 +223,7 @@ final class ZohoInventoryAjax {
 
 		if ( is_wp_error( $response ) ) {
 			$this->errors = array( 'message' => $response->get_error_messages() );
+			$this->response = array( 'status' => 'error' );
 			return array();
 		}
 
