@@ -5,7 +5,7 @@
  * Author:      CommerceBird
  * Description: This plugin helps you get the most of CommerceBird by allowing you to upload product images, use integrations like Zoho Inventory, Zoho CRM, Exact Online and more. Requires a subscription at CommerceBird.com.
  * Version: 2.3.3
- * Requires PHP: 7.4
+ * Requires PHP: 8.2
  * Requires Plugins: woocommerce
  * Requires at least: 6.5
  * Tested up to: 6.7.2

@@ -46,6 +46,7 @@ return array(
     'CommerceBird\\Admin\\Traits\\LogWriter' => $baseDir . '/admin/includes/Traits/LogWriter.php',
     'CommerceBird\\Admin\\Traits\\OptionStatus' => $baseDir . '/admin/includes/Traits/OptionStatus.php',
     'CommerceBird\\Admin\\Traits\\Singleton' => $baseDir . '/admin/includes/Traits/Singleton.php',
+    'CommerceBird\\CMBIRD_ZCRM_Contact' => $baseDir . '/includes/classes/zoho-crm/class-zcrm-contact.php',
     'CommerceBird\\CMBIRD_ZCRM_Modules' => $baseDir . '/includes/classes/zoho-crm/class-zcrm-modules.php',
     'CommerceBird\\Cmbird_WC_API' => $baseDir . '/includes/classes/class-wc-api.php',
     'CommerceBird\\Plugin' => $baseDir . '/includes/classes/class-plugin.php',

@@ -106,6 +106,7 @@ class ComposerStaticInit6cc35eb22754518bdbc6ea461160a75a
         'CommerceBird\\Admin\\Traits\\LogWriter' => __DIR__ . '/../..' . '/admin/includes/Traits/LogWriter.php',
         'CommerceBird\\Admin\\Traits\\OptionStatus' => __DIR__ . '/../..' . '/admin/includes/Traits/OptionStatus.php',
         'CommerceBird\\Admin\\Traits\\Singleton' => __DIR__ . '/../..' . '/admin/includes/Traits/Singleton.php',
+        'CommerceBird\\CMBIRD_ZCRM_Contact' => __DIR__ . '/../..' . '/includes/classes/zoho-crm/class-zcrm-contact.php',
         'CommerceBird\\CMBIRD_ZCRM_Modules' => __DIR__ . '/../..' . '/includes/classes/zoho-crm/class-zcrm-modules.php',
         'CommerceBird\\Cmbird_WC_API' => __DIR__ . '/../..' . '/includes/classes/class-wc-api.php',
         'CommerceBird\\Plugin' => __DIR__ . '/../..' . '/includes/classes/class-plugin.php',

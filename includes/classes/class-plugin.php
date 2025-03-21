@@ -133,7 +133,7 @@ class Plugin {
 
 	public static function init() {
 		if ( is_admin() ) {
-			$php_min_version = '7.4';
+			$php_min_version = '8.2';
 			$php_current_version = phpversion();
 
 			if ( version_compare( $php_min_version, $php_current_version, '>' ) ) {
